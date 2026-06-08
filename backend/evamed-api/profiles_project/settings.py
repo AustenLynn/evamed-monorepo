@@ -66,7 +66,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://172.16.3.134:8000",
     "http://0.0.0.0:8000",
     "http://0.0.0.0:8080",
-    "http://54.224.175.163"
+    "http://54.224.175.163",
+    "https://evamed-frontend.onrender.com",
 ]
 
 ROOT_URLCONF = 'profiles_project.urls'
