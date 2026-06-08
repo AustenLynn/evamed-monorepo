@@ -1,0 +1,4599 @@
+[
+{
+  "model": "projects_api.use",
+  "pk": 1,
+  "fields": {
+    "name_use": "Habitacional"
+  }
+},
+{
+  "model": "projects_api.use",
+  "pk": 2,
+  "fields": {
+    "name_use": "Comercial"
+  }
+},
+{
+  "model": "projects_api.use",
+  "pk": 3,
+  "fields": {
+    "name_use": "Oficinas"
+  }
+},
+{
+  "model": "projects_api.use",
+  "pk": 4,
+  "fields": {
+    "name_use": "Industrial"
+  }
+},
+{
+  "model": "projects_api.use",
+  "pk": 5,
+  "fields": {
+    "name_use": "Educacional"
+  }
+},
+{
+  "model": "projects_api.use",
+  "pk": 6,
+  "fields": {
+    "name_use": "Hospitalario"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 1,
+  "fields": {
+    "name_country": "M\u00e9xico"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 2,
+  "fields": {
+    "name_country": "China"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 3,
+  "fields": {
+    "name_country": "India"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 4,
+  "fields": {
+    "name_country": "Estados Unidos"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 5,
+  "fields": {
+    "name_country": "Indonesia"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 6,
+  "fields": {
+    "name_country": "Pakist\u00e1n"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 7,
+  "fields": {
+    "name_country": "Brasil"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 8,
+  "fields": {
+    "name_country": "Nigeria"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 9,
+  "fields": {
+    "name_country": "Bangladesh"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 10,
+  "fields": {
+    "name_country": "Rusia"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 11,
+  "fields": {
+    "name_country": "Jap\u00f3n"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 12,
+  "fields": {
+    "name_country": "Etiop\u00eda"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 13,
+  "fields": {
+    "name_country": "Filipinas"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 14,
+  "fields": {
+    "name_country": "Egipto"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 15,
+  "fields": {
+    "name_country": "Vietnam"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 16,
+  "fields": {
+    "name_country": "Congo Democr\u00e1tico"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 17,
+  "fields": {
+    "name_country": "Alemania"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 18,
+  "fields": {
+    "name_country": "Turqu\u00eda"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 19,
+  "fields": {
+    "name_country": "Ir\u00e1n"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 20,
+  "fields": {
+    "name_country": "Tailandia"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 21,
+  "fields": {
+    "name_country": "Francia"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 22,
+  "fields": {
+    "name_country": "Reino Unido"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 23,
+  "fields": {
+    "name_country": "Italia"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 24,
+  "fields": {
+    "name_country": "Sudafrica"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 25,
+  "fields": {
+    "name_country": "Tanzania"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 26,
+  "fields": {
+    "name_country": "Birmania"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 27,
+  "fields": {
+    "name_country": "Corea del sur"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 28,
+  "fields": {
+    "name_country": "Kenia"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 29,
+  "fields": {
+    "name_country": "Colombia"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 30,
+  "fields": {
+    "name_country": "Espa\u00f1a"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 31,
+  "fields": {
+    "name_country": "Ucrania"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 32,
+  "fields": {
+    "name_country": "Argentina"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 33,
+  "fields": {
+    "name_country": "Uganda"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 34,
+  "fields": {
+    "name_country": "Argelia"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 35,
+  "fields": {
+    "name_country": "Sud\u00e1n"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 36,
+  "fields": {
+    "name_country": "Irak"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 37,
+  "fields": {
+    "name_country": "Polonia"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 38,
+  "fields": {
+    "name_country": "Afganist\u00e1n"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 39,
+  "fields": {
+    "name_country": "Canad\u00e1"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 40,
+  "fields": {
+    "name_country": "Marruecos"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 41,
+  "fields": {
+    "name_country": "Arabia Saudi"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 42,
+  "fields": {
+    "name_country": "Uzbekist\u00e1n"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 43,
+  "fields": {
+    "name_country": "Per\u00fa"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 44,
+  "fields": {
+    "name_country": "Malasia"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 45,
+  "fields": {
+    "name_country": "Angola"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 46,
+  "fields": {
+    "name_country": "Ghana"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 47,
+  "fields": {
+    "name_country": "Mozambique"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 48,
+  "fields": {
+    "name_country": "Venezuela"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 49,
+  "fields": {
+    "name_country": "Yemen"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 50,
+  "fields": {
+    "name_country": "Nepal"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 51,
+  "fields": {
+    "name_country": "Madagascar"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 52,
+  "fields": {
+    "name_country": "Corea del norte"
+  }
+},
+{
+  "model": "projects_api.country",
+  "pk": 53,
+  "fields": {
+    "name_country": "Camer\u00fan"
+  }
+},
+{
+  "model": "projects_api.typeproject",
+  "pk": 1,
+  "fields": {
+    "name_type_project": "Duplex"
+  }
+},
+{
+  "model": "projects_api.typeproject",
+  "pk": 2,
+  "fields": {
+    "name_type_project": "Multifamiliar horizontal"
+  }
+},
+{
+  "model": "projects_api.typeproject",
+  "pk": 3,
+  "fields": {
+    "name_type_project": "Multifamiliar vertical"
+  }
+},
+{
+  "model": "projects_api.typeproject",
+  "pk": 4,
+  "fields": {
+    "name_type_project": "Triplex"
+  }
+},
+{
+  "model": "projects_api.typeproject",
+  "pk": 5,
+  "fields": {
+    "name_type_project": "Unifamiliar"
+  }
+},
+{
+  "model": "projects_api.usefullife",
+  "pk": 1,
+  "fields": {
+    "name_useful_life": "50"
+  }
+},
+{
+  "model": "projects_api.usefullife",
+  "pk": 2,
+  "fields": {
+    "name_useful_life": "100"
+  }
+},
+{
+  "model": "projects_api.usefullife",
+  "pk": 3,
+  "fields": {
+    "name_useful_life": "150"
+  }
+},
+{
+  "model": "projects_api.usefullife",
+  "pk": 4,
+  "fields": {
+    "name_useful_life": "200"
+  }
+},
+{
+  "model": "projects_api.usefullife",
+  "pk": 5,
+  "fields": {
+    "name_useful_life": "250"
+  }
+},
+{
+  "model": "projects_api.housingscheme",
+  "pk": 1,
+  "fields": {
+    "name_housing_scheme": "Adosado"
+  }
+},
+{
+  "model": "projects_api.housingscheme",
+  "pk": 2,
+  "fields": {
+    "name_housing_scheme": "Aislado"
+  }
+},
+{
+  "model": "projects_api.housingscheme",
+  "pk": 3,
+  "fields": {
+    "name_housing_scheme": "Vertical"
+  }
+},
+{
+  "model": "projects_api.section",
+  "pk": 1,
+  "fields": {
+    "name_section": "Cimentaci\u00f3n"
+  }
+},
+{
+  "model": "projects_api.section",
+  "pk": 2,
+  "fields": {
+    "name_section": "Muros interiores"
+  }
+},
+{
+  "model": "projects_api.section",
+  "pk": 3,
+  "fields": {
+    "name_section": "Muros exteriores"
+  }
+},
+{
+  "model": "projects_api.section",
+  "pk": 4,
+  "fields": {
+    "name_section": "Pisos"
+  }
+},
+{
+  "model": "projects_api.section",
+  "pk": 5,
+  "fields": {
+    "name_section": "Techos"
+  }
+},
+{
+  "model": "projects_api.section",
+  "pk": 6,
+  "fields": {
+    "name_section": "Entrepiso"
+  }
+},
+{
+  "model": "projects_api.section",
+  "pk": 7,
+  "fields": {
+    "name_section": "Estructura"
+  }
+},
+{
+  "model": "projects_api.section",
+  "pk": 8,
+  "fields": {
+    "name_section": "Puertas"
+  }
+},
+{
+  "model": "projects_api.section",
+  "pk": 9,
+  "fields": {
+    "name_section": "Ventanas"
+  }
+},
+{
+  "model": "projects_api.section",
+  "pk": 10,
+  "fields": {
+    "name_section": "Inst Especiales"
+  }
+},
+{
+  "model": "projects_api.section",
+  "pk": 11,
+  "fields": {
+    "name_section": "Otros"
+  }
+},
+{
+  "model": "projects_api.standard",
+  "pk": 1,
+  "fields": {
+    "name_standard": "A1-A3"
+  }
+},
+{
+  "model": "projects_api.standard",
+  "pk": 2,
+  "fields": {
+    "name_standard": "A1"
+  }
+},
+{
+  "model": "projects_api.standard",
+  "pk": 3,
+  "fields": {
+    "name_standard": "A2"
+  }
+},
+{
+  "model": "projects_api.standard",
+  "pk": 4,
+  "fields": {
+    "name_standard": "A3"
+  }
+},
+{
+  "model": "projects_api.potentialtype",
+  "pk": 1,
+  "fields": {
+    "name_potential_type": "PAAe",
+    "name_complete_potential_type": "Agotamiento de Recursos Abi\u00f3ticos Minerales",
+    "unit_potential_type": "kg SB eq"
+  }
+},
+{
+  "model": "projects_api.potentialtype",
+  "pk": 2,
+  "fields": {
+    "name_potential_type": "PAAf",
+    "name_complete_potential_type": "Agotamiento de Recursos Abi\u00f3ticos F\u00f3siles",
+    "unit_potential_type": "MJ"
+  }
+},
+{
+  "model": "projects_api.potentialtype",
+  "pk": 3,
+  "fields": {
+    "name_potential_type": "PCG 100",
+    "name_complete_potential_type": "Calentamiento Global",
+    "unit_potential_type": "kg CO2 eq"
+  }
+},
+{
+  "model": "projects_api.potentialtype",
+  "pk": 4,
+  "fields": {
+    "name_potential_type": "PAO",
+    "name_complete_potential_type": "Agotamiento de la Capa de Ozono",
+    "unit_potential_type": "kg CFC-11 eq"
+  }
+},
+{
+  "model": "projects_api.potentialtype",
+  "pk": 5,
+  "fields": {
+    "name_potential_type": "PFOF",
+    "name_complete_potential_type": "Oxidaci\u00f3n Fotoqu\u00edmica",
+    "unit_potential_type": "kg C2H4"
+  }
+},
+{
+  "model": "projects_api.potentialtype",
+  "pk": 6,
+  "fields": {
+    "name_potential_type": "PA",
+    "name_complete_potential_type": "Acidificaci\u00f3n",
+    "unit_potential_type": "kg SO2 eq"
+  }
+},
+{
+  "model": "projects_api.potentialtype",
+  "pk": 7,
+  "fields": {
+    "name_potential_type": "PE",
+    "name_complete_potential_type": "Eutrofizaci\u00f3n",
+    "unit_potential_type": "kg PO4 eq"
+  }
+},
+{
+  "model": "projects_api.potentialtype",
+  "pk": 8,
+  "fields": {
+    "name_potential_type": "EA",
+    "name_complete_potential_type": "Escasez de agua",
+    "unit_potential_type": "m3 eq"
+  }
+},
+{
+  "model": "projects_api.potentialtype",
+  "pk": 9,
+  "fields": {
+    "name_potential_type": "POT",
+    "name_complete_potential_type": "Formaci\u00f3n de Ozono Troposf\u00e9rico",
+    "unit_potential_type": "kg O3"
+  }
+},
+{
+  "model": "projects_api.potentialtype",
+  "pk": 10,
+  "fields": {
+    "name_potential_type": "PARNR",
+    "name_complete_potential_type": "Agotamiento de recursos energ\u00e9ticos no renovables",
+    "unit_potential_type": "MJ"
+  }
+},
+{
+  "model": "projects_api.potentialtype",
+  "pk": 11,
+  "fields": {
+    "name_potential_type": "Human toxicity",
+    "name_complete_potential_type": "Human toxicity",
+    "unit_potential_type": "4-DB"
+  }
+},
+{
+  "model": "projects_api.potentialtype",
+  "pk": 12,
+  "fields": {
+    "name_potential_type": "Fresh water aquatic ecotox.",
+    "name_complete_potential_type": "Fresh water aquatic ecotox",
+    "unit_potential_type": "4-DB"
+  }
+},
+{
+  "model": "projects_api.potentialtype",
+  "pk": 13,
+  "fields": {
+    "name_potential_type": "Marine aquatic ecotoxicity",
+    "name_complete_potential_type": "Marine aquatic ecotoxicity",
+    "unit_potential_type": "4-DB"
+  }
+},
+{
+  "model": "projects_api.potentialtype",
+  "pk": 14,
+  "fields": {
+    "name_potential_type": "Terrestrial ecotoxicity",
+    "name_complete_potential_type": "Terrestrial ecotoxicity",
+    "unit_potential_type": "4-DB"
+  }
+},
+{
+  "model": "projects_api.sourceinformation",
+  "pk": 2,
+  "fields": {
+    "name_source_information": "Generador de energ\u00eda el\u00e9ctrica a base de Diesel, potencia menor a 18.64 kW (GLO)-Ecoinvent 3"
+  }
+},
+{
+  "model": "projects_api.sourceinformation",
+  "pk": 3,
+  "fields": {
+    "name_source_information": "Maquinaria de carga ligera a base de Diesel, potencia menor a 18.64 kW (GLO)-Ecoinvent 3"
+  }
+},
+{
+  "model": "projects_api.sourceinformation",
+  "pk": 4,
+  "fields": {
+    "name_source_information": "Maquinaria de carga pesada a base de Diesel, potencia menor a 18.64kW (GLO)-Ecoinvent 3"
+  }
+},
+{
+  "model": "projects_api.sourceinformation",
+  "pk": 5,
+  "fields": {
+    "name_source_information": "Generador de energ\u00eda el\u00e9ctrica a base de Diesel, potencia potencia entre 18.64 kW y 74.57 kW (GLO)-Ecoinvent 3"
+  }
+},
+{
+  "model": "projects_api.sourceinformation",
+  "pk": 6,
+  "fields": {
+    "name_source_information": "Maquinaria de carga ligera a base de Diesel, potencia entre 18.64 kW y 74.57 kW (GLO)-Ecoinvent 3"
+  }
+},
+{
+  "model": "projects_api.sourceinformation",
+  "pk": 7,
+  "fields": {
+    "name_source_information": "Maquinaria de carga pesada a base de Diesel, potencia entre 18.64 kW y 74.57 kW (GLO)-Ecoinvent 3"
+  }
+},
+{
+  "model": "projects_api.sourceinformation",
+  "pk": 8,
+  "fields": {
+    "name_source_information": "Generador de energ\u00eda el\u00e9ctrica a base de Diesel, potencia mayor a 74.57 kW (GLO)-Ecoinvent 3"
+  }
+},
+{
+  "model": "projects_api.sourceinformation",
+  "pk": 9,
+  "fields": {
+    "name_source_information": "Maquinaria de carga ligera a base de Diesel, potencia mayor a 74.57 kW (GLO)-Ecoinvent 3"
+  }
+},
+{
+  "model": "projects_api.sourceinformation",
+  "pk": 10,
+  "fields": {
+    "name_source_information": "Maquinaria de carga pesada a base de Diesel, potencia mayor a 74.57 kW (GLO)-Ecoinvent 3"
+  }
+},
+{
+  "model": "projects_api.sourceinformation",
+  "pk": 11,
+  "fields": {
+    "name_source_information": "Excavadora hidr\u00e1ulica (GLO)"
+  }
+},
+{
+  "model": "projects_api.sourceinformation",
+  "pk": 12,
+  "fields": {
+    "name_source_information": "Banda transportadora (GLO)"
+  }
+},
+{
+  "model": "projects_api.transport",
+  "pk": 1,
+  "fields": {
+    "name_transport": "Transporte por oceano, Buque carguero (GLO)-Ecoinvent 3"
+  }
+},
+{
+  "model": "projects_api.transport",
+  "pk": 2,
+  "fields": {
+    "name_transport": "Transporte por oceano, contenedores (GLO)-Ecoinvent 3"
+  }
+},
+{
+  "model": "projects_api.transport",
+  "pk": 3,
+  "fields": {
+    "name_transport": "Veh\u00edculo de carga comercial ligera (GLO)-Ecoinvent 3"
+  }
+},
+{
+  "model": "projects_api.transport",
+  "pk": 4,
+  "fields": {
+    "name_transport": "Veh\u00edculo de carga, mayor a 32 Ton, tipo EURO 3 (RoW)-Ecoinvent 3"
+  }
+},
+{
+  "model": "projects_api.transport",
+  "pk": 5,
+  "fields": {
+    "name_transport": "Veh\u00edculo de carga, entre  16 y 32 Ton, tipo EURO 3 (RoW)-Ecoinvent 3"
+  }
+},
+{
+  "model": "projects_api.transport",
+  "pk": 6,
+  "fields": {
+    "name_transport": "Veh\u00edculo de carga, entre  3.5 y 7.5 Ton, tipo EURO 3 (RoW)-Ecoinvent 3"
+  }
+},
+{
+  "model": "projects_api.transport",
+  "pk": 7,
+  "fields": {
+    "name_transport": "Veh\u00edculo de carga, entre  7.5 y 16 Ton, tipo EURO 3 (RoW)-Ecoinvent 3"
+  }
+},
+{
+  "model": "projects_api.volumeunit",
+  "pk": 1,
+  "fields": {
+    "name_volume_unit": "M3"
+  }
+},
+{
+  "model": "projects_api.energyunit",
+  "pk": 1,
+  "fields": {
+    "name_energy_unit": "kWh"
+  }
+},
+{
+  "model": "projects_api.energyunit",
+  "pk": 2,
+  "fields": {
+    "name_energy_unit": "Hrs"
+  }
+},
+{
+  "model": "projects_api.energyunit",
+  "pk": 3,
+  "fields": {
+    "name_energy_unit": "MJ"
+  }
+},
+{
+  "model": "projects_api.bulkunit",
+  "pk": 1,
+  "fields": {
+    "name_bulk_unit": "Kg"
+  }
+},
+{
+  "model": "projects_api.typeenergy",
+  "pk": 2,
+  "fields": {
+    "name_type_energy": "Energ\u00eda el\u00e9ctrica, Medio voltaje (MX)-ECOINVENT3"
+  }
+},
+{
+  "model": "projects_api.typeenergy",
+  "pk": 9,
+  "fields": {
+    "name_type_energy": "Energ\u00eda el\u00e9ctrica, Alto voltaje (MX)-ECOINVENT3"
+  }
+},
+{
+  "model": "projects_api.typeenergy",
+  "pk": 10,
+  "fields": {
+    "name_type_energy": "Energ\u00eda el\u00e9ctrica, Bajo voltaje (MX)-ECOINVENT3"
+  }
+},
+{
+  "model": "projects_api.typeenergy",
+  "pk": 11,
+  "fields": {
+    "name_type_energy": "Calefacci\u00f3n dom\u00e9stica con gas natural (GLO)"
+  }
+},
+{
+  "model": "projects_api.typeenergy",
+  "pk": 15,
+  "fields": {
+    "name_type_energy": "Energ\u00eda el\u00e9ctrica, Alto voltaje (MX)-MEXICANIUH"
+  }
+},
+{
+  "model": "projects_api.typeenergy",
+  "pk": 16,
+  "fields": {
+    "name_type_energy": "Energ\u00eda el\u00e9ctrica, Medio voltaje (MX)-MEXICANIUH"
+  }
+},
+{
+  "model": "projects_api.typeenergy",
+  "pk": 17,
+  "fields": {
+    "name_type_energy": "Energ\u00eda el\u00e9ctrica, Bajo voltaje (MX)-MEXICANIUH"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 1,
+  "fields": {
+    "transport_id": 1,
+    "potential_type_id": 1,
+    "value": "6.010000000000000000000000000E-8"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 2,
+  "fields": {
+    "transport_id": 2,
+    "potential_type_id": 1,
+    "value": "7.000000000000000000000000000E-8"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 3,
+  "fields": {
+    "transport_id": 3,
+    "potential_type_id": 1,
+    "value": "0.00004090000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 4,
+  "fields": {
+    "transport_id": 4,
+    "potential_type_id": 1,
+    "value": "0.00000158000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 5,
+  "fields": {
+    "transport_id": 4,
+    "potential_type_id": 1,
+    "value": "0.00000158000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 6,
+  "fields": {
+    "transport_id": 5,
+    "potential_type_id": 1,
+    "value": "0.00000456000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 7,
+  "fields": {
+    "transport_id": 6,
+    "potential_type_id": 1,
+    "value": "0.00002550000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 8,
+  "fields": {
+    "transport_id": 7,
+    "potential_type_id": 1,
+    "value": "0.00000780000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 9,
+  "fields": {
+    "transport_id": 1,
+    "potential_type_id": 2,
+    "value": "0.08290000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 10,
+  "fields": {
+    "transport_id": 2,
+    "potential_type_id": 2,
+    "value": "0.12000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 11,
+  "fields": {
+    "transport_id": 3,
+    "potential_type_id": 2,
+    "value": "26.00000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 12,
+  "fields": {
+    "transport_id": 4,
+    "potential_type_id": 2,
+    "value": "1.44000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 13,
+  "fields": {
+    "transport_id": 5,
+    "potential_type_id": 2,
+    "value": "2.55000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 14,
+  "fields": {
+    "transport_id": 6,
+    "potential_type_id": 2,
+    "value": "7.74000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 15,
+  "fields": {
+    "transport_id": 7,
+    "potential_type_id": 2,
+    "value": "3.26000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 16,
+  "fields": {
+    "transport_id": 1,
+    "potential_type_id": 3,
+    "value": "0.00650000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 17,
+  "fields": {
+    "transport_id": 2,
+    "potential_type_id": 3,
+    "value": "0.00934000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 18,
+  "fields": {
+    "transport_id": 3,
+    "potential_type_id": 3,
+    "value": "1.84000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 19,
+  "fields": {
+    "transport_id": 4,
+    "potential_type_id": 3,
+    "value": "0.09360000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 20,
+  "fields": {
+    "transport_id": 5,
+    "potential_type_id": 3,
+    "value": "0.17200000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 21,
+  "fields": {
+    "transport_id": 6,
+    "potential_type_id": 3,
+    "value": "0.54100000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 22,
+  "fields": {
+    "transport_id": 7,
+    "potential_type_id": 3,
+    "value": "0.22400000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 23,
+  "fields": {
+    "transport_id": 1,
+    "potential_type_id": 4,
+    "value": "1.03000000000000000000000000E-9"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 24,
+  "fields": {
+    "transport_id": 2,
+    "potential_type_id": 4,
+    "value": "1.50000000000000000000000000E-9"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 25,
+  "fields": {
+    "transport_id": 3,
+    "potential_type_id": 4,
+    "value": "2.9600000000000000000000000000E-7"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 26,
+  "fields": {
+    "transport_id": 4,
+    "potential_type_id": 4,
+    "value": "1.720000000000000000000000000E-8"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 27,
+  "fields": {
+    "transport_id": 5,
+    "potential_type_id": 4,
+    "value": "3.020000000000000000000000000E-8"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 28,
+  "fields": {
+    "transport_id": 6,
+    "potential_type_id": 4,
+    "value": "8.840000000000000000000000000E-8"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 29,
+  "fields": {
+    "transport_id": 7,
+    "potential_type_id": 4,
+    "value": "3.820000000000000000000000000E-8"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 30,
+  "fields": {
+    "transport_id": 1,
+    "potential_type_id": 5,
+    "value": "0.00000430000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 31,
+  "fields": {
+    "transport_id": 2,
+    "potential_type_id": 5,
+    "value": "0.00000638000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 32,
+  "fields": {
+    "transport_id": 3,
+    "potential_type_id": 5,
+    "value": "0.00069400000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 33,
+  "fields": {
+    "transport_id": 4,
+    "potential_type_id": 5,
+    "value": "0.00001410000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 34,
+  "fields": {
+    "transport_id": 5,
+    "potential_type_id": 5,
+    "value": "0.00002680000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 35,
+  "fields": {
+    "transport_id": 6,
+    "potential_type_id": 5,
+    "value": "0.00008800000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 36,
+  "fields": {
+    "transport_id": 7,
+    "potential_type_id": 5,
+    "value": "0.00003510000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 37,
+  "fields": {
+    "transport_id": 1,
+    "potential_type_id": 6,
+    "value": "0.00015400000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 38,
+  "fields": {
+    "transport_id": 2,
+    "potential_type_id": 6,
+    "value": "0.00024500000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 39,
+  "fields": {
+    "transport_id": 3,
+    "potential_type_id": 6,
+    "value": "0.00820000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 40,
+  "fields": {
+    "transport_id": 4,
+    "potential_type_id": 6,
+    "value": "0.00048500000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 41,
+  "fields": {
+    "transport_id": 5,
+    "potential_type_id": 6,
+    "value": "0.00087200000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 42,
+  "fields": {
+    "transport_id": 6,
+    "potential_type_id": 6,
+    "value": "0.00259000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 43,
+  "fields": {
+    "transport_id": 7,
+    "potential_type_id": 6,
+    "value": "0.00110000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 44,
+  "fields": {
+    "transport_id": 1,
+    "potential_type_id": 7,
+    "value": "0.00001600000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 45,
+  "fields": {
+    "transport_id": 2,
+    "potential_type_id": 7,
+    "value": "0.00002740000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 46,
+  "fields": {
+    "transport_id": 3,
+    "potential_type_id": 7,
+    "value": "0.00228000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 47,
+  "fields": {
+    "transport_id": 4,
+    "potential_type_id": 7,
+    "value": "0.00011600000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 48,
+  "fields": {
+    "transport_id": 5,
+    "potential_type_id": 7,
+    "value": "0.00021100000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 49,
+  "fields": {
+    "transport_id": 6,
+    "potential_type_id": 7,
+    "value": "0.00065400000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 50,
+  "fields": {
+    "transport_id": 7,
+    "potential_type_id": 7,
+    "value": "0.00027000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 51,
+  "fields": {
+    "transport_id": 1,
+    "potential_type_id": 8,
+    "value": "0.00015900000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 52,
+  "fields": {
+    "transport_id": 2,
+    "potential_type_id": 8,
+    "value": "0.00018900000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 53,
+  "fields": {
+    "transport_id": 3,
+    "potential_type_id": 8,
+    "value": "0.12600000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 54,
+  "fields": {
+    "transport_id": 4,
+    "potential_type_id": 8,
+    "value": "0.00540000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 55,
+  "fields": {
+    "transport_id": 5,
+    "potential_type_id": 8,
+    "value": "0.00856000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 56,
+  "fields": {
+    "transport_id": 6,
+    "potential_type_id": 8,
+    "value": "0.03240000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 57,
+  "fields": {
+    "transport_id": 7,
+    "potential_type_id": 8,
+    "value": "0.01190000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 58,
+  "fields": {
+    "transport_id": 1,
+    "potential_type_id": 9,
+    "value": "0E-35"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 59,
+  "fields": {
+    "transport_id": 2,
+    "potential_type_id": 9,
+    "value": "0E-35"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 60,
+  "fields": {
+    "transport_id": 3,
+    "potential_type_id": 9,
+    "value": "0E-35"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 61,
+  "fields": {
+    "transport_id": 4,
+    "potential_type_id": 9,
+    "value": "0E-35"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 62,
+  "fields": {
+    "transport_id": 5,
+    "potential_type_id": 9,
+    "value": "0E-35"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 63,
+  "fields": {
+    "transport_id": 6,
+    "potential_type_id": 9,
+    "value": "0E-35"
+  }
+},
+{
+  "model": "projects_api.potentialtransport",
+  "pk": 64,
+  "fields": {
+    "transport_id": 7,
+    "potential_type_id": 9,
+    "value": "0E-35"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 1,
+  "fields": {
+    "material_id": 81,
+    "unit_id": 3,
+    "value": "0.03850000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 2,
+  "fields": {
+    "material_id": 173,
+    "unit_id": 15,
+    "value": "0.07120000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 3,
+  "fields": {
+    "material_id": 175,
+    "unit_id": 15,
+    "value": "0.08120000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 4,
+  "fields": {
+    "material_id": 174,
+    "unit_id": 15,
+    "value": "7.55650000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 5,
+  "fields": {
+    "material_id": 176,
+    "unit_id": 15,
+    "value": "12.74737000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 6,
+  "fields": {
+    "material_id": 178,
+    "unit_id": 5,
+    "value": "0.01256000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 7,
+  "fields": {
+    "material_id": 177,
+    "unit_id": 5,
+    "value": "0.01256000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 8,
+  "fields": {
+    "material_id": 181,
+    "unit_id": 5,
+    "value": "0.01142000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 9,
+  "fields": {
+    "material_id": 179,
+    "unit_id": 5,
+    "value": "0.01067000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 10,
+  "fields": {
+    "material_id": 180,
+    "unit_id": 5,
+    "value": "0.01257500000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 11,
+  "fields": {
+    "material_id": 182,
+    "unit_id": 5,
+    "value": "0.01094000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 12,
+  "fields": {
+    "material_id": 192,
+    "unit_id": 5,
+    "value": "0.00670000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 13,
+  "fields": {
+    "material_id": 195,
+    "unit_id": 5,
+    "value": "0.00622000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 14,
+  "fields": {
+    "material_id": 196,
+    "unit_id": 5,
+    "value": "0.00805000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 15,
+  "fields": {
+    "material_id": 197,
+    "unit_id": 5,
+    "value": "0.00106000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 16,
+  "fields": {
+    "material_id": 198,
+    "unit_id": 5,
+    "value": "0.00700000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 17,
+  "fields": {
+    "material_id": 199,
+    "unit_id": 5,
+    "value": "0.01106000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 18,
+  "fields": {
+    "material_id": 200,
+    "unit_id": 5,
+    "value": "0.01556000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 19,
+  "fields": {
+    "material_id": 202,
+    "unit_id": 5,
+    "value": "0.00680000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 20,
+  "fields": {
+    "material_id": 201,
+    "unit_id": 5,
+    "value": "0.01075000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 21,
+  "fields": {
+    "material_id": 203,
+    "unit_id": 5,
+    "value": "0.01070000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 22,
+  "fields": {
+    "material_id": 204,
+    "unit_id": 5,
+    "value": "0.01159000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 23,
+  "fields": {
+    "material_id": 205,
+    "unit_id": 5,
+    "value": "0.01159000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 24,
+  "fields": {
+    "material_id": 210,
+    "unit_id": 5,
+    "value": "0.01203300000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 25,
+  "fields": {
+    "material_id": 211,
+    "unit_id": 5,
+    "value": "0.01211000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 26,
+  "fields": {
+    "material_id": 212,
+    "unit_id": 5,
+    "value": "0.00657000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 27,
+  "fields": {
+    "material_id": 213,
+    "unit_id": 5,
+    "value": "0.00689000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 28,
+  "fields": {
+    "material_id": 214,
+    "unit_id": 5,
+    "value": "0.01194000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 29,
+  "fields": {
+    "material_id": 215,
+    "unit_id": 5,
+    "value": "0.01122000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 30,
+  "fields": {
+    "material_id": 307,
+    "unit_id": 5,
+    "value": "0.00207000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 31,
+  "fields": {
+    "material_id": 229,
+    "unit_id": 15,
+    "value": "0.00933660000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 34,
+  "fields": {
+    "material_id": 388,
+    "unit_id": 3,
+    "value": "1.50000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 35,
+  "fields": {
+    "material_id": 389,
+    "unit_id": 3,
+    "value": "1.50000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 36,
+  "fields": {
+    "material_id": 351,
+    "unit_id": 3,
+    "value": "1.50000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 37,
+  "fields": {
+    "material_id": 390,
+    "unit_id": 3,
+    "value": "1.50000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 38,
+  "fields": {
+    "material_id": 352,
+    "unit_id": 3,
+    "value": "1.50000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 39,
+  "fields": {
+    "material_id": 391,
+    "unit_id": 3,
+    "value": "1.84000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 40,
+  "fields": {
+    "material_id": 55,
+    "unit_id": 15,
+    "value": "0.01452360000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 41,
+  "fields": {
+    "material_id": 6,
+    "unit_id": 15,
+    "value": "0.01971060000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 42,
+  "fields": {
+    "material_id": 1,
+    "unit_id": 15,
+    "value": "0.00660000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 43,
+  "fields": {
+    "material_id": 3,
+    "unit_id": 15,
+    "value": "0.00990000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 44,
+  "fields": {
+    "material_id": 230,
+    "unit_id": 15,
+    "value": "0.01320000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 45,
+  "fields": {
+    "material_id": 234,
+    "unit_id": 3,
+    "value": "2.33500000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 46,
+  "fields": {
+    "material_id": 231,
+    "unit_id": 3,
+    "value": "2.33500000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 47,
+  "fields": {
+    "material_id": 233,
+    "unit_id": 3,
+    "value": "2.33500000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 48,
+  "fields": {
+    "material_id": 235,
+    "unit_id": 3,
+    "value": "2.40900000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 49,
+  "fields": {
+    "material_id": 236,
+    "unit_id": 3,
+    "value": "2.40900000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 50,
+  "fields": {
+    "material_id": 69,
+    "unit_id": 3,
+    "value": "2.40900000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 51,
+  "fields": {
+    "material_id": 237,
+    "unit_id": 3,
+    "value": "2.32700000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 52,
+  "fields": {
+    "material_id": 240,
+    "unit_id": 3,
+    "value": "2.32700000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 53,
+  "fields": {
+    "material_id": 238,
+    "unit_id": 3,
+    "value": "2.32700000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 54,
+  "fields": {
+    "material_id": 239,
+    "unit_id": 3,
+    "value": "2.40000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 55,
+  "fields": {
+    "material_id": 241,
+    "unit_id": 3,
+    "value": "2.40000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 56,
+  "fields": {
+    "material_id": 242,
+    "unit_id": 3,
+    "value": "2.40000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 57,
+  "fields": {
+    "material_id": 244,
+    "unit_id": 3,
+    "value": "2.33200000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 58,
+  "fields": {
+    "material_id": 243,
+    "unit_id": 3,
+    "value": "2.33200000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 59,
+  "fields": {
+    "material_id": 246,
+    "unit_id": 3,
+    "value": "2.33200000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 60,
+  "fields": {
+    "material_id": 252,
+    "unit_id": 5,
+    "value": "0.00650250000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 61,
+  "fields": {
+    "material_id": 253,
+    "unit_id": 5,
+    "value": "0.00867000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 62,
+  "fields": {
+    "material_id": 254,
+    "unit_id": 5,
+    "value": "0.01083750000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 63,
+  "fields": {
+    "material_id": 256,
+    "unit_id": 5,
+    "value": "0.02601000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 64,
+  "fields": {
+    "material_id": 255,
+    "unit_id": 5,
+    "value": "0.03468000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 65,
+  "fields": {
+    "material_id": 260,
+    "unit_id": 5,
+    "value": "0.00741000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 66,
+  "fields": {
+    "material_id": 259,
+    "unit_id": 5,
+    "value": "0.00570000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 67,
+  "fields": {
+    "material_id": 267,
+    "unit_id": 5,
+    "value": "0.00780000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 68,
+  "fields": {
+    "material_id": 268,
+    "unit_id": 5,
+    "value": "0.01040000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 69,
+  "fields": {
+    "material_id": 269,
+    "unit_id": 5,
+    "value": "0.01300000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 70,
+  "fields": {
+    "material_id": 271,
+    "unit_id": 5,
+    "value": "0.02600000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 71,
+  "fields": {
+    "material_id": 272,
+    "unit_id": 5,
+    "value": "0.03120000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 72,
+  "fields": {
+    "material_id": 274,
+    "unit_id": 5,
+    "value": "0.01658800000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 73,
+  "fields": {
+    "material_id": 275,
+    "unit_id": 5,
+    "value": "0.02178800000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 74,
+  "fields": {
+    "material_id": 276,
+    "unit_id": 5,
+    "value": "0.02698800000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 75,
+  "fields": {
+    "material_id": 279,
+    "unit_id": 5,
+    "value": "0.03218800000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 76,
+  "fields": {
+    "material_id": 263,
+    "unit_id": 5,
+    "value": "0.02080000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 77,
+  "fields": {
+    "material_id": 264,
+    "unit_id": 5,
+    "value": "0.03120000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 78,
+  "fields": {
+    "material_id": 265,
+    "unit_id": 5,
+    "value": "0.03120000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 79,
+  "fields": {
+    "material_id": 281,
+    "unit_id": 5,
+    "value": "0.02600000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 80,
+  "fields": {
+    "material_id": 280,
+    "unit_id": 5,
+    "value": "0.02600000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 81,
+  "fields": {
+    "material_id": 282,
+    "unit_id": 5,
+    "value": "0.03120000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 82,
+  "fields": {
+    "material_id": 283,
+    "unit_id": 5,
+    "value": "0.03120000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 83,
+  "fields": {
+    "material_id": 284,
+    "unit_id": 5,
+    "value": "0.04160000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 84,
+  "fields": {
+    "material_id": 287,
+    "unit_id": 5,
+    "value": "0.05200000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 85,
+  "fields": {
+    "material_id": 285,
+    "unit_id": 5,
+    "value": "0.04160000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 86,
+  "fields": {
+    "material_id": 278,
+    "unit_id": 5,
+    "value": "0.02080000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 87,
+  "fields": {
+    "material_id": 286,
+    "unit_id": 5,
+    "value": "0.05200000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 88,
+  "fields": {
+    "material_id": 289,
+    "unit_id": 5,
+    "value": "0.00780000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 89,
+  "fields": {
+    "material_id": 290,
+    "unit_id": 5,
+    "value": "0.01040000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 90,
+  "fields": {
+    "material_id": 291,
+    "unit_id": 5,
+    "value": "0.01300000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 91,
+  "fields": {
+    "material_id": 294,
+    "unit_id": 5,
+    "value": "0.03120000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 92,
+  "fields": {
+    "material_id": 292,
+    "unit_id": 5,
+    "value": "0.01560000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 93,
+  "fields": {
+    "material_id": 293,
+    "unit_id": 5,
+    "value": "0.02600000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 94,
+  "fields": {
+    "material_id": 297,
+    "unit_id": 5,
+    "value": "0.00500000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 95,
+  "fields": {
+    "material_id": 302,
+    "unit_id": 5,
+    "value": "0.00250000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 96,
+  "fields": {
+    "material_id": 296,
+    "unit_id": 5,
+    "value": "0.00400000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 97,
+  "fields": {
+    "material_id": 299,
+    "unit_id": 5,
+    "value": "0.00200000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 98,
+  "fields": {
+    "material_id": 304,
+    "unit_id": 5,
+    "value": "0.00560000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 99,
+  "fields": {
+    "material_id": 303,
+    "unit_id": 5,
+    "value": "0.00700000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 100,
+  "fields": {
+    "material_id": 305,
+    "unit_id": 5,
+    "value": "0.00161000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 101,
+  "fields": {
+    "material_id": 307,
+    "unit_id": 5,
+    "value": "0.00207000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 102,
+  "fields": {
+    "material_id": 310,
+    "unit_id": 5,
+    "value": "0.00132000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 103,
+  "fields": {
+    "material_id": 309,
+    "unit_id": 5,
+    "value": "0.00165000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 104,
+  "fields": {
+    "material_id": 312,
+    "unit_id": 7,
+    "value": "0.00009763200000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 105,
+  "fields": {
+    "material_id": 314,
+    "unit_id": 7,
+    "value": "0.00032544000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 106,
+  "fields": {
+    "material_id": 316,
+    "unit_id": 7,
+    "value": "0.00162720000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 107,
+  "fields": {
+    "material_id": 315,
+    "unit_id": 7,
+    "value": "0.13631998800000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 108,
+  "fields": {
+    "material_id": 317,
+    "unit_id": 7,
+    "value": "0.42599996400000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 109,
+  "fields": {
+    "material_id": 318,
+    "unit_id": 7,
+    "value": "1.27799989100000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 110,
+  "fields": {
+    "material_id": 329,
+    "unit_id": 7,
+    "value": "0.00013086700000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 111,
+  "fields": {
+    "material_id": 330,
+    "unit_id": 7,
+    "value": "0.00033228000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 112,
+  "fields": {
+    "material_id": 332,
+    "unit_id": 7,
+    "value": "0.00125883000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 113,
+  "fields": {
+    "material_id": 322,
+    "unit_id": 7,
+    "value": "0.00034665700000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 114,
+  "fields": {
+    "material_id": 323,
+    "unit_id": 7,
+    "value": "0.00234300000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 115,
+  "fields": {
+    "material_id": 324,
+    "unit_id": 7,
+    "value": "0.00196812000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 116,
+  "fields": {
+    "material_id": 325,
+    "unit_id": 5,
+    "value": "0.00433920000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 117,
+  "fields": {
+    "material_id": 327,
+    "unit_id": 5,
+    "value": "0.00813600000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 118,
+  "fields": {
+    "material_id": 328,
+    "unit_id": 5,
+    "value": "0.01627200000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 119,
+  "fields": {
+    "material_id": 248,
+    "unit_id": 5,
+    "value": "0.02312000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 120,
+  "fields": {
+    "material_id": 247,
+    "unit_id": 5,
+    "value": "0.01083750000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 121,
+  "fields": {
+    "material_id": 250,
+    "unit_id": 5,
+    "value": "0.01083750000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 122,
+  "fields": {
+    "material_id": 249,
+    "unit_id": 5,
+    "value": "0.01083750000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 123,
+  "fields": {
+    "material_id": 245,
+    "unit_id": 5,
+    "value": "0.02312000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 124,
+  "fields": {
+    "material_id": 333,
+    "unit_id": 7,
+    "value": "0.00015648000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 125,
+  "fields": {
+    "material_id": 334,
+    "unit_id": 7,
+    "value": "0.00105388200000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 126,
+  "fields": {
+    "material_id": 336,
+    "unit_id": 7,
+    "value": "0.00067484400000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 127,
+  "fields": {
+    "material_id": 339,
+    "unit_id": 5,
+    "value": "0.00804600000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 128,
+  "fields": {
+    "material_id": 338,
+    "unit_id": 5,
+    "value": "0.01072800000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 129,
+  "fields": {
+    "material_id": 341,
+    "unit_id": 5,
+    "value": "0.02682000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 130,
+  "fields": {
+    "material_id": 337,
+    "unit_id": 5,
+    "value": "0.01788000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 131,
+  "fields": {
+    "material_id": 343,
+    "unit_id": 7,
+    "value": "0.00002431590000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 132,
+  "fields": {
+    "material_id": 342,
+    "unit_id": 7,
+    "value": "0.00006224880000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 133,
+  "fields": {
+    "material_id": 5,
+    "unit_id": 7,
+    "value": "0.00006224880000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 134,
+  "fields": {
+    "material_id": 8,
+    "unit_id": 7,
+    "value": "0.00155621900000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 135,
+  "fields": {
+    "material_id": 7,
+    "unit_id": 7,
+    "value": "0.00038905500000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 136,
+  "fields": {
+    "material_id": 9,
+    "unit_id": 7,
+    "value": "0.00350149400000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 137,
+  "fields": {
+    "material_id": 21,
+    "unit_id": 7,
+    "value": "0.00428616900000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 138,
+  "fields": {
+    "material_id": 19,
+    "unit_id": 7,
+    "value": "0.00064119900000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 139,
+  "fields": {
+    "material_id": 13,
+    "unit_id": 7,
+    "value": "0.00037880100000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 140,
+  "fields": {
+    "material_id": 14,
+    "unit_id": 7,
+    "value": "0.00120841400000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 141,
+  "fields": {
+    "material_id": 15,
+    "unit_id": 7,
+    "value": "0.00483365400000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 142,
+  "fields": {
+    "material_id": 20,
+    "unit_id": 7,
+    "value": "0.00131766400000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 143,
+  "fields": {
+    "material_id": 22,
+    "unit_id": 7,
+    "value": "0.00982742400000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 144,
+  "fields": {
+    "material_id": 23,
+    "unit_id": 7,
+    "value": "0.00088781400000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 145,
+  "fields": {
+    "material_id": 24,
+    "unit_id": 7,
+    "value": "0.00157833600000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 146,
+  "fields": {
+    "material_id": 25,
+    "unit_id": 7,
+    "value": "0.00355125600000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 147,
+  "fields": {
+    "material_id": 52,
+    "unit_id": 7,
+    "value": "0.00008621980000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 148,
+  "fields": {
+    "material_id": 54,
+    "unit_id": 7,
+    "value": "0.00131756400000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 149,
+  "fields": {
+    "material_id": 57,
+    "unit_id": 7,
+    "value": "0.00527025600000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 150,
+  "fields": {
+    "material_id": 56,
+    "unit_id": 7,
+    "value": "0.02107407700000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 151,
+  "fields": {
+    "material_id": 58,
+    "unit_id": 7,
+    "value": "0.05395408500000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 152,
+  "fields": {
+    "material_id": 63,
+    "unit_id": 7,
+    "value": "0.00000562836000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 153,
+  "fields": {
+    "material_id": 64,
+    "unit_id": 7,
+    "value": "0.00001019070000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 154,
+  "fields": {
+    "material_id": 65,
+    "unit_id": 7,
+    "value": "0.00001664990000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 155,
+  "fields": {
+    "material_id": 66,
+    "unit_id": 7,
+    "value": "0.00002743850000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 156,
+  "fields": {
+    "material_id": 70,
+    "unit_id": 5,
+    "value": "0.00171000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 157,
+  "fields": {
+    "material_id": 72,
+    "unit_id": 5,
+    "value": "0.00342000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 158,
+  "fields": {
+    "material_id": 73,
+    "unit_id": 5,
+    "value": "0.00570000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 159,
+  "fields": {
+    "material_id": 74,
+    "unit_id": 5,
+    "value": "0.00000214000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 160,
+  "fields": {
+    "material_id": 75,
+    "unit_id": 5,
+    "value": "0.00000321000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 161,
+  "fields": {
+    "material_id": 76,
+    "unit_id": 7,
+    "value": "7.182690000000000000000000000E-8"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 162,
+  "fields": {
+    "material_id": 78,
+    "unit_id": 7,
+    "value": "2.8135800000000000000000000000E-7"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 163,
+  "fields": {
+    "material_id": 79,
+    "unit_id": 7,
+    "value": "0.00000212828000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 164,
+  "fields": {
+    "material_id": 83,
+    "unit_id": 5,
+    "value": "1.09677000000000000000000000E-9"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 165,
+  "fields": {
+    "material_id": 82,
+    "unit_id": 5,
+    "value": "4.38709000000000000000000000E-9"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 166,
+  "fields": {
+    "material_id": 84,
+    "unit_id": 5,
+    "value": "2.741930000000000000000000000E-8"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 167,
+  "fields": {
+    "material_id": 88,
+    "unit_id": 5,
+    "value": "0.01350000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 168,
+  "fields": {
+    "material_id": 89,
+    "unit_id": 5,
+    "value": "0.02700000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 169,
+  "fields": {
+    "material_id": 91,
+    "unit_id": 5,
+    "value": "0.06750000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 170,
+  "fields": {
+    "material_id": 93,
+    "unit_id": 5,
+    "value": "0.00240000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 171,
+  "fields": {
+    "material_id": 92,
+    "unit_id": 5,
+    "value": "0.00300000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 172,
+  "fields": {
+    "material_id": 94,
+    "unit_id": 5,
+    "value": "0.00384000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 173,
+  "fields": {
+    "material_id": 95,
+    "unit_id": 5,
+    "value": "0.00480000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 174,
+  "fields": {
+    "material_id": 99,
+    "unit_id": 5,
+    "value": "0.00360000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 175,
+  "fields": {
+    "material_id": 100,
+    "unit_id": 5,
+    "value": "0.00720000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 176,
+  "fields": {
+    "material_id": 98,
+    "unit_id": 5,
+    "value": "0.00120000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 177,
+  "fields": {
+    "material_id": 97,
+    "unit_id": 5,
+    "value": "0.00240000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 178,
+  "fields": {
+    "material_id": 102,
+    "unit_id": 5,
+    "value": "0.00357000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 179,
+  "fields": {
+    "material_id": 103,
+    "unit_id": 5,
+    "value": "0.00476000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 180,
+  "fields": {
+    "material_id": 104,
+    "unit_id": 5,
+    "value": "0.00595000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 181,
+  "fields": {
+    "material_id": 105,
+    "unit_id": 5,
+    "value": "0.00714000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 182,
+  "fields": {
+    "material_id": 110,
+    "unit_id": 5,
+    "value": "0.00180000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 183,
+  "fields": {
+    "material_id": 111,
+    "unit_id": 5,
+    "value": "0.00360000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 184,
+  "fields": {
+    "material_id": 112,
+    "unit_id": 5,
+    "value": "0.00540000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 185,
+  "fields": {
+    "material_id": 113,
+    "unit_id": 5,
+    "value": "0.00900000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 186,
+  "fields": {
+    "material_id": 114,
+    "unit_id": 5,
+    "value": "0.01080000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 187,
+  "fields": {
+    "material_id": 115,
+    "unit_id": 5,
+    "value": "0.01350000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 188,
+  "fields": {
+    "material_id": 117,
+    "unit_id": 5,
+    "value": "0.00044800000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 189,
+  "fields": {
+    "material_id": 118,
+    "unit_id": 5,
+    "value": "0.00044800000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 190,
+  "fields": {
+    "material_id": 119,
+    "unit_id": 5,
+    "value": "0.00073000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 191,
+  "fields": {
+    "material_id": 120,
+    "unit_id": 5,
+    "value": "0.00123000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 192,
+  "fields": {
+    "material_id": 126,
+    "unit_id": 7,
+    "value": "0.00033465100000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 193,
+  "fields": {
+    "material_id": 125,
+    "unit_id": 7,
+    "value": "0.00008037120000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 194,
+  "fields": {
+    "material_id": 145,
+    "unit_id": 5,
+    "value": "0.00144000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 195,
+  "fields": {
+    "material_id": 143,
+    "unit_id": 5,
+    "value": "0.00072000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 196,
+  "fields": {
+    "material_id": 144,
+    "unit_id": 5,
+    "value": "0.00120000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 197,
+  "fields": {
+    "material_id": 146,
+    "unit_id": 5,
+    "value": "0.00240000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 198,
+  "fields": {
+    "material_id": 147,
+    "unit_id": 5,
+    "value": "0.00600000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 199,
+  "fields": {
+    "material_id": 155,
+    "unit_id": 3,
+    "value": "0.49000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 200,
+  "fields": {
+    "material_id": 431,
+    "unit_id": 5,
+    "value": "0.00952000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 201,
+  "fields": {
+    "material_id": 432,
+    "unit_id": 5,
+    "value": "0.01190000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 202,
+  "fields": {
+    "material_id": 127,
+    "unit_id": 7,
+    "value": "0.00118470300000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 203,
+  "fields": {
+    "material_id": 128,
+    "unit_id": 7,
+    "value": "0.00532582100000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 204,
+  "fields": {
+    "material_id": 149,
+    "unit_id": 3,
+    "value": "0.72000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 205,
+  "fields": {
+    "material_id": 152,
+    "unit_id": 3,
+    "value": "0.72000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 206,
+  "fields": {
+    "material_id": 148,
+    "unit_id": 3,
+    "value": "0.72000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 207,
+  "fields": {
+    "material_id": 156,
+    "unit_id": 3,
+    "value": "0.43000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 208,
+  "fields": {
+    "material_id": 158,
+    "unit_id": 3,
+    "value": "0.43000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 209,
+  "fields": {
+    "material_id": 157,
+    "unit_id": 3,
+    "value": "0.51000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 210,
+  "fields": {
+    "material_id": 159,
+    "unit_id": 3,
+    "value": "1.30000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 211,
+  "fields": {
+    "material_id": 160,
+    "unit_id": 5,
+    "value": "0.02080000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 212,
+  "fields": {
+    "material_id": 161,
+    "unit_id": 5,
+    "value": "0.02340000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 213,
+  "fields": {
+    "material_id": 162,
+    "unit_id": 5,
+    "value": "0.03250000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 214,
+  "fields": {
+    "material_id": 163,
+    "unit_id": 3,
+    "value": "0.60700000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 215,
+  "fields": {
+    "material_id": 164,
+    "unit_id": 3,
+    "value": "0.68000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 216,
+  "fields": {
+    "material_id": 165,
+    "unit_id": 3,
+    "value": "0.68000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 217,
+  "fields": {
+    "material_id": 167,
+    "unit_id": 3,
+    "value": "0.62500000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 218,
+  "fields": {
+    "material_id": 166,
+    "unit_id": 3,
+    "value": "0.62500000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 219,
+  "fields": {
+    "material_id": 168,
+    "unit_id": 5,
+    "value": "0.01973800000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 220,
+  "fields": {
+    "material_id": 169,
+    "unit_id": 5,
+    "value": "0.02251800000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 221,
+  "fields": {
+    "material_id": 171,
+    "unit_id": 3,
+    "value": "0.51000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 222,
+  "fields": {
+    "material_id": 172,
+    "unit_id": 3,
+    "value": "0.51000000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 223,
+  "fields": {
+    "material_id": 270,
+    "unit_id": 5,
+    "value": "0.01560000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 224,
+  "fields": {
+    "material_id": 433,
+    "unit_id": 5,
+    "value": "0.00270000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 225,
+  "fields": {
+    "material_id": 262,
+    "unit_id": 5,
+    "value": "0.02080000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 226,
+  "fields": {
+    "material_id": 277,
+    "unit_id": 5,
+    "value": "0.02080000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 227,
+  "fields": {
+    "material_id": 298,
+    "unit_id": 5,
+    "value": "0.00265467000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 228,
+  "fields": {
+    "material_id": 319,
+    "unit_id": 5,
+    "value": "0.00760000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 229,
+  "fields": {
+    "material_id": 62,
+    "unit_id": 5,
+    "value": "0.00018200000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 230,
+  "fields": {
+    "material_id": 61,
+    "unit_id": 5,
+    "value": "0.00009100000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 231,
+  "fields": {
+    "material_id": 122,
+    "unit_id": 5,
+    "value": "0.00002641000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 232,
+  "fields": {
+    "material_id": 123,
+    "unit_id": 5,
+    "value": "0.00003475000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 233,
+  "fields": {
+    "material_id": 151,
+    "unit_id": 3,
+    "value": "0.02940000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 234,
+  "fields": {
+    "material_id": 154,
+    "unit_id": 3,
+    "value": "0.05145000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 235,
+  "fields": {
+    "material_id": 153,
+    "unit_id": 3,
+    "value": "0.08575000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 236,
+  "fields": {
+    "material_id": 170,
+    "unit_id": 5,
+    "value": "0.01556800000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 237,
+  "fields": {
+    "material_id": 51,
+    "unit_id": 5,
+    "value": "0.00009400000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 238,
+  "fields": {
+    "material_id": 50,
+    "unit_id": 5,
+    "value": "0.00018800000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 239,
+  "fields": {
+    "material_id": 27,
+    "unit_id": 5,
+    "value": "0.00321850000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 240,
+  "fields": {
+    "material_id": 28,
+    "unit_id": 5,
+    "value": "0.00321850000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 241,
+  "fields": {
+    "material_id": 43,
+    "unit_id": 5,
+    "value": "0.00240000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 242,
+  "fields": {
+    "material_id": 45,
+    "unit_id": 5,
+    "value": "0.00250000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 243,
+  "fields": {
+    "material_id": 47,
+    "unit_id": 5,
+    "value": "0.00184000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 244,
+  "fields": {
+    "material_id": 33,
+    "unit_id": 5,
+    "value": "0.01346200000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 245,
+  "fields": {
+    "material_id": 29,
+    "unit_id": 5,
+    "value": "0.00889000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 246,
+  "fields": {
+    "material_id": 31,
+    "unit_id": 5,
+    "value": "0.00889000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 247,
+  "fields": {
+    "material_id": 32,
+    "unit_id": 5,
+    "value": "0.00889000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 248,
+  "fields": {
+    "material_id": 36,
+    "unit_id": 5,
+    "value": "0.00889000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 249,
+  "fields": {
+    "material_id": 34,
+    "unit_id": 5,
+    "value": "0.01346200000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 250,
+  "fields": {
+    "material_id": 35,
+    "unit_id": 5,
+    "value": "0.01346200000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.conversions",
+  "pk": 251,
+  "fields": {
+    "material_id": 38,
+    "unit_id": 5,
+    "value": "0.00889000000000000000000000000000000"
+  }
+},
+{
+  "model": "projects_api.databasematerial",
+  "pk": 1,
+  "fields": {
+    "name": "EPiC"
+  }
+},
+{
+  "model": "projects_api.databasematerial",
+  "pk": 2,
+  "fields": {
+    "name": "EPDs"
+  }
+},
+{
+  "model": "projects_api.databasematerial",
+  "pk": 3,
+  "fields": {
+    "name": "mexicaniuh"
+  }
+},
+{
+  "model": "projects_api.databasematerial",
+  "pk": 5,
+  "fields": {
+    "name": "ECOINVENT 3"
+  }
+},
+{
+  "model": "projects_api.constructiveprocess",
+  "pk": 1,
+  "fields": {
+    "name_constructive_process": "Energ\u00eda consumida durante el proceso constructivo"
+  }
+},
+{
+  "model": "projects_api.constructiveprocess",
+  "pk": 2,
+  "fields": {
+    "name_constructive_process": "Agua consumida durante el proceso constructivo"
+  }
+},
+{
+  "model": "projects_api.constructiveprocess",
+  "pk": 3,
+  "fields": {
+    "name_constructive_process": "Desechos generados durante el proceso constructivo"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 1,
+  "fields": {
+    "name_state": "Aguascalientes"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 2,
+  "fields": {
+    "name_state": "Baja California"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 3,
+  "fields": {
+    "name_state": "Baja California Sur"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 4,
+  "fields": {
+    "name_state": "Campeche"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 5,
+  "fields": {
+    "name_state": "Coahuila"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 6,
+  "fields": {
+    "name_state": "Colima"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 7,
+  "fields": {
+    "name_state": "Chiapas"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 8,
+  "fields": {
+    "name_state": "Chihuahua"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 9,
+  "fields": {
+    "name_state": "CDMX"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 10,
+  "fields": {
+    "name_state": "Durango"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 11,
+  "fields": {
+    "name_state": "Estado de M\u00e9xico"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 12,
+  "fields": {
+    "name_state": "Guanajuato"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 13,
+  "fields": {
+    "name_state": "Guerrero"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 14,
+  "fields": {
+    "name_state": "Hidalgo"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 15,
+  "fields": {
+    "name_state": "Jalisco"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 16,
+  "fields": {
+    "name_state": "Michoac\u00e1n"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 17,
+  "fields": {
+    "name_state": "Morelos"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 18,
+  "fields": {
+    "name_state": "Nayarit"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 19,
+  "fields": {
+    "name_state": "Nuevo Le\u00f3n"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 20,
+  "fields": {
+    "name_state": "Oaxaca"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 21,
+  "fields": {
+    "name_state": "Puebla"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 22,
+  "fields": {
+    "name_state": "Quer\u00e9taro"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 23,
+  "fields": {
+    "name_state": "Quintana Roo"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 24,
+  "fields": {
+    "name_state": "San Luis Potos\u00ed"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 25,
+  "fields": {
+    "name_state": "Sinaloa"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 26,
+  "fields": {
+    "name_state": "Sonora"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 27,
+  "fields": {
+    "name_state": "Tabasco"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 28,
+  "fields": {
+    "name_state": "Tamaulipas"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 29,
+  "fields": {
+    "name_state": "Tlaxcala"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 30,
+  "fields": {
+    "name_state": "Veracruz"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 31,
+  "fields": {
+    "name_state": "Yucat\u00e1n"
+  }
+},
+{
+  "model": "projects_api.state",
+  "pk": 32,
+  "fields": {
+    "name_state": "Zacatecas"
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 1,
+  "fields": {
+    "name_city": "Aguascalientes",
+    "state_id": 1
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 2,
+  "fields": {
+    "name_city": "Mexicali",
+    "state_id": 2
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 3,
+  "fields": {
+    "name_city": "Tijuana",
+    "state_id": 2
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 4,
+  "fields": {
+    "name_city": "Ensenada",
+    "state_id": 3
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 5,
+  "fields": {
+    "name_city": "La paz",
+    "state_id": 3
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 6,
+  "fields": {
+    "name_city": "Campeche",
+    "state_id": 4
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 7,
+  "fields": {
+    "name_city": "Piedras negras",
+    "state_id": 5
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 8,
+  "fields": {
+    "name_city": "Torre\u00f3n",
+    "state_id": 5
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 9,
+  "fields": {
+    "name_city": "Saltillo",
+    "state_id": 5
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 10,
+  "fields": {
+    "name_city": "Colima",
+    "state_id": 6
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 11,
+  "fields": {
+    "name_city": "Manzanillo",
+    "state_id": 6
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 12,
+  "fields": {
+    "name_city": "Cd. Cuahutemoc",
+    "state_id": 7
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 13,
+  "fields": {
+    "name_city": "Tuxtla Gutierrez",
+    "state_id": 7
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 14,
+  "fields": {
+    "name_city": "Tapachula",
+    "state_id": 7
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 15,
+  "fields": {
+    "name_city": "Cd Juarez",
+    "state_id": 8
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 16,
+  "fields": {
+    "name_city": "Chihuahua",
+    "state_id": 8
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 17,
+  "fields": {
+    "name_city": "Ciudad de M\u00e9xico",
+    "state_id": 9
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 18,
+  "fields": {
+    "name_city": "Durango",
+    "state_id": 10
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 19,
+  "fields": {
+    "name_city": "Toluca",
+    "state_id": 11
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 20,
+  "fields": {
+    "name_city": "Guanajuato",
+    "state_id": 12
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 21,
+  "fields": {
+    "name_city": "Le\u00f3n",
+    "state_id": 12
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 22,
+  "fields": {
+    "name_city": "Acapulco",
+    "state_id": 13
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 23,
+  "fields": {
+    "name_city": "Chilpancingo",
+    "state_id": 13
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 24,
+  "fields": {
+    "name_city": "Pachuca",
+    "state_id": 14
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 25,
+  "fields": {
+    "name_city": "Guadalajara",
+    "state_id": 15
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 26,
+  "fields": {
+    "name_city": "Morelia",
+    "state_id": 16
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 27,
+  "fields": {
+    "name_city": "Cuernavaca",
+    "state_id": 17
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 28,
+  "fields": {
+    "name_city": "Tepic",
+    "state_id": 18
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 29,
+  "fields": {
+    "name_city": "Monterrey",
+    "state_id": 19
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 30,
+  "fields": {
+    "name_city": "Oaxaca",
+    "state_id": 20
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 31,
+  "fields": {
+    "name_city": "Salina cruz",
+    "state_id": 20
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 32,
+  "fields": {
+    "name_city": "Puebla",
+    "state_id": 21
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 33,
+  "fields": {
+    "name_city": "Tehuac\u00e1n",
+    "state_id": 21
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 34,
+  "fields": {
+    "name_city": "Quer\u00e9taro",
+    "state_id": 22
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 35,
+  "fields": {
+    "name_city": "Chetumal",
+    "state_id": 23
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 36,
+  "fields": {
+    "name_city": "Canc\u00fan, Puerto Juarez",
+    "state_id": 23
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 37,
+  "fields": {
+    "name_city": "San Luis Potis\u00ed",
+    "state_id": 24
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 38,
+  "fields": {
+    "name_city": "Culiac\u00e1n",
+    "state_id": 25
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 39,
+  "fields": {
+    "name_city": "Mazatl\u00e1n",
+    "state_id": 25
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 40,
+  "fields": {
+    "name_city": "Hermosillo",
+    "state_id": 26
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 41,
+  "fields": {
+    "name_city": "Nogales",
+    "state_id": 26
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 42,
+  "fields": {
+    "name_city": "Villahermosa",
+    "state_id": 27
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 43,
+  "fields": {
+    "name_city": "Matamoros",
+    "state_id": 28
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 44,
+  "fields": {
+    "name_city": "Nuevo laredo",
+    "state_id": 28
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 45,
+  "fields": {
+    "name_city": "Reynosa",
+    "state_id": 28
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 46,
+  "fields": {
+    "name_city": "Tlaxcala",
+    "state_id": 29
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 47,
+  "fields": {
+    "name_city": "Xalapa",
+    "state_id": 30
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 48,
+  "fields": {
+    "name_city": "Tuxpan",
+    "state_id": 30
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 49,
+  "fields": {
+    "name_city": "Veracruz",
+    "state_id": 30
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 50,
+  "fields": {
+    "name_city": "M\u00e9rida",
+    "state_id": 31
+  }
+},
+{
+  "model": "projects_api.city",
+  "pk": 51,
+  "fields": {
+    "name_city": "Zacatecas",
+    "state_id": 32
+  }
+},
+{
+  "model": "projects_api.unit",
+  "pk": 1,
+  "fields": {
+    "name_unit": "Pz"
+  }
+},
+{
+  "model": "projects_api.unit",
+  "pk": 2,
+  "fields": {
+    "name_unit": "Kg"
+  }
+},
+{
+  "model": "projects_api.unit",
+  "pk": 3,
+  "fields": {
+    "name_unit": "m\u00b3"
+  }
+},
+{
+  "model": "projects_api.unit",
+  "pk": 4,
+  "fields": {
+    "name_unit": "Ton"
+  }
+},
+{
+  "model": "projects_api.unit",
+  "pk": 5,
+  "fields": {
+    "name_unit": "m\u00b2"
+  }
+},
+{
+  "model": "projects_api.unit",
+  "pk": 6,
+  "fields": {
+    "name_unit": "kg SB eq"
+  }
+},
+{
+  "model": "projects_api.unit",
+  "pk": 7,
+  "fields": {
+    "name_unit": "m"
+  }
+},
+{
+  "model": "projects_api.unit",
+  "pk": 8,
+  "fields": {
+    "name_unit": "m3 eq"
+  }
+},
+{
+  "model": "projects_api.unit",
+  "pk": 9,
+  "fields": {
+    "name_unit": "kg CFC-11 eq"
+  }
+},
+{
+  "model": "projects_api.unit",
+  "pk": 10,
+  "fields": {
+    "name_unit": "kg Nox, kg O3, o kg etano"
+  }
+},
+{
+  "model": "projects_api.unit",
+  "pk": 11,
+  "fields": {
+    "name_unit": "kg C2H4"
+  }
+},
+{
+  "model": "projects_api.unit",
+  "pk": 12,
+  "fields": {
+    "name_unit": "MJ"
+  }
+},
+{
+  "model": "projects_api.unit",
+  "pk": 13,
+  "fields": {
+    "name_unit": "kg N eq"
+  }
+},
+{
+  "model": "projects_api.unit",
+  "pk": 14,
+  "fields": {
+    "name_unit": "kg SO2 eq"
+  }
+},
+{
+  "model": "projects_api.unit",
+  "pk": 15,
+  "fields": {
+    "name_unit": "Pza"
+  }
+},
+{
+  "model": "projects_api.unit",
+  "pk": 16,
+  "fields": {
+    "name_unit": "kg CO4 eq"
+  }
+},
+{
+  "model": "projects_api.unit",
+  "pk": 17,
+  "fields": {
+    "name_unit": "kg CO2 eq"
+  }
+},
+{
+  "model": "projects_api.unit",
+  "pk": 18,
+  "fields": {
+    "name_unit": "kg 1,4-DB eq"
+  }
+},
+{
+  "model": "projects_api.unit",
+  "pk": 19,
+  "fields": {
+    "name_unit": "kg"
+  }
+},
+{
+  "model": "projects_api.origin",
+  "pk": 1,
+  "fields": {
+    "name_origin": "Modelo Revit"
+  }
+},
+{
+  "model": "projects_api.origin",
+  "pk": 2,
+  "fields": {
+    "name_origin": "C\u00e1lculo en Dynamo"
+  }
+},
+{
+  "model": "projects_api.origin",
+  "pk": 3,
+  "fields": {
+    "name_origin": "Usuario"
+  }
+}
+]
