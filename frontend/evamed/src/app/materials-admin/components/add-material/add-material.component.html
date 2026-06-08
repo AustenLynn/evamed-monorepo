@@ -1,0 +1,70 @@
+<form [formGroup]="addMaterialForm" novalidate (ngSubmit)="onSubmit()">
+  <mat-card appearance="outlined" class="custom-card">
+    <mat-card-header>
+      <mat-card-title class="card-title">Ingresar datos del material</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="Row row-space-bottom">
+        <div class="Col">
+          <mat-form-field appearance="outline" cdkFocusInitial subscriptSizing="dynamic">
+            <input matInput placeholder="Nombre" formControlName="name_material">
+            <mat-error *ngIf="addMaterialForm.controls['name_material'].hasError('required')">
+              El nombre es <strong>requerido</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-content>
+      <div class="Row row-space-bottom">
+        <div class="Col">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-select placeholder="Base de datos" formControlName="database_from" hideSingleSelectionIndicator>
+              <mat-option *ngFor="let data of ListDatabases" [value]="data.name">
+                {{ data.name }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="addMaterialForm.controls['database_from'].hasError('required')">
+              Base de datos es <strong>requerido</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-content>
+      <div class="Row row-space-bottom">
+        <div class="Col">
+          <mat-form-field  appearance="outline" subscriptSizing="dynamic">
+            <textarea matInput placeholder="Descripción" formControlName="description"></textarea>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-content>
+      <div class="Row">
+        <div class="Col">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-select placeholder="Unidad" formControlName="unit_id" hideSingleSelectionIndicator>
+              <mat-option *ngFor="let data of units" [value]="data.id">
+                {{ data.name_unit }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="addMaterialForm.controls['unit_id'].hasError('required')">
+              Unidad es un campo <strong>requerido</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" type="submit">Agregar material</button>
+      <button
+        mat-button
+        class="yellow-button"
+        (click)="goToMaterialList()"
+      >
+        Lista de materiales
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</form>

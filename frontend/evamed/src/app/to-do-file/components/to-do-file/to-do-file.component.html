@@ -1,0 +1,72 @@
+<div class="principal-container container-total">
+  <nav class="nav-steps">
+    <div class="header-tag">
+      <h1>{{nameProject}}</h1>
+      <a href="/" class="a-redirect"> < Regresar a tus proyectos </a>
+    </div>
+  </nav>
+  <div class="space-row"></div>
+  <section class="container-actions">
+
+    <section class="container-download">
+      <h2>1. Elige una opción para registrar materiales de construcción</h2>
+      <div class="elements-to-download">
+        <div class="container-elements-1">
+          <h3>Registro automático desde REVIT</h3>
+          <p class="p-instrucciones">
+            Descarga el complemento para exportar los materiales desde el modelo 3D de REVIT.
+          </p>
+          <div class="icon-download" (click)="onDownloadMated()" (keypress)="onDownloadMated()" tabindex="1">
+            <img src="assets/images/Icon awesome-file-download.png" alt="Download Mated file"/>
+            <h3>Descargar archivo</h3>
+          </div>
+        </div>
+        <div class="container-elements-2">
+          <h3>Registro manual en un archivo de Excel</h3>
+          <p class="p-instrucciones">
+            Descarga la plantilla de Excel para realizar la captura de materiales de forma manual.
+          </p>
+          <div class="container-two-icons">
+            <div class="icon-download" (click)="onDownloadWindows()" (keypress)="onDownloadWindows()" tabindex="2">
+              <img src="assets/images/Grupo 2070.png" alt="Download Windows file"/>
+              <h3>Descargar archivo</h3>
+            </div>
+            <div class="icon-download" (click)="onDownloadMac()" (keypress)="onDownloadMac()" tabindex="1">
+              <img src="assets/images/Grupo 2071.png" alt="Download Mac file"/>
+              <h3>Descargar archivo</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container-upload">
+      <h2>2. Carga de materiales de construcción</h2>
+      <div class="elements-to-download">
+        <div class="container-elements-3">
+          <p class="p-instrucciones">
+            Carga tu archivo de materiales en formato Excel dividido
+            por sistemas constructivos.
+          </p>
+          <div class="container-upload-icon">
+            <img  #asImage src="assets/images/Icon awesome-file-upload.png" class="img-upload" alt="File upload"/>
+            <input type="file" id="file" (change)="onFileChange($event)" multiple="false" class="input-upload" />
+            <label for="file" #asTitle  id="fileType" class="title-action">Cargar archivo</label>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+  <div class="space-row"></div>
+</div>
+
+<!--Section continue-->
+<div class="section-continue">
+  <button
+    mat-button
+    class="yellow-button"
+    (click)="saveFile()"
+  >
+    Continuar
+  </button>
+</div>

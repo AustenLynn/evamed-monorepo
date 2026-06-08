@@ -1,0 +1,64 @@
+<form [formGroup]="form" (ngSubmit)="updatePotentialType($event)">
+
+  <div class="header-modal">
+    <h1 mat-dialog-title class="title-standard-second-light">
+      Editar potencial de impacto ambiental
+    </h1>
+    <button mat-button class="close-icon" [mat-dialog-close]="true" (click)="onNoClick()">
+      <mat-icon style="color: #fff;">close</mat-icon>
+    </button>
+  </div>
+
+  <div mat-dialog-content>
+    <mat-card appearance="outlined" class="custom-card">
+
+      <mat-card-content>
+        <div class="Row row-space-bottom">
+          <div class="Col">
+            <mat-form-field  appearance="outline" cdkFocusInitial subscriptSizing="dynamic">
+              <input matInput placeholder="Abreviatura" formControlName="name_potential_type">
+              <mat-error *ngIf="form.controls['name_potential_type'].hasError('required')">
+                La abreviatura es <strong>requerida</strong>
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-content>
+        <div class="Row row-space-bottom">
+          <div class="Col">
+            <mat-form-field  appearance="outline" subscriptSizing="dynamic">
+              <input matInput placeholder="Nombre" formControlName="name_complete_potential_type">
+              <mat-error *ngIf="form.controls['name_complete_potential_type'].hasError('required')">
+                El nombre es <strong>requerido</strong>
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-content>
+        <div class="Row">
+          <div class="Col">
+            <mat-form-field appearance="outline">
+              <mat-select placeholder="Unidad" formControlName="unit_potential_type" hideSingleSelectionIndicator>
+                <mat-option *ngFor="let unit of units" [value]="unit.name_unit">
+                  {{ unit.name_unit }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="form.controls['unit_potential_type'].hasError('required')">
+                Unidad es un campo <strong>requerido</strong>
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-card-content>
+
+    </mat-card>
+  </div>
+
+  <div mat-dialog-actions class="center">
+    <button mat-raised-button color="primary" type="submit">Actualizar</button>
+  </div>
+</form>

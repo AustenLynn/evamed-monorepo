@@ -1,0 +1,20 @@
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>Administradores disponibles</mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="listado">
+    <a (click)="goToMaterials()" (keypress)="goToMaterials()" tabindex="1">Materiales</a>
+    <a (click)="goToTransports()" (keypress)="goToTransports()" tabindex="2">Transportes</a>
+    <a (click)="goToMachinery()" (keypress)="goToMachinery()" tabindex="3">Maquinaria</a>
+    <a (click)="goToEnergy()" (keypress)="goToEnergy()" tabindex="4">Tipo de energía</a>
+    <mat-divider></mat-divider>
+    <a (click)="goToUnits()" (keypress)="goToUnits()" tabindex="5">Unidades</a>
+    <a (click)="goToDBMaterials()" (keypress)="goToDBMaterials()" tabindex="6">Bases de datos</a>
+    <a (click)="goToPotentials()" (keypress)="goToPotentials()" tabindex="7">Potencial de impacto ambiental</a>
+    <a (click)="goToUsers()" (keypress)="goToUsers()" tabindex="8">Usuarios existentes</a>
+    <mat-divider></mat-divider>
+  </mat-card-content>
+  <mat-card-actions class="listado">
+    <a (click)="goToHome()" class="red" (keypress)="goToHome()" tabindex="9">Regresar al Home</a>
+  </mat-card-actions>
+</mat-card>

@@ -1,0 +1,179 @@
+import { NgModule } from '@angular/core';
+import { Routes, RouterModule, NoPreloading } from '@angular/router';
+import { LayoutComponent } from './layout/layout.component';
+import { AdminGuard } from './admin.guard';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: LayoutComponent,
+    children: [
+      {
+        path: '',
+        redirectTo: '/home-evamed',
+        pathMatch: 'full',
+      },
+      {
+        path: 'home-evamed',
+        canActivate: [AdminGuard],
+        loadChildren: () =>
+          import('./home-evamed/home-evamed.module').then(
+            m => m.HomeEvamedModule
+          ),
+      },
+      {
+        path: 'do-files',
+        canActivate: [AdminGuard],
+        loadChildren: () =>
+          import('./to-do-file/to-do-file.module').then(
+            m => m.ToDoFileModule
+          ),
+      },
+      {
+        path: 'materials-stage',
+        canActivate: [AdminGuard],
+        loadChildren: () =>
+          import('./materials-stage/materials-stage.module').then(
+            m => m.MaterialsStageModule
+          ),
+      },
+      {
+        path: 'construction-stage',
+        canActivate: [AdminGuard],
+        loadChildren: () =>
+          import('./construction-stage/construction-stage.module').then(
+            m => m.ConstructionStageModule
+          ),
+      },
+      {
+        path: 'usage-stage',
+        canActivate: [AdminGuard],
+        loadChildren: () =>
+          import('./usage-stage/usage-stage.module').then(
+            m => m.UsageStageModule
+          ),
+      },
+      {
+        path: 'end-life-stage',
+        canActivate: [AdminGuard],
+        loadChildren: () =>
+          import('./end-life-stage/end-life-stage.module').then(
+            m => m.EndLifeStageModule
+          ),
+      },
+      {
+        path: 'resultados',
+        canActivate: [AdminGuard],
+        loadChildren: () =>
+          import('./comparar/comparar.module').then(m => m.CompararModule),
+      },
+      {
+        path: 'admin-materials',
+        canActivate: [AdminGuard],
+        loadChildren: () =>
+          import('./materials-admin/materials-admin.module').then(
+            m => m.MaterialsAdminModule
+          ),
+      },
+      {
+        path: 'admin-units',
+        canActivate: [AdminGuard],
+        loadChildren: () =>
+          import('./units-admin/units-admin.module').then(
+            m => m.UnitsAdminModule
+          ),
+      },
+      {
+        path: 'admin-db-materials',
+        canActivate: [AdminGuard],
+        loadChildren: () =>
+          import('./data-base-admin/data-base-admin.module').then(
+            m => m.DataBaseAdminModule
+          ),
+      },
+      {
+        path: 'admin-potential',
+        canActivate: [AdminGuard],
+        loadChildren: () =>
+          import('./potential-admin/potential-admin.module').then(
+            m => m.PotentialAdminModule
+          ),
+      },
+      {
+        path: 'admin-transports',
+        canActivate: [AdminGuard],
+        loadChildren: () =>
+          import('./transport-admin/transport-admin.module').then(
+            m => m.TransportAdminModule
+          ),
+      },
+      {
+        path: 'admin-machinery',
+        canActivate: [AdminGuard],
+        loadChildren: () =>
+          import('./machinery-admin/machinery-admin.module').then(
+            m => m.MachineryAdminModule
+          ),
+      },
+      {
+        path: 'admin-energy',
+        canActivate: [AdminGuard],
+        loadChildren: () =>
+          import('./energy-admin/energy-admin.module').then(
+            m => m.EnergyAdminModule
+          ),
+      },
+      {
+        path: 'admin-others',
+        canActivate: [AdminGuard],
+        loadChildren: () =>
+          import('./others-admin/others-admin.module').then(
+            m => m.OthersAdminModule
+          ),
+      },
+      {
+        path: 'admin',
+        canActivate: [AdminGuard],
+        loadChildren: () =>
+          import('./principal-admin/principal-admin.module').then(
+            m => m.PrincipalAdminModule
+          ),
+      },
+      {
+        path: 'about',
+        canActivate: [AdminGuard],
+        loadChildren: () =>
+          import('./about/about.module').then(m => m.AboutModule),
+      },
+      {
+        path: 'user-manual',
+        canActivate: [AdminGuard],
+        loadChildren: () =>
+          import('./user-manual/user-manual.module').then(
+            m => m.UserManualModule
+          ),
+      },
+    ],
+  },
+  {
+    path: 'auth',
+    loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule),
+  },
+  {
+    path: '**',
+    loadChildren: () =>
+      import('./page-not-found/page-not-found.module').then(
+        m => m.PageNotFoundModule
+      ),
+  },
+];
+
+@NgModule({
+  imports: [
+    RouterModule.forRoot(routes, {
+      preloadingStrategy: NoPreloading,
+    }),
+  ],
+  exports: [RouterModule],
+})
+export class AppRoutingModule {}

@@ -1,0 +1,62 @@
+import { Component, OnInit } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/core/services/auth.service';
+
+@Component({
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss'],
+    standalone: false
+})
+export class LoginComponent implements OnInit {
+  form: UntypedFormGroup;
+
+  constructor(
+    private formBuilder: UntypedFormBuilder,
+    private router: Router,
+    private authService: AuthService
+  ) {
+    this.buildForm();
+  }
+
+  ngOnInit() {}
+
+  login(event: Event) {
+    event.preventDefault();
+    if (this.form.valid) {
+      const value = this.form.value;
+      this.authService
+        .login(value.email, value.password)
+        .then(() => {
+          //if (this.authService.isEmailVerified() == true) {
+          localStorage.setItem('email-login', value.email);
+          this.router.navigate(['/']);
+          //} else {
+          // alert(
+          //    'correo no validado, revisa tu correo para validar tu cuenta'
+          //  );
+          //  this.authService.verifyEmail();
+          // }
+        })
+        .catch(() => {
+          alert('no es válido');
+        });
+    }
+  }
+
+  private buildForm() {
+    this.form = this.formBuilder.group({
+      email: ['', [Validators.required]],
+      password: ['', [Validators.required]],
+    });
+  }
+
+  register() {
+    this.router.navigate(['/auth/register']);
+  }
+
+  about() {
+    this.router.navigate(['/auth/about']);
+  }
+}

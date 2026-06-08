@@ -1,0 +1,24 @@
+<mat-toolbar class='header-app'>
+  <mat-toolbar-row>
+    <div class="row between-xs middle-xs header-row">
+      <div class="container-title" >
+        <img src="../../../../assets/relevants/logo.png" (click)="goToHome()" class="logo-header"
+          (keypress)="goToHome()" tabindex="1" alt="EVAMED logo"/>
+      </div>
+      <div class="container-icons">
+        <div class="container-icon" (click)="goToAbout()" (keypress)="goToAbout()" tabindex="2">
+          <div class="icon-acerca-de"></div>
+          <div class="title-icon">
+            Acerca de
+          </div>
+        </div>
+        <div class="container-icon" (click)="goToUserManual()" (keypress)="goToUserManual()" tabindex="3">
+          <div class="icon-bosquejo"></div>
+          <div class="title-icon">
+            Manual de usuario
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-toolbar-row>
+</mat-toolbar>

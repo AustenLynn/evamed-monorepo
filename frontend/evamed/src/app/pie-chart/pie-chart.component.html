@@ -1,0 +1,43 @@
+<div class="graficas-especificas-seccionUno" *ngIf="showMePartially">
+  <div style="display:block" *ngFor="let item of inputProyect;let i = index">
+    <mat-card appearance="outlined">
+      <mat-card-header  class="pie-card-header">
+        {{item.Nombre}}<br>
+        {{indicador}}
+      </mat-card-header>
+    </mat-card>
+    <div>
+      <canvas #MyChart='base-chart' #canvas baseChart
+        [data]="pieChartData[i]"
+        [options]="pieChartOptions"
+        [type]="pieChartType"
+        [plugins]="chartPlugins"></canvas>
+        <div>
+          <ul class="mostrar-subetapas">
+            <li *ngFor = "let subetapa of pieChartLabels[i]; let num = index">
+              <div class="text-subetapas">
+                <button (click)="DeleteSubetapa(subetapa,i)">
+                  <span class="dot" [ngStyle]="{'background-color': pieChartColor[num]}"></span>
+                  <a id="{{idSubetapas[i][num]}}">{{subetapa}}</a>
+                </button>
+              </div>
+            </li>
+            <li>
+              <p class="totales-text">Total : {{totales[i]}}</p>
+            </li>
+          </ul>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="graficas-especificas" *ngIf="showMe_elementos">
+  <canvas #MyChart='base-chart' #canvas baseChart
+    [data]="pieChartData[0]"
+    [options]="pieChartOptions_elementos"
+    [plugins]="chartPlugins"
+    (chartClick)='onChartClick($event)'
+    [type]="pieChartType"></canvas>
+</div>
+
+

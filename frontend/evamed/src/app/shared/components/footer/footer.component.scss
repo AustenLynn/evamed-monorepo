@@ -1,0 +1,31 @@
+footer {
+  background-color: white;
+  position: absolute;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+
+  .logos-ibero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    width: 65rem;
+    padding: 20px 0;
+    color: #767676;
+
+    .img-footer {
+      display: flex;
+
+      .middle-message {
+        margin-left: 10px;
+      }
+    }
+
+  }
+  
+}
+
+.phone {
+  text-align: right;
+}

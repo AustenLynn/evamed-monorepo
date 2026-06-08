@@ -1,0 +1,41 @@
+<div class="energy-bar-wrapper">
+  <div class="energy-bar-legend">
+    <span class="legend-item construction">
+      <span class="legend-dot"></span>Construcción
+    </span>
+    <span class="legend-item usage">
+      <span class="legend-dot"></span>Uso
+    </span>
+    <span class="legend-item end-life">
+      <span class="legend-dot"></span>Fin de vida
+    </span>
+  </div>
+
+  <div class="energy-bar-track" [class.empty]="breakdown.total === 0">
+    <div
+      *ngIf="breakdown.construction > 0"
+      class="segment construction"
+      [style.width.%]="constructionPct"
+      [matTooltip]="'Construcción: ' + format(breakdown.construction)"
+      matTooltipPosition="above">
+    </div>
+    <div
+      *ngIf="breakdown.usage > 0"
+      class="segment usage"
+      [style.width.%]="usagePct"
+      [matTooltip]="'Uso: ' + format(breakdown.usage)"
+      matTooltipPosition="above">
+    </div>
+    <div
+      *ngIf="breakdown.endLife > 0"
+      class="segment end-life"
+      [style.width.%]="endLifePct"
+      [matTooltip]="'Fin de vida: ' + format(breakdown.endLife)"
+      matTooltipPosition="above">
+    </div>
+  </div>
+
+  <div class="energy-bar-total">
+    Total: <strong>{{ format(breakdown.total) }}</strong>
+  </div>
+</div>

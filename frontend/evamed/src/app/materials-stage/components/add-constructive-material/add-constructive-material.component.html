@@ -1,0 +1,155 @@
+<div class="header-modal">
+  <h1 mat-dialog-title class="title-standard-second-light">
+    Nuevo material constructivo
+  </h1>
+  <button mat-button class="close-icon" [mat-dialog-close]="true" (click)="onNoClick()">
+    <mat-icon style="color: #fff;">close</mat-icon>
+  </button>
+</div>
+<div mat-dialog-content>
+
+<div class="Row">
+    <div class="Col">
+    <div class="label-general">Nombre comercial</div>
+    <div>
+        <mat-form-field appearance="fill">
+        <input class="input-general"
+        [(ngModel)]="data.name" matInput type="text" cdkFocusInitial>
+        </mat-form-field>
+    </div>
+    </div>
+</div>
+<div class="Row">
+    <div class="Col select-middle">
+    <div class="label-general">Cantidad</div>
+    <div>
+        <mat-form-field appearance="fill">
+        <input class="input-general-renuew" [(ngModel)]="data.cantidad" matInput type="number">
+        </mat-form-field>
+    </div>
+    </div>
+    <div class="Col select-middle">
+    <div class="label-general">Unidad</div>
+    <div>
+        <mat-form-field appearance="outline" class="select-general" subscriptSizing="dynamic">
+        <mat-label>Seleccione una opción</mat-label>
+        <mat-select [(ngModel)]="data.unidad" hideSingleSelectionIndicator panelWidth="">
+            <mat-option *ngFor="let unit of units" [value]="unit.name_unit">
+            {{ unit.name_unit }}
+            </mat-option>
+        </mat-select>
+        </mat-form-field>
+
+    </div>
+    </div>
+</div>
+<div class="Row">
+    <div class="Col">
+    <div class="label-general">Comentarios</div>
+    <div>
+        <mat-form-field appearance="fill">
+        <textarea class="input-general-renuew"
+            [(ngModel)]="data.descripcion" matInput type="text"></textarea>
+        </mat-form-field>
+    </div>
+    </div>
+</div>
+<div class="Row">
+
+    <div class="Col select-middle">
+    <div class="label-general">Tipo de transporte 1</div>
+    <div>
+        <mat-form-field appearance="outline" class="select-general" subscriptSizing="dynamic">
+        <mat-label>Seleccione una opción</mat-label>
+        <mat-select [(ngModel)]="data.transporte1" hideSingleSelectionIndicator panelWidth="">
+            <mat-option *ngFor="let transporte of catalogoTransportesLocal" [value]="transporte.id">
+            {{ transporte.name_transport }}
+            </mat-option>
+        </mat-select>
+        </mat-form-field>
+    </div>
+    </div>
+    <div class="Col select-middle">
+    <div class="label-general">Distancia (km)</div>
+    <div>
+        <mat-form-field>
+        <input class="input-general-renuew" [(ngModel)]="data.distancia1" matInput type="number">
+        </mat-form-field>
+    </div>
+    </div>
+</div>
+
+<div class="Row">
+    <div class="Col select-middle">
+    <div class="label-general">Tipo de transporte 2</div>
+    <div>
+        <mat-form-field appearance="outline" class="select-general" subscriptSizing="dynamic">
+        <mat-label>Seleccione una opción</mat-label>
+        <mat-select [(ngModel)]="data.transporte2" hideSingleSelectionIndicator panelWidth="">
+            <mat-option *ngFor="let transporte of catalogoTransportesExtrangero" [value]="transporte.id">
+            {{ transporte.name_transport }}
+            </mat-option>
+        </mat-select>
+        </mat-form-field>
+    </div>
+    </div>
+    <div class="Col select-middle">
+    <div class="label-general">Distancia (km)</div>
+    <div>
+        <mat-form-field>
+        <input class="input-general-renuew" [(ngModel)]="data.distancia2" matInput type="number">
+        </mat-form-field>
+    </div>
+    </div>
+</div>
+
+<div class="Row">
+    <div class="Col select-middle">
+    <div class="label-general">Tiempo de vida (años)</div>
+    <div>
+        <mat-form-field appearance="outline" class="select-general" subscriptSizing="dynamic">
+            <mat-label>Seleccione una opción</mat-label>
+          <mat-select [(ngModel)]="data.vidaUtil" hideSingleSelectionIndicator panelWidth="">
+            <mat-option *ngFor="let vidaUtil of catalogoVidaUtil" [value]="vidaUtil.name_useful_life">
+              {{vidaUtil.name_useful_life}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+    </div>
+    </div>
+    <div class="Col select-middle">
+    <div class="label-general">Reemplazos</div>
+    <div>
+        <mat-form-field appearance="fill">
+        <input class="input-general-renuew" [(ngModel)]="data.reemplazos"
+             matInput type="number">
+        </mat-form-field>
+    </div>
+    </div>
+</div>
+
+<div class="Row">
+    <div class="Col select-middle">
+    <div class="label-general">Fuente de información de impacto ambiental</div>
+    <div>
+        <mat-form-field appearance="outline" class="select-general" subscriptSizing="dynamic">
+        <mat-label>Seleccione una opción</mat-label>
+        <mat-select [(ngModel)]="data.material" hideSingleSelectionIndicator panelWidth="">
+            <mat-option *ngFor="let item of materialsList" [value]="{ name: item.name_material, database: item.database_from }">
+                {{ item.name_material }}
+            </mat-option>
+        </mat-select>
+        </mat-form-field>
+    </div>
+    </div>
+</div>
+
+<div mat-dialog-actions class="center">
+  <button
+    mat-button
+    [mat-dialog-close]="data"
+    class="yellow-button"
+  >
+    Agregar material
+  </button>
+</div>

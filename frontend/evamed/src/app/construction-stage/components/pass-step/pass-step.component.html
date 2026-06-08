@@ -1,0 +1,22 @@
+<div class="header-modal">
+  <h1 mat-dialog-title class="title-standard-second-light" *ngIf="!isUpdate">
+    ¿Desea guardar los datos antes de continuar?
+  </h1>
+  <h1 mat-dialog-title class="title-standard-second-light" *ngIf="isUpdate">
+    Asegurese de guardar los cambios antes de continuar
+  </h1>
+  <button mat-button class="close-icon" [mat-dialog-close]="true" (click)="onNoClick()">
+    <mat-icon style="color: #fff;">close</mat-icon>
+  </button>
+</div>
+
+<div mat-dialog-actions class="center" *ngIf="!isUpdate">
+  <button mat-raised-button color="primary" (click)="continueStep($event)" cdkFocusInitial>Si</button>
+  <button mat-raised-button color="primary" (click)="continueOnly($event)">No</button>
+  <button mat-raised-button color="primary" (click)="onNoClick()">Cancelar</button>
+</div>
+
+<div mat-dialog-actions class="center" *ngIf="isUpdate">
+  <button mat-raised-button color="primary" (click)="continueOnly($event)" cdkFocusInitial>Continuar</button>
+  <button mat-raised-button color="primary" (click)="onNoClick()">Cancelar</button>
+</div>
