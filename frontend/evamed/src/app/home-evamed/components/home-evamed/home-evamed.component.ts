@@ -63,8 +63,8 @@ export class HomeEvamedComponent implements OnInit {
   superficieHabitable: string;
   noNiveles: string;
   optionSelected: string;
-  projectsList: any = 0;
-  tempProjectsList: any = 0;
+  projectsList: any = [];
+  tempProjectsList: any = [];
   countProjectList: number;
   user: string;
   sector: string;
@@ -312,6 +312,10 @@ export class HomeEvamedComponent implements OnInit {
     const userData = await lastValueFrom(
       this.users.searchUser(localStorage.getItem('email-login'))
     );
+    if (!userData || userData.length === 0) {
+      this.auth.logout().then(() => this.router.navigate(['/auth/register']));
+      return;
+    }
     this.user = userData[0].name;
     this.sector = userData[0].institution;
     this.email = userData[0].email;
