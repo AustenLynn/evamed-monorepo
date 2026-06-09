@@ -1115,7 +1115,7 @@ export class CompararComponent implements OnInit {
     //Se reinicia la sección 1
     if(this.Impactos_ambientales) {
       if(this.resultdosGraficos) {
-        this.containerGraficas.clear();
+        this.containerGraficas?.clear();
         this.receiveSelector(null);
         this.ID = ' ';
       }

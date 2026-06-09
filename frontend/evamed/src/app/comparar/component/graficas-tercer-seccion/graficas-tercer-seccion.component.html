@@ -69,7 +69,7 @@
               <div class="seccion_botones_elementos_constructivos">
                 <div *ngFor="let elementoConstructivo of botones_elementos_constructivos" class="botones-elementos-contructivos">
                   <div id="{{item.idsIconosElementos[elementoConstructivo.id]['idTEXTO']}}" class="espacio-sin-selecciomar">
-                    <button class="button-elemento-seleccionado color-texto" [disabled]="item.iconosElementosConstrucivos[elementoConstructivo.id]['habilitado']" (click)="onChartClickElemento(elementoConstructivo.id,item.id)">
+                    <button class="button-elemento-seleccionado color-texto" [disabled]="item.iconosElementosConstrucivos[elementoConstructivo.id]?.['habilitado']" (click)="onChartClickElemento(elementoConstructivo.id,item.id)">
                       <div>{{elementoConstructivo.name_section}}</div>
                       <div [style.background-color] =item.coloresBotonesElementos[elementoConstructivo.id] class='button-icon'>
                       </div></button>
