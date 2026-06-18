@@ -1754,6 +1754,14 @@ export class CompararComponent implements OnInit {
     this.iniciarSeccionTres();
   }
 
+  // Escribe el estado del checkbox de forma segura (reemplaza el two-way
+  // binding, que no admite el optional chaining usado en la plantilla).
+  setCheckElemento(id, value) {
+    if (this.elementosConstructivosMostradosElementos[id]) {
+      this.elementosConstructivosMostradosElementos[id]['check'] = value;
+    }
+  }
+
   elementoSeleccionadoElementos(recive) {
     if (
       this.elementosContructivosEliminadosElementos.includes(recive.toString())
