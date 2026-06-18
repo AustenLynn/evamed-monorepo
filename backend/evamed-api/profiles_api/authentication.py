@@ -22,11 +22,17 @@ def _get_firebase_app():
 
 
 class FirebaseUser:
-    """Minimal user object returned by FirebaseAuthentication."""
+    """Lightweight user returned when no Django UserProfile matches the token.
+
+    `id`/`pk` are None so object-level permission checks such as
+    `obj.id == request.user.id` fail closed instead of raising.
+    """
 
     def __init__(self, uid: str, email: str):
         self.uid = uid
         self.email = email
+        self.id = None
+        self.pk = None
         self.is_authenticated = True
         self.is_active = True
 
@@ -50,4 +56,13 @@ class FirebaseAuthentication(BaseAuthentication):
         except Exception:
             raise AuthenticationFailed('Invalid or expired Firebase token.')
 
-        return (FirebaseUser(uid=decoded['uid'], email=decoded.get('email', '')), None)
+        email = decoded.get('email', '')
+        # Bridge to the real Django user when one exists, so standard
+        # object-level permissions (obj.id == request.user.id) work.
+        if email:
+            from profiles_api.models import UserProfile
+            profile = UserProfile.objects.filter(email=email).first()
+            if profile is not None:
+                return (profile, None)
+
+        return (FirebaseUser(uid=decoded['uid'], email=email), None)

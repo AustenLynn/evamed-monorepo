@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from profiles_api import serializers
 from profiles_api import models
 from profiles_api import permissions
+from profiles_api.authentication import FirebaseAuthentication
 
 class HelloApiView(APIView):
     """Test APIView"""
@@ -104,7 +105,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     """Handle creating and updating profiles"""
     serializer_class = serializers.UserProfileSerializer
     queryset = models.UserProfile.objects.all()
-    authentication_classes = (TokenAuthentication,)
+    authentication_classes = (FirebaseAuthentication,)
     permission_classes = (IsAuthenticated, permissions.UpdateOwnProfile,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name', 'email',)
