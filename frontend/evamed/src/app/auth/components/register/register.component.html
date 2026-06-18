@@ -41,6 +41,9 @@ con un menor impacto ambiental durante todo su ciclo de vida <a (click)="about()
             <input class="input-context-login" placeholder="Coloca aquí tu correo electrónico" formControlName="email"
               matInput type="text">
           </div>
+          <div class="input-error" *ngIf="form.get('email').touched && form.get('email').hasError('email')">
+            Ingresa un correo electrónico válido
+          </div>
         </div>
         <div class="container-label-input">
           <div class="label-context-login">
@@ -123,6 +126,12 @@ con un menor impacto ambiental durante todo su ciclo de vida <a (click)="about()
             <input class="input-context-login" placeholder="Coloca aquí tu contraseña" formControlName="password"
               matInput type="password">
           </div>
+          <div class="input-hint" *ngIf="!(form.get('password').touched && form.get('password').hasError('minlength'))">
+            Mínimo 8 caracteres
+          </div>
+          <div class="input-error" *ngIf="form.get('password').touched && form.get('password').hasError('minlength')">
+            La contraseña debe tener al menos 8 caracteres
+          </div>
         </div>
         <div class="container-label-input">
           <div class="label-context-login">
@@ -131,6 +140,9 @@ con un menor impacto ambiental durante todo su ciclo de vida <a (click)="about()
           <div>
             <input class="input-context-login" placeholder="Coloca aquí tu contraseña" formControlName="password2"
               matInput type="password">
+          </div>
+          <div class="input-error" *ngIf="form.get('password2').value && form.get('password').value !== form.get('password2').value">
+            Las contraseñas no coinciden
           </div>
         </div>
         <div class="checks">

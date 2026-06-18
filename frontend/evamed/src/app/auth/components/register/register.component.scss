@@ -21,7 +21,9 @@ section.form-login {
   margin-left: 15%;
   margin-right: 20%;
   margin-top: 4%;
-  height: 70%;
+  /* Reserve space so the submit button / login link are not hidden
+     behind the position: fixed footer (.logos-ibero). */
+  padding-bottom: 150px;
 }
 
 .title-context-login {
@@ -49,6 +51,18 @@ section.form-login {
 
 .container-label-input {
   margin-top: 2px;
+}
+
+.input-hint {
+  color: #aca8a8;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.input-error {
+  color: #d32f2f;
+  font-size: 12px;
+  margin-top: 4px;
 }
 
 .label-context-login {
