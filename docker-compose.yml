@@ -38,7 +38,10 @@ services:
         condition: service_healthy
 
   web:
-    build: ./frontend/evamed
+    build:
+      context: ./frontend/evamed
+      args:
+        NG_CONFIGURATION: docker
     restart: unless-stopped
     environment:
       PORT: "8080"
