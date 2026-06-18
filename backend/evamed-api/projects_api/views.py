@@ -6,7 +6,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework import filters
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.db import transaction
 
 from projects_api import models
@@ -20,16 +20,14 @@ class UserPlatformViewSet(viewsets.ModelViewSet):
     queryset = models.UserPlatform.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=email', )
+    authentication_classes = (FirebaseAuthentication,)
 
     def get_permissions(self):
+        # Registration (create) must stay public; the Firebase authenticator
+        # is a no-op when no Bearer token is sent, so leaving it on is safe.
         if self.action == 'create':
-            return []
+            return [AllowAny()]
         return [IsAuthenticated()]
-
-    def get_authenticators(self):
-        if self.action == 'create':
-            return []
-        return [FirebaseAuthentication()]
 
 class TransportsViewSet(viewsets.ModelViewSet):
     """Handle creating and updating transports"""

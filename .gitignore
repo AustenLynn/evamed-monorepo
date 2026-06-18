@@ -1,0 +1,9 @@
+# Firebase Admin SDK service-account keys — NEVER commit these
+*firebase-adminsdk*.json
+serviceAccount*.json
+
+# Local env files
+.env
+
+# Windows / WSL artifacts
+*:Zone.Identifier
