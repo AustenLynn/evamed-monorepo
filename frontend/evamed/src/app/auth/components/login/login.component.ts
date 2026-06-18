@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
@@ -15,7 +16,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private snackBar: MatSnackBar
   ) {
     this.buildForm();
   }
@@ -29,26 +31,18 @@ export class LoginComponent implements OnInit {
       this.authService
         .login(value.email, value.password)
         .then(() => {
-          //if (this.authService.isEmailVerified() == true) {
-          localStorage.setItem('email-login', value.email);
           this.router.navigate(['/']);
-          //} else {
-          // alert(
-          //    'correo no validado, revisa tu correo para validar tu cuenta'
-          //  );
-          //  this.authService.verifyEmail();
-          // }
         })
         .catch(() => {
-          alert('no es válido');
+          this.snackBar.open('Correo o contraseña no válidos', 'OK', { duration: 4000 });
         });
     }
   }
 
   private buildForm() {
     this.form = this.formBuilder.group({
-      email: ['', [Validators.required]],
-      password: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
     });
   }
 

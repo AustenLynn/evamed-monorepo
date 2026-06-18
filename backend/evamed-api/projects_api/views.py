@@ -12,6 +12,7 @@ from django.db import transaction
 from projects_api import models
 from projects_api import serializers
 from profiles_api import permissions
+from profiles_api.authentication import FirebaseAuthentication
 
 class UserPlatformViewSet(viewsets.ModelViewSet):
     """Handle creating and updating user"""
@@ -19,6 +20,16 @@ class UserPlatformViewSet(viewsets.ModelViewSet):
     queryset = models.UserPlatform.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=email', )
+
+    def get_permissions(self):
+        if self.action == 'create':
+            return []
+        return [IsAuthenticated()]
+
+    def get_authenticators(self):
+        if self.action == 'create':
+            return []
+        return [FirebaseAuthentication()]
 
 class TransportsViewSet(viewsets.ModelViewSet):
     """Handle creating and updating transports"""

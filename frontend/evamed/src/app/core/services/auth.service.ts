@@ -1,26 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Auth, authState, createUserWithEmailAndPassword, signInWithEmailAndPassword,
   UserCredential, signOut, sendPasswordResetEmail, sendEmailVerification,} from '@angular/fire/auth';
-import { HttpClient } from '@angular/common/http';
-import { tap } from 'rxjs/operators';
-import { TokenService } from './token.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  servicioResponse: string;
-
-  boolError: boolean;
-
-  response: object;
-
   constructor(
-    //private af: AngularFireAuth,
     private auth: Auth,
-    private http: HttpClient,
-    private token: TokenService
   ) { }
 
   createUser(email: string, password: string) {
@@ -32,6 +20,7 @@ export class AuthService {
   }
 
   logout() {
+    localStorage.removeItem('email-login');
     return signOut(this.auth);
   }
 
@@ -46,23 +35,9 @@ export class AuthService {
    }
    // Verificar usuario
    isEmailVerified() {
-    return this.auth.currentUser.emailVerified;
+    return this.auth.currentUser?.emailVerified ?? false;
    }
   hasUser() {
     return authState(this.auth);
-  }
-
-  loginCoreEVAMED( username: string, password: string ) {
-
-    return this.http.post<any>(
-      //'http://127.0.0.1:8000/api-profiles/login/',
-      'http://10.2.102.118:8000/api-profiles/login/',
-      { username, password }
-    ).pipe(
-      tap((data: { token: string }) => {
-        const token = data.token;
-        this.token.saveToken(token);
-      })
-    );
   }
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserService } from './../../../core/services/user/user.service';
 import { AuthService } from './../../../core/services/auth.service';
 import { CatalogsService } from './../../../core/services/catalogs/catalogs.service';
@@ -20,7 +21,8 @@ export class RegisterComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private user: UserService,
-    private catalogsService: CatalogsService
+    private catalogsService: CatalogsService,
+    private snackBar: MatSnackBar
   ) {
     this.buildForm();
     this.catalogsService.countriesCatalog().subscribe(data => {
@@ -36,33 +38,46 @@ export class RegisterComponent implements OnInit {
     if (this.form.valid) {
       const value = this.form.value;
 
-      if (value.password === value.password2) {
-        this.user.addUser(value).subscribe(() => {});
-        this.authService
-          .createUser(value.email, value.password)
-          .then(() => {
-            this.authService.verifyEmail();
-            alert('Registro correcto');
-            this.router.navigate(['/auth/login']);
-          })
-          .catch( () => {
-            alert(
-              'El correo ya esta registrado con otro usuario, registra un nuevo correo'
-            );
-          });
-      } else {
-        alert('las contraseñas deben de coincidir');
+      if (value.password !== value.password2) {
+        this.snackBar.open('Las contraseñas deben coincidir', 'OK', { duration: 4000 });
+        return;
       }
+
+      this.user.addUser(value).subscribe({
+        next: () => {
+          this.authService
+            .createUser(value.email, value.password)
+            .then(() => {
+              this.authService.verifyEmail();
+              this.snackBar.open('Registro correcto', 'OK', { duration: 4000 });
+              this.router.navigate(['/auth/login']);
+            })
+            .catch(() => {
+              this.snackBar.open(
+                'El correo ya está registrado, usa otro correo',
+                'OK',
+                { duration: 4000 }
+              );
+            });
+        },
+        error: () => {
+          this.snackBar.open(
+            'Error al registrar el usuario. Intenta nuevamente.',
+            'OK',
+            { duration: 4000 }
+          );
+        },
+      });
     }
   }
 
   private buildForm() {
     this.form = this.formBuilder.group({
       name: ['', [Validators.required]],
-      email: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
       institution: ['', [Validators.required]],
-      password: ['', [Validators.required]],
-      password2: ['', [Validators.required]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      password2: ['', [Validators.required, Validators.minLength(8)]],
       sector: ['', [Validators.required]],
       country: ['', [Validators.required]],
     });

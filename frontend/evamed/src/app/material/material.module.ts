@@ -22,6 +22,7 @@ import { MatMenuModule} from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 @NgModule({
   declarations: [],
   imports: [
@@ -46,7 +47,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatMenuModule,
     MatCheckboxModule,
     MatAutocompleteModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatSnackBarModule
   ],
   exports: [
     MatButtonModule,
@@ -69,7 +71,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatMenuModule,
     MatCheckboxModule,
     MatAutocompleteModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatSnackBarModule
   ]
 })
 export class MaterialModule { }

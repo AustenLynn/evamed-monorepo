@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
@@ -15,7 +16,8 @@ export class RecoverPasswordComponent implements OnInit {
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private snackBar: MatSnackBar
   ) {
     this.buildForm();
   }
@@ -24,7 +26,7 @@ export class RecoverPasswordComponent implements OnInit {
 
   private buildForm() {
     this.form = this.formBuilder.group({
-      email: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
     });
   }
 
@@ -39,13 +41,15 @@ export class RecoverPasswordComponent implements OnInit {
       this.authService
         .resetPassword(value.email)
         .then(() => {
-          alert(
-            'El correo para restablecer la contraseña se ha enviado corectamente'
+          this.snackBar.open(
+            'El correo para restablecer la contraseña se ha enviado correctamente',
+            'OK',
+            { duration: 4000 }
           );
           this.router.navigate(['/']);
         })
         .catch(() => {
-          alert('Error! Intenta nuevamente la solicitud');
+          this.snackBar.open('Error. Intenta nuevamente la solicitud.', 'OK', { duration: 4000 });
         });
     }
   }
