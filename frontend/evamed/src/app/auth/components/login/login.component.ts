@@ -31,6 +31,10 @@ export class LoginComponent implements OnInit {
       this.authService
         .login(value.email, value.password)
         .then(() => {
+          // The app identifies the current user by this key (e.g. home-evamed
+          // and comparar look up the profile via searchUser); it is cleared on
+          // logout in AuthService.
+          localStorage.setItem('email-login', value.email);
           this.router.navigate(['/']);
         })
         .catch(() => {
