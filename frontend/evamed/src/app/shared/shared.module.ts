@@ -5,6 +5,7 @@ import { HighlightDirective } from './directives/highlight/highlight.directive';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { EnergyBarComponent } from './components/energy-bar/energy-bar.component';
+import { EmailVerificationBannerComponent } from './components/email-verification-banner/email-verification-banner.component';
 import { RouterModule } from '@angular/router';
 import { MaterialModule } from '../material/material.module';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -16,14 +17,16 @@ import { ReactiveFormsModule } from '@angular/forms';
     HighlightDirective,
     HeaderComponent,
     FooterComponent,
-    EnergyBarComponent
+    EnergyBarComponent,
+    EmailVerificationBannerComponent
   ],
   exports: [
     ExponentialPipe,
     HighlightDirective,
     HeaderComponent,
     FooterComponent,
-    EnergyBarComponent
+    EnergyBarComponent,
+    EmailVerificationBannerComponent
   ],
   imports: [
     CommonModule,

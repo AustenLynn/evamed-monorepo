@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Auth, authState, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-  UserCredential, signOut, sendPasswordResetEmail, sendEmailVerification,} from '@angular/fire/auth';
+  UserCredential, signOut, sendPasswordResetEmail, sendEmailVerification,
+  GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, OAuthProvider,
+  AuthProvider, signInWithPopup,} from '@angular/fire/auth';
+
+// Social providers supported by the app. 'apple' is wired but deferred (it
+// requires a paid Apple Developer account); it is simply not offered in the UI.
+export type SocialProvider = 'google' | 'apple' | 'facebook' | 'microsoft' | 'twitter';
 
 @Injectable({
   providedIn: 'root'
@@ -33,10 +39,62 @@ export class AuthService {
   verifyEmail(): Promise<void> {
      return sendEmailVerification(this.auth.currentUser);
    }
+
+  // Reenviar correo de verificación (desde el aviso en la app)
+  resendVerification(): Promise<void> {
+    if (!this.auth.currentUser) {
+      return Promise.reject(new Error('No hay un usuario autenticado.'));
+    }
+    return sendEmailVerification(this.auth.currentUser);
+  }
+
+  // Refresca el estado del usuario para detectar emailVerified tras hacer clic en el correo
+  reloadCurrentUser(): Promise<void> {
+    return this.auth.currentUser?.reload() ?? Promise.resolve();
+  }
+
+  // True cuando el usuario inició sesión con correo/contraseña (no con Google)
+  isPasswordProvider(): boolean {
+    return this.auth.currentUser?.providerData?.some(
+      p => p.providerId === 'password'
+    ) ?? false;
+  }
+
    // Verificar usuario
    isEmailVerified() {
     return this.auth.currentUser?.emailVerified ?? false;
    }
+
+  // Iniciar sesión con un proveedor social mediante popup.
+  loginWithProvider(provider: SocialProvider): Promise<UserCredential> {
+    return signInWithPopup(this.auth, this.buildProvider(provider));
+  }
+
+  // Alias retrocompatible.
+  loginWithGoogle(): Promise<UserCredential> {
+    return this.loginWithProvider('google');
+  }
+
+  private buildProvider(provider: SocialProvider): AuthProvider {
+    switch (provider) {
+      case 'google':
+        return new GoogleAuthProvider();
+      case 'facebook':
+        return new FacebookAuthProvider();
+      case 'twitter':
+        return new TwitterAuthProvider();
+      case 'apple':
+        return new OAuthProvider('apple.com');
+      case 'microsoft':
+        return new OAuthProvider('microsoft.com');
+    }
+  }
+
+  // Usuario autenticado actual (p. ej. para prellenar el perfil de Google)
+  get currentUser() {
+    return this.auth.currentUser;
+  }
+
   hasUser() {
     return authState(this.auth);
   }

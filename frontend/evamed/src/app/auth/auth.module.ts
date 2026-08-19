@@ -10,12 +10,14 @@ import { AboutComponent } from './components/about/about.component';
 import { MaterialModule } from './../material/material.module';
 import { SharedModule } from './../shared/shared.module';
 import { RecoverPasswordComponent } from './components/recover-password/recover-password/recover-password.component';
+import { CompleteProfileComponent } from './components/complete-profile/complete-profile.component';
 
 @NgModule({
   declarations: [
     LoginComponent,
     RegisterComponent,
     RecoverPasswordComponent,
+    CompleteProfileComponent,
     AboutComponent,
   ],
   imports: [

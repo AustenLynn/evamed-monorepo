@@ -95,6 +95,20 @@ button.yellow-button-login.mat-mdc-button-disabled {
   color: rgba(0, 0, 0, .26);
 }
 
+button.google-button-login {
+  width: 50%;
+  font-size: 16px;
+  border-color: #DADCE0;
+  color: #3C4043;
+
+  .google-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+}
+
 .p-context-login {
   color: #aca8a8;
   font-size: 16px;

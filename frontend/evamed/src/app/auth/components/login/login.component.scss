@@ -21,8 +21,10 @@ body {
 section.form-login {
   margin-left: 15%;
   margin-right: 20%;
-  margin-top: 20%;
-  height: 70%;
+  margin-top: 4%;
+  /* Reserve space so the register link is not hidden behind the
+     position: fixed footer (.logos-ibero). */
+  padding-bottom: 150px;
 }
 
 .title-context-login {
@@ -85,6 +87,56 @@ button.yellow-button-login.mat-mdc-button-disabled {
 .p-context-login {
   color: #ACA8A8;
   font-size: 16px;
+}
+
+.social-divider {
+  display: flex;
+  align-items: center;
+  margin-top: 30px;
+  color: #ACA8A8;
+  font-size: 13px;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: #E0E0E0;
+  }
+
+  span {
+    padding: 0 12px;
+  }
+}
+
+.social-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.social-icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid #DADCE0;
+  border-radius: 50%;
+  background-color: #FFF;
+  cursor: pointer;
+  transition: background-color .15s ease, box-shadow .15s ease;
+
+  &:hover {
+    background-color: #F5F5F5;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .12);
+  }
+
+  svg {
+    display: block;
+  }
 }
 
 .p-context-login a {

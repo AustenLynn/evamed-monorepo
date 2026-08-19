@@ -30,7 +30,7 @@ services:
       DJANGO_DEBUG: "False"
       GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/firebase.json
     volumes:
-      - ./evamed-ac3f8-599c8-firebase-adminsdk-fbsvc-58d328b9a1.json:/run/secrets/firebase.json:ro
+      - ./evamed-ac3f8-firebase-adminsdk-ghc6k-666be23c6d.json:/run/secrets/firebase.json:ro
     ports:
       - "8000:8000"
     depends_on:

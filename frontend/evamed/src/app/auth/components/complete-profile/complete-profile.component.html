@@ -20,17 +20,16 @@ con un menor impacto ambiental durante todo su ciclo de vida <a (click)="about()
   </div>
   <div class="main">
     <section class="form-login">
-      <form [formGroup]="form" (ngSubmit)="register($event)">
+      <form [formGroup]="form" (ngSubmit)="complete($event)">
         <div class="title-context-login">
-          Registro
+          Completa tu perfil
         </div>
         <div class="container-label-input">
           <div class="label-context-login">
             Nombre completo
           </div>
           <div>
-            <input class="input-context-login" placeholder="Coloca aquí tu nombre completo" formControlName="name"
-              matInput type="text">
+            <input class="input-context-login" [value]="name" matInput type="text" disabled>
           </div>
         </div>
         <div class="container-label-input">
@@ -38,11 +37,7 @@ con un menor impacto ambiental durante todo su ciclo de vida <a (click)="about()
             Correo electrónico
           </div>
           <div>
-            <input class="input-context-login" placeholder="Coloca aquí tu correo electrónico" formControlName="email"
-              matInput type="text">
-          </div>
-          <div class="input-error" *ngIf="form.get('email').touched && form.get('email').hasError('email')">
-            Ingresa un correo electrónico válido
+            <input class="input-context-login" [value]="email" matInput type="text" disabled>
           </div>
         </div>
         <div class="container-label-input">
@@ -118,60 +113,10 @@ con un menor impacto ambiental durante todo su ciclo de vida <a (click)="about()
             </div>
           </div>
         </div>
-        <div class="container-label-input">
-          <div class="label-context-login">
-            Contraseña
-          </div>
-          <div>
-            <input class="input-context-login" placeholder="Coloca aquí tu contraseña" formControlName="password"
-              matInput type="password">
-          </div>
-          <div class="input-hint" *ngIf="!(form.get('password').touched && form.get('password').hasError('minlength'))">
-            Mínimo 8 caracteres
-          </div>
-          <div class="input-error" *ngIf="form.get('password').touched && form.get('password').hasError('minlength')">
-            La contraseña debe tener al menos 8 caracteres
-          </div>
-        </div>
-        <div class="container-label-input">
-          <div class="label-context-login">
-            Repetir contraseña
-          </div>
-          <div>
-            <input class="input-context-login" placeholder="Coloca aquí tu contraseña" formControlName="password2"
-              matInput type="password">
-          </div>
-          <div class="input-error" *ngIf="form.get('password2').value && form.get('password').value !== form.get('password2').value">
-            Las contraseñas no coinciden
-          </div>
-        </div>
-        <div class="checks">
-          <div class="container-label-input">
-            <mat-checkbox class="margin-checkbox">
-              Deseo recibir información de EVAMED y eventuales actualizaciones de la herramienta
-            </mat-checkbox>
-          </div>
-          <div class="container-label-input">
-            <mat-checkbox class="margin-checkbox">
-              He leido y acepto los términos de referencia del manejo de la información
-            </mat-checkbox>
-          </div>
-        </div>
         <div class="container-label-button">
           <button [disabled]="form.invalid" mat-raised-button type="submit" class="yellow-button-login">
-            Enviar registro
+            Guardar perfil
           </button>
-        </div>
-        <div class="container-label-button">
-          <button type="button" mat-stroked-button class="google-button-login" (click)="registerWithGoogle()">
-            <img class="google-icon" src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="">
-            Continuar con Google
-          </button>
-        </div>
-        <div class="container-label-button">
-          <p class="p-context-login">
-            ¿Ya tienes cuenta? <a (click)="login()" (keypress)="login()" tabindex="1">Iniciar sesión aquí</a>
-          </p>
         </div>
       </form>
       <div class="logos-ibero">

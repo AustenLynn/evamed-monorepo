@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserService } from './../../../core/services/user/user.service';
 import { AuthService } from './../../../core/services/auth.service';
+import { SocialAuthFlowService } from './../../../core/services/social-auth-flow.service';
 import { CatalogsService } from './../../../core/services/catalogs/catalogs.service';
 
 @Component({
@@ -20,6 +21,7 @@ export class RegisterComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private router: Router,
     private authService: AuthService,
+    private socialFlow: SocialAuthFlowService,
     private user: UserService,
     private catalogsService: CatalogsService,
     private snackBar: MatSnackBar
@@ -80,6 +82,17 @@ export class RegisterComponent implements OnInit {
       password2: ['', [Validators.required, Validators.minLength(8)]],
       sector: ['', [Validators.required]],
       country: ['', [Validators.required]],
+    });
+  }
+
+  registerWithGoogle() {
+    this.socialFlow.signIn('google').catch(error => {
+      // Ignore the user simply closing the Google popup.
+      if (error?.code === 'auth/popup-closed-by-user' ||
+          error?.code === 'auth/cancelled-popup-request') {
+        return;
+      }
+      this.snackBar.open('No se pudo continuar con Google.', 'OK', { duration: 4000 });
     });
   }
 

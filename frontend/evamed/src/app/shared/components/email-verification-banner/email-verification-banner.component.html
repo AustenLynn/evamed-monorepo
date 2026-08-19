@@ -1,0 +1,18 @@
+<div class="verify-banner" *ngIf="visible">
+  <span class="verify-banner__text">
+    Verifica tu correo electrónico para asegurar tu cuenta.
+  </span>
+  <span class="verify-banner__actions">
+    <button type="button" class="verify-banner__link" (click)="resend()">
+      Reenviar correo
+    </button>
+    <button
+      type="button"
+      class="verify-banner__close"
+      aria-label="Cerrar aviso"
+      (click)="dismiss()"
+    >
+      &times;
+    </button>
+  </span>
+</div>

@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
+import { CompleteProfileComponent } from './components/complete-profile/complete-profile.component';
 import { AboutComponent } from './components/about/about.component';
 
 const routes: Routes = [
@@ -17,6 +18,10 @@ const routes: Routes = [
   {
     path: 'recover-password',
     component: RecoverPasswordComponent,
+  },
+  {
+    path: 'complete-profile',
+    component: CompleteProfileComponent,
   },
   {
     path: 'about',
