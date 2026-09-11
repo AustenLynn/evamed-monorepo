@@ -153,3 +153,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 AUTH_USER_MODEL = 'profiles_api.UserProfile'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+REST_FRAMEWORK = {
+    # Every endpoint reads the Firebase ID token sent by the Angular interceptor.
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'profiles_api.authentication.FirebaseAuthentication',
+    ),
+}

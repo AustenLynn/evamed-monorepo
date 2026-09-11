@@ -28,13 +28,16 @@ class FirebaseUser:
     `obj.id == request.user.id` fail closed instead of raising.
     """
 
-    def __init__(self, uid: str, email: str):
+    def __init__(self, uid: str, email: str, email_verified: bool = False):
         self.uid = uid
         self.email = email
+        self.email_verified = email_verified
         self.id = None
         self.pk = None
         self.is_authenticated = True
         self.is_active = True
+        # Admin rights only ever come from a Django UserProfile (see below).
+        self.is_staff = False
 
     def __str__(self):
         return self.email
@@ -57,12 +60,17 @@ class FirebaseAuthentication(BaseAuthentication):
             raise AuthenticationFailed('Invalid or expired Firebase token.')
 
         email = decoded.get('email', '')
-        # Bridge to the real Django user when one exists, so standard
-        # object-level permissions (obj.id == request.user.id) work.
-        if email:
+        email_verified = bool(decoded.get('email_verified', False))
+        # Bridge to the Django user (which may carry is_staff) only for a
+        # verified address: an unverified token just proves someone typed it.
+        if email and email_verified:
             from profiles_api.models import UserProfile
-            profile = UserProfile.objects.filter(email=email).first()
+            profile = UserProfile.objects.filter(email__iexact=email, is_active=True).first()
             if profile is not None:
                 return (profile, None)
 
-        return (FirebaseUser(uid=decoded['uid'], email=email), None)
+        return (FirebaseUser(uid=decoded['uid'], email=email, email_verified=email_verified), None)
+
+    def authenticate_header(self, request):
+        # Lets DRF answer 401 (not 403) when credentials are missing.
+        return 'Bearer'
