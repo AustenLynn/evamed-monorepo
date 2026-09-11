@@ -10,6 +10,11 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(private auth: Auth) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    // Only our API gets the Firebase ID token; other requests (assets,
+    // third-party services) pass straight through.
+    if (!req.url.includes('/api-projects/')) {
+      return next.handle(req);
+    }
     // Wait for Firebase to restore a persisted session. Otherwise requests fired
     // during start-up (e.g. home-evamed's constructor) go out without a token
     // and the API answers 401.

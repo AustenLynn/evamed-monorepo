@@ -123,6 +123,17 @@ class ProjectOwnershipTests(APITestCase):
         response = self.client.post('/api-projects/annual-consumption-required/', payload, format='json')
         self.assertEqual(response.status_code, 403)
 
+    def test_cannot_move_own_row_into_someone_elses_project(self):
+        self.as_alice()
+        row_id = self.rows['alice']['annual-consumption-required']
+        response = self.client.patch(
+            '/api-projects/annual-consumption-required/%s/' % row_id,
+            {'project_id': self.bob_project.id}, format='json',
+        )
+        self.assertEqual(response.status_code, 403)
+        row = models.AnnualConsumptionRequired.objects.get(id=row_id)
+        self.assertEqual(row.project_id_id, self.alice_project.id)
+
     def test_can_create_rows_in_own_project(self):
         self.as_alice()
         payload = {'project_id': self.alice_project.id, 'quantity': 1, 'unit_id': None}

@@ -20,9 +20,11 @@ class Command(BaseCommand):
         profile = UserProfile.objects.filter(email__iexact=email).first()
 
         if options['revoke']:
-            if profile is not None:
-                profile.is_staff = False
-                profile.save(update_fields=['is_staff'])
+            if profile is None:
+                self.stdout.write('no admin profile for %s; nothing revoked' % email)
+                return
+            profile.is_staff = False
+            profile.save(update_fields=['is_staff'])
             self.stdout.write('revoked admin: %s' % email)
             return
 
@@ -30,5 +32,7 @@ class Command(BaseCommand):
             profile = UserProfile(email=email, name=email.split('@')[0])
             profile.set_unusable_password()
         profile.is_staff = True
+        # FirebaseAuthentication only bridges active profiles.
+        profile.is_active = True
         profile.save()
         self.stdout.write('granted admin: %s' % email)
