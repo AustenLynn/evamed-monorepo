@@ -58,3 +58,28 @@ class FirebaseAuthenticationTests(TestCase):
 
     def test_missing_credentials_answer_401(self, _app):
         self.assertEqual(FirebaseAuthentication().authenticate_header(None), 'Bearer')
+
+    def test_unverified_password_account_is_not_trusted(self, _app):
+        user, _ = self.authenticate({
+            'uid': 'u3', 'email': 'victim@example.com', 'email_verified': False,
+            'firebase': {'sign_in_provider': 'password'},
+        })
+        self.assertIsInstance(user, FirebaseUser)
+        self.assertFalse(user.email_trusted)
+
+    def test_unverified_oauth_account_is_trusted_but_not_bridged_to_staff(self, _app):
+        user, _ = self.authenticate({
+            'uid': 'u4', 'email': 'admin@example.com', 'email_verified': False,
+            'firebase': {'sign_in_provider': 'google.com'},
+        })
+        self.assertIsInstance(user, FirebaseUser)
+        self.assertTrue(user.email_trusted)
+        self.assertFalse(user.is_staff)
+
+    def test_verified_password_account_is_trusted(self, _app):
+        user, _ = self.authenticate({
+            'uid': 'u5', 'email': 'someone@example.com', 'email_verified': True,
+            'firebase': {'sign_in_provider': 'password'},
+        })
+        self.assertIsInstance(user, FirebaseUser)
+        self.assertTrue(user.email_trusted)

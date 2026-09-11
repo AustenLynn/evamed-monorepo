@@ -4,9 +4,9 @@ from profiles_api.models import UserProfile
 from projects_api import models
 
 
-def firebase_user(email, verified=True):
+def firebase_user(email, verified=True, provider='password'):
     """What FirebaseAuthentication returns for a signed-in, non-admin user."""
-    return FirebaseUser(uid='uid-' + email, email=email, email_verified=verified)
+    return FirebaseUser(uid='uid-' + email, email=email, email_verified=verified, sign_in_provider=provider)
 
 
 def admin_user(email='admin@example.com'):

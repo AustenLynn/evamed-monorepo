@@ -18,8 +18,22 @@ def is_admin(user):
     return bool(getattr(user, 'is_authenticated', False) and getattr(user, 'is_staff', False))
 
 
-def caller_email(user):
+def claimed_email(user):
     return (getattr(user, 'email', '') or '').strip().lower()
+
+
+def caller_email(user):
+    """The identity used for data ownership.
+
+    A `UserProfile` has no `email_trusted` attribute, so it defaults to
+    trusted; it's only ever bridged from a Firebase token for a verified
+    email (see FirebaseAuthentication). A `FirebaseUser` may carry an
+    untrusted claimed email (unverified password sign-in) which must not be
+    treated as an owned identity.
+    """
+    if not getattr(user, 'email_trusted', True):
+        return ''
+    return claimed_email(user)
 
 
 def owned_projects(user):
@@ -47,12 +61,24 @@ class OwnedByCallerMixin:
 
     `owner_email_path` is the ORM path from the model to the owner's email,
     e.g. PROJECT_OWNER. Its first segment must be a serializer field.
+
+    `require_trusted_email` (default True) picks which identity counts as
+    "the caller's": the trusted one (`caller_email`) normally, or the merely
+    claimed one (`claimed_email`) when a viewset sets this False. Users-platform
+    sets it False in a later task so an unverified user can still register
+    their own profile.
     """
     permission_classes = (permissions.IsAuthenticated,)
     owner_email_path = None
+    require_trusted_email = True
+
+    def _owner_email(self):
+        if self.require_trusted_email:
+            return caller_email(self.request.user)
+        return claimed_email(self.request.user)
 
     def get_queryset(self):
-        email = caller_email(self.request.user)
+        email = self._owner_email()
         queryset = super().get_queryset()
         if not email:
             return queryset.none()
@@ -73,5 +99,5 @@ class OwnedByCallerMixin:
         value = validated_data.get(first)
         for attr in rest:
             value = getattr(value, attr, None)
-        if not value or value.strip().lower() != caller_email(self.request.user):
+        if not value or value.strip().lower() != self._owner_email():
             raise PermissionDenied('That record does not belong to you.')

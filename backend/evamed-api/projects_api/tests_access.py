@@ -162,3 +162,32 @@ class ProjectOwnershipTests(APITestCase):
         self.assertEqual(post_theirs.status_code, 400)
         self.assertEqual(patch_theirs.status_code, 400)
         self.assertEqual(self.client.get('/api-projects/materials-stage/', {'project_id': 'abc'}).status_code, 404)
+
+    def test_unverified_password_email_owns_nothing(self):
+        # An unverified password account only proves someone typed the address;
+        # it must not be trusted to own the real Alice's project data.
+        self.client.force_authenticate(user=firebase_user('alice@example.com', verified=False))
+
+        self.assertEqual(list(self.client.get('/api-projects/projects/').data), [])
+        self.assertEqual(list(self.client.get('/api-projects/material-scheme-project/').data), [])
+        self.assertEqual(
+            self.client.get('/api-projects/projects/%s/results/' % self.alice_project.id).status_code, 404
+        )
+
+        payload = {
+            'name_project': 'New', 'use_id': None, 'type_id': None, 'country_id': None,
+            'builded_surface': None, 'living_area': None, 'tier': None,
+            'useful_life_id': None, 'housing_scheme_id': None, 'city_id_origin': None,
+            'distance': None, 'user_platform_id': self.alice_project.user_platform_id.id,
+        }
+        response = self.client.post('/api-projects/projects/', payload, format='json')
+        self.assertEqual(response.status_code, 403)
+
+    def test_unverified_oauth_email_still_owns_her_project(self):
+        # OAuth providers take the email from the provider account, so it's
+        # trustworthy even when Firebase reports email_verified=False.
+        self.client.force_authenticate(
+            user=firebase_user('alice@example.com', verified=False, provider='facebook.com')
+        )
+        ids = {row['id'] for row in self.client.get('/api-projects/projects/').data}
+        self.assertEqual(ids, {self.alice_project.id})

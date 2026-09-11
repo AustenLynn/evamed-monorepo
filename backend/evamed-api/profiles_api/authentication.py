@@ -28,10 +28,16 @@ class FirebaseUser:
     `obj.id == request.user.id` fail closed instead of raising.
     """
 
-    def __init__(self, uid: str, email: str, email_verified: bool = False):
+    def __init__(self, uid: str, email: str, email_verified: bool = False, sign_in_provider: str = ''):
         self.uid = uid
         self.email = email
         self.email_verified = email_verified
+        self.sign_in_provider = sign_in_provider
+        # An unverified *password* account only proves someone typed the
+        # address; OAuth providers (google.com, facebook.com, microsoft.com,
+        # twitter.com, ...) take the email from the provider account, so it
+        # is trustworthy even when Firebase reports email_verified=False.
+        self.email_trusted = bool(email_verified) or sign_in_provider not in ('', 'password')
         self.id = None
         self.pk = None
         self.is_authenticated = True
@@ -61,6 +67,7 @@ class FirebaseAuthentication(BaseAuthentication):
 
         email = decoded.get('email', '')
         email_verified = bool(decoded.get('email_verified', False))
+        sign_in_provider = decoded.get('firebase', {}).get('sign_in_provider', '')
         # Bridge to the Django user (which may carry is_staff) only for a
         # verified address: an unverified token just proves someone typed it.
         if email and email_verified:
@@ -69,7 +76,13 @@ class FirebaseAuthentication(BaseAuthentication):
             if profile is not None:
                 return (profile, None)
 
-        return (FirebaseUser(uid=decoded['uid'], email=email, email_verified=email_verified), None)
+        return (
+            FirebaseUser(
+                uid=decoded['uid'], email=email, email_verified=email_verified,
+                sign_in_provider=sign_in_provider,
+            ),
+            None,
+        )
 
     def authenticate_header(self, request):
         # Lets DRF answer 401 (not 403) when credentials are missing.
