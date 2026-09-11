@@ -67,13 +67,17 @@ class FirebaseAuthenticationTests(TestCase):
         self.assertIsInstance(user, FirebaseUser)
         self.assertFalse(user.email_trusted)
 
-    def test_unverified_oauth_account_is_trusted_but_not_bridged_to_staff(self, _app):
+    def test_unverified_oauth_account_is_not_trusted_nor_bridged_to_staff(self, _app):
+        # The provider doesn't prove the email: an account can be linked to
+        # a social provider or have its email changed after sign-in, and some
+        # providers (multi-tenant Microsoft) let a tenant admin set any email.
         user, _ = self.authenticate({
             'uid': 'u4', 'email': 'admin@example.com', 'email_verified': False,
             'firebase': {'sign_in_provider': 'google.com'},
         })
         self.assertIsInstance(user, FirebaseUser)
-        self.assertTrue(user.email_trusted)
+        self.assertEqual(user.sign_in_provider, 'google.com')
+        self.assertFalse(user.email_trusted)
         self.assertFalse(user.is_staff)
 
     def test_verified_password_account_is_trusted(self, _app):

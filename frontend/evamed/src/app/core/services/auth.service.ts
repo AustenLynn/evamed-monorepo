@@ -53,13 +53,6 @@ export class AuthService {
     return this.auth.currentUser?.reload() ?? Promise.resolve();
   }
 
-  // True cuando el usuario inició sesión con correo/contraseña (no con Google)
-  isPasswordProvider(): boolean {
-    return this.auth.currentUser?.providerData?.some(
-      p => p.providerId === 'password'
-    ) ?? false;
-  }
-
    // Verificar usuario
    isEmailVerified() {
     return this.auth.currentUser?.emailVerified ?? false;

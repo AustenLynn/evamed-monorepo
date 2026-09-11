@@ -33,11 +33,12 @@ class FirebaseUser:
         self.email = email
         self.email_verified = email_verified
         self.sign_in_provider = sign_in_provider
-        # An unverified *password* account only proves someone typed the
-        # address; OAuth providers (google.com, facebook.com, microsoft.com,
-        # twitter.com, ...) take the email from the provider account, so it
-        # is trustworthy even when Firebase reports email_verified=False.
-        self.email_trusted = bool(email_verified) or sign_in_provider not in ('', 'password')
+        # Only Firebase's email_verified proves the caller controls the
+        # address. The sign-in provider doesn't: a password account can be
+        # linked to a social provider, a social user can change their email,
+        # and multi-tenant providers let a tenant admin set any email. The
+        # provider is kept for logging only.
+        self.email_trusted = bool(email_verified)
         self.id = None
         self.pk = None
         self.is_authenticated = True

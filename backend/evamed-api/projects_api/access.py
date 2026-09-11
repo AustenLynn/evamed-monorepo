@@ -28,8 +28,8 @@ def caller_email(user):
     A `UserProfile` has no `email_trusted` attribute, so it defaults to
     trusted; it's only ever bridged from a Firebase token for a verified
     email (see FirebaseAuthentication). A `FirebaseUser` may carry an
-    untrusted claimed email (unverified password sign-in) which must not be
-    treated as an owned identity.
+    untrusted claimed email (any sign-in Firebase reports unverified) which
+    must not be treated as an owned identity.
     """
     if not getattr(user, 'email_trusted', True):
         return ''

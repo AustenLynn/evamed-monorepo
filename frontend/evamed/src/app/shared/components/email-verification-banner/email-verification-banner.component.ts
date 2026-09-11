@@ -28,9 +28,10 @@ export class EmailVerificationBannerComponent implements OnInit, OnDestroy {
       }
       // Refresh so emailVerified reflects a recent click on the email link.
       await this.authService.reloadCurrentUser();
+      // Any sign-in Firebase reports unverified (password or social) needs
+      // the banner: the API only trusts verified emails.
       this.visible =
         !this.authService.isEmailVerified() &&
-        this.authService.isPasswordProvider() &&
         sessionStorage.getItem(DISMISS_KEY) !== 'true';
     });
   }

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { sendEmailVerification } from '@angular/fire/auth';
 import { lastValueFrom } from 'rxjs';
 import { AuthService, SocialProvider } from './auth.service';
 import { UserService } from './user/user.service';
@@ -32,6 +33,18 @@ export class SocialAuthFlowService {
       throw new Error('no-email');
     }
     localStorage.setItem('email-login', email);
+
+    // The API only trusts a verified email. Some providers (Facebook,
+    // Microsoft, Twitter) can leave it unverified; send the verification
+    // email once so the banner has something to point to. Google accounts
+    // are always verified, so this never fires for them.
+    if (!credential.user.emailVerified) {
+      try {
+        await sendEmailVerification(credential.user);
+      } catch {
+        // e.g. auth/too-many-requests: the banner can resend later.
+      }
+    }
 
     const existing = await lastValueFrom(this.userService.searchUser(email));
     if (existing && existing.length > 0) {

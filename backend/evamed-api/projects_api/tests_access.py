@@ -183,11 +183,10 @@ class ProjectOwnershipTests(APITestCase):
         response = self.client.post('/api-projects/projects/', payload, format='json')
         self.assertEqual(response.status_code, 403)
 
-    def test_unverified_oauth_email_still_owns_her_project(self):
-        # OAuth providers take the email from the provider account, so it's
-        # trustworthy even when Firebase reports email_verified=False.
+    def test_unverified_oauth_email_owns_nothing(self):
+        # Only a verified email is trusted, whatever the sign-in provider:
+        # an unverified social sign-in sees no projects until it verifies.
         self.client.force_authenticate(
             user=firebase_user('alice@example.com', verified=False, provider='facebook.com')
         )
-        ids = {row['id'] for row in self.client.get('/api-projects/projects/').data}
-        self.assertEqual(ids, {self.alice_project.id})
+        self.assertEqual(list(self.client.get('/api-projects/projects/').data), [])
