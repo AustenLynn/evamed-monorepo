@@ -37,7 +37,7 @@ An "admin" is a Django `UserProfile` with `is_staff`, reachable only through a *
 | A1 | Catalogue tables (materials, units, transports, … 30 routes) | Anyone can read; only admins can write | The UI already writes to them only from its admin pages (verified: every `post/put/delete` on these endpoints lives in `materials.service.ts` / `analisis.service.ts` and is called only from `*-admin` components). The register page reads `countries` before login, so reads stay public. |
 | A2 | What "admin" means | A Django `UserProfile` with `is_staff=True`, matched by **verified** Firebase email; managed with `python manage.py grant_admin <email>` | No new infra, and it's revocable without a deploy. Today "admin" is only `*ngIf="email === 'arqarvizup@gmail.com'"` in the UI, and the backend enforces nothing. Alternatives: Firebase custom claims (needs an Admin-SDK script; no DB row), or an env-var allowlist (every change needs a redeploy). |
 | A3 | Project data (8 routes + 3 APIViews) | Visible and writable only by the owner, meaning the `UserPlatform` whose email equals the token email, case-insensitive | Today every project of every user is readable and writable anonymously; the UI hides other users' projects with a client-side `filter`. Scoping server-side is invisible to the UI, because it already filters to its own rows. |
-| A4 | Unverified emails | May own and use projects; **cannot** be admin | Keeps today's "verify-your-email banner" UX. Risk: a legacy user who exists only in `UserPlatform` (never registered in Firebase) could be claimed by someone who registers that address in Firebase without verifying. Stricter option: in `OwnedByCallerMixin.get_queryset` and `owned_projects`, return nothing unless `getattr(user, 'email_verified', True)`. That is two lines, but it locks unverified users out. |
+| A4 | Unverified emails | Project data needs a **verified** email (Firebase `email_verified`, whatever the sign-in provider). Unverified users, including social sign-ins Firebase reports unverified, can register and read their own profile but see no projects until they verify. Updating a profile needs a verified email; the API can't delete profiles (Django admin can). Unverified users can't be admin. | Anyone can create a Firebase account for any address without verifying it, and the sign-in provider doesn't prove the email either (account linking, email changes, multi-tenant Microsoft). A verification banner points unverified users to the email. |
 | A5 | `/api-profiles/*` (course demo code: hello, feed, token login, profile list) | **Removed** | The frontend never calls it (verified). It exposes a password-guessing login for Django users (who will now be the admins) and lists every Django user's email. |
 | A6 | `UserPlatform.password` | Column **dropped**, and the field removed from the API | It stores the **plaintext** Firebase password of every email/password user (`register.component.ts` posts the form, password included, to `users-platform/`), and any signed-in user can list it today. Dropping the column is irreversible, which is intended. |
 | A7 | Missing credentials | `401` + `WWW-Authenticate: Bearer` (not `403`) | The UI and clients can tell "sign in" apart from "not allowed". |
@@ -50,6 +50,8 @@ An "admin" is a Django `UserProfile` with `is_staff`, reachable only through a *
    - whether Mexican data-protection law (LFPDPPP) or your institution's policy creates a notification duty.
 
    Please decide those with whoever is responsible for the platform.
+
+   Also: the git-tracked seed dump `backend/evamed-api/backup` contained those plaintext passwords (and real users' names and emails) in git history since the initial commit. The working-tree copy is now scrubbed (passwords set to NULL). Whether to rewrite git history, and whether real users' data belongs in the seed at all, is your call.
 2. **Who the admins are.** Task 7 grants admin to `arqarvizup@gmail.com` (the address hardcoded in the UI today). Confirm that this is right, and list anyone else.
 
 ---
@@ -1321,16 +1323,35 @@ from django.db.models import Count
 print('projects without owner:', Project.objects.filter(user_platform_id__isnull=True).count())
 print('duplicate profile emails:', UserPlatform.objects.values('email').annotate(n=Count('id')).filter(n__gt=1).count())
 print('profiles with stored passwords:', UserPlatform.objects.exclude(password__isnull=True).exclude(password='').count())
+print('profile emails with surrounding whitespace:', UserPlatform.objects.filter(email__regex=r'^\s|\s$').count())
 "
 ```
 
-Record the numbers. After rollout, ownerless projects become invisible to everyone (they are only reachable in Django admin). Duplicate emails are harmless, because both rows count as the same owner. The third number is the size of the password exposure for decision 1.
+Then count Firebase accounts that will lose access to their projects (needs `FIREBASE_CREDENTIALS_JSON`, as the API has):
 
-- [ ] **Step 2: Take a backup** of the production DB (Render dashboard → database → Backups, or `pg_dump -Fc`). Migration `0083` deletes the password column irreversibly.
+```bash
+python manage.py shell -c "
+from firebase_admin import auth
+from profiles_api.authentication import _get_firebase_app
+from projects_api.models import Project
+owners = {e.strip().lower() for e in Project.objects.values_list('user_platform_id__email', flat=True) if e}
+unverified = [u.email for u in auth.list_users(app=_get_firebase_app()).iterate_all()
+              if u.email and not u.email_verified and u.email.strip().lower() in owners]
+print('unverified Firebase accounts that own projects:', len(unverified))
+"
+```
+
+Record the numbers. After rollout, ownerless projects become invisible to everyone (they are only reachable in Django admin). Duplicate emails are harmless, because both rows count as the same owner. The third number is the size of the password exposure for decision 1. Emails with leading/trailing whitespace won't match any token email, so those users lose their projects until the rows are trimmed. The unverified owners lose access to their projects until they verify; consider emailing them first.
+
+- [ ] **Step 2: Take a backup** of the production DB with `pg_dump -Fc` (Render's free tier has no dashboard backups). Migration `0083` deletes the password column irreversibly. This backup contains the plaintext passwords, so delete it once the deploy is verified.
 
 - [ ] **Step 3: Resolve the "Needs your decision" items** (password-exposure response, admin list).
 
-- [ ] **Step 4: Ship backend and frontend together.** Merge and push; Render redeploys both services from `render.yml`. Expect a few minutes when one side is new and the other old: registration and cold page loads may fail briefly. Ship at a quiet hour.
+- [ ] **Step 4: Deploy the frontend first, then the backend.**
+  1. Frontend: it works against the old backend (the admin button stays hidden until the backend's `/me/` exists).
+  2. Backend + migration `0083`, once the frontend is live.
+
+  Rollback: run `python manage.py migrate projects_api 0082` before redeploying the old backend code. That re-adds the `password` column empty; the data doesn't come back.
 
 - [ ] **Step 5: Grant admins on each environment**
 
