@@ -1,6 +1,7 @@
 import subetapasInfo from 'src/app/calculos/Subetapas.json';
 import escalasCarbono from 'src/app/calculos/EscalasCarbono.json';
 import { Injectable } from '@angular/core';
+import { buildAggregateMaterialSet } from 'src/app/calculos/aggregate-materials';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +14,7 @@ export class Calculos {
   projectsList: [];
   materialList: [];
   materialSchemeDataList: [];
+  aggregateMaterials: Set<number> = new Set<number>();
   materialSchemeProyectList: [];
   potentialTypesList: [];
   standarsList: [];
@@ -46,6 +48,7 @@ export class Calculos {
     this.projectsList = info.projectsList;
     this.materialList = info.materialList;
     this.materialSchemeDataList = info.materialSchemeDataList;
+    this.aggregateMaterials = buildAggregateMaterialSet(this.materialSchemeDataList);
     this.materialSchemeProyectList = info.materialSchemeProyectList;
     this.potentialTypesList = info.potentialTypesList;
     this.standarsList = info.standarsList;
@@ -98,7 +101,7 @@ export class Calculos {
             schemeProyect.forEach(ps => {
               const baseDatosMaterial = this.materialList.filter(bs=> bs['id'] == ps['material_id']);
               if(BD[baseDatosMaterial[0]['database_from']]) {
-                if(baseDatosMaterial[0]['database_from'] != 'EPiC') {
+                if(!this.aggregateMaterials.has(ps['material_id'])) {
                   const materiales_subetapa = this.materialSchemeDataList.filter(
                     msd =>
                     msd['material_id'] == ps['material_id'] &&
@@ -233,7 +236,7 @@ export class Calculos {
           schemeProyect.forEach(ps => {
           const baseDatosMaterial = this.materialList.filter(bs=> bs['id'] == ps['material_id']);
           if(BD[baseDatosMaterial[0]['database_from']]) {
-            if(baseDatosMaterial[0]['database_from'] != 'EPiC') {
+            if(!this.aggregateMaterials.has(ps['material_id'])) {
               if(sumaParaReempazos[ps['material_id']] != undefined) {
                 let valorTransporte = 0
                 valorTransporte = sumaParaReempazos[ps['material_id']];

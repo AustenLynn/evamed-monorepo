@@ -1,0 +1,1881 @@
+{
+  "version": "3.12-sandbox",
+  "system_model": "cutoff",
+  "generated_at": "2026-09-04T05:20:27.613536+00:00",
+  "pins": [
+    {
+      "entity_type": "material",
+      "entity_id": 408,
+      "entity_name": "Adhesive mortar {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 3961,
+      "activity_name": "market for adhesive mortar",
+      "product_name": "adhesive mortar",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 3961,
+          "product_name": "adhesive mortar",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 5285,
+          "product_name": "adhesive mortar",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 4125,
+          "product_name": "adhesive mortar",
+          "geography": "Switzerland (CH)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 398,
+      "entity_name": "Aluminium scrap, post-consumer {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 8422,
+      "activity_name": "market for aluminium scrap, post-consumer",
+      "product_name": "aluminium scrap, post-consumer",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 8422,
+          "product_name": "aluminium scrap, post-consumer",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 25807,
+          "product_name": "aluminium scrap, post-consumer",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 4175,
+          "product_name": "aluminium scrap, new",
+          "geography": "Europe (RER)",
+          "unit": "kg",
+          "score": 0.688,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 399,
+      "entity_name": "Aluminium scrap, post-consumer, prepared for melting {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 2062,
+      "activity_name": "market for aluminium scrap, post-consumer, prepared for melting",
+      "product_name": "aluminium scrap, post-consumer, prepared for melting",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 2062,
+          "product_name": "aluminium scrap, post-consumer, prepared for melting",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 25489,
+          "product_name": "aluminium scrap, post-consumer, prepared for melting",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 10849,
+          "product_name": "aluminium scrap, post-consumer, prepared for melting",
+          "geography": "Europe (RER)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 427,
+      "entity_name": "Anhydrite floor {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 2164,
+      "activity_name": "market for anhydrite floor",
+      "product_name": "anhydrite floor",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 2164,
+          "product_name": "anhydrite floor",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 4135,
+          "product_name": "anhydrite floor",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 7368,
+          "product_name": "anhydrite floor",
+          "geography": "Switzerland (CH)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 423,
+      "entity_name": "Autoclaved aerated concrete block {CH}| market for autoclaved aerated concrete block | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 21113,
+      "activity_name": "market for autoclaved aerated concrete block",
+      "product_name": "autoclaved aerated concrete block",
+      "geography": "Switzerland (CH)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 21113,
+          "product_name": "autoclaved aerated concrete block",
+          "geography": "Switzerland (CH)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 5845,
+          "product_name": "autoclaved aerated concrete block",
+          "geography": "Switzerland (CH)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 20647,
+          "product_name": "autoclaved aerated concrete block",
+          "geography": "India (IN)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 428,
+      "entity_name": "Base plaster {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 4944,
+      "activity_name": "market for base plaster",
+      "product_name": "base plaster",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 4944,
+          "product_name": "base plaster",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 9400,
+          "product_name": "base plaster",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 2688,
+          "product_name": "base plaster",
+          "geography": "Switzerland (CH)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 429,
+      "entity_name": "Cement cast plaster floor {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 2490,
+      "activity_name": "market for cement cast plaster floor",
+      "product_name": "cement cast plaster floor",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 2490,
+          "product_name": "cement cast plaster floor",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 921,
+          "product_name": "cement cast plaster floor",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 4220,
+          "product_name": "cement cast plaster floor",
+          "geography": "Switzerland (CH)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 430,
+      "entity_name": "Cement tile {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 7839,
+      "activity_name": "market for cement tile",
+      "product_name": "cement tile",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 7839,
+          "product_name": "cement tile",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 7752,
+          "product_name": "cement tile",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 949,
+          "product_name": "cement tile",
+          "geography": "Switzerland (CH)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 409,
+      "entity_name": "Cement, unspecified {GLO}| market group for cement, unspecified | Cut-off, S",
+      "evamed_unit": "Kg",
+      "dataset_id": 20218,
+      "activity_name": "market group for cement, unspecified",
+      "product_name": "cement, unspecified",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": true,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 20218,
+          "product_name": "cement, unspecified",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 21408,
+          "product_name": "cement, unspecified",
+          "geography": "Brazil (BR)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 92603,
+          "product_name": "cement, unspecified",
+          "geography": "Canada (CA)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 419,
+      "entity_name": "Ceramic tile {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 4635,
+      "activity_name": "market for ceramic tile",
+      "product_name": "ceramic tile",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 4635,
+          "product_name": "ceramic tile",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 8261,
+          "product_name": "ceramic tile",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 1476,
+          "product_name": "ceramic tile",
+          "geography": "Switzerland (CH)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 422,
+      "entity_name": "Cladding, crossbar-pole, aluminium {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 9045,
+      "activity_name": "market for cladding, crossbar-pole, aluminium",
+      "product_name": "cladding, crossbar-pole, aluminium",
+      "geography": "Global (GLO)",
+      "reference_unit": "m2",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 9045,
+          "product_name": "cladding, crossbar-pole, aluminium",
+          "geography": "Global (GLO)",
+          "unit": "m2",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 1843,
+          "product_name": "cladding, crossbar-pole, aluminium",
+          "geography": "Europe (RER)",
+          "unit": "m2",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 9485,
+          "product_name": "cladding, crossbar-pole, aluminium",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "m2",
+          "score": 1.0,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 394,
+      "entity_name": "Clay brick {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Kg",
+      "dataset_id": 29412,
+      "activity_name": "market for clay brick",
+      "product_name": "clay brick",
+      "geography": "Ecuador (EC)",
+      "reference_unit": "kg",
+      "unit_compatible": true,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 29412,
+          "product_name": "clay brick",
+          "geography": "Ecuador (EC)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 29670,
+          "product_name": "clay brick",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 30175,
+          "product_name": "clay brick",
+          "geography": "Ecuador (EC)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 424,
+      "entity_name": "Concrete roof tile {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 1080,
+      "activity_name": "market for concrete roof tile",
+      "product_name": "concrete roof tile",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 1080,
+          "product_name": "concrete roof tile",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 3650,
+          "product_name": "concrete roof tile",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 2440,
+          "product_name": "concrete roof tile",
+          "geography": "Switzerland (CH)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 425,
+      "entity_name": "Concrete, medium strength {GLO}| market group for concrete, medium strength | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 20989,
+      "activity_name": "market group for concrete, medium strength",
+      "product_name": "concrete, medium strength",
+      "geography": "Global (GLO)",
+      "reference_unit": "m3",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 20989,
+          "product_name": "concrete, medium strength",
+          "geography": "Global (GLO)",
+          "unit": "m3",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 20947,
+          "product_name": "concrete, medium strength",
+          "geography": "Brazil (BR)",
+          "unit": "m3",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 19583,
+          "product_name": "concrete, medium strength",
+          "geography": "Colombia (CO)",
+          "unit": "m3",
+          "score": 1.0,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 426,
+      "entity_name": "Concrete, normal {GLO}| market group for concrete, normal | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": null,
+      "activity_name": null,
+      "product_name": null,
+      "geography": null,
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "below-threshold",
+      "match_score": 0.704,
+      "status": "unresolved",
+      "alternatives": [
+        {
+          "dataset_id": 21267,
+          "product_name": "concrete, normal strength",
+          "geography": "Global (GLO)",
+          "unit": "m3",
+          "score": 0.704,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 26679,
+          "product_name": "concrete, normal strength",
+          "geography": "Austria (AT)",
+          "unit": "m3",
+          "score": 0.654,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 20405,
+          "product_name": "concrete, normal strength",
+          "geography": "Brazil (BR)",
+          "unit": "m3",
+          "score": 0.654,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 400,
+      "entity_name": "Copper cake {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Kg",
+      "dataset_id": 13622,
+      "activity_name": "market for copper cake",
+      "product_name": "copper cake",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": true,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 13622,
+          "product_name": "copper cake",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 13287,
+          "product_name": "copper, cathode",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 0.68,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 20973,
+          "product_name": "copper slag",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 0.668,
+          "unit_compatible": true
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 401,
+      "entity_name": "Copper scrap, sorted, pressed {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Kg",
+      "dataset_id": 4119,
+      "activity_name": "market for copper scrap, sorted, pressed",
+      "product_name": "copper scrap, sorted, pressed",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": true,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 4119,
+          "product_name": "copper scrap, sorted, pressed",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 27250,
+          "product_name": "copper scrap, sorted, pressed",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 26947,
+          "product_name": "iron scrap, sorted, pressed",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 0.719,
+          "unit_compatible": true
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 402,
+      "entity_name": "Dust, alloyed electric arc furnace steel {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Kg",
+      "dataset_id": null,
+      "activity_name": null,
+      "product_name": null,
+      "geography": null,
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "below-threshold",
+      "match_score": 0.662,
+      "status": "unresolved",
+      "alternatives": [
+        {
+          "dataset_id": 27925,
+          "product_name": "electric arc furnace dust",
+          "geography": "Europe without Switzerland (Europe without Switzerland)",
+          "unit": "kg",
+          "score": 0.662,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 23722,
+          "product_name": "electric arc furnace dust",
+          "geography": "India (IN)",
+          "unit": "kg",
+          "score": 0.662,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 23286,
+          "product_name": "electric arc furnace dust",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 0.662,
+          "unit_compatible": true
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 403,
+      "entity_name": "Dust, unalloyed electric arc furnace steel {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Kg",
+      "dataset_id": null,
+      "activity_name": null,
+      "product_name": null,
+      "geography": null,
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "below-threshold",
+      "match_score": 0.646,
+      "status": "unresolved",
+      "alternatives": [
+        {
+          "dataset_id": 27925,
+          "product_name": "electric arc furnace dust",
+          "geography": "Europe without Switzerland (Europe without Switzerland)",
+          "unit": "kg",
+          "score": 0.646,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 23722,
+          "product_name": "electric arc furnace dust",
+          "geography": "India (IN)",
+          "unit": "kg",
+          "score": 0.646,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 23286,
+          "product_name": "electric arc furnace dust",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 0.646,
+          "unit_compatible": true
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 420,
+      "entity_name": "Frit, for ceramic tile {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 10634,
+      "activity_name": "market for frit, for ceramic tile",
+      "product_name": "frit, for ceramic tile",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 10634,
+          "product_name": "frit, for ceramic tile",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 12079,
+          "product_name": "frit, for ceramic tile",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 4635,
+          "product_name": "ceramic tile",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 0.784,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 412,
+      "entity_name": "Light clay brick {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Kg",
+      "dataset_id": 7750,
+      "activity_name": "market for light clay brick",
+      "product_name": "light clay brick",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": true,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 7750,
+          "product_name": "light clay brick",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 5642,
+          "product_name": "light clay brick",
+          "geography": "Germany (DE)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 7253,
+          "product_name": "light clay brick",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 410,
+      "entity_name": "Light mortar {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 386,
+      "activity_name": "market for light mortar",
+      "product_name": "light mortar",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 386,
+          "product_name": "light mortar",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 6922,
+          "product_name": "light mortar",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 97,
+          "product_name": "light mortar",
+          "geography": "Switzerland (CH)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 411,
+      "entity_name": "Lime mortar {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 671,
+      "activity_name": "market for lime mortar",
+      "product_name": "lime mortar",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 671,
+          "product_name": "lime mortar",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 9374,
+          "product_name": "lime mortar",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 8217,
+          "product_name": "lime mortar",
+          "geography": "Switzerland (CH)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 404,
+      "entity_name": "Metalliferous hydroxide sludge {GLO}| market for metalliferous hydroxide sludge | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 18250,
+      "activity_name": "market for metalliferous hydroxide sludge",
+      "product_name": "metalliferous hydroxide sludge",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 18250,
+          "product_name": "metalliferous hydroxide sludge",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 27335,
+          "product_name": "metalliferous hydroxide sludge",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 18093,
+          "product_name": "zinc concentrate",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 0.56,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 397,
+      "entity_name": "Panel fotovoltaico Silicio policristalino (multi-Si) (GLO)",
+      "evamed_unit": "m²",
+      "dataset_id": null,
+      "activity_name": null,
+      "product_name": null,
+      "geography": null,
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "below-threshold",
+      "match_score": 0.494,
+      "status": "unresolved",
+      "alternatives": [
+        {
+          "dataset_id": 195,
+          "product_name": "photovoltaic laminate, multi-Si wafer",
+          "geography": "Europe (RER)",
+          "unit": "m2",
+          "score": 0.494,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 9745,
+          "product_name": "photovoltaic laminate, multi-Si wafer",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "m2",
+          "score": 0.494,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 3391,
+          "product_name": "photovoltaic cell, multi-Si wafer",
+          "geography": "Europe (RER)",
+          "unit": "m2",
+          "score": 0.477,
+          "unit_compatible": true
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 395,
+      "entity_name": "Panel fotovoltaico, Silicio amorfo (a-Si) (GLO)",
+      "evamed_unit": "Pz",
+      "dataset_id": null,
+      "activity_name": null,
+      "product_name": null,
+      "geography": null,
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "below-threshold",
+      "match_score": 0.531,
+      "status": "unresolved",
+      "alternatives": [
+        {
+          "dataset_id": 6509,
+          "product_name": "photovoltaic laminate, a-Si",
+          "geography": "Global (GLO)",
+          "unit": "m2",
+          "score": 0.531,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 4648,
+          "product_name": "photovoltaic laminate, a-Si",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "m2",
+          "score": 0.531,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 9443,
+          "product_name": "photovoltaic laminate, a-Si",
+          "geography": "United States of America (US)",
+          "unit": "m2",
+          "score": 0.531,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 396,
+      "entity_name": "Panel fotovoltaico, Silicio monocristalino (single-Si) (GLO)",
+      "evamed_unit": "Pz",
+      "dataset_id": null,
+      "activity_name": null,
+      "product_name": null,
+      "geography": null,
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "below-threshold",
+      "match_score": 0.502,
+      "status": "unresolved",
+      "alternatives": [
+        {
+          "dataset_id": 8373,
+          "product_name": "photovoltaic laminate, single-Si wafer",
+          "geography": "Europe (RER)",
+          "unit": "m2",
+          "score": 0.502,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 6454,
+          "product_name": "photovoltaic laminate, single-Si wafer",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "m2",
+          "score": 0.502,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 154,
+          "product_name": "photovoltaic cell, single-Si wafer",
+          "geography": "Europe (RER)",
+          "unit": "m2",
+          "score": 0.486,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 405,
+      "entity_name": "Precious metal from electronics scrap, in anode slime {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Kg",
+      "dataset_id": 94102,
+      "activity_name": "market for precious metal from electronics scrap, in anode slime",
+      "product_name": "precious metal from electronics scrap, in anode slime",
+      "geography": "Rest-of-World (RoW)",
+      "reference_unit": "kg",
+      "unit_compatible": true,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 94102,
+          "product_name": "precious metal from electronics scrap, in anode slime",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 92866,
+          "product_name": "precious metal from electronics scrap, in anode slime",
+          "geography": "Sweden (SE)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 9886,
+          "product_name": "precious metal from electronics scrap, in anode slime",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 413,
+      "entity_name": "Refractory material, acid {GLO}| kaolin to generic market for refractory material, acid | Cut-off, S",
+      "evamed_unit": "Kg",
+      "dataset_id": 21617,
+      "activity_name": "kaolin to generic market for refractory material, acid",
+      "product_name": "refractory material, acid",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": true,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 21617,
+          "product_name": "refractory material, acid",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 19807,
+          "product_name": "refractory material, acid",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 19859,
+          "product_name": "refractory material, acid",
+          "geography": "IAI Area, EU27 & EFTA (IAI Area, Western and Central Europe)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 414,
+      "entity_name": "Refractory, basic, packed {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 3141,
+      "activity_name": "market for refractory, basic, packed",
+      "product_name": "refractory, basic, packed",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 3141,
+          "product_name": "refractory, basic, packed",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 13553,
+          "product_name": "transport, freight, lorry with refrigeration machine, diesel, cooling, fleet average",
+          "geography": "Global (GLO)",
+          "unit": "metric ton*km",
+          "score": 0.199,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 12440,
+          "product_name": "transport, freight, lorry with refrigeration machine, diesel, cooling, fleet average",
+          "geography": "Global (GLO)",
+          "unit": "metric ton*km",
+          "score": 0.199,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 415,
+      "entity_name": "Refractory, fireclay, packed {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 1634,
+      "activity_name": "market for refractory, fireclay, packed",
+      "product_name": "refractory, fireclay, packed",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 1634,
+          "product_name": "refractory, fireclay, packed",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 6421,
+          "product_name": "refractory, fireclay, packed",
+          "geography": "Germany (DE)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 2443,
+          "product_name": "refractory, fireclay, packed",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 416,
+      "entity_name": "Refractory, high aluminium oxide, packed {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 8173,
+      "activity_name": "market for refractory, high aluminium oxide, packed",
+      "product_name": "refractory, high aluminium oxide, packed",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 8173,
+          "product_name": "refractory, high aluminium oxide, packed",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 1819,
+          "product_name": "refractory, high aluminium oxide, packed",
+          "geography": "Germany (DE)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 7855,
+          "product_name": "refractory, high aluminium oxide, packed",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 417,
+      "entity_name": "Sand-lime brick {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 2963,
+      "activity_name": "market for sand-lime brick",
+      "product_name": "sand-lime brick",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 2963,
+          "product_name": "sand-lime brick",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 2388,
+          "product_name": "sand-lime brick",
+          "geography": "Germany (DE)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 8391,
+          "product_name": "sand-lime brick",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 421,
+      "entity_name": "Sanitary ceramics {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 138,
+      "activity_name": "market for sanitary ceramics",
+      "product_name": "sanitary ceramics",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 138,
+          "product_name": "sanitary ceramics",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 3628,
+          "product_name": "sanitary ceramics",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 2418,
+          "product_name": "sanitary ceramics",
+          "geography": "Switzerland (CH)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 418,
+      "entity_name": "Shale brick {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": 10693,
+      "activity_name": "market for shale brick",
+      "product_name": "shale brick",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": false,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 10693,
+          "product_name": "shale brick",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 11609,
+          "product_name": "shale brick",
+          "geography": "Canada, Québec (CA-QC)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 11998,
+          "product_name": "shale brick",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 406,
+      "entity_name": "Slag, unalloyed electric arc furnace steel {GLO}| market for | Cut-off, S",
+      "evamed_unit": "Pz",
+      "dataset_id": null,
+      "activity_name": null,
+      "product_name": null,
+      "geography": null,
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "below-threshold",
+      "match_score": 0.646,
+      "status": "unresolved",
+      "alternatives": [
+        {
+          "dataset_id": 28798,
+          "product_name": "electric arc furnace slag",
+          "geography": "Europe without Switzerland (Europe without Switzerland)",
+          "unit": "kg",
+          "score": 0.646,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 23937,
+          "product_name": "electric arc furnace slag",
+          "geography": "India (IN)",
+          "unit": "kg",
+          "score": 0.646,
+          "unit_compatible": false
+        },
+        {
+          "dataset_id": 22656,
+          "product_name": "electric arc furnace slag",
+          "geography": "Rest-of-World (RoW)",
+          "unit": "kg",
+          "score": 0.646,
+          "unit_compatible": false
+        }
+      ]
+    },
+    {
+      "entity_type": "material",
+      "entity_id": 407,
+      "entity_name": "Zinc scrap, post-consumer {GLO}| market for zinc scrap, post-consumer | Cut-off, S",
+      "evamed_unit": "Kg",
+      "dataset_id": 20846,
+      "activity_name": "market for zinc scrap, post-consumer",
+      "product_name": "zinc scrap, post-consumer",
+      "geography": "Global (GLO)",
+      "reference_unit": "kg",
+      "unit_compatible": true,
+      "match_method": "exact",
+      "match_score": 1.0,
+      "status": "resolved",
+      "alternatives": [
+        {
+          "dataset_id": 20846,
+          "product_name": "zinc scrap, post-consumer",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 26210,
+          "product_name": "zinc scrap, post-consumer",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 1.0,
+          "unit_compatible": true
+        },
+        {
+          "dataset_id": 21545,
+          "product_name": "zinc",
+          "geography": "Global (GLO)",
+          "unit": "kg",
+          "score": 0.544,
+          "unit_compatible": true
+        }
+      ]
+    },
+    {
+      "entity_type": "source_information",
+      "entity_id": 12,
+      "entity_name": "Banda transportadora (GLO)",
+      "evamed_unit": null,
+      "dataset_id": null,
+      "activity_name": null,
+      "product_name": null,
+      "geography": "GLO",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 0.0,
+      "status": "unresolved",
+      "notes": "Ambiguous: 'conveyor belt' (ds 1771, unit m, the infrastructure) vs 'transport, freight, conveyor belt' (ds 18142, unit metric ton*km, the operation). EVAmed uses this as a construction-stage machinery source with a quantity, which suits the operation, but the unit differs from the other machinery rows (hour). Needs a domain decision.",
+      "alternatives": []
+    },
+    {
+      "entity_type": "source_information",
+      "entity_id": 11,
+      "entity_name": "Excavadora hidráulica (GLO)",
+      "evamed_unit": null,
+      "dataset_id": null,
+      "activity_name": null,
+      "product_name": null,
+      "geography": "GLO",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 0.0,
+      "status": "unresolved",
+      "notes": "Ambiguous: 'excavation, hydraulic digger' (ds 3302, unit m3, the operation) vs 'hydraulic digger' (ds 6515, unit unit, the machine itself). m3 of excavation does not match the hour-based machinery rows around it. Needs a domain decision.",
+      "alternatives": []
+    },
+    {
+      "entity_type": "source_information",
+      "entity_id": 8,
+      "entity_name": "Generador de energía eléctrica a base de Diesel, potencia mayor a 74.57 kW (GLO)-Ecoinvent 3",
+      "evamed_unit": null,
+      "dataset_id": 11601,
+      "activity_name": "machine operation, diesel, >= 74.57 kW, generators",
+      "product_name": null,
+      "geography": "GLO",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 1.0,
+      "status": "resolved",
+      "notes": null,
+      "alternatives": []
+    },
+    {
+      "entity_type": "source_information",
+      "entity_id": 2,
+      "entity_name": "Generador de energía eléctrica a base de Diesel, potencia menor a 18.64 kW (GLO)-Ecoinvent 3",
+      "evamed_unit": null,
+      "dataset_id": 10619,
+      "activity_name": "machine operation, diesel, < 18.64 kW, generators",
+      "product_name": null,
+      "geography": "GLO",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 1.0,
+      "status": "resolved",
+      "notes": null,
+      "alternatives": []
+    },
+    {
+      "entity_type": "source_information",
+      "entity_id": 5,
+      "entity_name": "Generador de energía eléctrica a base de Diesel, potencia potencia entre 18.64 kW y 74.57 kW (GLO)-Ecoinvent 3",
+      "evamed_unit": null,
+      "dataset_id": 10751,
+      "activity_name": "machine operation, diesel, >= 18.64 kW and < 74.57 kW, generators",
+      "product_name": null,
+      "geography": "GLO",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 1.0,
+      "status": "resolved",
+      "notes": null,
+      "alternatives": []
+    },
+    {
+      "entity_type": "source_information",
+      "entity_id": 6,
+      "entity_name": "Maquinaria de carga ligera a base de Diesel, potencia entre 18.64 kW y 74.57 kW (GLO)-Ecoinvent 3",
+      "evamed_unit": null,
+      "dataset_id": 11173,
+      "activity_name": "machine operation, diesel, >= 18.64 kW and < 74.57 kW, low load factor",
+      "product_name": null,
+      "geography": "GLO",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 1.0,
+      "status": "resolved",
+      "notes": null,
+      "alternatives": []
+    },
+    {
+      "entity_type": "source_information",
+      "entity_id": 9,
+      "entity_name": "Maquinaria de carga ligera a base de Diesel, potencia mayor a 74.57 kW (GLO)-Ecoinvent 3",
+      "evamed_unit": null,
+      "dataset_id": 11071,
+      "activity_name": "machine operation, diesel, >= 74.57 kW, low load factor",
+      "product_name": null,
+      "geography": "GLO",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 1.0,
+      "status": "resolved",
+      "notes": null,
+      "alternatives": []
+    },
+    {
+      "entity_type": "source_information",
+      "entity_id": 3,
+      "entity_name": "Maquinaria de carga ligera a base de Diesel, potencia menor a 18.64 kW (GLO)-Ecoinvent 3",
+      "evamed_unit": null,
+      "dataset_id": 11231,
+      "activity_name": "machine operation, diesel, < 18.64 kW, low load factor",
+      "product_name": null,
+      "geography": "GLO",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 1.0,
+      "status": "resolved",
+      "notes": "'carga ligera' read as low load factor",
+      "alternatives": []
+    },
+    {
+      "entity_type": "source_information",
+      "entity_id": 7,
+      "entity_name": "Maquinaria de carga pesada a base de Diesel, potencia entre 18.64 kW y 74.57 kW (GLO)-Ecoinvent 3",
+      "evamed_unit": null,
+      "dataset_id": 11247,
+      "activity_name": "machine operation, diesel, >= 18.64 kW and < 74.57 kW, high load factor",
+      "product_name": null,
+      "geography": "GLO",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 1.0,
+      "status": "resolved",
+      "notes": null,
+      "alternatives": []
+    },
+    {
+      "entity_type": "source_information",
+      "entity_id": 10,
+      "entity_name": "Maquinaria de carga pesada a base de Diesel, potencia mayor a 74.57 kW (GLO)-Ecoinvent 3",
+      "evamed_unit": null,
+      "dataset_id": 11020,
+      "activity_name": "machine operation, diesel, >= 74.57 kW, high load factor",
+      "product_name": null,
+      "geography": "GLO",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 1.0,
+      "status": "resolved",
+      "notes": null,
+      "alternatives": []
+    },
+    {
+      "entity_type": "source_information",
+      "entity_id": 4,
+      "entity_name": "Maquinaria de carga pesada a base de Diesel, potencia menor a 18.64kW (GLO)-Ecoinvent 3",
+      "evamed_unit": null,
+      "dataset_id": 12116,
+      "activity_name": "machine operation, diesel, < 18.64 kW, high load factor",
+      "product_name": null,
+      "geography": "GLO",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 1.0,
+      "status": "resolved",
+      "notes": "'carga pesada' read as high load factor",
+      "alternatives": []
+    },
+    {
+      "entity_type": "transport",
+      "entity_id": 1,
+      "entity_name": "Transporte por oceano, Buque carguero (GLO)-Ecoinvent 3",
+      "evamed_unit": null,
+      "dataset_id": 20256,
+      "activity_name": "transport, freight, sea, bulk carrier for dry goods, heavy fuel oil",
+      "product_name": null,
+      "geography": "GLO",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 1.0,
+      "status": "resolved",
+      "notes": null,
+      "alternatives": []
+    },
+    {
+      "entity_type": "transport",
+      "entity_id": 2,
+      "entity_name": "Transporte por oceano, contenedores (GLO)-Ecoinvent 3",
+      "evamed_unit": null,
+      "dataset_id": 21692,
+      "activity_name": "transport, freight, sea, container ship, heavy fuel oil",
+      "product_name": null,
+      "geography": "GLO",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 1.0,
+      "status": "resolved",
+      "notes": null,
+      "alternatives": []
+    },
+    {
+      "entity_type": "transport",
+      "entity_id": 3,
+      "entity_name": "Vehículo de carga comercial ligera (GLO)-Ecoinvent 3",
+      "evamed_unit": null,
+      "dataset_id": 18815,
+      "activity_name": "market group for transport, freight, light commercial vehicle, fleet average",
+      "product_name": null,
+      "geography": "GLO",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 1.0,
+      "status": "resolved",
+      "notes": "Only candidate in 3.12-sandbox; it is a market group, not a transforming activity.",
+      "alternatives": []
+    },
+    {
+      "entity_type": "transport",
+      "entity_id": 5,
+      "entity_name": "Vehículo de carga, entre  16 y 32 Ton, tipo EURO 3 (RoW)-Ecoinvent 3",
+      "evamed_unit": null,
+      "dataset_id": 1195,
+      "activity_name": "transport, freight, lorry, 16-32 metric ton, diesel, EURO 3",
+      "product_name": null,
+      "geography": "RoW",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 1.0,
+      "status": "resolved",
+      "notes": null,
+      "alternatives": []
+    },
+    {
+      "entity_type": "transport",
+      "entity_id": 6,
+      "entity_name": "Vehículo de carga, entre  3.5 y 7.5 Ton, tipo EURO 3 (RoW)-Ecoinvent 3",
+      "evamed_unit": null,
+      "dataset_id": 6810,
+      "activity_name": "transport, freight, lorry, 3.5-7.5 metric ton, diesel, EURO 3",
+      "product_name": null,
+      "geography": "RoW",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 1.0,
+      "status": "resolved",
+      "notes": null,
+      "alternatives": []
+    },
+    {
+      "entity_type": "transport",
+      "entity_id": 7,
+      "entity_name": "Vehículo de carga, entre  7.5 y 16 Ton, tipo EURO 3 (RoW)-Ecoinvent 3",
+      "evamed_unit": null,
+      "dataset_id": 5480,
+      "activity_name": "transport, freight, lorry, 7.5-16 metric ton, diesel, EURO 3",
+      "product_name": null,
+      "geography": "RoW",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 1.0,
+      "status": "resolved",
+      "notes": null,
+      "alternatives": []
+    },
+    {
+      "entity_type": "transport",
+      "entity_id": 4,
+      "entity_name": "Vehículo de carga, mayor a 32 Ton, tipo EURO 3 (RoW)-Ecoinvent 3",
+      "evamed_unit": null,
+      "dataset_id": 5263,
+      "activity_name": "transport, freight, lorry, >32 metric ton, diesel, EURO 3",
+      "product_name": null,
+      "geography": "RoW",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 1.0,
+      "status": "resolved",
+      "notes": null,
+      "alternatives": []
+    },
+    {
+      "entity_type": "type_energy",
+      "entity_id": 9,
+      "entity_name": "Energía eléctrica, Alto voltaje (MX)-ECOINVENT3",
+      "evamed_unit": null,
+      "dataset_id": 2989,
+      "activity_name": "market for electricity, high voltage",
+      "product_name": null,
+      "geography": "MX",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 1.0,
+      "status": "resolved",
+      "notes": null,
+      "alternatives": []
+    },
+    {
+      "entity_type": "type_energy",
+      "entity_id": 10,
+      "entity_name": "Energía eléctrica, Bajo voltaje (MX)-ECOINVENT3",
+      "evamed_unit": null,
+      "dataset_id": 8279,
+      "activity_name": "market for electricity, low voltage",
+      "product_name": null,
+      "geography": "MX",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 1.0,
+      "status": "resolved",
+      "notes": null,
+      "alternatives": []
+    },
+    {
+      "entity_type": "type_energy",
+      "entity_id": 2,
+      "entity_name": "Energía eléctrica, Medio voltaje (MX)-ECOINVENT3",
+      "evamed_unit": null,
+      "dataset_id": 7773,
+      "activity_name": "market for electricity, medium voltage",
+      "product_name": null,
+      "geography": "MX",
+      "reference_unit": null,
+      "unit_compatible": null,
+      "match_method": "manual",
+      "match_score": 1.0,
+      "status": "resolved",
+      "notes": null,
+      "alternatives": []
+    }
+  ]
+}

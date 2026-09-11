@@ -69,6 +69,9 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
   EPDS: any;
   showMaterial: boolean;
   showListMaterials: boolean;
+  // Which source database the 'Base de datos' tab is browsing.
+  selectedDb: string = null;
+  ecoinvent: any[] = [];
   shouldShowMaterials: boolean;
   showMexican: boolean;
   showListEPIC: boolean;
@@ -111,6 +114,9 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
       this.mexicaniuh = mexicaniuh.sort((a, b) =>
         a.name_material > b.name_material ? 1 : -1
       );
+      this.ecoinvent = data
+        .filter(res => res.database_from === 'ECOINVENT 3')
+        .sort((a, b) => (a.name_material > b.name_material ? 1 : -1));
     });
 
     this.catalogsService.countriesCatalog().subscribe(data => {
@@ -170,6 +176,7 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
     this.selectedMaterial = false;
     this.showEPD = false;
     this.showMexican = false;
+    this.selectedDb = null;
     this.showListEPIC = false;
     this.showListMaterials = true;
 
@@ -1036,19 +1043,18 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
     });
   }
 
-  showEPIC() {
+  showDatabase(db: string) {
     this.showListMaterials = false;
-    this.showListEPIC = true;
-  }
-
-  showMexicanIuh() {
-    this.showListMaterials = false;
-    this.showListEPIC = false;
-    this.showMexican = true;
+    this.selectedDb = db;
+    this.showListEPIC = db === 'EPiC';
+    this.showMexican = db === 'mexicaniuh';
   }
 
   returnDatabaseList() {
     this.showListMaterials = true;
+    this.showListEPIC = false;
+    this.showMexican = false;
+    this.selectedDb = null;
   }
 
   returnListDB() {

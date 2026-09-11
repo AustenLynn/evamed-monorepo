@@ -1,5 +1,6 @@
 import subetapasInfo from 'src/app/calculos/Subetapas.json';
 import { Injectable } from '@angular/core';
+import { buildAggregateMaterialSet } from 'src/app/calculos/aggregate-materials';
 
 @Injectable({
     providedIn: 'root',
@@ -10,6 +11,7 @@ export class CalculosTercerSeccion {
   projectsList: [];
   materialList: [];
   materialSchemeDataList: [];
+  aggregateMaterials: Set<number> = new Set<number>();
   materialSchemeProyectList: [];
   potentialTypesList: [];
   standarsList: [];
@@ -38,6 +40,7 @@ export class CalculosTercerSeccion {
     this.projectsList = info.projectsList;
     this.materialList = info.materialList;
     this.materialSchemeDataList = info.materialSchemeDataList;
+    this.aggregateMaterials = buildAggregateMaterialSet(this.materialSchemeDataList);
     this.materialSchemeProyectList = info.materialSchemeProyectList;
     this.potentialTypesList = info.potentialTypesList;
     this.standarsList = info.standarsList;
@@ -97,7 +100,7 @@ export class CalculosTercerSeccion {
             schemeProyect.forEach(ps => {
               const baseDatosMaterial = this.materialList.filter(bs=> bs['id'] == ps['material_id']);
               if(BD[baseDatosMaterial[0]['database_from']]) {
-                if(baseDatosMaterial[0]['database_from'] === 'EPiC') {
+                if(this.aggregateMaterials.has(ps['material_id'])) {
                   const elementoscreadosA1A3 = [],
                     materiales_subetapa = this.materialSchemeDataList.filter(
                       msd =>
@@ -251,7 +254,7 @@ export class CalculosTercerSeccion {
                         Datos[nameImpacto]['Uso']['B4'][ps['section_id']] =
                         Datos[nameImpacto]['Uso']['B4'][ps['section_id']] + auxSumaParaReemplazo;
                     }
-                  if(baseDatosMaterial[0]['database_from'] === 'EPiC') {
+                  if(this.aggregateMaterials.has(ps['material_id'])) {
                     const materiales_subetapa = this.materialSchemeDataList.filter(
                       msd =>
                         msd['material_id'] == ps['material_id'] &&

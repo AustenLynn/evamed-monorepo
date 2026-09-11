@@ -82,6 +82,9 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
   mexicaniuh: any;
   showListMaterials: boolean;
   showMexican: boolean;
+  // Which source database the 'Base de datos' tab is browsing.
+  selectedDb: string = null;
+  ecoinvent: any[] = [];
   materialFiltrado = '';
 
   myControl = new UntypedFormControl();
@@ -121,6 +124,9 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
       this.mexicaniuh = mexicaniuh.sort((a, b) =>
         a.name_material > b.name_material ? 1 : -1
       );
+      this.ecoinvent = data
+        .filter(res => res.database_from === 'ECOINVENT 3')
+        .sort((a, b) => (a.name_material > b.name_material ? 1 : -1));
       // Initialize filteredEPDS here
       this.filteredEPDS = [...this.EPDS];
     });
@@ -174,6 +180,7 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
     this.shouldShowMaterials = true;
     this.showEPD = false;
     this.showMexican = false;
+    this.selectedDb = null;
     this.showListMaterials = true;
 
     const PDP = JSON.parse(sessionStorage.getItem('primaryDataProject')),
@@ -1076,18 +1083,16 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
     });
   }
 
-  showEPIC() {
+  showDatabase(db: string) {
     this.showListMaterials = false;
-  }
-
-  showMexicanIuh() {
-    this.showListMaterials = false;
-    this.showMexican = true;
+    this.selectedDb = db;
+    this.showMexican = db === 'mexicaniuh';
   }
 
   returnDatabaseList() {
     this.showListMaterials = true;
     this.showMexican = false;
+    this.selectedDb = null;
   }
 
   showDetailEPD(event, material) {

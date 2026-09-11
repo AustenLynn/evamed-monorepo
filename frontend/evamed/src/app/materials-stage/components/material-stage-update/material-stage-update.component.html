@@ -595,11 +595,13 @@
 
                   <mat-tab label="Base de datos">
                     <div *ngIf="showListMaterials">
-                      <div class="item-material" (click)="showMexicanIuh()" (keypress)="showMexicanIuh()" tabindex="12">
+                      <div class="item-material" (click)="showDatabase('mexicaniuh')" (keypress)="showDatabase('mexicaniuh')" tabindex="12">
                         mexicaniuh
                       </div>
-                      <div class="item-material" (click)="showEPIC()" (keypress)="showEPIC()" tabindex="13">
+                      <div class="item-material" (click)="showDatabase('EPiC')" (keypress)="showDatabase('EPiC')" tabindex="13">
                         EPiC</div>
+                      <div class="item-material" (click)="showDatabase('ECOINVENT 3')" (keypress)="showDatabase('ECOINVENT 3')" tabindex="14">
+                        ECOINVENT 3</div>
                     </div>
 
                     <div *ngIf="showListEPIC">
@@ -610,6 +612,18 @@
                               (keypress)="showDetailMaterial($event, item)" tabindex="15">
                               {{ item.name_material }} -
                               <span class="epic">EPiC</span>
+                            </div>
+                          </div>
+                    </div>
+
+                    <div *ngIf="selectedDb === 'ECOINVENT 3' && !showMaterial && !showListMaterials">
+                      <span class="return" (click)="returnDatabaseList()" (keypress)="returnDatabaseList()" tabindex="16">
+                        < </span>
+                          <div *ngFor="let item of ecoinvent">
+                            <div (click)="showDetailMaterial($event, item)" class="item-material"
+                              (keypress)="showDetailMaterial($event, item)" tabindex="17">
+                              {{ item.name_material }} -
+                              <span class="epic">ECOINVENT 3</span>
                             </div>
                           </div>
                     </div>

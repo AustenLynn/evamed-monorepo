@@ -2,6 +2,26 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
+class EcoinventPinnedModel(models.Model):
+    """
+    Mixin for catalogue rows whose impact factors can be refreshed from the
+    ecoinvent API.
+
+    `ecoinvent_dataset_id` is pinned once by the `ecoinvent_resolve` command
+    and then reused, so refreshes never depend on search results staying
+    stable. Version and system model are recorded alongside it because a
+    dataset id is only meaningful within one of them.
+    """
+    ecoinvent_dataset_id = models.IntegerField(null=True, blank=True, db_index=True)
+    ecoinvent_version = models.CharField(max_length=32, null=True, blank=True)
+    ecoinvent_system_model = models.CharField(max_length=32, null=True, blank=True)
+    ecoinvent_synced_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+
 class UserPlatform(models.Model):
     """UserPlatform model"""
     name = models.CharField(max_length=255, null=True)
@@ -15,7 +35,7 @@ class UserPlatform(models.Model):
         """Return string representation of user"""
         return self.email
 
-class Transport(models.Model):
+class Transport(EcoinventPinnedModel):
     """Transport model"""
     name_transport = models.CharField(max_length=255)
 
@@ -162,7 +182,7 @@ class PotentialType(models.Model):
         """Return string representation of name potential type"""
         return self.name_potential_type
 
-class Material(models.Model):
+class Material(EcoinventPinnedModel):
     """Construction material model"""
     name_material = models.CharField(max_length=255, null=True)
     unit_id = models.ForeignKey(Unit, on_delete=models.CASCADE, null=True)
@@ -197,7 +217,7 @@ class BulkUnit(models.Model):
         """Return string representation of name bulk unit"""
         return self.name_bulk_unit
 
-class SourceInformation(models.Model):
+class SourceInformation(EcoinventPinnedModel):
     """Construction source information model"""
     name_source_information = models.CharField(max_length=255)
 
@@ -328,7 +348,7 @@ class AnnualConsumptionRequired(models.Model):
         """Return string representation of ACR"""
         return str(self.project_id)
 
-class TypeEnergy(models.Model):
+class TypeEnergy(EcoinventPinnedModel):
     """Constructive type energy"""
     name_type_energy = models.CharField(max_length=255)
 
@@ -440,3 +460,52 @@ class DataBaseMaterial(models.Model):
     def __str__(self):
         """Return string"""
         return self.name
+
+
+class EcoinventIndicatorMap(models.Model):
+    """
+    Maps an EVAmed PotentialType to the ecoinvent LCIA indicator that supplies
+    it, and to the Unit its values are stored in.
+
+    Seeded by migration; see docs/ecoinvent-api-findings.md for how each
+    indicator id was verified.
+    """
+    potential_type_id = models.OneToOneField(
+        PotentialType, on_delete=models.CASCADE)
+    indicator_id = models.IntegerField()
+    method_name = models.CharField(max_length=255)
+    indicator_name = models.CharField(max_length=255)
+    expected_unit = models.CharField(max_length=64)
+    unit_id = models.ForeignKey(Unit, on_delete=models.SET_NULL, null=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        """Return string representation"""
+        return '{} -> ecoinvent indicator {}'.format(
+            self.potential_type_id, self.indicator_id)
+
+
+class EcoinventUsageReport(models.Model):
+    """
+    Queue of licence usage reports owed to ecoinvent.
+
+    The licence requires reporting each delivery of a dataset's impact scores,
+    including when they are served from our own cache, so this records the
+    obligation durably and a management command drains it. Reporting is never
+    done inline: POST /v3/api1/reports is a third-party call and must not sit
+    in a request path.
+    """
+    REASON_REFRESH = 'refresh'
+    REASON_PERIODIC = 'periodic'
+
+    dataset_ids = models.TextField()      # JSON list
+    indicator_ids = models.TextField()    # JSON list
+    reason = models.CharField(max_length=32, default=REASON_REFRESH)
+    created_at = models.DateTimeField(auto_now_add=True)
+    reported_at = models.DateTimeField(null=True, blank=True)
+    attempts = models.IntegerField(default=0)
+    last_error = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        """Return string representation"""
+        return 'ecoinvent usage report {} ({})'.format(self.id, self.reason)

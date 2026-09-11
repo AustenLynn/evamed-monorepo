@@ -213,6 +213,27 @@ _IMPACTOS_IGNORAR = frozenset([
 ])
 
 _PRODUCTION_STAGES = [2, 3, 4]  # standard_id: A1, A2, A3
+_AGGREGATE_STANDARD = 1         # standard_id: A1-A3 (cradle-to-gate, not decomposable)
+
+
+def _aggregate_material_ids(msd_rows):
+    """
+    Material ids whose impact data only exists as a single A1-A3 aggregate.
+
+    Some source databases publish a per-module A1/A2/A3 split (EPDs, mexicaniuh);
+    others publish only a combined cradle-to-gate value (EPiC, ECOINVENT 3 —
+    ecoinvent 'Cut-off, S' system processes structurally cannot be decomposed).
+    Deciding per material from the data it actually has, rather than from a
+    hardcoded database name, keeps this correct when a new source is added.
+    """
+    stages_by_material = {}
+    for row in msd_rows:
+        stages_by_material.setdefault(row.material_id_id, set()).add(row.standard_id_id)
+    return {
+        material_id
+        for material_id, stages in stages_by_material.items()
+        if _AGGREGATE_STANDARD in stages and not stages.intersection(_PRODUCTION_STAGES)
+    }
 
 
 class ProjectResultsView(APIView):
@@ -249,10 +270,14 @@ class ProjectResultsView(APIView):
         material_ids = [ps.material_id_id for ps in scheme_project]
 
         # MaterialSchemeData: (material_id, standard_id, potential_type_id) → summed value
+        msd_rows = list(models.MaterialSchemeData.objects.filter(material_id__in=material_ids))
         msd_lookup = {}
-        for msd in models.MaterialSchemeData.objects.filter(material_id__in=material_ids):
+        for msd in msd_rows:
             key = (msd.material_id_id, msd.standard_id_id, msd.potential_type_id_id)
             msd_lookup[key] = msd_lookup.get(key, 0) + float(msd.value or 0)
+
+        # Materials carrying only a combined A1-A3 value (no extra query).
+        aggregate_materials = _aggregate_material_ids(msd_rows)
 
         # Conversions: material_id → weight factor
         conv_lookup = {
@@ -329,21 +354,24 @@ class ProjectResultsView(APIView):
                 for ps in scheme_project:
                     mat = ps.material_id
                     db = mat.database_from or ''
-                    if db not in active_databases or db == 'EPiC':
+                    if db not in active_databases or mat.id in aggregate_materials:
                         continue
                     total += msd_lookup.get((mat.id, subetapa, impacto.id), 0) * float(ps.quantity or 0)
                 produccion[subproceso] = produccion.get(subproceso, 0) + total
 
-            epic_key = standards.get(1, 'EPiC')
-            epic_total = 0
+            aggregate_key = standards.get(_AGGREGATE_STANDARD, 'A1-A3')
+            aggregate_total = 0
             for ps in scheme_project:
                 mat = ps.material_id
                 if (mat.database_from or '') not in active_databases:
                     continue
-                if mat.database_from == 'EPiC':
-                    epic_total += msd_lookup.get((mat.id, 1, impacto.id), 0) * float(ps.quantity or 0)
-            if epic_total:
-                produccion[epic_key] = produccion.get(epic_key, 0) + epic_total
+                if mat.id in aggregate_materials:
+                    aggregate_total += (
+                        msd_lookup.get((mat.id, _AGGREGATE_STANDARD, impacto.id), 0)
+                        * float(ps.quantity or 0)
+                    )
+            if aggregate_total:
+                produccion[aggregate_key] = produccion.get(aggregate_key, 0) + aggregate_total
 
             datos[name]['Producción'] = produccion
 
@@ -390,7 +418,7 @@ class ProjectResultsView(APIView):
                     continue
                 replaces = ps.replaces or 0
                 b4_total += suma_transport.get(mat.id, 0) * replaces
-                if db != 'EPiC':
+                if mat.id not in aggregate_materials:
                     for subetapa in _PRODUCTION_STAGES:
                         b4_total += (
                             msd_lookup.get((mat.id, subetapa, impacto.id), 0)
@@ -398,7 +426,7 @@ class ProjectResultsView(APIView):
                         )
                 else:
                     b4_total += (
-                        msd_lookup.get((mat.id, 1, impacto.id), 0)
+                        msd_lookup.get((mat.id, _AGGREGATE_STANDARD, impacto.id), 0)
                         * float(ps.quantity or 0) * replaces
                     )
 
