@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { HttpErrorResponse } from '@angular/common/http';
 import { AddNewProjectComponent } from '../add-new-project/add-new-project.component';
 import { ChooseTypeOfProjectComponent } from '../choose-type-of-project/choose-type-of-project.component';
 import { ProjectsService } from './../../../core/services/projects/projects.service';
@@ -222,6 +224,7 @@ export class HomeEvamedComponent implements OnInit {
     private endLifeService: EndLifeService,
     private electricitConsumptionService: ElectricitConsumptionService,
     private selectionService: SelectionService,
+    private snackBar: MatSnackBar,
   ) {
     this.catalogsService.usesCatalog().subscribe(data => {
       this.catalogoUsos = data;
@@ -1347,15 +1350,27 @@ export class HomeEvamedComponent implements OnInit {
                 : result.ciudadSeleccionada,
             distance: null,
           })
-          .subscribe(data => {
-            sessionStorage.setItem('primaryDataProject', JSON.stringify(data));
+          .subscribe({
+            next: data => {
+              sessionStorage.setItem('primaryDataProject', JSON.stringify(data));
 
-            sessionStorage.setItem(
-              'estadoSeleccionado',
-              result.estadoSeleccionado
-            );
-            //this.openDialogCTOP(); // No abrir tipo de evalución e ir directo a do-files
-            this.router.navigateByUrl('do-files');
+              sessionStorage.setItem(
+                'estadoSeleccionado',
+                result.estadoSeleccionado
+              );
+              //this.openDialogCTOP(); // No abrir tipo de evalución e ir directo a do-files
+              this.router.navigateByUrl('do-files');
+            },
+            error: (err: HttpErrorResponse) => {
+              // The API only lets a verified email own projects.
+              if (err.status === 403) {
+                this.snackBar.open(
+                  'Verifica tu correo electrónico para crear proyectos.',
+                  'OK',
+                  { duration: 4000 }
+                );
+              }
+            },
           });
       } catch {
         console.log('close modal');
