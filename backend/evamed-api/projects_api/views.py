@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework import filters
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
 from django.db import transaction
 
 from projects_api import models
@@ -16,20 +17,34 @@ class CatalogueViewSet(viewsets.ModelViewSet):
     permission_classes = (access.IsAdminOrReadOnly,)
 
 class UserPlatformViewSet(access.OwnedByCallerMixin, viewsets.ModelViewSet):
-    """A user's own profile. Admins can list everyone's."""
+    """A user's own profile. Admins can read everyone's.
+
+    Profiles can't be deleted through the API (deleting one cascades to its
+    projects); Django admin still can.
+    """
     serializer_class = serializers.UserPlatformSerializer
     queryset = models.UserPlatform.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=email', )
     owner_email_path = 'email'
+    http_method_names = ('get', 'post', 'put', 'patch', 'head', 'options')
     # An unverified user can still register and read their own profile;
-    # project data needs a trusted email.
-    require_trusted_email = False
+    # changing it, like project data, needs a trusted email.
+    claimed_email_actions = ('list', 'retrieve', 'create')
 
     def get_queryset(self):
-        if access.is_admin(self.request.user):
+        if self.action in ('list', 'retrieve') and access.is_admin(self.request.user):
             return models.UserPlatform.objects.all()
         return super().get_queryset()
+
+    def perform_create(self, serializer):
+        # An unverified claim must not add a second profile for an email that
+        # already has one: the real owner's projects hang off the first.
+        email = access.claimed_email(self.request.user)
+        if not access.caller_email(self.request.user) and \
+                models.UserPlatform.objects.filter(email__iexact=email).exists():
+            raise PermissionDenied('Verify your email to use this profile.')
+        super().perform_create(serializer)
 
 
 class MeView(APIView):

@@ -62,20 +62,19 @@ class OwnedByCallerMixin:
     `owner_email_path` is the ORM path from the model to the owner's email,
     e.g. PROJECT_OWNER. Its first segment must be a serializer field.
 
-    `require_trusted_email` (default True) picks which identity counts as
-    "the caller's": the trusted one (`caller_email`) normally, or the merely
-    claimed one (`claimed_email`) when a viewset sets this False. Users-platform
-    sets it False in a later task so an unverified user can still register
-    their own profile.
+    The caller's identity is the trusted one (`caller_email`), except for the
+    actions listed in `claimed_email_actions` (default none), which accept the
+    merely claimed one (`claimed_email`). Users-platform uses this so an
+    unverified user can still register and read their own profile.
     """
     permission_classes = (permissions.IsAuthenticated,)
     owner_email_path = None
-    require_trusted_email = True
+    claimed_email_actions = ()
 
     def _owner_email(self):
-        if self.require_trusted_email:
-            return caller_email(self.request.user)
-        return claimed_email(self.request.user)
+        if self.action in self.claimed_email_actions:
+            return claimed_email(self.request.user)
+        return caller_email(self.request.user)
 
     def get_queryset(self):
         email = self._owner_email()
