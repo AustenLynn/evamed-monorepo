@@ -159,4 +159,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'profiles_api.authentication.FirebaseAuthentication',
     ),
+    # Anything not explicitly opened up (catalogue reads) needs a signed-in user.
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
 }

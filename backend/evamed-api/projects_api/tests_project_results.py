@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from projects_api import models
+from projects_api.testing import firebase_user, owned_project
 
 
 RESULTS_URL = '/api-projects/projects/{}/results/'
@@ -36,7 +37,8 @@ class ProductionStageAggregationTests(APITestCase):
         for name in ('EPiC', 'EPDs', 'mexicaniuh', 'ECOINVENT 3'):
             models.DataBaseMaterial.objects.create(name=name)
 
-        self.project = models.Project.objects.create(name_project='test project')
+        self.project = owned_project('owner@example.com', name='test project')
+        self.client.force_authenticate(user=firebase_user('owner@example.com'))
 
     def _material(self, database_from):
         return models.Material.objects.create(

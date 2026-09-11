@@ -2,8 +2,8 @@ from django.test import SimpleTestCase
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from projects_api import access
-from projects_api.testing import admin_user, firebase_user
+from projects_api import access, models
+from projects_api.testing import admin_user, firebase_user, owned_project
 from projects_api.urls import router
 
 CATALOGUE_ROUTES = {
@@ -71,3 +71,94 @@ class CataloguePermissionTests(APITestCase):
 
     def test_unverified_email_is_never_admin(self):
         self.assertFalse(access.is_admin(firebase_user('admin@example.com', verified=False)))
+
+
+class ProjectOwnershipTests(APITestCase):
+
+    def setUp(self):
+        self.alice_project = owned_project('alice@example.com', name='Alice')
+        self.bob_project = owned_project('bob@example.com', name='Bob')
+        self.rows = {}
+        for project, who in ((self.alice_project, 'alice'), (self.bob_project, 'bob')):
+            acr = models.AnnualConsumptionRequired.objects.create(project_id=project, quantity=1)
+            self.rows[who] = {
+                'projects': project.id,
+                'material-scheme-project': models.MaterialSchemeProject.objects.create(project_id=project).id,
+                'material-scheme-project-original': models.MaterialSchemeProjectOrigianal.objects.create(project_id=project).id,
+                'constructive-system-element': models.ConstructiveSystemElement.objects.create(project_id=project).id,
+                'annual-consumption-required': acr.id,
+                'electricity-consumption-data': models.ElectricityConsumptionData.objects.create(annual_consumption_required_id=acr).id,
+                'electricity-consumption-deconstructive-process': models.ElectricityConsumptionDeconstructiveProcess.objects.create(project_id=project).id,
+                'treatment-of-generate-wasted': models.TreatmentOfGeneratedWaste.objects.create(project_id=project).id,
+            }
+        self.assertEqual(set(self.rows['alice']), OWNED_ROUTES)
+
+    def as_alice(self):
+        self.client.force_authenticate(user=firebase_user('ALICE@example.com'))  # case-insensitive
+
+    def test_anonymous_gets_401_everywhere(self):
+        for prefix in sorted(OWNED_ROUTES):
+            with self.subTest(prefix=prefix):
+                self.assertEqual(self.client.get('/api-projects/%s/' % prefix).status_code, 401)
+
+    def test_lists_contain_only_own_rows(self):
+        self.as_alice()
+        for prefix in sorted(OWNED_ROUTES):
+            with self.subTest(prefix=prefix):
+                ids = {row['id'] for row in self.client.get('/api-projects/%s/' % prefix).data}
+                self.assertEqual(ids, {self.rows['alice'][prefix]})
+
+    def test_other_users_rows_are_invisible_and_untouchable(self):
+        self.as_alice()
+        for prefix in sorted(OWNED_ROUTES):
+            url = '/api-projects/%s/%s/' % (prefix, self.rows['bob'][prefix])
+            with self.subTest(prefix=prefix):
+                self.assertEqual(self.client.get(url).status_code, 404)
+                self.assertEqual(self.client.patch(url, {}, format='json').status_code, 404)
+                self.assertEqual(self.client.delete(url).status_code, 404)
+
+    def test_cannot_create_rows_in_someone_elses_project(self):
+        self.as_alice()
+        payload = {'project_id': self.bob_project.id, 'quantity': 1, 'unit_id': None}
+        response = self.client.post('/api-projects/annual-consumption-required/', payload, format='json')
+        self.assertEqual(response.status_code, 403)
+
+    def test_can_create_rows_in_own_project(self):
+        self.as_alice()
+        payload = {'project_id': self.alice_project.id, 'quantity': 1, 'unit_id': None}
+        response = self.client.post('/api-projects/annual-consumption-required/', payload, format='json')
+        self.assertEqual(response.status_code, 201)
+
+    def test_projects_can_only_be_created_for_yourself(self):
+        self.as_alice()
+        payload = {
+            'name_project': 'New', 'use_id': None, 'type_id': None, 'country_id': None,
+            'builded_surface': None, 'living_area': None, 'tier': None,
+            'useful_life_id': None, 'housing_scheme_id': None, 'city_id_origin': None,
+            'distance': None,
+        }
+        mine = dict(payload, user_platform_id=self.alice_project.user_platform_id.id)
+        theirs = dict(payload, user_platform_id=self.bob_project.user_platform_id.id)
+        self.assertEqual(self.client.post('/api-projects/projects/', mine, format='json').status_code, 201)
+        self.assertEqual(self.client.post('/api-projects/projects/', theirs, format='json').status_code, 403)
+
+    def test_results_are_owner_only(self):
+        # The owner's 200 path is covered by tests_project_results (which signs in as the owner).
+        self.as_alice()
+        self.assertEqual(self.client.get('/api-projects/projects/%s/results/' % self.bob_project.id).status_code, 404)
+
+    def test_materials_stage_is_owner_only(self):
+        self.as_alice()
+        section = models.Section.objects.create(name_section='S')
+        get_theirs = self.client.get('/api-projects/materials-stage/', {'project_id': self.bob_project.id})
+        post_theirs = self.client.post('/api-projects/materials-stage/', {
+            'project_id': self.bob_project.id,
+            'items': [{'section_id': section.id, 'label': 'Muro'}],
+        }, format='json')
+        patch_theirs = self.client.patch('/api-projects/materials-stage/update/', {
+            'project_id': self.bob_project.id, 'selectedIds': [],
+        }, format='json')
+        self.assertEqual(get_theirs.status_code, 404)
+        self.assertEqual(post_theirs.status_code, 400)
+        self.assertEqual(patch_theirs.status_code, 400)
+        self.assertEqual(self.client.get('/api-projects/materials-stage/', {'project_id': 'abc'}).status_code, 404)

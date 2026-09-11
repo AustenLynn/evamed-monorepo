@@ -84,8 +84,9 @@ class HousingSchemeViewSet(CatalogueViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name_housing_scheme', )
 
-class ProjectsViewSet(viewsets.ModelViewSet):
+class ProjectsViewSet(access.OwnedByCallerMixin, viewsets.ModelViewSet):
     """Handle creating and updating profiles"""
+    owner_email_path = 'user_platform_id__email'
     serializer_class = serializers.ProjectsSerializer
     queryset = models.Project.objects.select_related(
         'use_id', 'type_id', 'country_id', 'useful_life_id',
@@ -171,8 +172,9 @@ class ConstructiveProcessViewSet(CatalogueViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name_constructive_process', )
 
-class MaterialSchemeProjectViewSet(viewsets.ModelViewSet):
+class MaterialSchemeProjectViewSet(access.OwnedByCallerMixin, viewsets.ModelViewSet):
     """Handle creating and updating material scheme project"""
+    owner_email_path = access.PROJECT_OWNER
     serializer_class = serializers.MaterialSchemeProjectSerializer
     queryset = models.MaterialSchemeProject.objects.select_related(
         'material_id', 'project_id', 'origin_id', 'section_id',
@@ -182,8 +184,9 @@ class MaterialSchemeProjectViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=material_id', )
 
-class MaterialSchemeProjectOriginalViewSet(viewsets.ModelViewSet):
+class MaterialSchemeProjectOriginalViewSet(access.OwnedByCallerMixin, viewsets.ModelViewSet):
     """Handle creating and updating material scheme project"""
+    owner_email_path = access.PROJECT_OWNER
     serializer_class = serializers.MaterialSchemeProjectOriginalSerializer
     queryset = models.MaterialSchemeProjectOrigianal.objects.select_related(
         'material_id', 'project_id', 'origin_id', 'section_id',
@@ -201,8 +204,9 @@ class MaterialSchemeDataViewSet(CatalogueViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('value', )
 
-class ConstructiveSystemElementViewSet(viewsets.ModelViewSet):
+class ConstructiveSystemElementViewSet(access.OwnedByCallerMixin, viewsets.ModelViewSet):
     """Handle creating and updating CSE"""
+    owner_email_path = access.PROJECT_OWNER
     serializer_class = serializers.ConstructiveSystemElementSerializer
     queryset = models.ConstructiveSystemElement.objects.select_related(
         'project_id', 'section_id', 'constructive_process_id',
@@ -253,11 +257,13 @@ class ProjectResultsView(APIView):
     Optional query param:  ?databases=EPiC,EPD   (comma-separated; omit = all)
     """
 
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request, project_id):
         databases_param = request.query_params.get('databases', None)
 
         try:
-            project = models.Project.objects.select_related('useful_life_id').get(id=project_id)
+            project = access.owned_projects(request.user).select_related('useful_life_id').get(id=project_id)
         except models.Project.DoesNotExist:
             return Response({'detail': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -458,6 +464,8 @@ class ProjectResultsView(APIView):
 class MaterialStageView(APIView):
     """Handle materials-stage checkbox options"""
 
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
         project_id = request.query_params.get('project_id')
         if project_id is None:
@@ -465,6 +473,9 @@ class MaterialStageView(APIView):
                 {'detail': 'project_id is required'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+        if not access.owns_project(request.user, project_id):
+            return Response({'detail': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
 
         queryset = models.MaterialStageSystemSelection.objects.filter(
             project_id_id=project_id
@@ -484,7 +495,7 @@ class MaterialStageView(APIView):
         validated = payload.validated_data
 
         project_id = validated['project_id']
-        if not models.Project.objects.filter(id=project_id).exists():
+        if not access.owns_project(request.user, project_id):
             return Response(
                 {'detail': 'Invalid project_id'},
                 status=status.HTTP_400_BAD_REQUEST
@@ -532,6 +543,8 @@ class MaterialStageView(APIView):
 class MaterialStageUpdateView(APIView):
     """Update materials-stage checkbox state"""
 
+    permission_classes = (IsAuthenticated,)
+
     @transaction.atomic
     def patch(self, request):
         return self._update_selection_state(request)
@@ -546,7 +559,7 @@ class MaterialStageUpdateView(APIView):
         validated = payload.validated_data
 
         project_id = validated['project_id']
-        if not models.Project.objects.filter(id=project_id).exists():
+        if not access.owns_project(request.user, project_id):
             return Response(
                 {'detail': 'Invalid project_id'},
                 status=status.HTTP_400_BAD_REQUEST
@@ -597,15 +610,17 @@ class SourcesElectricityConsumptionViewSet(CatalogueViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name_source_electricity_consumption', )
 
-class AnnualConsumptionRequiredViewSet(viewsets.ModelViewSet):
+class AnnualConsumptionRequiredViewSet(access.OwnedByCallerMixin, viewsets.ModelViewSet):
     """Handle creating and updating create ACR"""
+    owner_email_path = access.PROJECT_OWNER
     serializer_class = serializers.AnnualConsumptionRequiredSerializer
     queryset = models.AnnualConsumptionRequired.objects.select_related('project_id', 'unit_id')
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=project_id', )
 
-class ElectricityConsumptionDataViewSet(viewsets.ModelViewSet):
+class ElectricityConsumptionDataViewSet(access.OwnedByCallerMixin, viewsets.ModelViewSet):
     """Handle creating and updating create ECD"""
+    owner_email_path = 'annual_consumption_required_id__' + access.PROJECT_OWNER
     serializer_class = serializers.ElectricityConsumptionDataSerializer
     queryset = models.ElectricityConsumptionData.objects.select_related(
         'annual_consumption_required_id', 'unit_id', 'type',
@@ -627,8 +642,9 @@ class TypeEnergyViewSet(CatalogueViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=id', )
 
-class ElectricityConsumptionDeconstructiveProcessViewSet(viewsets.ModelViewSet):
+class ElectricityConsumptionDeconstructiveProcessViewSet(access.OwnedByCallerMixin, viewsets.ModelViewSet):
     """Handle creating and updating create ECDP"""
+    owner_email_path = access.PROJECT_OWNER
     serializer_class = serializers.ElectricityConsumptionDeconstructiveProcessSerializer
     queryset = models.ElectricityConsumptionDeconstructiveProcess.objects.select_related(
         'unit_id', 'source_information_id', 'section_id', 'project_id',
@@ -636,8 +652,9 @@ class ElectricityConsumptionDeconstructiveProcessViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=id', )
 
-class TreatmentOfGeneratedWasteViewSet(viewsets.ModelViewSet):
+class TreatmentOfGeneratedWasteViewSet(access.OwnedByCallerMixin, viewsets.ModelViewSet):
     """Handle creating and updating create TOGW"""
+    owner_email_path = access.PROJECT_OWNER
     serializer_class = serializers.TreatmentOfGeneratedWasteSerializer
     queryset = models.TreatmentOfGeneratedWaste.objects.select_related('section_id', 'project_id')
     filter_backends = (filters.SearchFilter,)

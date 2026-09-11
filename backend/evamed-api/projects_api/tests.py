@@ -2,13 +2,15 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from projects_api import models
+from projects_api.testing import firebase_user, owned_project
 
 
 class MaterialStageSelectionApiTests(APITestCase):
 	"""Tests for materials-stage checkbox persistence APIs"""
 
 	def setUp(self):
-		self.project = models.Project.objects.create(name_project='Test Project')
+		self.project = owned_project('owner@example.com', name='Test Project')
+		self.client.force_authenticate(user=firebase_user('owner@example.com'))
 		self.section = models.Section.objects.create(name_section='Cimentación')
 		self.origin = models.Origin.objects.create(name_origin='Modelo de Revit')
 		self.base_url = '/api-projects/materials-stage/'
