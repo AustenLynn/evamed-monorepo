@@ -13,6 +13,12 @@ from projects_api import models
 from projects_api import serializers
 from profiles_api import permissions
 from profiles_api.authentication import FirebaseAuthentication
+from projects_api import access
+
+
+class CatalogueViewSet(viewsets.ModelViewSet):
+    """Reference data: anyone may read it, only admins may change it."""
+    permission_classes = (access.IsAdminOrReadOnly,)
 
 class UserPlatformViewSet(viewsets.ModelViewSet):
     """Handle creating and updating user"""
@@ -29,49 +35,49 @@ class UserPlatformViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
         return [IsAuthenticated()]
 
-class TransportsViewSet(viewsets.ModelViewSet):
+class TransportsViewSet(CatalogueViewSet):
     """Handle creating and updating transports"""
     serializer_class = serializers.TransportsSerializer
     queryset = models.Transport.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=id', )
 
-class UsesViewSet(viewsets.ModelViewSet):
+class UsesViewSet(CatalogueViewSet):
     """Handle creating and updating uses"""
     serializer_class = serializers.UsesSerializer
     queryset = models.Use.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name_use', )
 
-class TypeProjectsViewSet(viewsets.ModelViewSet):
+class TypeProjectsViewSet(CatalogueViewSet):
     """Handle creating and updating type projects"""
     serializer_class = serializers.TypeProjectsSerializer
     queryset = models.TypeProject.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name_type_project', )
 
-class CountriesViewSet(viewsets.ModelViewSet):
+class CountriesViewSet(CatalogueViewSet):
     """Handle creating and updating countries"""
     serializer_class = serializers.CountriesSerializer
     queryset = models.Country.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name_country', )
 
-class ExternalDistanceViewSet(viewsets.ModelViewSet):
+class ExternalDistanceViewSet(CatalogueViewSet):
     """Handle creating and updating countries"""
     serializer_class = serializers.ExternalDistanceSerializer
     queryset = models.ExternalDistance.objects.select_related('country_id_origin')
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=id', )
 
-class UsefulLifeViewSet(viewsets.ModelViewSet):
+class UsefulLifeViewSet(CatalogueViewSet):
     """Handle creating and updating useful life"""
     serializer_class = serializers.UsefulLifeSerializer
     queryset = models.UsefulLife.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name_useful_life', )
 
-class HousingSchemeViewSet(viewsets.ModelViewSet):
+class HousingSchemeViewSet(CatalogueViewSet):
     """Handle creating and updating housing Scheme"""
     serializer_class = serializers.HousingSchemeSerializer
     queryset = models.HousingScheme.objects.all()
@@ -88,77 +94,77 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=id',)
 
-class MaterialsViewSet(viewsets.ModelViewSet):
+class MaterialsViewSet(CatalogueViewSet):
     """Handle creating and updating materials"""
     serializer_class = serializers.MaterialsSerializer
     queryset = models.Material.objects.select_related('unit_id')
     filter_backends = (filters.SearchFilter,)
     search_fields = ['=id', 'name_material']
 
-class SectionsViewSet(viewsets.ModelViewSet):
+class SectionsViewSet(CatalogueViewSet):
     """Handle creating and updating sections"""
     serializer_class = serializers.SectionsSerializer
     queryset = models.Section.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name_section', )
 
-class OriginsViewSet(viewsets.ModelViewSet):
+class OriginsViewSet(CatalogueViewSet):
     """Handle creating and updating origins"""
     serializer_class = serializers.OriginsSerializer
     queryset = models.Origin.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name_origin', )
 
-class UnitsViewSet(viewsets.ModelViewSet):
+class UnitsViewSet(CatalogueViewSet):
     """Handle creating and updating units"""
     serializer_class = serializers.UnitsSerializer
     queryset = models.Unit.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name_unit', )
 
-class StandardsViewSet(viewsets.ModelViewSet):
+class StandardsViewSet(CatalogueViewSet):
     """Handle creating and updating standards"""
     serializer_class = serializers.StandardsSerializer
     queryset = models.Standard.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name_standard', )
 
-class PotentialTypesViewSet(viewsets.ModelViewSet):
+class PotentialTypesViewSet(CatalogueViewSet):
     """Handle creating and updating potential types"""
     serializer_class = serializers.PotentialTypesSerializer
     queryset = models.PotentialType.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name_potential_type', )
 
-class VolumeUnitsViewSet(viewsets.ModelViewSet):
+class VolumeUnitsViewSet(CatalogueViewSet):
     """Handle creating and updating volume units"""
     serializer_class = serializers.VolumeUnitsSerializer
     queryset = models.VolumeUnit.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name_volume_unit', )
 
-class EnergyUnitsViewSet(viewsets.ModelViewSet):
+class EnergyUnitsViewSet(CatalogueViewSet):
     """Handle creating and updating energy units"""
     serializer_class = serializers.EnergyUnitsSerializer
     queryset = models.EnergyUnit.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name_energy_unit', )
 
-class BulkUnitsViewSet(viewsets.ModelViewSet):
+class BulkUnitsViewSet(CatalogueViewSet):
     """Handle creating and updating bulk units"""
     serializer_class = serializers.BulkUnitsSerializer
     queryset = models.BulkUnit.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name_bulk_unit', )
 
-class SourceInformationViewSet(viewsets.ModelViewSet):
+class SourceInformationViewSet(CatalogueViewSet):
     """Handle creating and updating source information"""
     serializer_class = serializers.SourceInformationSerializer
     queryset = models.SourceInformation.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name_source_information', )
 
-class ConstructiveProcessViewSet(viewsets.ModelViewSet):
+class ConstructiveProcessViewSet(CatalogueViewSet):
     """Handle creating and updating source information"""
     serializer_class = serializers.ConstructiveProcessSerializer
     queryset = models.ConstructiveProcess.objects.all()
@@ -186,7 +192,7 @@ class MaterialSchemeProjectOriginalViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=material_id', )
 
-class MaterialSchemeDataViewSet(viewsets.ModelViewSet):
+class MaterialSchemeDataViewSet(CatalogueViewSet):
     """Handle creating and updating material scheme data"""
     serializer_class = serializers.MaterialSchemeDataSerializer
     queryset = models.MaterialSchemeData.objects.select_related(
@@ -584,7 +590,7 @@ class MaterialStageUpdateView(APIView):
         data = serializers.MaterialStageSystemSelectionSerializer(queryset, many=True).data
         return Response({'items': data}, status=status.HTTP_200_OK)
 
-class SourcesElectricityConsumptionViewSet(viewsets.ModelViewSet):
+class SourcesElectricityConsumptionViewSet(CatalogueViewSet):
     """Handle creating and updating create source electricity consumption"""
     serializer_class = serializers.SourcesElectricityConsumptionSerializer
     queryset = models.SourcesElectricityConsumption.objects.all()
@@ -607,14 +613,14 @@ class ElectricityConsumptionDataViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=annual_consumption_required_id', )
 
-class StageSchemeDataViewSet(viewsets.ModelViewSet):
+class StageSchemeDataViewSet(CatalogueViewSet):
     """Handle creating and updating create SSD"""
     serializer_class = serializers.StageSchemeDataSerializer
     queryset = models.StageSchemeData.objects.select_related('unit_stage_id')
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=id', )
 
-class TypeEnergyViewSet(viewsets.ModelViewSet):
+class TypeEnergyViewSet(CatalogueViewSet):
     """Handle creating and updating create TypeEnergy"""
     serializer_class = serializers.TypeEnergySerializer
     queryset = models.TypeEnergy.objects.all()
@@ -637,7 +643,7 @@ class TreatmentOfGeneratedWasteViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=id', )
 
-class SourceInformationDataViewSet(viewsets.ModelViewSet):
+class SourceInformationDataViewSet(CatalogueViewSet):
     """Handle creating and updating Source information data"""
     serializer_class = serializers.SourceInformationDataSerializer
     queryset = models.SourceInformationData.objects.select_related(
@@ -646,7 +652,7 @@ class SourceInformationDataViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('value', )
 
-class TypeEnergyDataViewSet(viewsets.ModelViewSet):
+class TypeEnergyDataViewSet(CatalogueViewSet):
     """Handle creating and updating Type Energy Data"""
     serializer_class = serializers.TypeEnergyDataSerializer
     queryset = models.TypeEnergyData.objects.select_related(
@@ -655,42 +661,42 @@ class TypeEnergyDataViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('value', )
 
-class StatesViewSet(viewsets.ModelViewSet):
+class StatesViewSet(CatalogueViewSet):
     """Handle creating and updating states"""
     serializer_class = serializers.StatesSerializer
     queryset = models.State.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=id', )
 
-class CitiesViewSet(viewsets.ModelViewSet):
+class CitiesViewSet(CatalogueViewSet):
     """Handle creating and updating cities"""
     serializer_class = serializers.CitiesSerializer
     queryset = models.City.objects.select_related('state_id')
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=id', )
 
-class LocalDistancesViewSet(viewsets.ModelViewSet):
+class LocalDistancesViewSet(CatalogueViewSet):
     """Handle creating and updating local distances"""
     serializer_class = serializers.LocalDistancesSerializer
     queryset = models.LocalDistance.objects.select_related('city_id_origin', 'city_id_end')
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=id', )
 
-class PotentialTransportViewSet(viewsets.ModelViewSet):
+class PotentialTransportViewSet(CatalogueViewSet):
     """Handle creating and updating potential transports"""
     serializer_class = serializers.PotentialTransportSerializer
     queryset = models.PotentialTransport.objects.select_related('transport_id', 'potential_type_id')
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=id', )
 
-class ConversionsViewSet(viewsets.ModelViewSet):
+class ConversionsViewSet(CatalogueViewSet):
     """Handle creating and updating conversions"""
     serializer_class = serializers.ConversionsSerializer
     queryset = models.Conversions.objects.select_related('material_id', 'unit_id')
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=id', )
 
-class DataBaseMaterialViewSet(viewsets.ModelViewSet):
+class DataBaseMaterialViewSet(CatalogueViewSet):
     """Handle creating and updating DataBaseMaterial"""
     serializer_class = serializers.DataBaseMaterialSerializer
     queryset = models.DataBaseMaterial.objects.all()
