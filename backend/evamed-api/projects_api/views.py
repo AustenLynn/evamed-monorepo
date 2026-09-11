@@ -20,20 +20,34 @@ class CatalogueViewSet(viewsets.ModelViewSet):
     """Reference data: anyone may read it, only admins may change it."""
     permission_classes = (access.IsAdminOrReadOnly,)
 
-class UserPlatformViewSet(viewsets.ModelViewSet):
-    """Handle creating and updating user"""
+class UserPlatformViewSet(access.OwnedByCallerMixin, viewsets.ModelViewSet):
+    """A user's own profile. Admins can list everyone's."""
     serializer_class = serializers.UserPlatformSerializer
     queryset = models.UserPlatform.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=email', )
-    authentication_classes = (FirebaseAuthentication,)
+    owner_email_path = 'email'
+    # An unverified user can still register and read their own profile;
+    # project data needs a trusted email.
+    require_trusted_email = False
 
-    def get_permissions(self):
-        # Registration (create) must stay public; the Firebase authenticator
-        # is a no-op when no Bearer token is sent, so leaving it on is safe.
-        if self.action == 'create':
-            return [AllowAny()]
-        return [IsAuthenticated()]
+    def get_queryset(self):
+        if access.is_admin(self.request.user):
+            return models.UserPlatform.objects.all()
+        return super().get_queryset()
+
+
+class MeView(APIView):
+    """Who the caller is, as the API sees it. Drives admin-only UI."""
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        return Response({
+            'email': access.claimed_email(request.user),
+            'is_admin': access.is_admin(request.user),
+            # Django (admin) users are only ever bridged for verified emails.
+            'email_verified': getattr(request.user, 'email_verified', True),
+        })
 
 class TransportsViewSet(CatalogueViewSet):
     """Handle creating and updating transports"""

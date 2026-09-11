@@ -29,7 +29,6 @@ class UserPlatform(models.Model):
     institution = models.CharField(max_length=255, null=True)
     sector = models.CharField(max_length=255, null=True)
     country = models.CharField(max_length=255, null=True)
-    password = models.CharField(max_length=255, null=True)
 
     def __str__(self):
         """Return string representation of user"""

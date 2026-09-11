@@ -46,6 +46,7 @@ router.register('conversions', views.ConversionsViewSet)
 router.register('database-material', views.DataBaseMaterialViewSet)
 
 urlpatterns = [
+    path('me/', views.MeView.as_view()),
     path('materials-stage/', views.MaterialStageView.as_view()),
     path('materials-stage/update/', views.MaterialStageUpdateView.as_view()),
     path('projects/<int:project_id>/results/', views.ProjectResultsView.as_view()),

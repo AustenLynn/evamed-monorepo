@@ -6,12 +6,8 @@ class UserPlatformSerializer(serializers.ModelSerializer):
     """User Platform Serializer"""
     class Meta:
         model = models.UserPlatform
-        fields = '__all__'
-        extra_kwargs = {
-            # Social-login users (Google/Facebook/...) have no password; auth is
-            # handled by Firebase, so this record stores an empty one.
-            'password': {'required': False, 'allow_blank': True},
-        }
+        # Passwords live in Firebase only; never accept or return one here.
+        fields = ('id', 'name', 'email', 'institution', 'sector', 'country')
 
     def create(self, validated_data):
         """User Platform to create material scheme data"""
@@ -21,7 +17,6 @@ class UserPlatformSerializer(serializers.ModelSerializer):
             institution = validated_data['institution'],
             sector = validated_data['sector'],
             country = validated_data['country'],
-            password = validated_data.get('password', ''),
         )
 
         user.save()
