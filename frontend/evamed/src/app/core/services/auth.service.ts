@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Auth, authState, createUserWithEmailAndPassword, signInWithEmailAndPassword,
   UserCredential, signOut, sendPasswordResetEmail, sendEmailVerification,
   GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, OAuthProvider,
-  AuthProvider, signInWithPopup,} from '@angular/fire/auth';
+  AuthProvider, signInWithPopup, deleteUser,} from '@angular/fire/auth';
 
 // Social providers supported by the app. 'apple' is wired but deferred (it
 // requires a paid Apple Developer account); it is simply not offered in the UI.
@@ -97,5 +97,10 @@ export class AuthService {
 
   hasUser() {
     return authState(this.auth);
+  }
+
+  // Undo a half-finished registration so the email isn't left "already in use".
+  deleteCurrentUser(): Promise<void> {
+    return this.auth.currentUser ? deleteUser(this.auth.currentUser) : Promise.resolve();
   }
 }

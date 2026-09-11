@@ -49,8 +49,6 @@ export class CompleteProfileComponent implements OnInit {
           institution: value.institution,
           sector: value.sector,
           country: value.country,
-          // Google handles auth; the backend record keeps a nullable password.
-          password: '',
         })
         .subscribe({
           next: () => {

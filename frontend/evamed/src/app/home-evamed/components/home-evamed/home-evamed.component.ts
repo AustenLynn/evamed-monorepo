@@ -69,6 +69,7 @@ export class HomeEvamedComponent implements OnInit {
   user: string;
   sector: string;
   email: string;
+  isAdmin = false;
   nameProject: string;
   tagProject: string;
   sections: any[] = [];
@@ -320,6 +321,10 @@ export class HomeEvamedComponent implements OnInit {
     this.sector = userData[0].institution;
     this.email = userData[0].email;
     localStorage.setItem('email-id', userData[0].id);
+
+    // Admin rights are decided by the API (grant_admin), not by the UI.
+    const me = await lastValueFrom(this.users.getMe()).catch(() => null);
+    this.isAdmin = me?.is_admin === true;
 
     const [allProjects, potentialTypesList, ULList, listaBD] = await Promise.all([
       lastValueFrom(this.projectsService.getProjects()),

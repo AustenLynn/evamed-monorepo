@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { lastValueFrom } from 'rxjs';
 import { UserService } from './../../../core/services/user/user.service';
 import { AuthService } from './../../../core/services/auth.service';
 import { SocialAuthFlowService } from './../../../core/services/social-auth-flow.service';
@@ -36,41 +37,42 @@ export class RegisterComponent implements OnInit {
 
   register(event: Event) {
     event.preventDefault();
-
-    if (this.form.valid) {
-      const value = this.form.value;
-
-      if (value.password !== value.password2) {
-        this.snackBar.open('Las contraseñas deben coincidir', 'OK', { duration: 4000 });
-        return;
-      }
-
-      this.user.addUser(value).subscribe({
-        next: () => {
-          this.authService
-            .createUser(value.email, value.password)
-            .then(() => {
-              this.authService.verifyEmail();
-              this.snackBar.open('Registro correcto', 'OK', { duration: 4000 });
-              this.router.navigate(['/auth/login']);
-            })
-            .catch(() => {
-              this.snackBar.open(
-                'El correo ya está registrado, usa otro correo',
-                'OK',
-                { duration: 4000 }
-              );
-            });
-        },
-        error: () => {
-          this.snackBar.open(
-            'Error al registrar el usuario. Intenta nuevamente.',
-            'OK',
-            { duration: 4000 }
-          );
-        },
-      });
+    if (!this.form.valid) {
+      return;
     }
+    const value = this.form.value;
+    if (value.password !== value.password2) {
+      this.snackBar.open('Las contraseñas deben coincidir', 'OK', { duration: 4000 });
+      return;
+    }
+
+    // Firebase first: the API only accepts a profile from the signed-in owner
+    // of that email. The password goes to Firebase only, never to our API.
+    this.authService
+      .createUser(value.email, value.password)
+      .then(async () => {
+        try {
+          await lastValueFrom(this.user.addUser({
+            name: value.name,
+            email: value.email,
+            institution: value.institution,
+            sector: value.sector,
+            country: value.country,
+          }));
+        } catch (error) {
+          await this.authService.deleteCurrentUser();
+          throw error;
+        }
+        this.authService.verifyEmail();
+        this.snackBar.open('Registro correcto', 'OK', { duration: 4000 });
+        this.router.navigate(['/auth/login']);
+      })
+      .catch(error => {
+        const message = error?.code === 'auth/email-already-in-use'
+          ? 'El correo ya está registrado, usa otro correo'
+          : 'Error al registrar el usuario. Intenta nuevamente.';
+        this.snackBar.open(message, 'OK', { duration: 4000 });
+      });
   }
 
   private buildForm() {

@@ -38,7 +38,8 @@ const apiEvamed = 'https://evamed-api-vlx1.onrender.com/api-projects',
  units = '/units/',
  potentialTranposrt = '/potential-transport/',
  conversion = '/conversions/',
- dbMaterial = '/database-material/';
+ dbMaterial = '/database-material/',
+ me = '/me/';
 
 export const environment = {
   production: true,
@@ -79,6 +80,7 @@ export const environment = {
   api_potential_transport: `${apiEvamed}${potentialTranposrt}`,
   api_conversions: `${apiEvamed}${conversion}`,
   api_db_material: `${apiEvamed}${dbMaterial}`,
+  api_me: `${apiEvamed}${me}`,
   firebaseConfig: {
     apiKey: "AIzaSyC3t_NpPrGwj7i26j5cfIQCt1aaq3f9k-I",
     authDomain: "evamed-ac3f8.firebaseapp.com",

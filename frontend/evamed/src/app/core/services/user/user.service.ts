@@ -41,4 +41,10 @@ export class UserService {
       })
     );
   }
+
+  getMe() {
+    return this.http.get<{ email: string; is_admin: boolean; email_verified: boolean }>(
+      environment.api_me
+    );
+  }
 }
