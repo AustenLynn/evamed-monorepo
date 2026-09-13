@@ -1,7 +1,7 @@
 
 services:
   db:
-    image: postgres:12-alpine
+    image: postgres:17-alpine
     restart: unless-stopped
     environment:
       POSTGRES_DB: evamed_total
