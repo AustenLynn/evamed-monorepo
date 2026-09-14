@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { sendEmailVerification } from '@angular/fire/auth';
+import { sendEmailVerification } from 'firebase/auth';
 import { lastValueFrom } from 'rxjs';
 import { AuthService, SocialProvider } from './auth.service';
 import { UserService } from './user/user.service';

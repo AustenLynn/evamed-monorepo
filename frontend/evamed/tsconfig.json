@@ -8,7 +8,8 @@
     "declaration": false,
     "experimentalDecorators": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
     "importHelpers": true,
     "target": "ES2022",
     "lib": [

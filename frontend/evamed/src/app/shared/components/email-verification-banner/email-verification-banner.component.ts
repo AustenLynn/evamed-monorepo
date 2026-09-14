@@ -1,8 +1,9 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, inject, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Auth } from '@angular/fire/auth';
+import { Auth } from 'firebase/auth';
 import { Subscription } from 'rxjs';
 import { AuthService } from './../../../core/services/auth.service';
+import { FIREBASE_AUTH } from './../../../core/firebase';
 
 @Component({
     selector: 'app-email-verification-banner',
@@ -14,8 +15,9 @@ export class EmailVerificationBannerComponent implements OnInit, OnDestroy {
   visible = false;
   private sub: Subscription;
 
+  private auth = inject(FIREBASE_AUTH);
+
   constructor(
-    private auth: Auth,
     private authService: AuthService,
     private snackBar: MatSnackBar
   ) {}

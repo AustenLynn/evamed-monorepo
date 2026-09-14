@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Auth } from '@angular/fire/auth';
+import { Auth } from 'firebase/auth';
 import { from, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { environment } from './../../../environments/environment';
+import { FIREBASE_AUTH } from './../firebase';
 
 // Our API's origin and path prefix, e.g. http://localhost:8000 + /api-projects/.
 // api_projects ends in /projects/ and may be absolute or relative.
@@ -14,7 +15,7 @@ const apiPath = apiBase.pathname.replace(/projects\/$/, '');
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor(private auth: Auth) {}
+  private auth = inject(FIREBASE_AUTH);
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Only our API gets the Firebase ID token; other requests (assets,

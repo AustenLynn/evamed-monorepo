@@ -1,8 +1,11 @@
-import { Injectable } from '@angular/core';
-import { Auth, authState, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+import { Injectable, inject } from '@angular/core';
+import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
   UserCredential, signOut, sendPasswordResetEmail, sendEmailVerification,
   GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, OAuthProvider,
-  AuthProvider, signInWithPopup, deleteUser,} from '@angular/fire/auth';
+  AuthProvider, signInWithPopup, deleteUser, onAuthStateChanged, User } from 'firebase/auth';
+import { Observable } from 'rxjs';
+
+import { FIREBASE_AUTH } from './../firebase';
 
 // Social providers supported by the app. 'apple' is wired but deferred (it
 // requires a paid Apple Developer account); it is simply not offered in the UI.
@@ -13,9 +16,7 @@ export type SocialProvider = 'google' | 'apple' | 'facebook' | 'microsoft' | 'tw
 })
 export class AuthService {
 
-  constructor(
-    private auth: Auth,
-  ) { }
+  private auth = inject(FIREBASE_AUTH);
 
   createUser(email: string, password: string) {
     return createUserWithEmailAndPassword(this.auth, email, password);
@@ -88,8 +89,11 @@ export class AuthService {
     return this.auth.currentUser;
   }
 
-  hasUser() {
-    return authState(this.auth);
+  // Replaces @angular/fire's authState(): emits the current user immediately
+  // and again on every sign-in/sign-out.
+  hasUser(): Observable<User | null> {
+    return new Observable<User | null>(subscriber =>
+      onAuthStateChanged(this.auth, subscriber));
   }
 
   // Undo a half-finished registration so the email isn't left "already in use".
