@@ -39,7 +39,7 @@
 | # | Decision | Default | Consequence / alternative |
 |---|---|---|---|
 | D5 | Build location | Images are built **on the instance** during deploy | Simple, no registry. Needs the 2 GB swap file (Task 3) because `ng build` peaks above 2 GB. Deploys take ~5–8 min. Alternative: build in CI and push to ECR, then run a 1 GB instance. |
-| D6 | Single origin | Caddy serves the SPA and proxies `/api/*`, `/api-projects/*`, `/api-profiles/*` to Django | No CORS changes and no second hostname. The frontend gets a new `awsdev` build configuration whose API base is the relative path `/api-projects`. |
+| D6 | Single origin | Caddy serves the SPA and proxies `/api/*`, `/api-projects/*` to Django | No CORS changes and no second hostname. The frontend's `production` build already uses the relative API base `/api-projects` (since Render's retirement), so no extra build configuration is needed. `/api-profiles/*` no longer exists — the authorization plan removed it. |
 | D7 | Django admin | **Not** exposed publicly; reach it through an SSH tunnel (`deploy/README.md`) | The SPA already owns the `/admin` route, so the path would collide. Keeping admin off the internet is also safer. |
 | D8 | Backups | Lightsail automatic daily snapshot at 08:00 UTC (02:00 Mexico City), last 7 kept | Whole-disk, crash-consistent. Fine for disposable dev data. Restoring means creating a new instance from the snapshot (runbook in Task 5). |
 | D9 | Instance replacement guard | `lifecycle.ignore_changes = [user_data, blueprint_id, key_pair_name]` | Postgres data lives on the instance disk, so replacing the instance **wipes the DB**. Changing these fields must be a deliberate `-replace`, never a side effect. |
@@ -52,7 +52,7 @@
 1. **The API accepts anonymous writes.** Most `/api-projects/` viewsets (`TransportsViewSet`, `UsesViewSet`, materials, etc. in `backend/evamed-api/projects_api/views.py`) have no `permission_classes`, so DRF's default `AllowAny` applies. On a public hostname anyone can edit catalogue data, and new hostnames get scanned within minutes of their certificate appearing in Certificate Transparency logs. The plan accepts this for dev because the data is a re-seedable dump. Before anything real goes on this box, set `DEFAULT_PERMISSION_CLASSES` (write → `IsAuthenticated`) in a separate change.
 2. **The runtime stack was end-of-life** when this plan was written: Postgres 12 (EOL Nov 2024), Python 3.8 (EOL Oct 2024), Django 2.2 (EOL Apr 2022). `docs/superpowers/plans/2026-09-11-runtime-upgrade.md` is that separate plan; its Task 4 moves local (and this template's) Postgres to **17**, so the `deploy/compose.aws.yml` above starts on `postgres:17-alpine` rather than 12. Django 5.2 refuses to connect below PostgreSQL 14, so a box built from this plan must never be seeded with an older image.
 3. **Credential hygiene.** The ecoinvent credentials are marked "rotate" in `.env`; rotate them before putting them on a server. The Django `SECRET_KEY` in `settings.py` is committed, so dev gets a freshly generated one via env (Task 1). Use an IAM user or IAM Identity Center with MFA for Terraform, never the root account.
-4. **What happens to Render?** This plan leaves `render.yml` and the Render deployment untouched. `environment.prod.ts` still points at Render. Decide separately whether AWS dev replaces Render's role.
+4. **Render is retired** (2026-09-13): `render.yml` is deleted and `environment.prod.ts` now uses the same-origin relative base `/api-projects`. That means the `production` build already suits a single-origin deployment like this one, so the `awsdev` configuration this plan adds in Task 2 is optional — building with `--configuration production` gives the same API base. There is currently no other hosted environment.
 5. **Separate AWS account?** Dev lives in whichever account your CLI profile points at. If that account will also host production later, consider AWS Organizations with a dedicated dev account. The budget alert in this plan is account-wide.
 6. **Stale entries.** `CORS_ALLOWED_ORIGINS` still lists an old EC2 IP (`54.224.175.163`), and `materials.service.ts` has dead `*Fake` methods pointing at Heroku. They are harmless here, but worth deleting.
 
@@ -65,8 +65,6 @@
 | `backend/evamed-api/profiles_project/env.py` | Create | `env_bool` / `env_list` helpers for typed env settings |
 | `backend/evamed-api/profiles_project/tests_env.py` | Create | Tests for the helpers and for env-driven settings |
 | `backend/evamed-api/profiles_project/settings.py` | Modify | `SECRET_KEY`, `ALLOWED_HOSTS`, proxy-TLS header from env |
-| `frontend/evamed/src/environments/environment.awsdev.ts` | Create | Prod-like environment with relative API base `/api-projects` |
-| `frontend/evamed/angular.json` | Modify | New `awsdev` build configuration |
 | `deploy/compose.aws.yml` | Create | Server compose stack: db, api, web, caddy |
 | `deploy/Caddyfile` | Create | TLS + path routing |
 | `deploy/.env.aws.example` | Create | Template for the server's secrets file |
@@ -329,65 +327,39 @@ git commit -m "feat(api): read secret key, allowed hosts and proxy TLS from env"
 
 ---
 
-### Task 2: Frontend `awsdev` build + server compose stack (local smoke test)
+### Task 2: Server compose stack (local smoke test)
 
 **Files:**
-- Create: `frontend/evamed/src/environments/environment.awsdev.ts`
 - Modify: `frontend/evamed/angular.json` (`projects.evamed.architect.build.configurations`)
 - Create: `deploy/compose.aws.yml`, `deploy/Caddyfile`, `deploy/.env.aws.example`, `deploy/dc.sh`
 - Modify: `.gitignore`
 
 **Interfaces:**
-- Consumes: Task 1 env contract (`DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS`, `DJANGO_BEHIND_TLS_PROXY`).
+- Consumes: Task 1 env contract (`DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS`, `DJANGO_BEHIND_TLS_PROXY`). Note `settings.py` already sets `SECURE_PROXY_SSL_HEADER` unconditionally and reads `CSRF_TRUSTED_ORIGINS` from the environment, so this box must set `CSRF_TRUSTED_ORIGINS=https://$SITE_DOMAIN` for the Django admin to accept POSTs.
 - Produces for Tasks 4–5: the compose file at `deploy/compose.aws.yml` (project name `evamed`), which interpolates `SITE_DOMAIN`, `DB_PASSWORD`, `DJANGO_SECRET_KEY`, `FIREBASE_KEY_FILE` (all required) and `ECOINVENT_*` (optional) from an `--env-file`. `deploy/dc.sh` wraps it with the server paths `/opt/evamed/src` and `/opt/evamed/secrets/.env`.
 
-- [ ] **Step 1: Create the `awsdev` environment from prod, swapping only the API base**
+- [ ] **Steps 1–2 (no longer needed): the `awsdev` environment and Angular configuration**
+
+Since Render was retired, `frontend/evamed/src/environments/environment.prod.ts` already uses the relative base `const apiEvamed = '/api-projects',`, which is exactly what this single-origin setup needs. So there is nothing to create: build with the existing `production` configuration and skip to Step 3.
+
+Confirm before moving on:
 
 ```bash
-cd /home/maikolkali/evamed-monorepo/frontend/evamed
-sed "s#'https://evamed-api-vlx1.onrender.com/api-projects'#'/api-projects'#" \
-  src/environments/environment.prod.ts > src/environments/environment.awsdev.ts
-diff src/environments/environment.prod.ts src/environments/environment.awsdev.ts
+head -3 /home/maikolkali/evamed-monorepo/frontend/evamed/src/environments/environment.prod.ts
 ```
 
-Expected diff: exactly one changed line; the new line is `const apiEvamed = '/api-projects',`.
-
-- [ ] **Step 2: Add the `awsdev` configuration to `angular.json`**
-
-Inside `projects.evamed.architect.build.configurations`, after the `"docker": { ... }` object, add (mind the comma after `docker`'s closing brace):
-
-```json
-"awsdev": {
-  "fileReplacements": [
-    {
-      "replace": "src/environments/environment.ts",
-      "with": "src/environments/environment.awsdev.ts"
-    }
-  ],
-  "optimization": true,
-  "outputHashing": "all",
-  "sourceMap": false,
-  "namedChunks": false,
-  "extractLicenses": true,
-  "budgets": [
-    { "type": "initial", "maximumWarning": "2mb", "maximumError": "5mb" },
-    { "type": "anyComponentStyle", "maximumWarning": "6kb", "maximumError": "10kb" }
-  ]
-}
-```
-
-Check it parses: `python3 -c "import json;print(list(json.load(open('angular.json'))['projects']['evamed']['architect']['build']['configurations']))"` → includes `'awsdev'`.
+Expected: the `apiEvamed` line is the relative `'/api-projects'`. If it ever points at an absolute host again, add an `awsdev` environment file plus a matching `angular.json` configuration (copy `production`, adding a `fileReplacements` entry), and use `NG_CONFIGURATION: awsdev` in Step 5's compose file instead of `production`.
 
 - [ ] **Step 3: Verify the build bakes in the relative API base**
 
 ```bash
 cd /home/maikolkali/evamed-monorepo
-docker build --build-arg NG_CONFIGURATION=awsdev -t evamed-web:awsdev frontend/evamed
+docker build --build-arg NG_CONFIGURATION=production -t evamed-web:awsdev frontend/evamed
 docker run --rm evamed-web:awsdev sh -c \
-  'grep -l "onrender.com" dist/evamed/*.js && echo LEAK || echo NO_RENDER; grep -l "/api-projects" dist/evamed/*.js | head -1'
+  'grep -l "https://[a-z0-9.-]*/api-projects" dist/evamed/*.js && echo ABSOLUTE_HOST_LEAK || echo RELATIVE_OK; grep -l "/api-projects" dist/evamed/*.js | head -1'
 ```
 
-Expected: `NO_RENDER`, then one `main-*.js` filename.
+Expected: `RELATIVE_OK`, then one `main-*.js` filename.
 
 - [ ] **Step 4: Create `deploy/Caddyfile`**
 
@@ -475,7 +447,7 @@ services:
     build:
       context: ../frontend/evamed
       args:
-        NG_CONFIGURATION: awsdev
+        NG_CONFIGURATION: production
     restart: unless-stopped
     environment:
       PORT: "8080"
@@ -596,9 +568,8 @@ docker compose -f deploy/compose.aws.yml --env-file "$SMOKE" -p evamed-smoke dow
 - [ ] **Step 10: Commit**
 
 ```bash
-git add frontend/evamed/src/environments/environment.awsdev.ts frontend/evamed/angular.json \
-  deploy/compose.aws.yml deploy/Caddyfile deploy/.env.aws.example deploy/dc.sh .gitignore
-git commit -m "feat(deploy): add awsdev frontend build and Caddy-fronted compose stack"
+git add deploy/compose.aws.yml deploy/Caddyfile deploy/.env.aws.example deploy/dc.sh .gitignore
+git commit -m "feat(deploy): add Caddy-fronted compose stack for the dev box"
 ```
 
 ---

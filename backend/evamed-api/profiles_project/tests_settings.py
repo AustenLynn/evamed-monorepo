@@ -1,6 +1,6 @@
 """Settings-level checks for the proxy/CSRF configuration the admin depends on.
 
-Render terminates TLS in front of gunicorn, so Django only sees an http
+A proxy terminating TLS in front of gunicorn leaves Django seeing an http
 request while the browser sends an https `Origin` header. Django 4.0+ compares
 the two on every unsafe request, so the admin (login included) 403s unless the
 forwarded scheme is trusted and the site's own origin is listed.

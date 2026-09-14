@@ -24,11 +24,12 @@ DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['*']
 
-# Render (and any TLS-terminating proxy) forwards the original scheme; without
-# this, request.is_secure() is False and Django 4.0+ rejects the admin's
-# https Origin as a CSRF failure.
+# A TLS-terminating proxy forwards the original scheme; without this,
+# request.is_secure() is False and Django 4.0+ rejects the admin's
+# https Origin as a CSRF failure. Only safe behind a proxy that always
+# sets X-Forwarded-Proto.
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-# Comma-separated, scheme included, e.g. https://evamed-api-vlx1.onrender.com
+# Comma-separated, scheme included, e.g. https://api.example.com
 CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()]
 
 
@@ -72,7 +73,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://0.0.0.0:8000",
     "http://0.0.0.0:8080",
     "http://54.224.175.163",
-    "https://evamed-frontend-vlx1.onrender.com",
 ]
 
 ROOT_URLCONF = 'profiles_project.urls'

@@ -37,9 +37,9 @@ Node is independent.
 | U3 | Python target | **3.12** (supported until Oct 2028) | Django 4.2.8+ and 5.2 support it, and it has mature wheels for everything we use. 3.13 would also work; there's no need yet. |
 | U4 | PostgreSQL target | **17** (supported until Nov 2029) | Django 5.2 needs ≥ 14. The seed `backup` is a custom-format dump (`PGDMP`), which `pg_restore` 17 reads fine. |
 | U5 | DB driver | Stay on `psycopg2` 2.9 | Zero code change. psycopg 3 is a later, separate improvement. |
-| U6 | Unused deps | Remove `python-decouple`, `dj-database-url`, `pytz`; delete `settings_local.py`, `runtime.txt` | All are imported nowhere or unused. `settings_local.py` is an old SQLite/Heroku settings file that nothing loads. `runtime.txt` is a Heroku relic; Render and Docker read the `Dockerfile`. |
+| U6 | Unused deps | Remove `python-decouple`, `dj-database-url`, `pytz`; delete `settings_local.py`, `runtime.txt` | All are imported nowhere or unused. `settings_local.py` is an old SQLite/Heroku settings file that nothing loads. `runtime.txt` is a Heroku relic; Docker builds read the `Dockerfile`. |
 | U7 | Node for the frontend image | **22 LTS** (maintenance until Apr 2027) | Node 18 reached end of life in April 2025. Angular 19 supports `^22.0.0`. Your WSL already has Node v22.22.0. |
-| U7b | `CSRF_TRUSTED_ORIGINS` | **Per-environment, read from the environment** (comma-separated, scheme included); `render.yml` sets it for `evamed-api` | Django 4.0+ checks the `Origin` header on unsafe requests, so the admin needs its own https origin listed, and the value differs per deployment. Hardcoding it in `settings.py` would break every other environment. Any new environment (AWS dev, a preview service) must set it, or admin POSTs 403. |
+| U7b | `CSRF_TRUSTED_ORIGINS` | **Per-environment, read from the environment** (comma-separated, scheme included); each environment sets it | Django 4.0+ checks the `Origin` header on unsafe requests, so the admin needs its own https origin listed, and the value differs per deployment. Hardcoding it in `settings.py` would break every other environment. Any environment must set it, or admin POSTs 403. |
 | U8 | Order vs. the authorization plan | Do `2026-09-11-api-authorization.md` **first** if you can | Its ~35 permission tests become part of this upgrade's safety net. Nothing here depends on it; Task 1 works either way. |
 
 **Out of scope, but also end-of-life:** **Angular 19** left long-term support around May 2026. Upgrading Angular (19 → 20 → 21, one major at a time with `ng update`) touches every module and deserves its own plan.
@@ -210,7 +210,7 @@ Expected: no output. (DRF 3.9 already accepts `basename`; 3.11+ rejects `base_na
 
 ```bash
 git rm backend/evamed-api/profiles_project/settings_local.py
-grep -rn "settings_local" backend/ docker-compose.yml render.yml
+grep -rn "settings_local" backend/ docker-compose.yml
 ```
 
 Expected: no output.
@@ -511,91 +511,70 @@ git commit -m "chore(frontend): Node 22 LTS image"
 
 ---
 
-### Task 7: Rollout, in three stages
+### Task 7: Rollout
 
 **Files:** none
 
-**Stage A: everything except Django 5.2** (Tasks 1–4 and 6 on `main`)
+**Render was retired on 2026-09-13** (`render.yml` deleted, `environment.prod.ts` switched to the same-origin path `/api-projects`), so at the time of writing there is **no hosted environment** for this code. That removes Stage B entirely: nothing deployed is stuck on an old PostgreSQL, so Django 5.2 is merged into `main` rather than held on a branch. What remains is local verification now, and a checklist for whoever stands up the next environment.
 
-- [ ] **Step 0 (blocking gate): confirm production PostgreSQL is ≥ 12 BEFORE pushing anything.** Django 4.2 refuses to connect to anything older. In the Render shell for `evamed-api`:
+**Local verification (done as part of Tasks 1–6)**
 
-```bash
-python manage.py shell -c "from django.db import connection; connection.ensure_connection(); print(connection.pg_version)"
-```
+- Full suite green, `makemigrations --check` clean, `manage.py check` clean, the stack boots on PostgreSQL 17 and answers `/api/health/`.
+- The pre-upgrade local database dump is kept at `~/evamed-local-pre-pg17-<date>.dump`.
 
-Do **not** deploy Stage A until this prints `120000` or higher. If it prints less, the database has to be upgraded first (Stage B's Step 6 procedure, just to a lower target) — otherwise the new image boots against a database it cannot open and the service stays down. Stage B's Step 5 runs the same one-liner again for the ≥ `140000` decision; keep both.
+**Blocking human smoke test — do this locally now, and again on any new environment**
 
-- [ ] **Step 1:** Back up production (Render dashboard → database → Backups, or `pg_dump -Fc` with the external URL).
-- [ ] **Step 2:** Push `main`. Render rebuilds `evamed-api` (Python 3.12 / Django 4.2, which works on the current DB) and `evamed-frontend` (Node 22). `docker-compose.yml` doesn't affect Render.
-- [ ] **Step 3 (blocking human smoke test — a human must do all of it before Stage A counts as done):**
-  1. `curl -s https://<render-api-host>/api/health/` → `{"status": "ok"}`.
-  2. **Sign in with a real Firebase account.** This is the only real exercise of the firebase-admin 6→7 jump; the test suite mocks token verification end to end, so a broken credential or verification path shows up here and nowhere else.
-  3. Open a project.
-  4. Open that project's results.
-  5. **Load an admin page** (`/admin/`) — exercises `collectstatic` and the manifest static storage.
-  6. **Perform one admin POST** (the login itself counts, or save any object) — exercises the CSRF/`Origin` path behind Render's TLS-terminating proxy, i.e. `SECURE_PROXY_SSL_HEADER` plus `CSRF_TRUSTED_ORIGINS`.
+1. `curl -s http://localhost:8000/api/health/` → `{"status": "ok"}`.
+2. **Sign in with a real Firebase account.** This is the only real exercise of the firebase-admin 6→7 jump; the test suite mocks token verification end to end, so a broken credential or verification path shows up here and nowhere else.
+3. Open a project.
+4. Open that project's results.
+5. **Load an admin page** (`/admin/`) — exercises `collectstatic` and the manifest static storage.
+6. **Perform one admin POST** (the login itself counts, or save any object) — exercises the CSRF/`Origin` path, i.e. `SECURE_PROXY_SSL_HEADER` plus `CSRF_TRUSTED_ORIGINS`.
 
-  If any of these fails, roll back (see **Rollback**) rather than continuing to Stage B.
-- [ ] **Step 4 (AWS dev — N/A today):** `deploy/compose.aws.yml` does not exist in this repo, so there is no PG12 AWS-dev stack to migrate; skip this step. It applies only once `docs/superpowers/plans/2026-09-11-aws-lightsail-dev-deploy.md` has been executed, and that plan's template now starts on `postgres:17-alpine`, so a freshly built box needs no migration at all. Kept for the case of a box built from the older PG12 template — the new `postgres:17-alpine` image can't open a PG12 volume, so on the box:
+**When a new environment is created**
 
-```bash
-ssh ubuntu@$EVAMED_DEV_HOST 'bash /opt/evamed/src/deploy/dc.sh exec -T db pg_dump -U myprojectuser -Fc evamed_total > /opt/evamed/pre-pg17.dump && ls -l /opt/evamed/pre-pg17.dump'
-ssh ubuntu@$EVAMED_DEV_HOST 'bash /opt/evamed/src/deploy/dc.sh down && docker volume rm evamed_db_data'
-deploy/deploy.sh                                          # starts PG17; seed restores
-ssh ubuntu@$EVAMED_DEV_HOST 'bash /opt/evamed/src/deploy/dc.sh exec -T db pg_restore -U myprojectuser -d evamed_total --clean --if-exists --no-owner < /opt/evamed/pre-pg17.dump; bash /opt/evamed/src/deploy/dc.sh restart api'
-```
-
-(Dev data is disposable; skip the restore if the seed is enough.)
-
-**Stage B: production database to PostgreSQL ≥ 14 (ideally 17)**
-
-- [ ] **Step 5: Find the version**
-
-In the Render shell for `evamed-api`:
+- Start its database at **PostgreSQL 17**. Django 5.2 refuses to connect below 14, and a new environment has no reason to start lower. `docs/superpowers/plans/2026-09-11-aws-lightsail-dev-deploy.md` already specifies `postgres:17-alpine`.
+- Set **`CSRF_TRUSTED_ORIGINS`** for that environment (comma-separated, scheme included, e.g. `https://api.example.com`), or every admin POST 403s. `SECURE_PROXY_SSL_HEADER` is already set and is correct only behind a proxy that always sets `X-Forwarded-Proto`; if you ever run gunicorn with no proxy in front, remove it.
+- The frontend's production build now uses the relative base `/api-projects`, so the API and the SPA must be served from **one origin** (the AWS-dev plan's Caddy setup does this). If you ever split them across hosts, give the frontend an absolute API base again and re-add that origin to `CORS_ALLOWED_ORIGINS`.
+- Run `python manage.py collectstatic --noinput` on boot (`entrypoint.sh` does it) and `grant_admin <email>` for each admin.
+- Confirm the database version before the first deploy:
 
 ```bash
 python manage.py shell -c "from django.db import connection; connection.ensure_connection(); print(connection.pg_version)"
 ```
 
-`140000` or higher means Django 5.2 will run; skip to Stage C (you can still plan a move to 17). Anything lower must be upgraded first.
+`140000` or higher for Django 5.2. Below that, the service will not start.
 
-- [ ] **Step 5b: Rehearse the dump→restore into a throwaway PG17 database first.** Never let production be the first restore you try:
+**Migrating an existing database to PostgreSQL 17 (kept for reuse)**
+
+Should a future environment need a major-version move, the procedure that worked locally, plus the two traps worth knowing:
+
+1. Rehearse into a throwaway PG17 database first — never let the real target be your first restore:
 
 ```bash
-pg_dump -Fc "<old external URL>" > prod.dump
+pg_dump -Fc "<old URL>" > prod.dump
 docker run -d --name pg17-rehearsal -e POSTGRES_PASSWORD=rehearsal -p 55432:5432 postgres:17-alpine
 docker exec -i pg17-rehearsal psql -U postgres -c "create database rehearsal"
 pg_restore --no-owner --no-privileges -d "postgresql://postgres:rehearsal@localhost:55432/rehearsal" prod.dump
+docker rm -f pg17-rehearsal
 ```
 
-Fix every error the rehearsal reports before touching the real target, then `docker rm -f pg17-rehearsal`.
+2. **Grant the app user rights on schema `public` before restoring.** PostgreSQL 15 changed the default: `CREATE` on schema `public` is no longer granted to `PUBLIC`, so a restore run as a non-owner fails with `permission denied for schema public`. Either restore as the database owner, or first:
 
-- [ ] **Step 6: Upgrade.** Take a fresh backup. If Render offers an in-place major-version upgrade for your database plan, use it. Otherwise:
-  1. Create a new PostgreSQL 17 database in Render.
-  2. **Before restoring, grant the app user rights on schema `public`.** PostgreSQL 15 changed the default: `CREATE` on schema `public` is no longer granted to `PUBLIC`, so a restore run as a non-owner fails with `permission denied for schema public`. Either run the restore as the database owner, or first:
+```sql
+GRANT CREATE, USAGE ON SCHEMA public TO <app_user>;
+```
 
-     ```sql
-     GRANT CREATE, USAGE ON SCHEMA public TO <app_user>;
-     ```
-  3. Copy the data: `pg_dump -Fc "<old external URL>" > prod.dump`, then `pg_restore --no-owner --no-privileges -d "<new external URL>" prod.dump`.
-  4. **Compare row counts after the restore**, the way Task 4 did locally (it expected `406` materials):
+3. **Compare row counts after the restore** (locally this was `406` materials):
 
-     ```bash
-     psql "<old external URL>" -tAc "select count(*) from projects_api_material"
-     psql "<new external URL>" -tAc "select count(*) from projects_api_material"
-     ```
+```bash
+psql "<old URL>" -tAc "select count(*) from projects_api_material"
+psql "<new URL>" -tAc "select count(*) from projects_api_material"
+```
 
-     The two numbers must match before you point the API at the new database. Spot-check `projects_api_project` and `profiles_api_userprofile` the same way.
-  5. Point `evamed-api` at the new database: change `fromDatabase.name` in `render.yml`, or the `DB_*` env vars in the dashboard.
-  6. Redeploy and re-run Step 5 until it prints ≥ `140000`.
-
-  Schedule a short maintenance window: writes made between the dump and the switch are lost.
-
-**Stage C: Django 5.2**
-
-- [ ] **Step 7:** Only after Step 5 shows ≥ 14 on **every** deployed environment (Render, and AWS dev from Step 4): merge `upgrade/django-5.2` into `main`, push, and repeat the Step 3 smoke test.
+   They must match before you point the API at the new database. Spot-check `projects_api_project` and `profiles_api_userprofile` too. Schedule a maintenance window: writes made between the dump and the switch are lost.
 
 **Rollback**
 
 - App: redeploy the previous commit. The upgrade adds no migrations to our own apps. Any new migrations Django applies to its built-in apps are additive, and the older version ignores them.
-- Database: restore the backup taken before the stage into a database of the old version, and point the API back at it.
+- Database: restore the backup taken before the change into a database of the old version, and point the API back at it.

@@ -17,7 +17,8 @@ def _get_firebase_app():
         cred = credentials.Certificate(json.loads(cred_json))
         return firebase_admin.initialize_app(cred)
 
-    # Fall back to Application Default Credentials (Google Cloud / Render with workload identity)
+    # Fall back to Application Default Credentials (Google Cloud, or any host
+    # providing workload identity)
     return firebase_admin.initialize_app()
 
 

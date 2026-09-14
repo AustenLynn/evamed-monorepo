@@ -1,5 +1,5 @@
 // generar api
-const apiEvamed = 'https://evamed-api-vlx1.onrender.com/api-projects',
+const apiEvamed = '/api-projects',
 // apis
  projects = '/projects/',
  transports = '/transports/',

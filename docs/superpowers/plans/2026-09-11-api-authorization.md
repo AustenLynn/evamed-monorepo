@@ -44,7 +44,7 @@ An "admin" is a Django `UserProfile` with `is_staff`, reachable only through a *
 
 ### Needs your decision (not blocking the code)
 
-1. **Possible exposure of plaintext passwords.** Until commit `6c020f8` (2026-06-18), `users-platform/` had no permission check, so anyone on the internet could `GET` every user's name, email and plaintext password from the live API (Render, and Heroku before it). From then until this plan ships, any signed-in user can. Those are the same passwords users use for Firebase, and probably elsewhere. This plan stops the leak and deletes the data. It does **not** decide on:
+1. **Possible exposure of plaintext passwords.** Until commit `6c020f8` (2026-06-18), `users-platform/` had no permission check, so anyone on the internet could `GET` every user's name, email and plaintext password from the live API (Render, and Heroku before it; both now retired). From then until this plan ships, any signed-in user can. Those are the same passwords users use for Firebase, and probably elsewhere. This plan stops the leak and deletes the data. It does **not** decide on:
    - forcing a password reset for all email/password accounts (possible in bulk with the Firebase Admin SDK by revoking refresh tokens and sending reset emails),
    - notifying users,
    - whether Mexican data-protection law (LFPDPPP) or your institution's policy creates a notification duty.
@@ -1314,7 +1314,7 @@ git commit -m "fix(frontend): wait for auth before API calls, keep passwords out
 
 - [ ] **Step 1: Pre-flight on the live database (read-only)**
 
-Run against the production DB (Render shell for `evamed-api`, or `psql` with the external connection string):
+Run against whichever database holds the real data (a shell on the deployed API, or `psql` with its connection string). Render was retired on 2026-09-13, so if no environment is deployed yet this step applies to the first one that is:
 
 ```bash
 python manage.py shell -c "
@@ -1343,7 +1343,7 @@ print('unverified Firebase accounts that own projects:', len(unverified))
 
 Record the numbers. After rollout, ownerless projects become invisible to everyone (they are only reachable in Django admin). Duplicate emails are harmless, because both rows count as the same owner. The third number is the size of the password exposure for decision 1. Emails with leading/trailing whitespace won't match any token email, so those users lose their projects until the rows are trimmed. The unverified owners lose access to their projects until they verify; consider emailing them first.
 
-- [ ] **Step 2: Take a backup** of the production DB with `pg_dump -Fc` (Render's free tier has no dashboard backups). Migration `0083` deletes the password column irreversibly. This backup contains the plaintext passwords, so delete it once the deploy is verified.
+- [ ] **Step 2: Take a backup** of that database with `pg_dump -Fc`. Migration `0083` deletes the password column irreversibly. This backup contains the plaintext passwords, so delete it once the deploy is verified.
 
 - [ ] **Step 3: Resolve the "Needs your decision" items** (password-exposure response, admin list).
 
@@ -1356,10 +1356,10 @@ Record the numbers. After rollout, ownerless projects become invisible to everyo
 - [ ] **Step 5: Grant admins on each environment**
 
 ```bash
-# Render: shell for evamed-api    |  local: docker compose exec api ...  |  AWS dev: bash /opt/evamed/src/deploy/dc.sh exec api ...
+# local: docker compose exec api ...   |   AWS dev: bash /opt/evamed/src/deploy/dc.sh exec api ...
 python manage.py grant_admin arqarvizup@gmail.com
 ```
 
 That account must sign in with a **verified** email (Google sign-in qualifies; an email/password account must click its verification link first).
 
-- [ ] **Step 6: Smoke-test production:** repeat the four `curl` checks from Task 6 Step 9 against the Render API URL, plus browser checks 1–3 with a real account.
+- [ ] **Step 6: Smoke-test the deployment:** repeat the four `curl` checks from Task 6 Step 9 against its API URL, plus browser checks 1–3 with a real account.
