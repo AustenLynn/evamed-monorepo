@@ -39,6 +39,7 @@ Node is independent.
 | U5 | DB driver | Stay on `psycopg2` 2.9 | Zero code change. psycopg 3 is a later, separate improvement. |
 | U6 | Unused deps | Remove `python-decouple`, `dj-database-url`, `pytz`; delete `settings_local.py`, `runtime.txt` | All are imported nowhere or unused. `settings_local.py` is an old SQLite/Heroku settings file that nothing loads. `runtime.txt` is a Heroku relic; Render and Docker read the `Dockerfile`. |
 | U7 | Node for the frontend image | **22 LTS** (maintenance until Apr 2027) | Node 18 reached end of life in April 2025. Angular 19 supports `^22.0.0`. Your WSL already has Node v22.22.0. |
+| U7b | `CSRF_TRUSTED_ORIGINS` | **Per-environment, read from the environment** (comma-separated, scheme included); `render.yml` sets it for `evamed-api` | Django 4.0+ checks the `Origin` header on unsafe requests, so the admin needs its own https origin listed, and the value differs per deployment. Hardcoding it in `settings.py` would break every other environment. Any new environment (AWS dev, a preview service) must set it, or admin POSTs 403. |
 | U8 | Order vs. the authorization plan | Do `2026-09-11-api-authorization.md` **first** if you can | Its ~35 permission tests become part of this upgrade's safety net. Nothing here depends on it; Task 1 works either way. |
 
 **Out of scope, but also end-of-life:** **Angular 19** left long-term support around May 2026. Upgrading Angular (19 → 20 → 21, one major at a time with `ng update`) touches every module and deserves its own plan.
@@ -57,7 +58,7 @@ Node is independent.
 | `backend/evamed-api/runtime.txt` | Delete | Heroku relic |
 | `backend/evamed-api/Dockerfile` | Modify | Python 3.12 base |
 | `docker-compose.yml` | Modify | `postgres:17-alpine` |
-| `deploy/compose.aws.yml` | Modify (only if it exists) | `postgres:17-alpine` |
+| `deploy/compose.aws.yml` | N/A — does not exist in this repo | Would be `postgres:17-alpine`; the AWS-dev plan's template now specifies 17 directly |
 | `frontend/evamed/Dockerfile`, `frontend/evamed/package.json` | Modify | Node 22 |
 
 ---
@@ -363,7 +364,7 @@ Expected: a non-empty dump file and the material count (note it, e.g. `406`).
 
 - [ ] **Step 2: Switch the image**
 
-In `docker-compose.yml`, change `image: postgres:12-alpine` to `image: postgres:17-alpine`. If `deploy/compose.aws.yml` exists, make the same change there. **Deploying that file to the AWS box requires Task 7's AWS-dev procedure in the same sitting.**
+In `docker-compose.yml`, change `image: postgres:12-alpine` to `image: postgres:17-alpine`. (`deploy/compose.aws.yml` — **N/A**: that file does not exist in this repo, and `docs/superpowers/plans/2026-09-11-aws-lightsail-dev-deploy.md` now templates it at `postgres:17-alpine`, so there is nothing to migrate. If a box was ever built from the older PG12 template, **deploying the change to it requires Task 7's AWS-dev procedure in the same sitting.**)
 
 - [ ] **Step 3: Recreate the volume (seed restores automatically)**
 
@@ -516,10 +517,26 @@ git commit -m "chore(frontend): Node 22 LTS image"
 
 **Stage A: everything except Django 5.2** (Tasks 1–4 and 6 on `main`)
 
+- [ ] **Step 0 (blocking gate): confirm production PostgreSQL is ≥ 12 BEFORE pushing anything.** Django 4.2 refuses to connect to anything older. In the Render shell for `evamed-api`:
+
+```bash
+python manage.py shell -c "from django.db import connection; connection.ensure_connection(); print(connection.pg_version)"
+```
+
+Do **not** deploy Stage A until this prints `120000` or higher. If it prints less, the database has to be upgraded first (Stage B's Step 6 procedure, just to a lower target) — otherwise the new image boots against a database it cannot open and the service stays down. Stage B's Step 5 runs the same one-liner again for the ≥ `140000` decision; keep both.
+
 - [ ] **Step 1:** Back up production (Render dashboard → database → Backups, or `pg_dump -Fc` with the external URL).
 - [ ] **Step 2:** Push `main`. Render rebuilds `evamed-api` (Python 3.12 / Django 4.2, which works on the current DB) and `evamed-frontend` (Node 22). `docker-compose.yml` doesn't affect Render.
-- [ ] **Step 3:** Smoke-test production: `curl -s https://<render-api-host>/api/health/`, then log in, open a project and its results.
-- [ ] **Step 4 (AWS dev, if built):** the new `postgres:17-alpine` image can't open the PG12 volume, so on the box:
+- [ ] **Step 3 (blocking human smoke test — a human must do all of it before Stage A counts as done):**
+  1. `curl -s https://<render-api-host>/api/health/` → `{"status": "ok"}`.
+  2. **Sign in with a real Firebase account.** This is the only real exercise of the firebase-admin 6→7 jump; the test suite mocks token verification end to end, so a broken credential or verification path shows up here and nowhere else.
+  3. Open a project.
+  4. Open that project's results.
+  5. **Load an admin page** (`/admin/`) — exercises `collectstatic` and the manifest static storage.
+  6. **Perform one admin POST** (the login itself counts, or save any object) — exercises the CSRF/`Origin` path behind Render's TLS-terminating proxy, i.e. `SECURE_PROXY_SSL_HEADER` plus `CSRF_TRUSTED_ORIGINS`.
+
+  If any of these fails, roll back (see **Rollback**) rather than continuing to Stage B.
+- [ ] **Step 4 (AWS dev — N/A today):** `deploy/compose.aws.yml` does not exist in this repo, so there is no PG12 AWS-dev stack to migrate; skip this step. It applies only once `docs/superpowers/plans/2026-09-11-aws-lightsail-dev-deploy.md` has been executed, and that plan's template now starts on `postgres:17-alpine`, so a freshly built box needs no migration at all. Kept for the case of a box built from the older PG12 template — the new `postgres:17-alpine` image can't open a PG12 volume, so on the box:
 
 ```bash
 ssh ubuntu@$EVAMED_DEV_HOST 'bash /opt/evamed/src/deploy/dc.sh exec -T db pg_dump -U myprojectuser -Fc evamed_total > /opt/evamed/pre-pg17.dump && ls -l /opt/evamed/pre-pg17.dump'
@@ -542,11 +559,35 @@ python manage.py shell -c "from django.db import connection; connection.ensure_c
 
 `140000` or higher means Django 5.2 will run; skip to Stage C (you can still plan a move to 17). Anything lower must be upgraded first.
 
+- [ ] **Step 5b: Rehearse the dump→restore into a throwaway PG17 database first.** Never let production be the first restore you try:
+
+```bash
+pg_dump -Fc "<old external URL>" > prod.dump
+docker run -d --name pg17-rehearsal -e POSTGRES_PASSWORD=rehearsal -p 55432:5432 postgres:17-alpine
+docker exec -i pg17-rehearsal psql -U postgres -c "create database rehearsal"
+pg_restore --no-owner --no-privileges -d "postgresql://postgres:rehearsal@localhost:55432/rehearsal" prod.dump
+```
+
+Fix every error the rehearsal reports before touching the real target, then `docker rm -f pg17-rehearsal`.
+
 - [ ] **Step 6: Upgrade.** Take a fresh backup. If Render offers an in-place major-version upgrade for your database plan, use it. Otherwise:
   1. Create a new PostgreSQL 17 database in Render.
-  2. Copy the data: `pg_dump -Fc "<old external URL>" > prod.dump`, then `pg_restore --no-owner --no-privileges -d "<new external URL>" prod.dump`.
-  3. Point `evamed-api` at the new database: change `fromDatabase.name` in `render.yml`, or the `DB_*` env vars in the dashboard.
-  4. Redeploy and re-run Step 5 until it prints ≥ `140000`.
+  2. **Before restoring, grant the app user rights on schema `public`.** PostgreSQL 15 changed the default: `CREATE` on schema `public` is no longer granted to `PUBLIC`, so a restore run as a non-owner fails with `permission denied for schema public`. Either run the restore as the database owner, or first:
+
+     ```sql
+     GRANT CREATE, USAGE ON SCHEMA public TO <app_user>;
+     ```
+  3. Copy the data: `pg_dump -Fc "<old external URL>" > prod.dump`, then `pg_restore --no-owner --no-privileges -d "<new external URL>" prod.dump`.
+  4. **Compare row counts after the restore**, the way Task 4 did locally (it expected `406` materials):
+
+     ```bash
+     psql "<old external URL>" -tAc "select count(*) from projects_api_material"
+     psql "<new external URL>" -tAc "select count(*) from projects_api_material"
+     ```
+
+     The two numbers must match before you point the API at the new database. Spot-check `projects_api_project` and `profiles_api_userprofile` the same way.
+  5. Point `evamed-api` at the new database: change `fromDatabase.name` in `render.yml`, or the `DB_*` env vars in the dashboard.
+  6. Redeploy and re-run Step 5 until it prints ≥ `140000`.
 
   Schedule a short maintenance window: writes made between the dump and the switch are lost.
 

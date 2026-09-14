@@ -50,7 +50,7 @@
 ### Gaps you should decide on (not blocking this plan)
 
 1. **The API accepts anonymous writes.** Most `/api-projects/` viewsets (`TransportsViewSet`, `UsesViewSet`, materials, etc. in `backend/evamed-api/projects_api/views.py`) have no `permission_classes`, so DRF's default `AllowAny` applies. On a public hostname anyone can edit catalogue data, and new hostnames get scanned within minutes of their certificate appearing in Certificate Transparency logs. The plan accepts this for dev because the data is a re-seedable dump. Before anything real goes on this box, set `DEFAULT_PERMISSION_CLASSES` (write → `IsAuthenticated`) in a separate change.
-2. **The runtime stack is end-of-life:** Postgres 12 (EOL Nov 2024), Python 3.8 (EOL Oct 2024), Django 2.2 (EOL Apr 2022). Fine for dev, but upgrade before any production move to AWS. That is a separate plan.
+2. **The runtime stack was end-of-life** when this plan was written: Postgres 12 (EOL Nov 2024), Python 3.8 (EOL Oct 2024), Django 2.2 (EOL Apr 2022). `docs/superpowers/plans/2026-09-11-runtime-upgrade.md` is that separate plan; its Task 4 moves local (and this template's) Postgres to **17**, so the `deploy/compose.aws.yml` above starts on `postgres:17-alpine` rather than 12. Django 5.2 refuses to connect below PostgreSQL 14, so a box built from this plan must never be seeded with an older image.
 3. **Credential hygiene.** The ecoinvent credentials are marked "rotate" in `.env`; rotate them before putting them on a server. The Django `SECRET_KEY` in `settings.py` is committed, so dev gets a freshly generated one via env (Task 1). Use an IAM user or IAM Identity Center with MFA for Terraform, never the root account.
 4. **What happens to Render?** This plan leaves `render.yml` and the Render deployment untouched. `environment.prod.ts` still points at Render. Decide separately whether AWS dev replaces Render's role.
 5. **Separate AWS account?** Dev lives in whichever account your CLI profile points at. If that account will also host production later, consider AWS Organizations with a dedicated dev account. The budget alert in this plan is account-wide.
@@ -417,7 +417,9 @@ name: evamed
 
 services:
   db:
-    image: postgres:12-alpine
+    # PostgreSQL 17: Django 5.2 refuses to connect to anything below 14, and the
+    # seed `backup` is a custom-format dump that pg_restore 17 reads fine.
+    image: postgres:17-alpine
     restart: unless-stopped
     environment:
       POSTGRES_DB: evamed_total
