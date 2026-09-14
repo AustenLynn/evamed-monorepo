@@ -23,6 +23,13 @@ module.exports = tseslint.config(
       preferArrow: preferArrow
     },
     rules: {
+      // angular-eslint@21's recommended config newly enables these three rules,
+      // which enforce the standalone-components / inject() / control-flow
+      // migrations. Those migrations were explicitly declined for this Angular
+      // 21 upgrade task, so the rules that would flag every un-migrated file
+      // are turned off rather than adopted piecemeal.
+      "@angular-eslint/prefer-standalone": "off",
+      "@angular-eslint/prefer-inject": "off",
       "@angular-eslint/directive-selector": [
         "error",
         {
@@ -143,6 +150,11 @@ module.exports = tseslint.config(
       ...angular.configs.templateRecommended,
       ...angular.configs.templateAccessibility,
     ],
-    rules: {},
+    rules: {
+      // See the comment above the "@angular-eslint/prefer-standalone" rule:
+      // the built-in control-flow migration (*ngIf/*ngFor -> @if/@for) was
+      // explicitly declined for this Angular 21 upgrade task.
+      "@angular-eslint/template/prefer-control-flow": "off",
+    },
   }
 );
