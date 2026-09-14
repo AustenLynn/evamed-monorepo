@@ -444,23 +444,23 @@ td.mat-mdc-footer-cell:first-of-type {
 
 .toggle-switch {
   /* Checked (on) state */
-  --mdc-switch-selected-track-color: #81c784;
-  --mdc-switch-selected-handle-color: #66bb6a;
-  --mdc-switch-selected-hover-track-color: #a5d6a7;
-  --mdc-switch-selected-hover-handle-color: #81c784;
-  --mdc-switch-selected-focus-track-color: #a5d6a7;
-  --mdc-switch-selected-focus-handle-color: #81c784;
-  --mdc-switch-selected-pressed-track-color: #66bb6a;
-  --mdc-switch-selected-pressed-handle-color: #4caf50;
+  --mat-slide-toggle-selected-track-color: #81c784;
+  --mat-slide-toggle-selected-handle-color: #66bb6a;
+  --mat-slide-toggle-selected-hover-track-color: #a5d6a7;
+  --mat-slide-toggle-selected-hover-handle-color: #81c784;
+  --mat-slide-toggle-selected-focus-track-color: #a5d6a7;
+  --mat-slide-toggle-selected-focus-handle-color: #81c784;
+  --mat-slide-toggle-selected-pressed-track-color: #66bb6a;
+  --mat-slide-toggle-selected-pressed-handle-color: #4caf50;
   /* Unchecked (off) state — gray */
-  --mdc-switch-unselected-track-color: #bdbdbd;
-  --mdc-switch-unselected-handle-color: #9e9e9e;
-  --mdc-switch-unselected-hover-track-color: #e0e0e0;
-  --mdc-switch-unselected-hover-handle-color: #bdbdbd;
-  --mdc-switch-unselected-focus-track-color: #bdbdbd;
-  --mdc-switch-unselected-focus-handle-color: #9e9e9e;
-  --mdc-switch-unselected-pressed-track-color: #9e9e9e;
-  --mdc-switch-unselected-pressed-handle-color: #757575;
+  --mat-slide-toggle-unselected-track-color: #bdbdbd;
+  --mat-slide-toggle-unselected-handle-color: #9e9e9e;
+  --mat-slide-toggle-unselected-hover-track-color: #e0e0e0;
+  --mat-slide-toggle-unselected-hover-handle-color: #bdbdbd;
+  --mat-slide-toggle-unselected-focus-track-color: #bdbdbd;
+  --mat-slide-toggle-unselected-focus-handle-color: #9e9e9e;
+  --mat-slide-toggle-unselected-pressed-track-color: #9e9e9e;
+  --mat-slide-toggle-unselected-pressed-handle-color: #757575;
 }
 
 ::ng-deep .toggle-switch .mdc-switch__track::after {

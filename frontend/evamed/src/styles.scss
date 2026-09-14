@@ -588,8 +588,8 @@ span.mat-option-text {
 }
 
 :root {
-  --mat-tab-header-divider-height: 1px;
-  --mat-tab-header-divider-color: #e0e2ec;
+  --mat-tab-divider-height: 1px;
+  --mat-tab-divider-color: #e0e2ec;
 }
 
 /*.mat-mdc-tab-body-content {
@@ -669,25 +669,25 @@ span.mat-checkbox-label {
 }
 
 .mat-mdc-tab-group {
-  --mat-tab-header-disabled-ripple-color: rgba(0, 0, 0, 0.38);
-  --mat-tab-header-pagination-icon-color: black;
-  --mat-tab-header-inactive-label-text-color: rgba(0, 0, 0, 0.6);
-  --mat-tab-header-active-label-text-color: rgba(0, 0, 0, 0.6);
-  --mat-tab-header-active-ripple-color: #7fa20b;
-  --mat-tab-header-inactive-ripple-color: #7fa20b;
-  --mat-tab-header-active-indicator-color: #7fa20b;
-  --mat-tab-header-inactive-focus-label-text-color: rgba(0, 0, 0, 0.6);
-  --mat-tab-header-inactive-hover-label-text-color: rgba(0, 0, 0, 0.6);
-  --mat-tab-header-active-focus-label-text-color: rgba(0, 0, 0, 0.6);
-  --mat-tab-header-active-hover-label-text-color: rgba(0, 0, 0, 0.6);
-  --mat-tab-header-active-focus-indicator-color: #7fa20b;
-  --mat-tab-header-active-hover-indicator-color: #7fa20b;
-  --mdc-tab-indicator-active-indicator-color: #7fa20b;
+  --mat-tab-disabled-ripple-color: rgba(0, 0, 0, 0.38);
+  --mat-tab-pagination-icon-color: black;
+  --mat-tab-inactive-label-text-color: rgba(0, 0, 0, 0.6);
+  --mat-tab-active-label-text-color: rgba(0, 0, 0, 0.6);
+  --mat-tab-active-ripple-color: #7fa20b;
+  --mat-tab-inactive-ripple-color: #7fa20b;
+  --mat-tab-active-indicator-color: #7fa20b;
+  --mat-tab-inactive-focus-label-text-color: rgba(0, 0, 0, 0.6);
+  --mat-tab-inactive-hover-label-text-color: rgba(0, 0, 0, 0.6);
+  --mat-tab-active-focus-label-text-color: rgba(0, 0, 0, 0.6);
+  --mat-tab-active-hover-label-text-color: rgba(0, 0, 0, 0.6);
+  --mat-tab-active-focus-indicator-color: #7fa20b;
+  --mat-tab-active-hover-indicator-color: #7fa20b;
+  --mat-tab-active-indicator-color: #7fa20b;
 }
 
 .mdc-notched-outline  {
-  --mdc-outlined-text-field-focus-outline-color: #7fa20b;
-  --mdc-outlined-text-field-focus-label-text-color: #7fa20b;
+  --mat-form-field-outlined-focus-outline-color: #7fa20b;
+  --mat-form-field-outlined-focus-label-text-color: #7fa20b;
 }
 
 .mat-mdc-form-field.mat-focused .mat-mdc-select-arrow {
@@ -701,27 +701,27 @@ span.mat-checkbox-label {
 }
 
 .mat-pseudo-checkbox-full.mat-pseudo-checkbox-checked, .mat-pseudo-checkbox-full.mat-pseudo-checkbox-indeterminate {
-  --mat-full-pseudo-checkbox-selected-icon-color: #a8d024;
-  background-color: var(--mat-full-pseudo-checkbox-selected-icon-color, var(--mat-sys-primary));
+  --mat-pseudo-checkbox-full-selected-icon-color: #a8d024;
+  background-color: var(--mat-pseudo-checkbox-full-selected-icon-color, var(--mat-sys-primary));
   border-color: rgba(0,0,0,0);
 }
 
 .mat-mdc-list-option.mat-accent, .mdc-checkbox{
-  --mdc-checkbox-selected-icon-color: #a8d024;
+  --mat-checkbox-selected-icon-color: #a8d024;
 }
 
 .mdc-checkbox /*__native-control:enabled:checked ~ .mdc-checkbox__background, .mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background*/ {
-  --mdc-checkbox-selected-icon-color: #a8d024;
-  --mdc-checkbox-selected-focus-icon-color: #a8d024;
-  --mdc-checkbox-selected-hover-icon-color: #a8d024;
-  --mdc-checkbox-selected-pressed-icon-color: #a8d024;
-  --mdc-checkbox-selected-focus-state-layer-color: #a8d024;
-  --mdc-checkbox-selected-hover-state-layer-color: #a8d024;
-  --mdc-checkbox-selected-pressed-state-layer-color: #a8d024;
+  --mat-checkbox-selected-icon-color: #a8d024;
+  --mat-checkbox-selected-focus-icon-color: #a8d024;
+  --mat-checkbox-selected-hover-icon-color: #a8d024;
+  --mat-checkbox-selected-pressed-icon-color: #a8d024;
+  --mat-checkbox-selected-focus-state-layer-color: #a8d024;
+  --mat-checkbox-selected-hover-state-layer-color: #a8d024;
+  --mat-checkbox-selected-pressed-state-layer-color: #a8d024;
 
-  border-color: var(--mdc-checkbox-selected-icon-color, var(--mat-sys-primary));
+  border-color: var(--mat-checkbox-selected-icon-color, var(--mat-sys-primary));
 }
 
 :root{
-  --mdc-filled-text-field-focus-active-indicator-color: #a8d024;
+  --mat-form-field-filled-focus-active-indicator-color: #a8d024;
 }

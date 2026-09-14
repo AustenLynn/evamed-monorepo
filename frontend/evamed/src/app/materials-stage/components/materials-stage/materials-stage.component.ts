@@ -518,10 +518,12 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
         let typeTransport = 'mar';
         if (id === item.id + 1) {
           switch (item.region) {
-            case 'PACIFICO' || 'ATLANTICO':
+            case 'PACIFICO':
+            case 'ATLANTICO':
               typeTransport = 'mar';
               break;
-            case 'NORTE' || 'SUR':
+            case 'NORTE':
+            case 'SUR':
               typeTransport = 'terreste';
               break;
             default:
