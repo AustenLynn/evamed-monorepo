@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MaterialsService } from './../../../core/services/materials/materials.service';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
@@ -12,6 +12,7 @@ export interface DialogData {
     selector: 'app-update-data-base',
     templateUrl: './update-data-base.component.html',
     styleUrls: ['./update-data-base.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class UpdateDataBaseComponent implements OnInit {

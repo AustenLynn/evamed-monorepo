@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
@@ -8,6 +8,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
     host: {
         'stage': 'construction-stage'
     },
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PassStepComponent implements OnInit {

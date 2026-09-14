@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit} from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
 import { ViewChild, EventEmitter, Input, Output } from '@angular/core';
 import { ChartOptions, ChartType } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -15,6 +15,7 @@ import { CommonModule } from '@angular/common';
     selector: 'app-graficas-tercer-seccion',
     templateUrl: './graficas-tercer-seccion.component.html',
     styleUrls: ['./graficas-tercer-seccion.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [BaseChartDirective, MatTableModule, MatIconModule, MatButtonToggleModule,
         MatButtonModule, MatCardModule, ScrollingModule, CommonModule]
 })

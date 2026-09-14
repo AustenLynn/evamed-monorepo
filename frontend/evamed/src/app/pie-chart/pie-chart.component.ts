@@ -1,4 +1,4 @@
-import { EventEmitter, Input, Output } from '@angular/core';
+import { EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { Component, OnInit, ViewChild} from '@angular/core';
 import { ChartDataset } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
@@ -11,6 +11,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
     selector: 'app-pie-chart',
     templateUrl: './pie-chart.component.html',
     styleUrls: ['./pie-chart.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [BaseChartDirective, MatCardModule, CommonModule]
 })
 export class PieChartComponent implements OnInit {

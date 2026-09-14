@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { MaterialsService } from './../../../core/services/materials/materials.service';
@@ -11,6 +11,7 @@ import { DeletePotentialTransportComponent } from '../potential/delete-potential
     selector: 'app-update-transport',
     templateUrl: './update-transport.component.html',
     styleUrls: ['./update-transport.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class UpdateTransportComponent implements OnInit {

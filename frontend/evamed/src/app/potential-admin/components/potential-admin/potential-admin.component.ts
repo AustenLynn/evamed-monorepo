@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MaterialsService } from 'src/app/core/services/materials/materials.service';
 import { UpdatePotentialComponent } from '../update-potential/update-potential.component';
@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
     selector: 'app-potential-admin',
     templateUrl: './potential-admin.component.html',
     styleUrls: ['./potential-admin.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PotentialAdminComponent implements OnInit {

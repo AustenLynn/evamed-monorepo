@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CatalogsService } from 'src/app/core/services/catalogs/catalogs.service';
 import { MaterialsService } from './../../../core/services/materials/materials.service';
@@ -22,6 +22,7 @@ export interface DialogData {
   selector: 'app-add-constructive-material',
   templateUrl: './add-constructive-material.component.html',
   styleUrls: ['./add-constructive-material.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AddConstructiveMaterialComponent implements OnInit {

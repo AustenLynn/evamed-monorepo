@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -39,6 +39,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     selector: 'app-home-evamed',
     templateUrl: './home-evamed.component.html',
     styleUrls: ['./home-evamed.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [BaseChartDirective, MatCardModule, MatSelectModule, FormsModule, MatFormFieldModule,
         MatIconModule, MatButtonModule, MatButtonToggleModule, MatTabsModule, MatMenuModule,
         CommonModule, MatTooltipModule, MatProgressSpinnerModule]

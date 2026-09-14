@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { MaterialsService } from './../../../core/services/materials/materials.service';
@@ -7,6 +7,7 @@ import { MaterialsService } from './../../../core/services/materials/materials.s
     selector: 'app-add-material',
     templateUrl: './add-material.component.html',
     styleUrls: ['./add-material.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class AddMaterialComponent implements OnInit {

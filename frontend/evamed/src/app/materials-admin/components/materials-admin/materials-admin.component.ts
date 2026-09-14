@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MaterialsService } from './../../../core/services/materials/materials.service';
@@ -16,6 +16,7 @@ export interface Material {
     selector: 'app-materials-admin',
     templateUrl: './materials-admin.component.html',
     styleUrls: ['./materials-admin.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MaterialsAdminComponent implements OnInit {

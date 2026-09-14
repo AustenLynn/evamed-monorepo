@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MaterialsService } from './../../../../core/services/materials/materials.service';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
@@ -14,6 +14,7 @@ export interface DialogData {
     selector: 'app-update-potential-transport',
     templateUrl: './update-potential-transport.component.html',
     styleUrls: ['./update-potential-transport.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class UpdatePotentialTransportComponent implements OnInit {

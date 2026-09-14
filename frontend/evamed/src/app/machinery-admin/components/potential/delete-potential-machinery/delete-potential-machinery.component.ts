@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MaterialsService } from './../../../../core/services/materials/materials.service';
 
@@ -10,6 +10,7 @@ export interface DialogData {
     selector: 'app-delete-potential-machinery',
     templateUrl: './delete-potential-machinery.component.html',
     styleUrls: ['./delete-potential-machinery.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DeletePotentialMachineryComponent implements OnInit {

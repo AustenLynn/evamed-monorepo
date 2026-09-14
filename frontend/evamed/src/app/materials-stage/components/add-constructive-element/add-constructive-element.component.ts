@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 export interface DialogData {
@@ -10,6 +10,7 @@ export interface DialogData {
     selector: 'app-add-constructive-element',
     templateUrl: './add-constructive-element.component.html',
     styleUrls: ['./add-constructive-element.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class AddConstructiveElementComponent implements OnInit {

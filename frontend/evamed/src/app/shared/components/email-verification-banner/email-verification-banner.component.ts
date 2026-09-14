@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, inject, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Auth } from 'firebase/auth';
 import { Subscription } from 'rxjs';
@@ -9,6 +9,7 @@ import { FIREBASE_AUTH } from './../../../core/firebase';
     selector: 'app-email-verification-banner',
     templateUrl: './email-verification-banner.component.html',
     styleUrls: ['./email-verification-banner.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class EmailVerificationBannerComponent implements OnInit, OnDestroy {

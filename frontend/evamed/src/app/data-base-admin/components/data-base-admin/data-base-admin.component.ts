@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MaterialsService } from 'src/app/core/services/materials/materials.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AddDataBaseComponent } from '../add-data-base/add-data-base.component';
@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
     selector: 'app-data-base-admin',
     templateUrl: './data-base-admin.component.html',
     styleUrls: ['./data-base-admin.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DataBaseAdminComponent implements OnInit {

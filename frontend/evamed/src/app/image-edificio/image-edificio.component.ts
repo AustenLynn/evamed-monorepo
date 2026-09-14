@@ -1,10 +1,11 @@
-import { Component, ElementRef, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, AfterViewInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
     selector: 'app-image-edificio',
     templateUrl: './image-edificio.component.html',
     styleUrls: ['./image-edificio.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ImageEdificioComponent implements OnInit, AfterViewInit {

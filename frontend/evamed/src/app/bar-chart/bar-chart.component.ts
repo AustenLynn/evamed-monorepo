@@ -6,6 +6,7 @@ import {
   Input,
   Output,
   EventEmitter,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { ChartOptions, ChartType, ChartDataset, ChartEvent } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
@@ -16,6 +17,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
     selector: 'app-bar-chart',
     templateUrl: './bar-chart.component.html',
     styleUrls: ['./bar-chart.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [BaseChartDirective, CommonModule]
 })
 export class BarChartComponent implements OnInit, AfterViewInit {

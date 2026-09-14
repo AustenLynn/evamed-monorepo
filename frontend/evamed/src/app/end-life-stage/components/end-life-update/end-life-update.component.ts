@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, ViewChild, OnInit, AfterViewInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { MatListOption } from '@angular/material/list';
 import { Router } from '@angular/router';
 import { CatalogsService } from 'src/app/core/services/catalogs/catalogs.service';
@@ -14,6 +14,7 @@ import { finalize, take } from 'rxjs/operators';
     selector: 'app-end-life-update',
     templateUrl: './end-life-update.component.html',
     styleUrls: ['./end-life-update.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class EndLifeUpdateComponent implements OnInit, AfterViewInit, OnDestroy {

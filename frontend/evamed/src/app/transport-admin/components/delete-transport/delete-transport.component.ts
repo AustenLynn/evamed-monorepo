@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MaterialsService } from './../../../core/services/materials/materials.service';
 
@@ -11,6 +11,7 @@ export interface DialogData {
     selector: 'app-delete-transport',
     templateUrl: './delete-transport.component.html',
     styleUrls: ['./delete-transport.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DeleteTransportComponent implements OnInit {

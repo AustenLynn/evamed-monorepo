@@ -7,7 +7,7 @@ import { LayoutComponent } from './layout/layout.component';
 import { SharedModule } from './shared/shared.module';
 import { CoreModule } from './core/core.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 
@@ -23,7 +23,7 @@ import { AuthInterceptor } from './core/interceptors/auth.interceptor';
     ],
     providers: [
         provideCharts(withDefaultRegisterables()),
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     ]
 })

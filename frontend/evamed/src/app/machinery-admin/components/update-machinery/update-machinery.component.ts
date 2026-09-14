@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { MaterialsService } from './../../../core/services/materials/materials.service';
@@ -11,6 +11,7 @@ import { DeletePotentialMachineryComponent } from '../potential/delete-potential
     selector: 'app-update-machinery',
     templateUrl: './update-machinery.component.html',
     styleUrls: ['./update-machinery.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class UpdateMachineryComponent implements OnInit {

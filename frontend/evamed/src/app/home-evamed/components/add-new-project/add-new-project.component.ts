@@ -1,5 +1,5 @@
 import { CatalogsService } from 'src/app/core/services/catalogs/catalogs.service';
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 export interface DialogData {
@@ -28,6 +28,7 @@ export interface DialogData {
     selector: 'app-add-new-project',
     templateUrl: './add-new-project.component.html',
     styleUrls: ['./add-new-project.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class AddNewProjectComponent implements OnInit {

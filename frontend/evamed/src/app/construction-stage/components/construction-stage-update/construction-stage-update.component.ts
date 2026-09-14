@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, ViewChild, OnInit, AfterViewInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatListOption } from '@angular/material/list';
 import { MatAccordion } from '@angular/material/expansion';
@@ -15,6 +15,7 @@ import { EnergyTotalService } from 'src/app/core/services/energy-total/energy-to
     selector: 'app-construction-stage-update',
     templateUrl: './construction-stage-update.component.html',
     styleUrls: ['./construction-stage-update.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ConstructionStageUpdateComponent implements OnInit, AfterViewInit, OnDestroy {

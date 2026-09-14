@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { MatListOption } from '@angular/material/list';
 import { MatSelectionListChange } from '@angular/material/list';
 import { MaterialsService } from './../../../core/services/materials/materials.service';
@@ -24,6 +24,7 @@ export interface Material {
     selector: 'app-materials-stage',
     templateUrl: './materials-stage.component.html',
     styleUrls: ['./materials-stage.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MaterialsStageComponent implements OnInit, OnDestroy {

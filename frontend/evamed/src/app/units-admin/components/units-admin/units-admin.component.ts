@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MaterialsService } from 'src/app/core/services/materials/materials.service';
 import { AddUnitComponent } from '../add-unit/add-unit.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
     selector: 'app-units-admin',
     templateUrl: './units-admin.component.html',
     styleUrls: ['./units-admin.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class UnitsAdminComponent implements OnInit {

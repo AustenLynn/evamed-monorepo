@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ChartOptions, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { MatCardModule } from '@angular/material/card';
@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
     selector: 'app-radial-chart',
     templateUrl: './radial-chart.component.html',
     styleUrls: ['./radial-chart.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [BaseChartDirective, MatCardModule, CommonModule]
 })
 export class RadialChartComponent implements OnInit {

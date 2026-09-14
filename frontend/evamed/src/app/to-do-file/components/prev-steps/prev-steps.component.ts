@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MaterialsService } from './../../../core/services/materials/materials.service';
@@ -7,6 +7,7 @@ import { MaterialsService } from './../../../core/services/materials/materials.s
     selector: 'app-prev-steps',
     templateUrl: './prev-steps.component.html',
     styleUrls: ['./prev-steps.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PrevStepsComponent implements OnInit {

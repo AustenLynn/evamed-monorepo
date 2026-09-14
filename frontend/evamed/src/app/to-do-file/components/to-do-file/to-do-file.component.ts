@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as XLSX from 'xlsx';
 import { FileSaverService } from 'ngx-filesaver';
@@ -11,6 +11,7 @@ type AOA = any[][];
     selector: 'app-to-do-file',
     templateUrl: './to-do-file.component.html',
     styleUrls: ['./to-do-file.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ToDoFileComponent implements OnInit {

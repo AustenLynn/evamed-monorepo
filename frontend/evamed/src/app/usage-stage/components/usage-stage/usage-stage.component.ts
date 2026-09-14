@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CatalogsService } from 'src/app/core/services/catalogs/catalogs.service';
 import { MaterialsService } from 'src/app/core/services/materials/materials.service';
@@ -9,6 +9,7 @@ import { EnergyTotalService } from 'src/app/core/services/energy-total/energy-to
     selector: 'app-usage-stage',
     templateUrl: './usage-stage.component.html',
     styleUrls: ['./usage-stage.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class UsageStageComponent implements OnInit, OnDestroy {

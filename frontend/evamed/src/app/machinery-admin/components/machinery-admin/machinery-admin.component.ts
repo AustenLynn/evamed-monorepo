@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MaterialsService } from 'src/app/core/services/materials/materials.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AddMachineryComponent } from '../add-machinery/add-machinery.component';
@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
     selector: 'app-machinery-admin',
     templateUrl: './machinery-admin.component.html',
     styleUrls: ['./machinery-admin.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MachineryAdminComponent implements OnInit {

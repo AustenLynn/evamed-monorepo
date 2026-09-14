@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { MatListOption } from '@angular/material/list';
 import { MaterialsService } from './../../../core/services/materials/materials.service';
 import { ProjectsService } from './../../../core/services/projects/projects.service';
@@ -21,6 +21,7 @@ export interface Material {
     selector: 'app-material-stage-update',
     templateUrl: './material-stage-update.component.html',
     styleUrls: ['./material-stage-update.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {

@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MaterialsService } from './../../../core/services/materials/materials.service';
@@ -10,6 +10,7 @@ import { MaterialsService } from './../../../core/services/materials/materials.s
     host: {
         'stage': 'end-life-stage'
     },
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class IntermedialComponent implements OnInit {

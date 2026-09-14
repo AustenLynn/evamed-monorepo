@@ -1,6 +1,6 @@
 import { CatalogsService } from 'src/app/core/services/catalogs/catalogs.service';
 import { EndLifeService } from './../../../core/services/end-life/end-life.service';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 
 import { Router } from '@angular/router';
 import { MatListOption } from '@angular/material/list';
@@ -14,6 +14,7 @@ import { IntermedialComponent } from '../intermedial/intermedial.component';
     selector: 'app-end-life-stage',
     templateUrl: './end-life-stage.component.html',
     styleUrls: ['./end-life-stage.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class EndLifeStageComponent implements OnInit, OnDestroy {

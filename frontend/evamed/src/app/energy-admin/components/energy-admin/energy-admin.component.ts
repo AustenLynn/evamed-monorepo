@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MaterialsService } from 'src/app/core/services/materials/materials.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteEnergyComponent } from '../delete-energy/delete-energy.component';
@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
     selector: 'app-energy-admin',
     templateUrl: './energy-admin.component.html',
     styleUrls: ['./energy-admin.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class EnergyAdminComponent implements OnInit {

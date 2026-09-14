@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { MaterialsService } from './../../../core/services/materials/materials.service';
@@ -11,6 +11,7 @@ import { DeletePotentialEnergyComponent } from '../potential/delete-potential-en
     selector: 'app-update-energy',
     templateUrl: './update-energy.component.html',
     styleUrls: ['./update-energy.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class UpdateEnergyComponent implements OnInit {
