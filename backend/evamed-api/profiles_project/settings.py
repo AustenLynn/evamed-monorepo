@@ -24,6 +24,13 @@ DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['*']
 
+# Render (and any TLS-terminating proxy) forwards the original scheme; without
+# this, request.is_secure() is False and Django 4.0+ rejects the admin's
+# https Origin as a CSRF failure.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# Comma-separated, scheme included, e.g. https://evamed-api-vlx1.onrender.com
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()]
+
 
 # Application definition
 
@@ -101,7 +108,7 @@ WSGI_APPLICATION = 'profiles_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DB_NAME', 'evamed_total'),
         'USER': os.getenv('DB_USER', 'myprojectuser'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'password'),

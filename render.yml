@@ -35,6 +35,8 @@ services:
           property: port
       - key: DJANGO_DEBUG
         value: "False"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: https://evamed-api-vlx1.onrender.com
       - key: SECRET_KEY
         generateValue: true
 
