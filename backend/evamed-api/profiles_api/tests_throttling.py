@@ -30,6 +30,13 @@ class ThrottleTests(APITestCase):
     def test_anonymous_address_comes_from_the_proxy_header(self):
         self.assertEqual(self.statuses(4, HTTP_X_FORWARDED_FOR='203.0.113.1'), [200, 200, 200, 429])
         self.assertEqual(self.statuses(1, HTTP_X_FORWARDED_FOR='203.0.113.2'), [200])
+        # NUM_PROXIES = 1 takes the last entry, so a spoofed prepended entry
+        # doesn't buy a fresh allowance: this shares 203.0.113.1's bucket,
+        # which is already exhausted above.
+        self.assertEqual(
+            self.statuses(1, HTTP_X_FORWARDED_FOR='198.51.100.9, 203.0.113.1'),
+            [429],
+        )
 
     def test_each_signed_in_user_has_their_own_allowance(self):
         self.client.force_authenticate(firebase_user('alice@example.com'))

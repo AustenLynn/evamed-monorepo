@@ -30,6 +30,10 @@ There are none. The Protractor setup was removed in 2026-09 (unsupported since
 Angular 12). The frontend's gates are the production build plus a manual
 click-through; see `docs/superpowers/plans/2026-09-13-angular-upgrade.md`.
 
+## Dependencies
+
+`xlsx` is installed from the SheetJS CDN tarball (`https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz`) rather than npm, because the npm registry copy is outdated. `npm audit` and Dependabot both skip URL-tarball dependencies, so this one's advisories have to be checked by hand against https://git.sheetjs.com/sheetjs/sheetjs. Upgrading it means installing the newer CDN tarball URL, not bumping a version number.
+
 [//]: # "## Further help"
 
 [//]: # "To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md)."

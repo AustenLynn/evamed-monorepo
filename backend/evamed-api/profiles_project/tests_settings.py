@@ -56,3 +56,15 @@ class DatabaseEngineSettingsTests(SimpleTestCase):
             settings.DATABASES['default']['ENGINE'],
             'django.db.backends.postgresql',
         )
+
+
+class CacheSettingsTests(SimpleTestCase):
+    def test_default_cache_is_shared_across_worker_processes(self):
+        # DRF throttles use the default cache. gunicorn runs multiple worker
+        # processes (see gunicorn.conf.py), so the default cache must be a
+        # file-based (or otherwise shared) backend, not the per-process
+        # LocMemCache Django falls back to when CACHES is unset.
+        self.assertEqual(
+            settings.CACHES['default']['BACKEND'],
+            'django.core.cache.backends.filebased.FileBasedCache',
+        )

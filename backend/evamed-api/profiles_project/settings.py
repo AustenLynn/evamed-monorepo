@@ -160,9 +160,11 @@ STORAGES = {
 }
 
 REST_FRAMEWORK = {
+    # Every endpoint reads the Firebase ID token sent by the Angular interceptor.
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'profiles_api.authentication.FirebaseAuthentication',
     ),
+    # Anything not explicitly opened up (catalogue reads) needs a signed-in user.
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
@@ -175,10 +177,22 @@ REST_FRAMEWORK = {
         'user': '600/minute',
     },
     # One proxy (Caddy on AWS) sits in front of gunicorn: the client address
-    # is the last entry it appends to X-Forwarded-For. With no proxy (local
-    # compose) there is no such header and REMOTE_ADDR is used. Raise this if
-    # another proxy or load balancer is ever put in front of Caddy.
+    # is the last entry it appends to X-Forwarded-For. Without Caddy in front
+    # (local compose, where port 8000 is published directly) there is no
+    # trusted proxy to append that header, so a caller can send their own
+    # X-Forwarded-For and rotate it to get fresh anonymous allowances; the
+    # local compose stack must not be exposed on a reachable host.
     'NUM_PROXIES': 1,
+}
+
+# One cache shared by all gunicorn workers in the container, so the API
+# throttles below count per address/user rather than per worker process.
+# Nothing else in the app uses Django's cache.
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': '/tmp/evamed-cache',
+    }
 }
 
 # The API suite would trip the throttles above; see test_runner.py.
