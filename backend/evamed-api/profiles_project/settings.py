@@ -164,12 +164,26 @@ STORAGES = {
 }
 
 REST_FRAMEWORK = {
-    # Every endpoint reads the Firebase ID token sent by the Angular interceptor.
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'profiles_api.authentication.FirebaseAuthentication',
     ),
-    # Anything not explicitly opened up (catalogue reads) needs a signed-in user.
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.AnonRateThrottle',
+        'profiles_api.throttling.FirebaseUserRateThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '120/minute',
+        'user': '600/minute',
+    },
+    # One proxy (Caddy on AWS) sits in front of gunicorn: the client address
+    # is the last entry it appends to X-Forwarded-For. With no proxy (local
+    # compose) there is no such header and REMOTE_ADDR is used. Raise this if
+    # another proxy or load balancer is ever put in front of Caddy.
+    'NUM_PROXIES': 1,
 }
+
+# The API suite would trip the throttles above; see test_runner.py.
+TEST_RUNNER = 'profiles_project.test_runner.NoThrottleTestRunner'
