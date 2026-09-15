@@ -6,13 +6,13 @@
 
 **Architecture:** Terraform creates a 2 GB Lightsail instance with a static IP, a firewall, daily snapshots, a Route 53 `A` record and a cost budget. On the box, a dedicated `deploy/compose.aws.yml` runs the existing `db`/`api`/`web` containers behind Caddy. Caddy terminates TLS with an automatic Let's Encrypt certificate and routes `/api*` to Django and everything else to the frontend. Because both are served from one origin, CORS is not involved. `deploy/deploy.sh` ships the committed `HEAD` with `git archive` over SSH and runs `docker compose up --build` on the box. Secrets never enter Terraform state or git.
 
-**Tech Stack:** Terraform ≥ 1.10 (or OpenTofu ≥ 1.10, same files), AWS provider `~> 6.0`, AWS Lightsail, Route 53, AWS Budgets, S3 (state), Ubuntu 24.04, Docker + Compose v2, Caddy 2, the existing Django 2.2 / Angular 19 images.
+**Tech Stack:** Terraform ≥ 1.10 (or OpenTofu ≥ 1.10, same files), AWS provider `~> 6.0`, AWS Lightsail, Route 53, AWS Budgets, S3 (state), Ubuntu 24.04, Docker + Compose v2, Caddy 2, the existing Django 5.2 / Angular 22 images.
 
 **Spec:** None separate. The decisions below are the spec.
 
 ## Global Constraints
 
-- Environment is **dev only**. It holds seeded catalogue data from `backend/evamed-api/backup` and must never receive a copy of production user data.
+- Environment is **dev only**. It holds seeded catalogue data from `backend/evamed-api/backup`, plus its test accounts and projects, which are not real people (confirmed 2026-09-15), and must never receive a copy of production user data.
 - AWS region: `us-east-1` (variable `region`). Lightsail has no Mexico region; `us-east-1` has the most Lightsail capacity and the lowest latency to Mexico among Lightsail regions.
 - Lightsail bundle `small_3_0` (2 GB RAM, 2 vCPU, 60 GB SSD, ~US$12/month), blueprint `ubuntu_24_04`. Verify both IDs in Task 0; AWS renames bundles occasionally.
 - Monthly budget alert: **US$25**, emailed at 80 % forecasted and 100 % actual.
@@ -49,12 +49,12 @@
 
 ### Gaps you should decide on (not blocking this plan)
 
-1. **The API accepts anonymous writes.** Most `/api-projects/` viewsets (`TransportsViewSet`, `UsesViewSet`, materials, etc. in `backend/evamed-api/projects_api/views.py`) have no `permission_classes`, so DRF's default `AllowAny` applies. On a public hostname anyone can edit catalogue data, and new hostnames get scanned within minutes of their certificate appearing in Certificate Transparency logs. The plan accepts this for dev because the data is a re-seedable dump. Before anything real goes on this box, set `DEFAULT_PERMISSION_CLASSES` (write → `IsAuthenticated`) in a separate change.
+1. **API authorization — done.** The API-authorization plan made the API authenticated by default, with catalogue routes public-read/admin-write and project data owner-only. The pre-deploy hardening plan added throttling (anonymous 120/min per address, signed-in 600/min per Firebase uid) with `NUM_PROXIES = 1`. Caddy's `reverse_proxy` appends `X-Forwarded-For` by default, which is what that setting expects; putting a load balancer or CDN in front of Caddy means raising it.
 2. **The runtime stack was end-of-life** when this plan was written: Postgres 12 (EOL Nov 2024), Python 3.8 (EOL Oct 2024), Django 2.2 (EOL Apr 2022). `docs/superpowers/plans/2026-09-11-runtime-upgrade.md` is that separate plan; its Task 4 moves local (and this template's) Postgres to **17**, so the `deploy/compose.aws.yml` above starts on `postgres:17-alpine` rather than 12. Django 5.2 refuses to connect below PostgreSQL 14, so a box built from this plan must never be seeded with an older image.
 3. **Credential hygiene.** The ecoinvent credentials are marked "rotate" in `.env`; rotate them before putting them on a server. The Django `SECRET_KEY` in `settings.py` is committed, so dev gets a freshly generated one via env (Task 1). Use an IAM user or IAM Identity Center with MFA for Terraform, never the root account.
 4. **Render is retired** (2026-09-13): `render.yml` is deleted and `environment.prod.ts` now uses the same-origin relative base `/api-projects`. That means the `production` build already suits a single-origin deployment like this one, so the `awsdev` configuration this plan adds in Task 2 is optional — building with `--configuration production` gives the same API base. There is currently no other hosted environment.
 5. **Separate AWS account?** Dev lives in whichever account your CLI profile points at. If that account will also host production later, consider AWS Organizations with a dedicated dev account. The budget alert in this plan is account-wide.
-6. **Stale entries.** `CORS_ALLOWED_ORIGINS` still lists an old EC2 IP (`54.224.175.163`), and `materials.service.ts` has dead `*Fake` methods pointing at Heroku. They are harmless here, but worth deleting.
+6. **Stale entries — done.** The retired EC2/LAN origins are gone from `CORS_ALLOWED_ORIGINS` and the dead `*Fake` methods are deleted.
 
 ---
 
@@ -86,6 +86,8 @@
 ### Task 0: Prerequisites (manual, no commit)
 
 **Files:** none
+
+- [ ] **Step 0: Pre-flight.** `docs/superpowers/plans/2026-09-14-pre-deploy-hardening.md` is complete (throttling, CORS and the npm audit fixes are on `main`), and the Angular-upgrade smoke checklist S1–S8 has passed on `main`. Do not create a public hostname before both are true.
 
 - [ ] **Step 1: AWS identity.** Sign in as a non-root IAM user (or IAM Identity Center user) with MFA and `AdministratorAccess` for now. Create a CLI profile:
 
@@ -369,7 +371,7 @@ Expected: `RELATIVE_OK`, then one `main-*.js` filename.
 
 	# Django API. /admin is deliberately absent: the SPA owns that route and
 	# Django admin is reached over an SSH tunnel instead (see README).
-	@api path /api/* /api-projects/* /api-profiles/*
+	@api path /api/* /api-projects/*
 	handle @api {
 		reverse_proxy api:8000
 	}
