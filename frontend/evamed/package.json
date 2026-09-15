@@ -9,7 +9,7 @@
     "test": "ng test"
   },
   "engines": {
-    "node": ">=22 <23",
+    "node": "^22.22.3",
     "npm": ">=10"
   },
   "private": true,
@@ -28,7 +28,7 @@
     "chart.js": "^4.4.7",
     "chartjs-plugin-datalabels": "^2.2.0",
     "express": "^4.17.1",
-    "firebase": "^11.4.0",
+    "firebase": "^12.19.0",
     "flexboxgrid": "^6.3.1",
     "ng2-charts": "^10.0.0",
     "ngx-filesaver": "^22.0.0",

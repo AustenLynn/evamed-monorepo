@@ -42,7 +42,8 @@ Node is independent.
 | U7b | `CSRF_TRUSTED_ORIGINS` | **Per-environment, read from the environment** (comma-separated, scheme included); each environment sets it | Django 4.0+ checks the `Origin` header on unsafe requests, so the admin needs its own https origin listed, and the value differs per deployment. Hardcoding it in `settings.py` would break every other environment. Any environment must set it, or admin POSTs 403. |
 | U8 | Order vs. the authorization plan | Do `2026-09-11-api-authorization.md` **first** if you can | Its ~35 permission tests become part of this upgrade's safety net. Nothing here depends on it; Task 1 works either way. |
 
-**Out of scope, but also end-of-life:** **Angular 19** left long-term support around May 2026. Upgrading Angular (19 → 20 → 21, one major at a time with `ng update`) touches every module and deserves its own plan.
+**Angular:** was end-of-life at 19 when this plan was written; upgraded to 22
+separately — see `docs/superpowers/plans/2026-09-13-angular-upgrade.md`.
 
 ---
 

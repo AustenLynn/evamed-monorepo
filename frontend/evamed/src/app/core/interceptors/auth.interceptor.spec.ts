@@ -40,7 +40,7 @@ describe('AuthInterceptor', () => {
   });
 
   it('does not attach it to another host', async () => {
-    const foreign = 'https://evamed-rest-api.herokuapp.com/api-projects/material-scheme-data/';
+    const foreign = 'https://api.example.com/api-projects/projects/';
     http.get(foreign).subscribe();
     await new Promise(resolve => setTimeout(resolve, 0));
     const request = httpMock.expectOne(foreign);
