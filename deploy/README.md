@@ -13,6 +13,8 @@ export EVAMED_DEV_HOST=dev.evamediber.click   # terraform -chdir=infra/dev outpu
 
 Commit, then run `deploy/deploy.sh`. It ships `HEAD` only; uncommitted changes are skipped with a warning.
 
+If the health check never passes, `deploy.sh` exits 1, but the newly built containers stay running on the box. The old containers are already gone at that point, so the site is serving whatever the new containers manage, not the previous revision. Use `bash /opt/evamed/src/deploy/dc.sh ps` to see which containers are running and `bash /opt/evamed/src/deploy/dc.sh logs --tail=100` to troubleshoot.
+
 ## Secrets
 
 Edit `deploy/.env.aws` (gitignored), then
@@ -53,6 +55,8 @@ Lightsail console → Instances → `evamed-dev` → Snapshots → pick an autom
 "Create new instance". Then point Terraform at it: move the static IP to the new instance in the
 console and `terraform import` the new instance, or simply use it to copy data out.
 Snapshots are daily at 08:00 UTC; the last 7 are kept.
+
+After any deliberate `terraform apply -replace=aws_lightsail_instance.app`, the static IP is detached by Lightsail. Terraform rebuilds the attachment in the same apply (thanks to the `lifecycle.replace_triggered_by` setting), but verify `terraform output static_ip` still matches `dig +short dev.evamediber.click` and that `aws lightsail get-static-ips` shows `isAttached: true` before assuming the site is back online. Note that a replacement wipes the instance disk, so the database is re-seeded from the dump on the next deploy.
 
 ## Kernel updates
 

@@ -12,7 +12,7 @@ for var in SITE_DOMAIN DB_PASSWORD DJANGO_SECRET_KEY FIREBASE_KEY_FILE; do
   grep -qE "^${var}=.+" "$ENV_FILE" || { echo "$var is empty in deploy/$ENV_FILE" >&2; exit 1; }
 done
 
-scp "$ENV_FILE" "ubuntu@$HOST:/opt/evamed/secrets/.env"
-scp "$FIREBASE_KEY" "ubuntu@$HOST:/opt/evamed/secrets/firebase.json"
-ssh "ubuntu@$HOST" 'chmod 600 /opt/evamed/secrets/.env /opt/evamed/secrets/firebase.json'
+scp -o StrictHostKeyChecking=accept-new "$ENV_FILE" "ubuntu@$HOST:/opt/evamed/secrets/.env"
+scp -o StrictHostKeyChecking=accept-new "$FIREBASE_KEY" "ubuntu@$HOST:/opt/evamed/secrets/firebase.json"
+ssh -o StrictHostKeyChecking=accept-new "ubuntu@$HOST" 'chmod 600 /opt/evamed/secrets/.env /opt/evamed/secrets/firebase.json'
 echo "secrets uploaded to $HOST:/opt/evamed/secrets"

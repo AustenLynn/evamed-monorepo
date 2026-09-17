@@ -36,6 +36,13 @@ resource "aws_lightsail_static_ip" "app" {
 resource "aws_lightsail_static_ip_attachment" "app" {
   static_ip_name = aws_lightsail_static_ip.app.name
   instance_name  = aws_lightsail_instance.app.name
+
+  # Replacing the instance detaches the static IP in Lightsail without
+  # Terraform noticing, so the site silently drops. Rebuild the attachment
+  # whenever the instance is replaced.
+  lifecycle {
+    replace_triggered_by = [aws_lightsail_instance.app.id]
+  }
 }
 
 # Replaces Lightsail's default firewall (22 + 80 open to all) entirely.
