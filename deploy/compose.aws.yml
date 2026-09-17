@@ -1,0 +1,91 @@
+# Dev stack on the Lightsail instance. Paths are relative to this file.
+# Run through deploy/dc.sh on the server; see deploy/README.md.
+name: evamed
+
+services:
+  db:
+    # PostgreSQL 17: Django 5.2 refuses to connect to anything below 14, and the
+    # seed `backup` is a custom-format dump that pg_restore 17 reads fine.
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: evamed_total
+      POSTGRES_USER: myprojectuser
+      # Only applied when the volume is first created.
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ../backend/evamed-api/backup:/docker-entrypoint-initdb.d/backup:ro
+      - ../backend/evamed-api/docker/postgres/initdb/01-restore.sh:/docker-entrypoint-initdb.d/01-restore.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myprojectuser -d evamed_total"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: ../backend/evamed-api
+    command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && gunicorn profiles_project.wsgi:application -c /app/gunicorn.conf.py"
+    restart: unless-stopped
+    environment:
+      DB_NAME: evamed_total
+      DB_USER: myprojectuser
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
+      DB_HOST: db
+      DB_PORT: "5432"
+      DJANGO_DEBUG: "False"
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?DJANGO_SECRET_KEY must be set}
+      # localhost: healthcheck and the SSH-tunnelled admin.
+      DJANGO_ALLOWED_HOSTS: ${SITE_DOMAIN:?SITE_DOMAIN must be set},localhost,127.0.0.1
+      DJANGO_BEHIND_TLS_PROXY: "True"
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/firebase.json
+      ECOINVENT_CLIENT_ID: ${ECOINVENT_CLIENT_ID:-}
+      ECOINVENT_CLIENT_SECRET: ${ECOINVENT_CLIENT_SECRET:-}
+      ECOINVENT_VERSION: ${ECOINVENT_VERSION:-3.12-sandbox}
+      ECOINVENT_ALLOW_PRODUCTION: "False"
+    volumes:
+      - ${FIREBASE_KEY_FILE:?FIREBASE_KEY_FILE must be set}:/run/secrets/firebase.json:ro
+    # Loopback only: reachable through `ssh -L`, never from the internet.
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health/', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ../frontend/evamed
+      args:
+        NG_CONFIGURATION: production
+    restart: unless-stopped
+    environment:
+      PORT: "8080"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?SITE_DOMAIN must be set}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+      web:
+        condition: service_started
+
+volumes:
+  db_data:
+  caddy_data:     # holds the Let's Encrypt account + certs; keep it to avoid rate limits
+  caddy_config:

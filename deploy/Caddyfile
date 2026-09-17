@@ -1,0 +1,14 @@
+{$SITE_DOMAIN} {
+	encode zstd gzip
+
+	# Django API. /admin is deliberately absent: the SPA owns that route and
+	# Django admin is reached over an SSH tunnel instead (see README).
+	@api path /api/* /api-projects/*
+	handle @api {
+		reverse_proxy api:8000
+	}
+
+	handle {
+		reverse_proxy web:8080
+	}
+}

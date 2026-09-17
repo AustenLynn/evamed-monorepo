@@ -7,3 +7,11 @@ serviceAccount*.json
 
 # Windows / WSL artifacts
 *:Zone.Identifier
+
+# AWS dev deploy
+deploy/.env.aws
+infra/**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
