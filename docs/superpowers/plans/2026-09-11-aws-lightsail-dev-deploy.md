@@ -4,9 +4,9 @@
 
 **Goal:** Run the EVAmed stack (Postgres + Django API + Angular frontend) as a single, HTTPS-served dev environment on one AWS Lightsail instance, provisioned with Terraform and deployed with one script.
 
-**Architecture:** Terraform creates a 2 GB Lightsail instance with a static IP, a firewall, daily snapshots, a Route 53 `A` record and a cost budget. On the box, a dedicated `deploy/compose.aws.yml` runs the existing `db`/`api`/`web` containers behind Caddy. Caddy terminates TLS with an automatic Let's Encrypt certificate and routes `/api*` to Django and everything else to the frontend. Because both are served from one origin, CORS is not involved. `deploy/deploy.sh` ships the committed `HEAD` with `git archive` over SSH and runs `docker compose up --build` on the box. Secrets never enter Terraform state or git.
+**Architecture:** Terraform creates a 2 GB Lightsail instance with a static IP, a firewall, daily snapshots, a Route 53 `A` record. On the box, a dedicated `deploy/compose.aws.yml` runs the existing `db`/`api`/`web` containers behind Caddy. Caddy terminates TLS with an automatic Let's Encrypt certificate and routes `/api*` to Django and everything else to the frontend. Because both are served from one origin, CORS is not involved. `deploy/deploy.sh` ships the committed `HEAD` with `git archive` over SSH and runs `docker compose up --build` on the box. Secrets never enter Terraform state or git.
 
-**Tech Stack:** Terraform ≥ 1.10 (or OpenTofu ≥ 1.10, same files), AWS provider `~> 6.0`, AWS Lightsail, Route 53, AWS Budgets, S3 (state), Ubuntu 24.04, Docker + Compose v2, Caddy 2, the existing Django 5.2 / Angular 22 images.
+**Tech Stack:** Terraform ≥ 1.10 (or OpenTofu ≥ 1.10, same files), AWS provider `~> 6.0`, AWS Lightsail, Route 53, S3 (state), Ubuntu 24.04, Docker + Compose v2, Caddy 2, the existing Django 5.2 / Angular 22 images.
 
 **Spec:** None separate. The decisions below are the spec.
 
@@ -15,7 +15,7 @@
 - Environment is **dev only**. It holds seeded catalogue data from `backend/evamed-api/backup`, plus its test accounts and projects, which are not real people (confirmed 2026-09-15), and must never receive a copy of production user data.
 - AWS region: `us-east-1` (variable `region`). Lightsail has no Mexico region; `us-east-1` has the most Lightsail capacity and the lowest latency to Mexico among Lightsail regions.
 - Lightsail bundle `small_3_0` (2 GB RAM, 2 vCPU, 60 GB SSD, ~US$12/month), blueprint `ubuntu_24_04`. Verify both IDs in Task 0; AWS renames bundles occasionally.
-- Monthly budget alert: **US$25**, emailed at 80 % forecasted and 100 % actual.
+- Cost alerting already exists outside Terraform (created 2026-09-17, account-wide): budget `evamed-monthly-usage-25` (US$25 of gross usage, 80 % forecast / 100 % actual) and budget `evamed-post-credit-charges` (US$1 of post-credit cost, so the first charge credits do not absorb raises an alert). Terraform must NOT create a budget: a third budget would start costing US$0.02/day and duplicate the alerts.
 - No secret (Django key, DB password, Firebase Admin key, ecoinvent credentials) may appear in git, in Terraform code, or in Terraform state.
 - Public inbound ports: 80 and 443 only. SSH (22) is open only to `ssh_allowed_cidrs`. Postgres (5432), API (8000) and web (8080) are never exposed on the internet.
 - Deploys ship **committed** code only (`git archive HEAD`).
@@ -53,7 +53,7 @@
 2. **The runtime stack was end-of-life** when this plan was written: Postgres 12 (EOL Nov 2024), Python 3.8 (EOL Oct 2024), Django 2.2 (EOL Apr 2022). `docs/superpowers/plans/2026-09-11-runtime-upgrade.md` is that separate plan; its Task 4 moves local (and this template's) Postgres to **17**, so the `deploy/compose.aws.yml` above starts on `postgres:17-alpine` rather than 12. Django 5.2 refuses to connect below PostgreSQL 14, so a box built from this plan must never be seeded with an older image.
 3. **Credential hygiene.** The ecoinvent credentials are marked "rotate" in `.env`; rotate them before putting them on a server. The Django `SECRET_KEY` in `settings.py` is committed, so dev gets a freshly generated one via env (Task 1). Use an IAM user or IAM Identity Center with MFA for Terraform, never the root account.
 4. **Render is retired** (2026-09-13): `render.yml` is deleted and `environment.prod.ts` now uses the same-origin relative base `/api-projects`. That means the `production` build already suits a single-origin deployment like this one, so the `awsdev` configuration this plan adds in Task 2 is optional — building with `--configuration production` gives the same API base. There is currently no other hosted environment.
-5. **Separate AWS account?** Dev lives in whichever account your CLI profile points at. If that account will also host production later, consider AWS Organizations with a dedicated dev account. The budget alert in this plan is account-wide.
+5. **Separate AWS account?** Dev lives in whichever account your CLI profile points at. If that account will also host production later, consider AWS Organizations with a dedicated dev account. The budget alerts are account-wide.
 6. **Stale entries — done.** The retired EC2/LAN origins are gone from `CORS_ALLOWED_ORIGINS` and the dead `*Fake` methods are deleted.
 
 ---
@@ -75,7 +75,7 @@
 | `infra/bootstrap-state.sh` | Create | One-time S3 state bucket creation |
 | `infra/dev/versions.tf` | Create | Terraform/provider pins, S3 backend, provider config |
 | `infra/dev/variables.tf` | Create | Inputs |
-| `infra/dev/main.tf` | Create | Lightsail, Route 53, budget |
+| `infra/dev/main.tf` | Create | Lightsail, Route 53 |
 | `infra/dev/outputs.tf` | Create | IP, URL, SSH command |
 | `infra/dev/user-data.sh` | Create | First-boot provisioning (swap, Docker, dirs) |
 | `infra/dev/terraform.tfvars.example` | Create | Example inputs |
@@ -705,16 +705,6 @@ variable "ssh_allowed_cidrs" {
   }
 }
 
-variable "alert_email" {
-  description = "Receives AWS Budgets alerts."
-  type        = string
-}
-
-variable "monthly_budget_usd" {
-  description = "Account-wide monthly cost budget."
-  type        = string
-  default     = "25"
-}
 ```
 
 The `validation` on `domain_name` references another variable, which requires Terraform ≥ 1.9. That is covered by the `>= 1.10` pin.
@@ -834,29 +824,6 @@ resource "aws_route53_record" "app" {
   records = [aws_lightsail_static_ip.app.ip_address]
 }
 
-resource "aws_budgets_budget" "monthly" {
-  name         = "${local.name}-monthly"
-  budget_type  = "COST"
-  limit_amount = var.monthly_budget_usd
-  limit_unit   = "USD"
-  time_unit    = "MONTHLY"
-
-  notification {
-    comparison_operator        = "GREATER_THAN"
-    threshold                  = 80
-    threshold_type             = "PERCENTAGE"
-    notification_type          = "FORECASTED"
-    subscriber_email_addresses = [var.alert_email]
-  }
-
-  notification {
-    comparison_operator        = "GREATER_THAN"
-    threshold                  = 100
-    threshold_type             = "PERCENTAGE"
-    notification_type          = "ACTUAL"
-    subscriber_email_addresses = [var.alert_email]
-  }
-}
 ```
 
 - [ ] **Step 6: Create `infra/dev/outputs.tf`**
@@ -882,7 +849,6 @@ output "ssh_command" {
 hosted_zone_name  = "example.com"
 domain_name       = "dev.example.com"
 ssh_allowed_cidrs = ["203.0.113.7/32"] # curl -s https://checkip.amazonaws.com
-alert_email       = "you@example.com"
 # region            = "us-east-1"
 # bundle_id         = "small_3_0"
 ```
@@ -908,7 +874,7 @@ Expected: `wrote infra/dev/backend.hcl ...`; `Terraform has been successfully in
 terraform plan -out=dev.tfplan
 ```
 
-Expected: `Plan: 7 to add, 0 to change, 0 to destroy.` (key pair, instance, static IP, attachment, public ports, Route 53 record, budget). Read it and check that no secret values appear.
+Expected: `Plan: 6 to add, 0 to change, 0 to destroy.` (key pair, instance, static IP, attachment, public ports, Route 53 record). Read it and check that no secret values appear.
 
 - [ ] **Step 10: Commit** (`backend.hcl` holds only the bucket name and region, which aren't secret; commit it so the next person doesn't have to bootstrap again)
 
@@ -938,7 +904,7 @@ terraform apply dev.tfplan
 terraform output
 ```
 
-Expected: `Apply complete! Resources: 7 added`, with outputs for `static_ip`, `url` and `ssh_command`. Confirm the AWS Budgets subscription email if one arrives.
+Expected: `Apply complete! Resources: 6 added`, with outputs for `static_ip`, `url` and `ssh_command`.
 
 - [ ] **Step 2: DNS resolves to the static IP**
 
@@ -1171,7 +1137,7 @@ run `sudo reboot`; the stack comes back on its own.
 ## Cost
 
 About US$12/month for the instance, plus snapshot storage (~US$0.05/GB-month), Route 53 queries, and pennies for S3 state.
-A budget alert emails at 80 % of US$25 (forecast) and at 100 % (actual).
+The pre-existing budgets alert at 80 % of US$25 gross usage (forecast), at 100 % (actual), and on the first post-credit dollar.
 
 ## Tear down
 
