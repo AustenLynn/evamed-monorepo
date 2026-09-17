@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 
+from profiles_project.env import env_bool, env_list
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -17,18 +19,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '25&!(c13l4!5kwt_9(#uh1bd&^@je)im*iw0$@seh3lrox%zw)'
+# The fallback is the historical committed key: fine for local docker only.
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', '25&!(c13l4!5kwt_9(#uh1bd&^@je)im*iw0$@seh3lrox%zw)')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = env_list('DJANGO_ALLOWED_HOSTS', '*')
 
-# A TLS-terminating proxy forwards the original scheme; without this,
-# request.is_secure() is False and Django 4.0+ rejects the admin's
-# https Origin as a CSRF failure. Only safe behind a proxy that always
-# sets X-Forwarded-Proto.
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Comma-separated, scheme included, e.g. https://api.example.com
 CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()]
 
@@ -197,3 +195,8 @@ CACHES = {
 
 # The API suite would trip the throttles above; see test_runner.py.
 TEST_RUNNER = 'profiles_project.test_runner.NoThrottleTestRunner'
+
+# Behind Caddy on AWS: trust its X-Forwarded-Proto so request.is_secure() and
+# DRF's absolute URLs use https.
+if env_bool('DJANGO_BEHIND_TLS_PROXY'):
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

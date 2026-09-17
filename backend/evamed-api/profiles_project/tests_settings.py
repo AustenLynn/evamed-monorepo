@@ -33,11 +33,29 @@ def _csrf_trusted_origins_with(value):
     return json.loads(out.decode().strip().splitlines()[-1])
 
 
+def _secure_proxy_ssl_header_with(django_behind_tls_proxy=None):
+    """Load settings in a fresh interpreter and return SECURE_PROXY_SSL_HEADER."""
+    env = os.environ.copy()
+    env['DJANGO_SETTINGS_MODULE'] = 'profiles_project.settings'
+    env.pop('DJANGO_BEHIND_TLS_PROXY', None)
+    if django_behind_tls_proxy is not None:
+        env['DJANGO_BEHIND_TLS_PROXY'] = django_behind_tls_proxy
+    code = (
+        'import json\n'
+        'from django.conf import settings\n'
+        'print(json.dumps(getattr(settings, "SECURE_PROXY_SSL_HEADER", None)))\n'
+    )
+    out = subprocess.check_output(
+        [sys.executable, '-c', code], env=env, cwd=settings.BASE_DIR
+    )
+    return json.loads(out.decode().strip().splitlines()[-1])
+
+
 class ProxyCsrfSettingsTests(SimpleTestCase):
     def test_secure_proxy_ssl_header_trusts_forwarded_scheme(self):
         self.assertEqual(
-            settings.SECURE_PROXY_SSL_HEADER,
-            ('HTTP_X_FORWARDED_PROTO', 'https'),
+            _secure_proxy_ssl_header_with('True'),
+            ['HTTP_X_FORWARDED_PROTO', 'https'],
         )
 
     def test_csrf_trusted_origins_parsed_from_environment(self):
