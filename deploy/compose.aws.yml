@@ -38,6 +38,8 @@ services:
       # localhost: healthcheck and the SSH-tunnelled admin.
       DJANGO_ALLOWED_HOSTS: ${SITE_DOMAIN:?SITE_DOMAIN must be set},localhost,127.0.0.1
       DJANGO_BEHIND_TLS_PROXY: "True"
+      # Required for Django admin POSTs (reached via SSH tunnel) to pass CSRF validation.
+      CSRF_TRUSTED_ORIGINS: https://${SITE_DOMAIN}
       GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/firebase.json
       ECOINVENT_CLIENT_ID: ${ECOINVENT_CLIENT_ID:-}
       ECOINVENT_CLIENT_SECRET: ${ECOINVENT_CLIENT_SECRET:-}
