@@ -1,6 +1,8 @@
-#!/bin/bash
+#!/bin/sh
+# Lightsail concatenates this script after its own #!/bin/sh preamble and runs
+# the combined file under dash, so this script must stay POSIX (no bashisms).
 # First-boot provisioning for the EVAmed dev instance. Runs once as root.
-set -euxo pipefail
+set -eux
 export DEBIAN_FRONTEND=noninteractive
 
 # 2 GB swap: the Angular production build peaks above the 2 GB of RAM.
