@@ -34,6 +34,29 @@ docker compose up --build
 - **Frontend:** http://localhost:8080
 - **API:** http://localhost:8000
 
+## Pruebas automáticas (CI)
+
+Cada `push` y cada pull request ejecutan `.github/workflows/tests.yml` en GitHub
+Actions, con dos trabajos independientes:
+
+- **backend** — instala Python 3.12, levanta PostgreSQL 17 y corre
+  `python manage.py test` (115 pruebas).
+- **frontend** — instala Node 22, corre `npm test` (6 pruebas) y compila
+  `npm run build -- --configuration production`.
+
+No usan ningún secreto: las pruebas simulan Firebase. El estado de cada
+ejecución se ve en la pestaña **Actions** del repositorio.
+
+Para correr lo mismo localmente:
+
+```bash
+docker compose run --rm api python manage.py test
+docker compose run --rm web npm test -- --watch=false
+```
+
+El despliegue **no** es automático: sigue siendo manual con `deploy/deploy.sh`
+(ver `deploy/README.md`).
+
 ## Base de datos (restore automático en primer arranque)
 
 El dump se restaura automáticamente **solo en el primer arranque**, usando `backup`.
