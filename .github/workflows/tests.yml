@@ -60,3 +60,32 @@ jobs:
           DB_HOST: localhost
           DB_PORT: '5432'
         run: python manage.py test --verbosity 2
+
+  frontend:
+    name: frontend (Angular 22, Vitest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: frontend/evamed
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/evamed/package-lock.json
+
+      # xlsx comes from SheetJS's own CDN, not npm, so this step needs
+      # cdn.sheetjs.com to be reachable.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run the unit tests
+        run: npm test -- --watch=false
+
+      # The deploy builds this on the 2 GB box; failing here is cheaper.
+      - name: Build production
+        run: npm run build -- --configuration production
