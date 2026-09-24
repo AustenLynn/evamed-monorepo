@@ -66,7 +66,8 @@ Every push to `main` that passes both CI test jobs deploys itself to the Lightsa
 - **GitHub environment `dev`,** with deployment branches limited to `main`:
   - Secret `DEPLOY_SSH_KEY`: the deploy private key.
   - Variables: `AWS_ROLE_ARN` (from the Terraform output), `EVAMED_DEV_HOST` (`dev.evamediber.click`), `SSH_ALLOWED_CIDRS` (space-separated, same values as `ssh_allowed_cidrs`), `DEPLOY_KNOWN_HOSTS` (from `ssh-keyscan -t ed25519 dev.evamediber.click`, checked against the key the box reports on the console).
-- The environment is created in the GitHub UI. `gh` isn't installed here, so the runbook lists the clicks.
+- The environment, its branch policy, secret and variables are created with `gh` (authenticated as `AustenLynn` with `repo` and `workflow` scopes): `gh api -X PUT repos/AustenLynn/evamed-monorepo/environments/dev` with a custom branch policy for `main`, then `gh secret set --env dev` and `gh variable set --env dev`. The same commands go in the runbook so rotation is repeatable.
+- The repo already has `Preview` and `Production` environments, created by the Vercel integration (`vercel[bot]` deployments). `dev` is a separate name and doesn't interact with them.
 
 ### Failure handling
 
@@ -78,7 +79,7 @@ Every push to `main` that passes both CI test jobs deploys itself to the Lightsa
 ## Verification
 
 1. `terraform plan` shows only the OIDC provider (or none), the role and its policy. `terraform apply`.
-2. **Full path end to end.** Temporarily allow a throwaway branch in the `dev` environment and remove the `main` condition on that branch. Run `workflow_dispatch`. Expect a deploy, the site healthy with the new `REVISION`, and afterwards `get-instance-port-states` listing only `ssh_allowed_cidrs` on port 22.
+2. **Full path end to end.** Temporarily allow a throwaway branch in the `dev` environment (`gh api` on its deployment-branch policies) and remove the `main` condition on that branch. Run `workflow_dispatch`. Expect a deploy, the site healthy with the new `REVISION`, and afterwards `get-instance-port-states` listing only `ssh_allowed_cidrs` on port 22.
 3. **Failure path.** Same branch, with `EVAMED_DEV_HOST` overridden to an unresolvable host. Expect a red job and the port closed afterwards.
 4. **Stale-hole cleanup.** Manually open a fake `/32`, run again, and expect it closed by step 3.
 5. Delete the throwaway branch, restore the environment rule to `main` only, merge `feat/ci-tests`, and confirm the first run on `main` deploys.
