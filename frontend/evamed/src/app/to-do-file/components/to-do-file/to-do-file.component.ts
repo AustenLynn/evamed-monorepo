@@ -17,6 +17,11 @@ type AOA = any[][];
 export class ToDoFileComponent implements OnInit {
   fileName: string;
   nameProject: string;
+  // The next screens read sessionStorage['dataProject'] once when they open,
+  // so Continuar waits until the chosen file has been parsed and stored.
+  fileReady = false;
+  processingFile = false;
+  uploadError: string | null = null;
 
   @ViewChild('asTitle') title: ElementRef;
   @ViewChild('asImage') image: ElementRef;
@@ -53,31 +58,49 @@ export class ToDoFileComponent implements OnInit {
     if (target.files.length !== 1) {
       throw new Error('Cannot use multiple files');
     }
+    // Drop any earlier file's data so nothing stale can reach the next screens.
+    sessionStorage.removeItem('dataProject');
+    this.fileReady = false;
+    this.processingFile = true;
+    this.uploadError = null;
+
     const reader: FileReader = new FileReader();
     reader.onload = (e: any) => {
-      /* read workbook */
-      const bstr: string = e.target.result,
-       wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
-      /* assingable */
-      let partialData: AOA = [];
-      const totalData = [];
-      let i = 0;
-      /* save data */
-      for (i = 0; i < wb.SheetNames.length; i++) {
-        partialData = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[i]], {
-          raw: true,
-          defval: null,
-        });
-        totalData.push(partialData);
-      }
+      try {
+        /* read workbook */
+        const bstr: string = e.target.result,
+         wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
+        /* assingable */
+        let partialData: AOA = [];
+        const totalData = [];
+        let i = 0;
+        /* save data */
+        for (i = 0; i < wb.SheetNames.length; i++) {
+          partialData = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[i]], {
+            raw: true,
+            defval: null,
+          });
+          totalData.push(partialData);
+        }
 
-      let toRead = {};
-      toRead = {
-        sheetNames: wb.SheetNames,
-        data: totalData,
-      };
-      sessionStorage.setItem('dataProject', JSON.stringify(toRead));
-      // this.router.navigateByUrl('materials-stage');
+        let toRead = {};
+        toRead = {
+          sheetNames: wb.SheetNames,
+          data: totalData,
+        };
+        sessionStorage.setItem('dataProject', JSON.stringify(toRead));
+        this.fileReady = true;
+      } catch (error) {
+        console.error('No se pudo procesar el archivo', error);
+        this.uploadError =
+          'No se pudo procesar el archivo. Verifica que sea la plantilla de EVAMED e inténtalo de nuevo.';
+      } finally {
+        this.processingFile = false;
+      }
+    };
+    reader.onerror = () => {
+      this.processingFile = false;
+      this.uploadError = 'No se pudo leer el archivo. Inténtalo de nuevo.';
     };
     reader.readAsArrayBuffer(target.files[0]);
   }
@@ -122,6 +145,9 @@ export class ToDoFileComponent implements OnInit {
   }
 
   saveFile() {
+    if (!this.fileReady) {
+      return;
+    }
     this.dialog.open(PrevStepsComponent);
   }
 }
