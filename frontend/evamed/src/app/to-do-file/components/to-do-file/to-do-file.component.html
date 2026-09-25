@@ -62,9 +62,16 @@
 
 <!--Section continue-->
 <div class="section-continue">
+  @if (processingFile) {
+    <p class="upload-status">Procesando archivo…</p>
+  }
+  @if (uploadError) {
+    <p class="upload-error">{{ uploadError }}</p>
+  }
   <button
     mat-button
     class="yellow-button"
+    [disabled]="!fileReady"
     (click)="saveFile()"
   >
     Continuar

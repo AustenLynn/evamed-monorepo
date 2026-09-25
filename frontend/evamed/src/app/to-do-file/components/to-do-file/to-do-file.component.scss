@@ -201,3 +201,25 @@ p.p-instrucciones {
   }
 
 }
+
+// Continuar stays disabled while the uploaded file is being parsed.
+.section-continue {
+  button.yellow-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .upload-status,
+  .upload-error {
+    margin: 0 0 8px;
+    font-size: 14px;
+  }
+
+  .upload-status {
+    color: #767676;
+  }
+
+  .upload-error {
+    color: #b3261e;
+  }
+}
