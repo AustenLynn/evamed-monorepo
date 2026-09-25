@@ -44,8 +44,13 @@ Actions, con dos trabajos independientes:
 - **frontend** — instala Node 22, corre `npm test` (6 pruebas) y compila
   `npm run build -- --configuration production`.
 
-No usan ningún secreto: las pruebas simulan Firebase. El estado de cada
+Las pruebas no usan ningún secreto: simulan Firebase. El estado de cada
 ejecución se ve en la pestaña **Actions** del repositorio.
+
+Cuando ambos trabajos pasan en `main`, un tercer trabajo, **deploy**, despliega
+automáticamente al servidor de desarrollo (`dev.evamediber.click`). También se
+puede redesplegar `main` a mano con **Actions → tests → Run workflow**. Detalles
+en `deploy/README.md`.
 
 Para correr lo mismo localmente:
 

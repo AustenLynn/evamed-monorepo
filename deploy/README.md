@@ -11,9 +11,41 @@ export EVAMED_DEV_HOST=dev.evamediber.click   # terraform -chdir=infra/dev outpu
 
 ## Deploy
 
-Commit, then run `deploy/deploy.sh`. It ships `HEAD` only; uncommitted changes are skipped with a warning.
+Merging to `main` deploys automatically: the `deploy` job in `.github/workflows/tests.yml` runs after both test jobs pass. To redeploy `main` without a new commit, use **Actions → tests → Run workflow** on `main`, or run `gh workflow run tests.yml --ref main`.
 
-If the health check never passes, `deploy.sh` exits 1, but the newly built containers stay running on the box. The old containers are already gone at that point, so the site is serving whatever the new containers manage, not the previous revision. Use `bash /opt/evamed/src/deploy/dc.sh ps` to see which containers are running and `bash /opt/evamed/src/deploy/dc.sh logs --tail=100` to troubleshoot.
+The job assumes the `evamed-dev-github-deploy` role through GitHub OIDC (`infra/dev/github-deploy.tf`), so no AWS keys live in GitHub. It opens port 22 for the runner's own IP, runs `deploy/deploy.sh`, and closes the port again, even when the deploy fails. Before opening, it also closes any port-22 CIDR that isn't in `ssh_allowed_cidrs`, which cleans up after a crashed runner. The first step therefore also closes anything you open by hand in the Lightsail console: put permanent openings in `terraform.tfvars` instead.
+
+Don't run `terraform apply` while a deploy is running: it resets the firewall and cuts the runner off mid-deploy.
+
+You can still deploy by hand: commit, then run `deploy/deploy.sh`. It ships `HEAD` only; uncommitted changes are skipped with a warning.
+
+If the health check never passes, `deploy.sh` exits 1, but the newly built containers stay running on the box. The old containers are already gone at that point, so the site is serving whatever the new containers manage, not the previous revision. Use `bash /opt/evamed/src/deploy/dc.sh ps` to see which containers are running and `bash /opt/evamed/src/deploy/dc.sh logs --tail=100` to troubleshoot. To roll back, revert the commit on `main`, which deploys the previous code.
+
+### GitHub `dev` environment
+
+Only `main` may deploy to it. It holds:
+
+| Name | Kind | Value |
+|---|---|---|
+| `DEPLOY_SSH_KEY` | secret | Private half of the CI-only key `evamed-dev-github-deploy` |
+| `AWS_ROLE_ARN` | variable | `terraform -chdir=infra/dev output -raw github_deploy_role_arn` |
+| `EVAMED_DEV_HOST` | variable | `dev.evamediber.click` |
+| `DEPLOY_KNOWN_HOSTS` | variable | `ssh-keyscan -t ed25519 dev.evamediber.click` without its `#` banner line, checked against the box's `/etc/ssh/ssh_host_ed25519_key.pub` |
+
+**Rotate the deploy key:**
+
+```bash
+ssh-keygen -t ed25519 -N '' -C evamed-dev-github-deploy -f /tmp/deploy_key
+ssh ubuntu@$EVAMED_DEV_HOST 'cat >> ~/.ssh/authorized_keys' < /tmp/deploy_key.pub
+gh secret set DEPLOY_SSH_KEY --env dev < /tmp/deploy_key && shred -u /tmp/deploy_key
+# then delete the old evamed-dev-github-deploy line from ~/.ssh/authorized_keys on the box
+```
+
+After replacing the instance, the host key changes: refresh `DEPLOY_KNOWN_HOSTS` and re-add the deploy key.
+
+### Your IP changed
+
+`ssh` times out when your IP no longer matches `ssh_allowed_cidrs`. Update `infra/dev/terraform.tfvars` and run `terraform apply` (not during a deploy). Terraform replaces the whole firewall resource for this, so the site can be unreachable for a few seconds.
 
 ## Secrets
 
