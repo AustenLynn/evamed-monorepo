@@ -4,5 +4,9 @@
     "outDir": "./out-tsc/spec",
     "types": ["vitest/globals", "node"]
   },
-  "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
+  "include": ["src/**/*.spec.ts", "src/**/*.d.ts"],
+  "angularCompilerOptions": {
+    // Same template checking as the app build (tsconfig.app.json).
+    "strictTemplates": false
+  }
 }
