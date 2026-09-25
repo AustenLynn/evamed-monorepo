@@ -49,11 +49,17 @@ resource "aws_lightsail_static_ip_attachment" "app" {
 resource "aws_lightsail_instance_public_ports" "app" {
   instance_name = aws_lightsail_instance.app.name
 
-  port_info {
-    protocol  = "tcp"
-    from_port = 22
-    to_port   = 22
-    cidrs     = var.ssh_allowed_cidrs
+  # Permanent SSH openings only. Leave ssh_allowed_cidrs empty to reach the box
+  # with deploy/with-ssh.sh instead. An empty list drops the rule entirely
+  # rather than sending port 22 with no CIDRs.
+  dynamic "port_info" {
+    for_each = length(var.ssh_allowed_cidrs) > 0 ? [1] : []
+    content {
+      protocol  = "tcp"
+      from_port = 22
+      to_port   = 22
+      cidrs     = var.ssh_allowed_cidrs
+    }
   }
 
   port_info {
