@@ -32,6 +32,7 @@ Every push to `main` that passes both CI test jobs deploys itself to the Lightsa
 ### Workflow (`.github/workflows/tests.yml`)
 
 - Add `workflow_dispatch:` to `on:`. A manual run re-runs both test jobs, then deploys.
+- Change the workflow-level concurrency to `cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}`. Otherwise a second push to `main` would cancel the first run *including its deploy job* mid-rebuild. Runs on `main` now queue; other branches still cancel superseded runs.
 - New job `deploy`:
   - `needs: [backend, frontend]`
   - `if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')`
@@ -42,7 +43,7 @@ Every push to `main` that passes both CI test jobs deploys itself to the Lightsa
 - Steps, in order:
   1. `actions/checkout` with the full commit available to `git archive HEAD`.
   2. `aws-actions/configure-aws-credentials` with `role-to-assume: ${{ vars.AWS_ROLE_ARN }}` and the region `us-east-1`.
-  3. **Close stale holes.** Read `get-instance-port-states` for `evamed-dev`; for every port-22 CIDR not in `vars.SSH_ALLOWED_CIDRS`, call `close-instance-public-ports`. This removes leftovers from a runner that died before step 7.
+  3. **Close stale holes.** Read `get-instance-port-states` for `evamed-dev`; for every port-22 CIDR not in the SSM parameter `/evamed/dev/ssh-allowed-cidrs` (written by Terraform from `ssh_allowed_cidrs`, so there's one source of truth), call `close-instance-public-ports`. This removes leftovers from a runner that died before step 7.
   4. **Open.** Get the runner's IPv4 from `https://checkip.amazonaws.com`, then `open-instance-public-ports` for port 22, `<ip>/32`. Save the CIDR to a step output.
   5. **SSH setup.** Write `secrets.DEPLOY_SSH_KEY` to `~/.ssh/id_ed25519` (mode 600) and `vars.DEPLOY_KNOWN_HOSTS` to `~/.ssh/known_hosts`. Wait until port 22 accepts connections: poll for up to 60 s, since the rule change isn't instant.
   6. **Deploy.** `EVAMED_DEV_HOST=${{ vars.EVAMED_DEV_HOST }} deploy/deploy.sh`. The script's exit code is the job result.
@@ -56,7 +57,9 @@ Every push to `main` that passes both CI test jobs deploys itself to the Lightsa
 - **Inline policy:**
   - `lightsail:OpenInstancePublicPorts`, `lightsail:CloseInstancePublicPorts`, `lightsail:GetInstancePortStates` on `Resource: "*"` with `StringEquals` `aws:ResourceTag/Project = evamed` and `aws:ResourceTag/Environment = dev`.
   - The Lightsail API reference states that the open/close actions support tag-based access control. If `GetInstancePortStates` turns out not to, it gets its own read-only statement without the tag condition, and the plan records that.
+- **SSM parameter** `/evamed/dev/ssh-allowed-cidrs` (String, space-separated `ssh_allowed_cidrs`). The role may `ssm:GetParameter` on that parameter only.
 - **Output** `github_deploy_role_arn`.
+- **Verified 2026-09-24:** the account (`339712712127`) has no OIDC provider yet, so Terraform creates it. `aws:ResourceTag` conditions are the documented form for Lightsail. `GetInstancePortStates` is not documented as supporting tag-based access, so it gets its own statement without the tag condition.
 - Nothing here changes `aws_lightsail_instance.app`. `terraform plan` must show additions only.
 - **Drift:** `aws_lightsail_instance_public_ports.app` owns the full port list, so a hole left open during a deploy shows as drift, and `terraform apply` removes it. Don't run `terraform apply` while a deploy is running.
 
@@ -65,7 +68,7 @@ Every push to `main` that passes both CI test jobs deploys itself to the Lightsa
 - **Deploy key.** A new ed25519 key pair used only by CI (`evamed-dev-github-deploy`). The public half is appended by hand to `/home/ubuntu/.ssh/authorized_keys` on the box. This is a one-time runbook step: Terraform/user-data would force an instance replacement. Your personal key is unaffected.
 - **GitHub environment `dev`,** with deployment branches limited to `main`:
   - Secret `DEPLOY_SSH_KEY`: the deploy private key.
-  - Variables: `AWS_ROLE_ARN` (from the Terraform output), `EVAMED_DEV_HOST` (`dev.evamediber.click`), `SSH_ALLOWED_CIDRS` (space-separated, same values as `ssh_allowed_cidrs`), `DEPLOY_KNOWN_HOSTS` (from `ssh-keyscan -t ed25519 dev.evamediber.click`, checked against the key the box reports on the console).
+  - Variables: `AWS_ROLE_ARN` (from the Terraform output), `EVAMED_DEV_HOST` (`dev.evamediber.click`), `DEPLOY_KNOWN_HOSTS` (from `ssh-keyscan -t ed25519 dev.evamediber.click`, checked against the key the box reports on the console).
 - The environment, its branch policy, secret and variables are created with `gh` (authenticated as `AustenLynn` with `repo` and `workflow` scopes): `gh api -X PUT repos/AustenLynn/evamed-monorepo/environments/dev` with a custom branch policy for `main`, then `gh secret set --env dev` and `gh variable set --env dev`. The same commands go in the runbook so rotation is repeatable.
 - The repo already has `Preview` and `Production` environments, created by the Vercel integration (`vercel[bot]` deployments). `dev` is a separate name and doesn't interact with them.
 
@@ -79,7 +82,7 @@ Every push to `main` that passes both CI test jobs deploys itself to the Lightsa
 ## Verification
 
 1. `terraform plan` shows only the OIDC provider (or none), the role and its policy. `terraform apply`.
-2. **Full path end to end.** Temporarily allow a throwaway branch in the `dev` environment (`gh api` on its deployment-branch policies) and remove the `main` condition on that branch. Run `workflow_dispatch`. Expect a deploy, the site healthy with the new `REVISION`, and afterwards `get-instance-port-states` listing only `ssh_allowed_cidrs` on port 22.
+2. **Full path end to end.** `workflow_dispatch` only works once the workflow is on the default branch, so pre-merge testing uses *push*: a throwaway branch whose `deploy` condition names that branch, temporarily allowed in the `dev` environment's branch policy. Push it. Expect a deploy, the site healthy with the new `REVISION`, and afterwards `get-instance-port-states` listing only `ssh_allowed_cidrs` on port 22.
 3. **Failure path.** Same branch, with `EVAMED_DEV_HOST` overridden to an unresolvable host. Expect a red job and the port closed afterwards.
 4. **Stale-hole cleanup.** Manually open a fake `/32`, run again, and expect it closed by step 3.
 5. Delete the throwaway branch, restore the environment rule to `main` only, merge `feat/ci-tests`, and confirm the first run on `main` deploys.
@@ -96,3 +99,7 @@ Every push to `main` that passes both CI test jobs deploys itself to the Lightsa
 
 - `deploy/README.md`: automated deploys, the deploy key, the `dev` environment, how to rotate the key, "don't `terraform apply` during a deploy".
 - `README.md` CI section (Spanish): the deploy job.
+
+## Related cleanup
+
+Vercel is no longer used (confirmed 2026-09-24) but its GitHub integration still creates `Preview` deployments. Disconnecting it is a follow-up, outside this pipeline.
