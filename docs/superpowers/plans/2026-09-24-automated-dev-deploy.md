@@ -227,11 +227,11 @@ AWS_PROFILE=evamed-dev terraform plan -out=dev.tfplan
 
 Expected:
 - `Success! The configuration is valid.`
-- The plan says **`4 to add, 1 to change, 0 to destroy`**:
+- The plan says **`5 to add, 0 to change, 1 to destroy`** (observed 2026-09-24; the provider can't update the firewall resource in place, so a CIDR change replaces it):
   - The 4 additions: `aws_iam_openid_connect_provider.github`, `aws_iam_role.github_deploy`, `aws_iam_role_policy.github_deploy`, `aws_ssm_parameter.ssh_allowed_cidrs`.
-  - The 1 change: `aws_lightsail_instance_public_ports.app`, updated in place with the new port-22 CIDR only.
+  - The replacement: `aws_lightsail_instance_public_ports.app` (destroy + create) with the new port-22 CIDR. Its rules vanish for a few seconds, so the site may blip.
 
-If the plan shows anything else (especially any change to `aws_lightsail_instance.app`, or anything to destroy), **stop and report**.
+If the plan shows anything else (especially any change to `aws_lightsail_instance.app`, or a destroy of anything but the firewall resource), **stop and report**.
 
 - [ ] **Step 6: CHECKPOINT → apply**
 
@@ -242,7 +242,7 @@ AWS_PROFILE=evamed-dev terraform apply dev.tfplan
 AWS_PROFILE=evamed-dev terraform output -raw github_deploy_role_arn
 ```
 
-Expected: `Apply complete! Resources: 4 added, 1 changed, 0 destroyed.`, and the role ARN `arn:aws:iam::339712712127:role/evamed-dev-github-deploy`.
+Expected: `Apply complete! Resources: 5 added, 0 changed, 1 destroyed.`, and the role ARN `arn:aws:iam::339712712127:role/evamed-dev-github-deploy`.
 
 If the apply fails with `AccessDenied` on an `iam:` or `ssm:` action, the `evamed-dev` IAM user lacks that permission. **Stop and report**; do not widen the user's permissions yourself.
 
@@ -608,7 +608,7 @@ After replacing the instance, the host key changes: refresh `DEPLOY_KNOWN_HOSTS`
 
 ### Your IP changed
 
-`ssh` times out when your IP no longer matches `ssh_allowed_cidrs`. Update `infra/dev/terraform.tfvars` and run `terraform apply` (not during a deploy).
+`ssh` times out when your IP no longer matches `ssh_allowed_cidrs`. Update `infra/dev/terraform.tfvars` and run `terraform apply` (not during a deploy). Terraform replaces the whole firewall resource for this, so the site can be unreachable for a few seconds.
 ````
 
 - [ ] **Step 2: Update the Spanish CI section in `README.md`**

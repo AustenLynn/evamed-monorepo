@@ -46,3 +46,9 @@ variable "ssh_allowed_cidrs" {
     error_message = "Do not open SSH to the whole internet."
   }
 }
+
+variable "github_repository" {
+  description = "owner/name of the repo whose `dev` environment may deploy."
+  type        = string
+  default     = "AustenLynn/evamed-monorepo"
+}
