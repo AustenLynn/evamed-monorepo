@@ -3,14 +3,16 @@ name: tests
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
-# A newer push to the same branch makes the older run pointless.
+# A newer push to the same branch makes the older run pointless, except on
+# main, where cancelling would kill a deploy mid-rebuild; those runs queue.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   backend:
@@ -89,3 +91,91 @@ jobs:
       # The deploy builds this on the 2 GB box; failing here is cheaper.
       - name: Build production
         run: npm run build -- --configuration production
+
+  deploy:
+    name: deploy (Lightsail dev)
+    needs: [backend, frontend]
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: dev
+      url: https://${{ vars.EVAMED_DEV_HOST }}
+    # Deploys queue; one is never cancelled mid-rebuild.
+    concurrency:
+      group: deploy-dev
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      INSTANCE: evamed-dev
+      EVAMED_DEV_HOST: ${{ vars.EVAMED_DEV_HOST }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      # A runner that died mid-deploy can leave its /32 open. Close any
+      # port-22 CIDR that Terraform (infra/dev, ssh_allowed_cidrs) didn't set.
+      - name: Close stale SSH openings
+        run: |
+          allowed=" $(aws ssm get-parameter --name /evamed/dev/ssh-allowed-cidrs \
+            --query Parameter.Value --output text) "
+          # The backticks are a JMESPath number literal, not shell.
+          # shellcheck disable=SC2016
+          for cidr in $(aws lightsail get-instance-port-states --instance-name "$INSTANCE" \
+              --query 'portStates[?fromPort==`22`].cidrs[]' --output text); do
+            case "$allowed" in
+              *" $cidr "*) ;;
+              *)
+                echo "closing stale $cidr"
+                aws lightsail close-instance-public-ports --instance-name "$INSTANCE" \
+                  --port-info "fromPort=22,toPort=22,protocol=tcp,cidrs=$cidr" >/dev/null
+                ;;
+            esac
+          done
+
+      - name: Open SSH for this runner
+        id: open
+        run: |
+          cidr="$(curl -fsS https://checkip.amazonaws.com | tr -d '[:space:]')/32"
+          aws lightsail open-instance-public-ports --instance-name "$INSTANCE" \
+            --port-info "fromPort=22,toPort=22,protocol=tcp,cidrs=$cidr" >/dev/null
+          echo "cidr=$cidr" >> "$GITHUB_OUTPUT"
+
+      # deploy.sh uses accept-new, which still rejects a changed host key.
+      - name: Install the deploy key
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ vars.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      # Lightsail firewall changes take a few seconds to apply.
+      - name: Wait for port 22
+        run: |
+          for _ in $(seq 1 12); do
+            timeout 5 bash -c "</dev/tcp/$EVAMED_DEV_HOST/22" 2>/dev/null && exit 0
+            sleep 5
+          done
+          echo "port 22 on $EVAMED_DEV_HOST never opened for this runner" >&2
+          exit 1
+
+      - name: Deploy
+        run: deploy/deploy.sh
+
+      - name: Close SSH for this runner
+        if: always() && steps.open.outputs.cidr != ''
+        env:
+          CIDR: ${{ steps.open.outputs.cidr }}
+        run: |
+          aws lightsail close-instance-public-ports --instance-name "$INSTANCE" \
+            --port-info "fromPort=22,toPort=22,protocol=tcp,cidrs=$CIDR" >/dev/null

@@ -411,6 +411,8 @@ concurrency:
         run: |
           allowed=" $(aws ssm get-parameter --name /evamed/dev/ssh-allowed-cidrs \
             --query Parameter.Value --output text) "
+          # The backticks are a JMESPath number literal, not shell.
+          # shellcheck disable=SC2016
           for cidr in $(aws lightsail get-instance-port-states --instance-name "$INSTANCE" \
               --query 'portStates[?fromPort==`22`].cidrs[]' --output text); do
             case "$allowed" in
@@ -457,16 +459,19 @@ concurrency:
 
       - name: Close SSH for this runner
         if: always() && steps.open.outputs.cidr != ''
+        env:
+          CIDR: ${{ steps.open.outputs.cidr }}
         run: |
           aws lightsail close-instance-public-ports --instance-name "$INSTANCE" \
-            --port-info "fromPort=22,toPort=22,protocol=tcp,cidrs=${{ steps.open.outputs.cidr }}" >/dev/null
+            --port-info "fromPort=22,toPort=22,protocol=tcp,cidrs=$CIDR" >/dev/null
 ```
 
 - [ ] **Step 3: Lint the workflow**
 
 ```bash
 cd /home/maikolkali/evamed-monorepo
-docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:latest -color .github/workflows/tests.yml
+# No Docker in this WSL distro: use the release binaries (actionlint 1.7.12 + shellcheck) from $SCRATCH.
+$SCRATCH/actionlint -shellcheck $SCRATCH/shellcheck-*/shellcheck .github/workflows/tests.yml
 ```
 
 Expected: no output and exit code 0. actionlint also runs shellcheck on each `run:` block. Fix anything it reports, except warnings about the unknown `vars` context keys, which it can't see; report those to the user rather than ignoring them silently.
