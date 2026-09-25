@@ -18,7 +18,7 @@ import { ProjectsService } from './../../../core/services/projects/projects.serv
 import { MaterialsService } from './../../../core/services/materials/materials.service';
 import { AnalisisService } from './../../../core/services/analisis/analisis.service';
 import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import {
   animate,
@@ -221,22 +221,28 @@ export class CompararComponent implements OnInit {
     private calculosSegunaSeccion: CalculosSegundaSeccion,
     private calculosTercerSeccion: CalculosTercerSeccion,
   ) {
-    this.users
+    // menu_inicio() names the active project from this list, so it loads with
+    // the catalogues below instead of racing them.
+    const userProjects$ = this.users
       .searchUser(localStorage.getItem('email-login'))
-      .subscribe(data => {
-        localStorage.setItem('email-id', data[0].id);
-        this.projectsList = [];
-        this.projects.getProjects().subscribe(data => {
-          data.map(item => {
-            if (
+      .pipe(
+        switchMap(data => {
+          localStorage.setItem('email-id', data[0].id);
+          return this.projects.getProjects();
+        }),
+        map(data =>
+          data.filter(
+            item =>
               item.user_platform_id ===
               parseInt(localStorage.getItem('email-id'), 10)
-            ) {
-              this.projectsList.push(item);
-            }
-          });
-        });
-      });
+          )
+        ),
+        // Without the list only the names are missing; still draw the charts.
+        catchError(error => {
+          console.error('No se pudieron cargar los proyectos del usuario', error);
+          return of([]);
+        })
+      );
     forkJoin([
       this.analisis.getTypeEnergy(),
       this.materials.getMaterials(),
@@ -257,6 +263,7 @@ export class CompararComponent implements OnInit {
       this.analisis.getPotentialTransport(),
       this.analisis.getConversion(),
       this.analisis.getDB(),
+      userProjects$,
     ]).subscribe(
       ([
         TE,
@@ -278,7 +285,9 @@ export class CompararComponent implements OnInit {
         PT,
         conversions,
         DB,
+        userProjects,
       ]) => {
+        this.projectsList = userProjects;
         this.materialList = materialData;
         this.materialSchemeDataList = materialSchemeData;
         this.materialSchemeProyectList = materialSchemeProyect;
