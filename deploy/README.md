@@ -7,17 +7,18 @@ Infra lives in `infra/dev` (Terraform). Plan and decisions:
 ```bash
 export AWS_PROFILE=evamed-dev
 export EVAMED_DEV_HOST=dev.evamediber.click   # terraform -chdir=infra/dev output url
+S=deploy/with-ssh.sh                          # opens port 22 for your IP while a command runs
 ```
 
 ## Deploy
 
 Merging to `main` deploys automatically: the `deploy` job in `.github/workflows/tests.yml` runs after both test jobs pass. To redeploy `main` without a new commit, use **Actions → tests → Run workflow** on `main`, or run `gh workflow run tests.yml --ref main`.
 
-The job assumes the `evamed-dev-github-deploy` role through GitHub OIDC (`infra/dev/github-deploy.tf`), so no AWS keys live in GitHub. It opens port 22 for the runner's own IP, runs `deploy/deploy.sh`, and closes the port again, even when the deploy fails. Before opening, it also closes any port-22 CIDR that isn't in `ssh_allowed_cidrs`, which cleans up after a crashed runner. The first step therefore also closes anything you open by hand in the Lightsail console: put permanent openings in `terraform.tfvars` instead.
+The job assumes the `evamed-dev-github-deploy` role through GitHub OIDC (`infra/dev/github-deploy.tf`), so no AWS keys live in GitHub. It opens port 22 for the runner's own IP, runs `deploy/deploy.sh`, and closes the port again, even when the deploy fails. Before opening, it also closes any port-22 CIDR that isn't in `ssh_allowed_cidrs`, which cleans up after a crashed runner. That step also closes an opening held by `deploy/with-ssh.sh`: SSH sessions you already have should survive, but a new one needs the wrapper again.
 
 Don't run `terraform apply` while a deploy is running: it resets the firewall and cuts the runner off mid-deploy.
 
-You can still deploy by hand: commit, then run `deploy/deploy.sh`. It ships `HEAD` only; uncommitted changes are skipped with a warning.
+You can still deploy by hand: commit, then run `$S deploy/deploy.sh`. It ships `HEAD` only; uncommitted changes are skipped with a warning.
 
 If the health check never passes, `deploy.sh` exits 1, but the newly built containers stay running on the box. The old containers are already gone at that point, so the site is serving whatever the new containers manage, not the previous revision. Use `bash /opt/evamed/src/deploy/dc.sh ps` to see which containers are running and `bash /opt/evamed/src/deploy/dc.sh logs --tail=100` to troubleshoot. To roll back, revert the commit on `main`, which deploys the previous code.
 
@@ -36,21 +37,23 @@ Only `main` may deploy to it. It holds:
 
 ```bash
 ssh-keygen -t ed25519 -N '' -C evamed-dev-github-deploy -f /tmp/deploy_key
-ssh ubuntu@$EVAMED_DEV_HOST 'cat >> ~/.ssh/authorized_keys' < /tmp/deploy_key.pub
+$S ssh ubuntu@$EVAMED_DEV_HOST 'cat >> ~/.ssh/authorized_keys' < /tmp/deploy_key.pub
 gh secret set DEPLOY_SSH_KEY --env dev < /tmp/deploy_key && shred -u /tmp/deploy_key
 # then delete the old evamed-dev-github-deploy line from ~/.ssh/authorized_keys on the box
 ```
 
 After replacing the instance, the host key changes: refresh `DEPLOY_KNOWN_HOSTS` and re-add the deploy key.
 
-### Your IP changed
+### Reaching the server by SSH
 
-`ssh` times out when your IP no longer matches `ssh_allowed_cidrs`. Update `infra/dev/terraform.tfvars` and run `terraform apply` (not during a deploy). Terraform replaces the whole firewall resource for this, so the site can be unreachable for a few seconds.
+Port 22 is closed to everyone by default (`ssh_allowed_cidrs = []`). Prefix any command that needs SSH with `deploy/with-ssh.sh` (`$S` above). It opens port 22 for your current IP using your AWS credentials (`AWS_PROFILE=evamed-dev`), runs the command, and closes the port when the command exits, even when it fails. If a run is killed before it can close the port, the next CI deploy or `terraform apply` closes it.
+
+For an address that should always be allowed, put it in `ssh_allowed_cidrs` in `infra/dev/terraform.tfvars` and run `terraform apply` (not during a deploy). Terraform replaces the whole firewall resource for this, so the site can be unreachable for a few seconds.
 
 ## Secrets
 
 Edit `deploy/.env.aws` (gitignored), then
-`EVAMED_FIREBASE_KEY=<admin-key.json> deploy/push-secrets.sh` and redeploy.
+`EVAMED_FIREBASE_KEY=<admin-key.json> $S deploy/push-secrets.sh` and redeploy.
 `DB_PASSWORD` only applies to a fresh DB volume. To change it on a live DB, first run
 `bash /opt/evamed/src/deploy/dc.sh exec db psql -U myprojectuser -d evamed_total -c "ALTER USER myprojectuser PASSWORD '<new>'"`,
 then push secrets and redeploy.
@@ -58,7 +61,7 @@ then push secrets and redeploy.
 ## Everyday commands (on the server)
 
 ```bash
-ssh ubuntu@$EVAMED_DEV_HOST
+$S ssh ubuntu@$EVAMED_DEV_HOST
 bash /opt/evamed/src/deploy/dc.sh ps
 bash /opt/evamed/src/deploy/dc.sh logs -f api          # or web, caddy, db
 bash /opt/evamed/src/deploy/dc.sh exec api python manage.py shell
@@ -68,7 +71,7 @@ bash /opt/evamed/src/deploy/dc.sh exec api python manage.py ecoinvent_resolve --
 ## Django admin (not public)
 
 ```bash
-ssh -L 8000:127.0.0.1:8000 ubuntu@$EVAMED_DEV_HOST
+$S ssh -L 8000:127.0.0.1:8000 ubuntu@$EVAMED_DEV_HOST
 # then browse http://localhost:8000/admin/
 # create a login once: bash /opt/evamed/src/deploy/dc.sh exec api python manage.py createsuperuser
 ```
@@ -78,7 +81,7 @@ ssh -L 8000:127.0.0.1:8000 ubuntu@$EVAMED_DEV_HOST
 Destroys all dev data.
 
 ```bash
-ssh ubuntu@$EVAMED_DEV_HOST 'bash /opt/evamed/src/deploy/dc.sh down && docker volume rm evamed_db_data && bash /opt/evamed/src/deploy/dc.sh up -d'
+$S ssh ubuntu@$EVAMED_DEV_HOST 'bash /opt/evamed/src/deploy/dc.sh down && docker volume rm evamed_db_data && bash /opt/evamed/src/deploy/dc.sh up -d'
 ```
 
 ## Restore from a snapshot

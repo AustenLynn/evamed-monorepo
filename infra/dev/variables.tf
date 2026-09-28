@@ -38,8 +38,9 @@ variable "ssh_public_key_path" {
 }
 
 variable "ssh_allowed_cidrs" {
-  description = "CIDRs allowed to reach port 22, e.g. [\"203.0.113.7/32\"]."
+  description = "CIDRs always allowed to reach port 22, e.g. [\"203.0.113.7/32\"]. Empty: use deploy/with-ssh.sh."
   type        = list(string)
+  default     = []
 
   validation {
     condition     = !contains(var.ssh_allowed_cidrs, "0.0.0.0/0")

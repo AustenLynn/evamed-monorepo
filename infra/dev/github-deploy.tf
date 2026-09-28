@@ -41,9 +41,10 @@ resource "aws_iam_role" "github_deploy" {
 # The deploy job reads this to tell Terraform's SSH openings from ones a
 # crashed runner left behind.
 resource "aws_ssm_parameter" "ssh_allowed_cidrs" {
-  name  = "/evamed/dev/ssh-allowed-cidrs"
-  type  = "String"
-  value = join(" ", var.ssh_allowed_cidrs)
+  name = "/evamed/dev/ssh-allowed-cidrs"
+  type = "String"
+  # SSM rejects an empty value; "none" matches no CIDR.
+  value = length(var.ssh_allowed_cidrs) > 0 ? join(" ", var.ssh_allowed_cidrs) : "none"
 }
 
 data "aws_iam_policy_document" "github_deploy" {
