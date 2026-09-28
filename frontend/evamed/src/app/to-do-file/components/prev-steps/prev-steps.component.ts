@@ -12,8 +12,10 @@ import { MaterialsService } from './../../../core/services/materials/materials.s
 })
 export class PrevStepsComponent implements OnInit {
   ConstructiveSystems: number;
-  TotalMaterialsDB: number;
-  TotalExistDB: number;
+  // Distinct materials in the file, split by whether the database has them.
+  // Unset until the catalogue has loaded.
+  identifiedMaterials: number | null = null;
+  unidentifiedMaterials: number | null = null;
 
   constructor(
     private materialsService: MaterialsService,
@@ -23,44 +25,32 @@ export class PrevStepsComponent implements OnInit {
 
   ngOnInit(): void {
     const data = JSON.parse(sessionStorage.getItem('dataProject')),
-     constructiveSystems = [],
-      materialsExcel = [];
+      constructiveSystems = new Set(),
+      materialsExcel = new Set();
 
-    data.data.map( item => {
-      item.map(
-        data => {
-          if ( data.Sistema_constructivo !== null && data.Sistema_constructivo !== undefined ) {
-            constructiveSystems.push(data.Sistema_constructivo)
-          }
-          if ( data.Material !== null && data.Material !== undefined ) {
-            materialsExcel.push(data.Material);
-          }
+    data.data.forEach(sheet => {
+      sheet.forEach(row => {
+        // Empty cells come through as '' (or null with defval).
+        if (this.hasValue(row.Sistema_constructivo)) {
+          constructiveSystems.add(row.Sistema_constructivo);
         }
-      );
-    });
-    const filterConstructiveSystems = constructiveSystems.filter(this.onlyUnique);
-    this.ConstructiveSystems = filterConstructiveSystems.length;
-    this.ConstructiveSystems = this.ConstructiveSystems - 1;
-
-    const filterMaterialsExcel = materialsExcel.filter(this.onlyUnique);
-    this.TotalMaterialsDB = filterMaterialsExcel.length;
-    this.TotalMaterialsDB = this.TotalMaterialsDB - 1;
-
-    this.TotalExistDB = 0
-    filterMaterialsExcel.map( filteredMaterial => {
-      this.materialsService.getMaterials().subscribe( materials => {
-        materials.map( material => {
-          if (material.name_material === filteredMaterial) {
-            this.TotalExistDB++;
-          }
-        });
+        if (this.hasValue(row.Material)) {
+          materialsExcel.add(row.Material);
+        }
       });
     });
+    this.ConstructiveSystems = constructiveSystems.size;
 
+    this.materialsService.getMaterials().subscribe(materials => {
+      const catalogue = new Set(materials.map(material => material.name_material)),
+        identified = [...materialsExcel].filter(material => catalogue.has(material)).length;
+      this.identifiedMaterials = identified;
+      this.unidentifiedMaterials = materialsExcel.size - identified;
+    });
   }
 
-  onlyUnique(value, index, self) {
-    return self.indexOf(value) === index;
+  private hasValue(value): boolean {
+    return value !== null && value !== undefined && String(value).trim() !== '';
   }
 
   goToSteps() {

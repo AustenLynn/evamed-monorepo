@@ -14,8 +14,8 @@
       </mat-icon>
     </div>
     <div class="text">{{ConstructiveSystems}} Sistemas constructivos</div>
-    <div class="text">{{TotalMaterialsDB}} Materiales identificados</div>
-    <div class="text">{{TotalMaterialsDB - TotalExistDB}} Materiales no identificados</div>
+    <div class="text">{{identifiedMaterials ?? '…'}} Materiales identificados</div>
+    <div class="text">{{unidentifiedMaterials ?? '…'}} Materiales no identificados</div>
   </div>
 </div>
 <!-- Close Cuerpo de modal-->
