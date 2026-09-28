@@ -461,7 +461,8 @@ export class ConstructionStageComponent implements OnInit, OnDestroy {
   }
 
   goToResultados() {
-    sessionStorage.setItem('projectID', localStorage.getItem('idProyectoConstrucción'));
+    // idProyectoConstrucción can still name an earlier project here.
+    sessionStorage.setItem('projectID', String(this.projectId));
     this.router.navigateByUrl('resultados');
   }
 
