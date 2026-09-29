@@ -20,6 +20,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { MaterialsService } from '../../../core/services/materials/materials.service';
 import { AnalisisService } from '../../../core/services/analisis/analisis.service';
 import { SelectionService } from '../../../core/services/selection/selection.service';
+import { ActiveProjectService } from 'src/app/core/services/active-project/active-project.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule} from '@angular/forms';
@@ -226,6 +227,7 @@ export class HomeEvamedComponent implements OnInit {
     private electricitConsumptionService: ElectricitConsumptionService,
     private selectionService: SelectionService,
     private snackBar: MatSnackBar,
+    private activeProject: ActiveProjectService,
   ) {
     this.catalogsService.usesCatalog().subscribe(data => {
       this.catalogoUsos = data;
@@ -1385,44 +1387,37 @@ export class HomeEvamedComponent implements OnInit {
   }
 
   updateMaterial(id, section) {
-    localStorage.setItem('idProyectoConstrucción', id);
     this.selectionService.setSection(section);
-    this.router.navigateByUrl('materials-stage/update');
+    this.activeProject.open(id).subscribe(() => this.router.navigateByUrl('materials-stage/update'));
   }
 
   addProduction(id) {
-    localStorage.setItem('idProyectoConstrucción', id);
     this.selectionService.clearSection();
-    this.router.navigateByUrl('materials-stage/update');
+    this.activeProject.open(id).subscribe(() => this.router.navigateByUrl('materials-stage/update'));
   }
 
   updateConstruction(id, section) {
-    localStorage.setItem('idProyectoConstrucción', id);
     this.selectionService.setSection(section);
-    this.router.navigateByUrl('construction-stage/update');
+    this.activeProject.open(id).subscribe(() => this.router.navigateByUrl('construction-stage/update'));
   }
 
   addConstruction(id) {
-    localStorage.setItem('idProyectoConstrucción', id);
     this.selectionService.clearSection();
-    this.router.navigateByUrl('construction-stage/update');
+    this.activeProject.open(id).subscribe(() => this.router.navigateByUrl('construction-stage/update'));
   }
 
   updateEndLife(id, section) {
-    localStorage.setItem('idProyectoConstrucción', id);
     this.selectionService.setSection(section);
-    this.router.navigateByUrl('end-life-stage/update');
+    this.activeProject.open(id).subscribe(() => this.router.navigateByUrl('end-life-stage/update'));
   }
 
   addEndLife(id) {
-    localStorage.setItem('idProyectoConstrucción', id);
     this.selectionService.clearSection();
-    this.router.navigateByUrl('end-life-stage/update');
+    this.activeProject.open(id).subscribe(() => this.router.navigateByUrl('end-life-stage/update'));
   }
 
   updateUso(id) {
-    localStorage.setItem('idProyectoConstrucción', id);
-    this.router.navigateByUrl('usage-stage/update');
+    this.activeProject.open(id).subscribe(() => this.router.navigateByUrl('usage-stage/update'));
   }
 
   getSelectedImpactName(value: any): string {

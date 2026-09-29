@@ -20,6 +20,7 @@ import { AnalisisService } from './../../../core/services/analisis/analisis.serv
 import { forkJoin, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { ActiveProjectService } from 'src/app/core/services/active-project/active-project.service';
 import {
   animate,
   state,
@@ -220,6 +221,7 @@ export class CompararComponent implements OnInit {
     private calculos: Calculos,
     private calculosSegunaSeccion: CalculosSegundaSeccion,
     private calculosTercerSeccion: CalculosTercerSeccion,
+    private activeProject: ActiveProjectService,
   ) {
     // menu_inicio() names the active project from this list, so it loads with
     // the catalogues below instead of racing them.
@@ -337,13 +339,11 @@ export class CompararComponent implements OnInit {
   }
 
   goToMaterialStage() {
-    localStorage.setItem('idProyectoConstrucción', this.idProyectoActivo.toString());
-    this.router.navigateByUrl('materials-stage/update');
+    this.editProject(this.idProyectoActivo);
   }
 
   editProject(id: number) {
-    localStorage.setItem('idProyectoConstrucción', id.toString());
-    this.router.navigateByUrl('materials-stage/update');
+    this.activeProject.open(id).subscribe(() => this.router.navigateByUrl('materials-stage/update'));
   }
 
   //ids Necesarios para modificar en html
