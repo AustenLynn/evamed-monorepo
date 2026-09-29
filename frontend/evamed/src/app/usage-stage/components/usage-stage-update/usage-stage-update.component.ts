@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
+import { switchMap } from 'rxjs/operators';
 import { CatalogsService } from 'src/app/core/services/catalogs/catalogs.service';
 import { MaterialsService } from 'src/app/core/services/materials/materials.service';
 import { ElectricitConsumptionService } from './../../../core/services/electricity-consumption/electricit-consumption.service';
@@ -96,26 +97,28 @@ export class UsageStageUpdateComponent implements OnInit, OnDestroy {
       this.catalogoTipoEnergiaCombustible = tipoEnergiaCombustible;
     });
 
-    this.electricitConsumptionService.getACR().subscribe(data => {
-      const globalData = [];
-      data.map(item => {
-        if (
-          item.project_id ===
-          parseInt(localStorage.getItem('idProyectoConstrucción'), 10)
-        ) {
-          globalData.push(item);
-        }
-      });
-      this.globalData = globalData;
-      this.projectId = globalData[0].project_id;
-      this.nameProject = globalData[0].name;
-      this.cantidad = globalData[0].quantity;
-      this.unidad = globalData[0].unit_id;
-      this.CAID = globalData[0].id;
-      this.computeAndPushTotal();
-    });
-
-    this.electricitConsumptionService.getECD().subscribe(data => {
+    // The breakdown rows are matched on CAID, so fetch them once it is known.
+    this.electricitConsumptionService.getACR().pipe(
+      switchMap(data => {
+        const globalData = [];
+        data.map(item => {
+          if (
+            item.project_id ===
+            parseInt(localStorage.getItem('idProyectoConstrucción'), 10)
+          ) {
+            globalData.push(item);
+          }
+        });
+        this.globalData = globalData;
+        this.projectId = globalData[0].project_id;
+        this.nameProject = globalData[0].name;
+        this.cantidad = globalData[0].quantity;
+        this.unidad = globalData[0].unit_id;
+        this.CAID = globalData[0].id;
+        this.computeAndPushTotal();
+        return this.electricitConsumptionService.getECD();
+      })
+    ).subscribe(data => {
       this.ECD_IDS = [];
       data.map(item => {
         if (item.annual_consumption_required_id === this.CAID) {
@@ -606,10 +609,12 @@ export class UsageStageUpdateComponent implements OnInit, OnDestroy {
 
   getEnergyType(value: any, type: any): string {
     let selected;
+    // The catalogue can arrive after the saved type does; the tooltip fills in
+    // on the next check.
     if (type === 'electric') {
-      selected = this.catalogoTipoEnergiaElectrica.find(option => option.id === value);
+      selected = this.catalogoTipoEnergiaElectrica?.find(option => option.id === value);
     } else if (type === 'fuel') {
-      selected = this.catalogoTipoEnergiaCombustible.find(option => option.id === value);
+      selected = this.catalogoTipoEnergiaCombustible?.find(option => option.id === value);
     }
     return selected ? selected.name_type_energy : '';
   }

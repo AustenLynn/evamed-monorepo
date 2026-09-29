@@ -1,3 +1,4 @@
+@if (view$ | async; as view) {
 <div class="energy-bar-wrapper">
   <div class="energy-bar-legend">
     <span class="legend-item construction">
@@ -11,31 +12,32 @@
     </span>
   </div>
 
-  <div class="energy-bar-track" [class.empty]="breakdown.total === 0">
+  <div class="energy-bar-track" [class.empty]="view.breakdown.total === 0">
     <div
-      *ngIf="breakdown.construction > 0"
+      *ngIf="view.breakdown.construction > 0"
       class="segment construction"
-      [style.width.%]="constructionPct"
-      [matTooltip]="'Construcción: ' + format(breakdown.construction)"
+      [style.width.%]="view.constructionPct"
+      [matTooltip]="'Construcción: ' + format(view.breakdown.construction)"
       matTooltipPosition="above">
     </div>
     <div
-      *ngIf="breakdown.usage > 0"
+      *ngIf="view.breakdown.usage > 0"
       class="segment usage"
-      [style.width.%]="usagePct"
-      [matTooltip]="'Uso: ' + format(breakdown.usage)"
+      [style.width.%]="view.usagePct"
+      [matTooltip]="'Uso: ' + format(view.breakdown.usage)"
       matTooltipPosition="above">
     </div>
     <div
-      *ngIf="breakdown.endLife > 0"
+      *ngIf="view.breakdown.endLife > 0"
       class="segment end-life"
-      [style.width.%]="endLifePct"
-      [matTooltip]="'Fin de vida: ' + format(breakdown.endLife)"
+      [style.width.%]="view.endLifePct"
+      [matTooltip]="'Fin de vida: ' + format(view.breakdown.endLife)"
       matTooltipPosition="above">
     </div>
   </div>
 
   <div class="energy-bar-total">
-    Total: <strong>{{ format(breakdown.total) }}</strong>
+    Total: <strong>{{ format(view.breakdown.total) }}</strong>
   </div>
 </div>
+}
