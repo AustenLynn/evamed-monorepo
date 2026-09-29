@@ -1,5 +1,6 @@
-import { Component, ChangeDetectionStrategy, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { EnergyTotalService } from 'src/app/core/services/energy-total/energy-total.service';
 
 interface EnergyBreakdown {
@@ -9,6 +10,13 @@ interface EnergyBreakdown {
   total: number;
 }
 
+interface EnergyBarView {
+  breakdown: EnergyBreakdown;
+  constructionPct: number;
+  usagePct: number;
+  endLifePct: number;
+}
+
 @Component({
   selector: 'app-energy-bar',
   templateUrl: './energy-bar.component.html',
@@ -16,34 +24,23 @@ interface EnergyBreakdown {
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false
 })
-export class EnergyBarComponent implements OnInit, OnDestroy {
-  breakdown: EnergyBreakdown = { construction: 0, usage: 0, endLife: 0, total: 0 };
+export class EnergyBarComponent {
+  // Totals arrive after the stage pages' requests return; the async pipe marks
+  // this OnPush component for check whenever a new one comes in.
+  readonly view$: Observable<EnergyBarView>;
 
-  constructionPct = 0;
-  usagePct        = 0;
-  endLifePct      = 0;
-
-  private sub: Subscription;
-
-  constructor(private energyTotalService: EnergyTotalService) {}
-
-  ngOnInit(): void {
-    this.sub = this.energyTotalService.breakdown$.subscribe(b => {
-      this.breakdown = b;
-      if (b.total > 0) {
-        this.constructionPct = (b.construction / b.total) * 100;
-        this.usagePct        = (b.usage / b.total) * 100;
-        this.endLifePct      = (b.endLife / b.total) * 100;
-      } else {
-        this.constructionPct = 0;
-        this.usagePct        = 0;
-        this.endLifePct      = 0;
-      }
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.sub?.unsubscribe();
+  constructor(energyTotalService: EnergyTotalService) {
+    this.view$ = energyTotalService.breakdown$.pipe(
+      map(breakdown => {
+        const pct = (part: number) => (breakdown.total > 0 ? (part / breakdown.total) * 100 : 0);
+        return {
+          breakdown,
+          constructionPct: pct(breakdown.construction),
+          usagePct: pct(breakdown.usage),
+          endLifePct: pct(breakdown.endLife),
+        };
+      })
+    );
   }
 
   format(val: number): string {
