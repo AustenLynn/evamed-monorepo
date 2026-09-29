@@ -31,6 +31,7 @@ describe('CompararComponent project name', () => {
       { searchUser: () => users$ } as any,
       calculos as any,
       {} as any,
+      {} as any,
       {} as any
     );
   };

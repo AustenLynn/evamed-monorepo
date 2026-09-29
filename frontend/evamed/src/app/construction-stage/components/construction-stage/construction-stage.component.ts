@@ -6,6 +6,7 @@ import { CatalogsService } from './../../../core/services/catalogs/catalogs.serv
 import { ConstructionStageService } from 'src/app/core/services/construction-stage/construction-stage.service';
 import { MaterialsService } from './../../../core/services/materials/materials.service';
 import { EnergyTotalService } from 'src/app/core/services/energy-total/energy-total.service';
+import { BUILDING_SECTIONS } from '../../../shared/building-sections';
 
 @Component({
     selector: 'app-construction-stage',
@@ -85,19 +86,25 @@ export class ConstructionStageComponent implements OnInit, OnDestroy {
     this.projectId = PDP.id;
 
     this.sheetNames = [];
-    data.sheetNames.map(sheetname => {
-      if (
-        sheetname !== 'Muros InterioresBis' &&
-        sheetname !== 'Inicio' &&
-        sheetname !== 'Registro' &&
-        sheetname !== 'ListaElementos' &&
-        sheetname !== 'BD' &&
-        sheetname !== 'Parametros'
-      ) {
-        this.sheetNames.push(sheetname);
-      }
-    });
-    this.contentData = data.data;
+    // Only a project imported in this tab has its Excel here. An existing
+    // project opened from home has none; its elements are the fixed list.
+    if (data) {
+      data.sheetNames.map(sheetname => {
+        if (
+          sheetname !== 'Muros InterioresBis' &&
+          sheetname !== 'Inicio' &&
+          sheetname !== 'Registro' &&
+          sheetname !== 'ListaElementos' &&
+          sheetname !== 'BD' &&
+          sheetname !== 'Parametros'
+        ) {
+          this.sheetNames.push(sheetname);
+        }
+      });
+    } else {
+      this.sheetNames = [...BUILDING_SECTIONS];
+    }
+    this.contentData = data?.data;
     this.indexSheet = undefined;
 
     // Save on blur instead of polling.
