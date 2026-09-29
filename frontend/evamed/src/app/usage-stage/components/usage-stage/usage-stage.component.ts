@@ -353,10 +353,12 @@ export class UsageStageComponent implements OnInit, OnDestroy {
 
   getEnergyType(value: any, type: any): string {
     let selected;
+    // The catalogue can arrive after the saved type does; the tooltip fills in
+    // on the next check.
     if (type === 'electric') {
-      selected = this.catalogoTipoEnergiaElectrica.find(option => option.id === value);
+      selected = this.catalogoTipoEnergiaElectrica?.find(option => option.id === value);
     } else if (type === 'fuel') {
-      selected = this.catalogoTipoEnergiaCombustible.find(option => option.id === value);
+      selected = this.catalogoTipoEnergiaCombustible?.find(option => option.id === value);
     }
     return selected ? selected.name_type_energy : '';
   }
