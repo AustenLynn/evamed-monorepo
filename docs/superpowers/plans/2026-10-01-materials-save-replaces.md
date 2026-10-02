@@ -322,7 +322,10 @@ describe('MaterialsStageComponent saving', () => {
       { Sistema_constructivo: 'Muro A', Origen: 'Modelo de Revit', Material: 'Desconocido', Cantidad: 1 },
     ];
 
-  const build = (replace = vi.fn(() => of({ items: [] }))) => {
+  const replaceMock = () =>
+    vi.fn((_projectId: number, _origins: number[], _items: any[]) => of({ items: [] as any[] }));
+
+  const build = (replace: ReturnType<typeof replaceMock> = replaceMock()) => {
     const component: any = Object.create(MaterialsStageComponent.prototype);
     component.projectId = 42;
     component.ciudadOrigenSeleccionada = 9;
@@ -345,7 +348,7 @@ describe('MaterialsStageComponent saving', () => {
     const [projectId, origins, items] = replace.mock.calls[0];
     expect(projectId).toBe(42);
     expect(origins).toEqual([1, 2]);
-    expect(items.map(i => [i.construction_system, i.material_id, i.origin_id])).toEqual([
+    expect(items.map((i: any) => [i.construction_system, i.material_id, i.origin_id])).toEqual([
       ['Muro A', 1, 1],
       ['Muro A', 1, 1], // a legitimate duplicate row in the Excel is kept
       ['Losa', 2, 2],
@@ -368,7 +371,7 @@ describe('MaterialsStageComponent saving', () => {
     component.SOR = [[]];
     component.saveStepOne();
 
-    expect(replace.mock.calls[1][2].map(i => i.construction_system)).toEqual(['Losa']);
+    expect(replace.mock.calls[1][2].map((i: any) => i.construction_system)).toEqual(['Losa']);
   });
 
   it('sends nothing until the materials catalogue has loaded', () => {
@@ -381,7 +384,7 @@ describe('MaterialsStageComponent saving', () => {
   });
 
   it('lets the next autosave retry after a failed save', () => {
-    const { component } = build(vi.fn(() => throwError(() => new Error('offline'))));
+    const { component } = build(vi.fn((_p: number, _o: number[], _i: any[]) => throwError(() => new Error('offline'))) as any);
     component.lastAutosaveSignature = 'saved-state';
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
