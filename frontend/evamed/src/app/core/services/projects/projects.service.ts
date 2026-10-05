@@ -101,6 +101,13 @@ export class ProjectsService {
         })
       );
   }
+  /** Sets the project's material rows for `origins` to exactly `items` (server-side, atomically). */
+  replaceMaterialScheme(projectId: number, origins: number[], items: object[]): Observable<{ items: any[] }> {
+    return this.http
+      .put<{ items: any[] }>(`${environment.api_projects}${projectId}/material-scheme/`, { origins, items })
+      .pipe(tap(() => this.clearMaterialSchemeCache()));
+  }
+
 
   getMaterialSchemeProyectOrigin() {
     return this.http.get<any>(environment.api_scheme_project_original).pipe(

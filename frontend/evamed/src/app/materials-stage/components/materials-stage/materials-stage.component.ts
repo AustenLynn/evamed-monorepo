@@ -612,159 +612,82 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
     // console.log(this.selectedMaterial);
   }
 
-  async saveStepOne() {
-    const projectId = this.projectId;
+  saveStepOne(): void {
+    // Material names resolve to ids through the catalogue. Without it every
+    // row would be dropped and the replace would wipe the project's materials.
+    if (!this.projectId || !this.materialsList) {
+      return;
+    }
 
-    // Save Modelo Revit and Usuario
-    await Object.entries(this.SOR).forEach(([key, value]) => {
-      this.contentData[parseInt(key, 10) + 1].map(data => {
-        value.map(sc => {
-          if (data.Sistema_constructivo === sc) {
-            if (
-              data.Origen === 'Modelo de Revit' ||
-              data.Origen === 'Template EVAMED'
-            ) {
-              let materialToSearch = data.Material;
+    const items = [
+      ...this.buildSchemeItems(this.SOR, 1, ['Modelo de Revit', 'Template EVAMED'], value => parseInt(value, 10)),
+      ...this.buildSchemeItems(this.SOD, 2, ['Opciones EVAMED'], value => value),
+    ];
 
-              if (data.name_material_db !== undefined) {
-                materialToSearch = data.materialSelectedDB;
-              }
+    this.projectsService.replaceMaterialScheme(this.projectId, [1, 2], items).subscribe({
+      error: error => {
+        console.error('No se pudieron guardar los materiales', error);
+        // Not saved: let the next autosave tick send it again.
+        this.lastAutosaveSignature = null;
+      },
+    });
+  }
 
-              this.materialsService
-                .searchMaterial(materialToSearch)
-                .subscribe(material => {
-                  material.map(materialData => {
-                    if (materialData.name_material === materialToSearch) {
-                      this.projectsService
-                        .addSchemeProject({
-                          construction_system: data.Sistema_constructivo,
-                          comercial_name: data.Material,
-                          quantity: data.Cantidad,
-                          provider_distance: 0,
-                          material_id: materialData.id,
-                          project_id: projectId,
-                          origin_id: 1,
-                          section_id: parseInt(key, 10) + 1,
-                          value: null,
-                          distance_init:
-                            data.distancia_1 === '' ||
-                            data.distancia_1 === undefined
-                              ? 0
-                              : parseInt(data.distancia_1, 10),
-                          distance_end:
-                            data.distancia_2 === '' ||
-                            data.distancia_2 === undefined
-                              ? 0
-                              : parseInt(data.distancia_2, 10),
-                          replaces:
-                            data.reemplazos === '' ||
-                            data.reemplazos === undefined
-                              ? 0
-                              : data.reemplazos,
-                          city_id_origin: this.ciudadOrigenSeleccionada,
-                          state_id_origin: 1,
-                          city_id_end: 1,
-                          transport_id_origin:
-                            data.transporte_1 === '' ||
-                            data.transporte_1 === undefined
-                              ? null
-                              : parseInt(data.transporte_1, 10),
-                          transport_id_end:
-                            data.transporte_2 === '' ||
-                            data.transporte_2 === undefined
-                              ? null
-                              : parseInt(data.transporte_2, 10),
-                          unit_text: data.Unidad,
-                          description_material: data['Descripción de Material'],
-                        })
-                        .subscribe(data => {
-                          console.log(
-                            'Success Modelo Revit o Template EVAMED!'
-                          );
-                          console.log(data);
-                        });
-                    }
-                  });
-                });
-            }
-          }
-        });
+  /** One row per selected Excel line and catalogue match, as the old per-row POSTs built them. */
+  private buildSchemeItems(
+    selections: string[][],
+    originId: number,
+    origens: string[],
+    transport: (value: any) => any
+  ): object[] {
+    const items = [];
+    Object.entries(selections ?? []).forEach(([key, systems]) => {
+      const sheetIndex = parseInt(key, 10);
+      (this.contentData[sheetIndex + 1] ?? []).forEach(data => {
+        if (!(systems ?? []).includes(data.Sistema_constructivo) || !origens.includes(data.Origen)) {
+          return;
+        }
+        // The API stores quantity as a decimal and rejects anything else; one such
+        // row would make the whole replace fail. (The old per-row POSTs lost it too.)
+        if (!this.isNumeric(data.Cantidad)) {
+          return;
+        }
+        const materialToSearch = data.name_material_db !== undefined ? data.materialSelectedDB : data.Material;
+        this.materialsList
+          .filter(material => material.name_material === materialToSearch)
+          .forEach(material => {
+            items.push({
+              construction_system: data.Sistema_constructivo,
+              comercial_name: data.Material,
+              quantity: data.Cantidad,
+              provider_distance: 0,
+              material_id: material.id,
+              origin_id: originId,
+              section_id: sheetIndex + 1,
+              value: null,
+              distance_init: this.isBlank(data.distancia_1) ? 0 : parseInt(data.distancia_1, 10),
+              distance_end: this.isBlank(data.distancia_2) ? 0 : parseInt(data.distancia_2, 10),
+              replaces: this.isBlank(data.reemplazos) ? 0 : data.reemplazos,
+              city_id_origin: this.ciudadOrigenSeleccionada,
+              state_id_origin: 1,
+              city_id_end: 1,
+              transport_id_origin: this.isBlank(data.transporte_1) ? null : transport(data.transporte_1),
+              transport_id_end: this.isBlank(data.transporte_2) ? null : transport(data.transporte_2),
+              unit_text: data.Unidad,
+              description_material: data['Descripción de Material'],
+            });
+          });
       });
     });
+    return items;
+  }
 
-    // Save Dynamo
-    await Object.entries(this.SOD).forEach(([key, value]) => {
-      this.contentData[parseInt(key, 10) + 1].map(data => {
-        value.map(sc => {
-          if (data.Sistema_constructivo === sc) {
-            if (data.Origen === 'Opciones EVAMED') {
-              let materialToSearch = data.Material;
+  private isBlank(value): boolean {
+    return value === '' || value === undefined;
+  }
 
-              if (data.name_material_db !== undefined) {
-                materialToSearch = data.materialSelectedDB;
-              }
-
-              this.materialsService
-                .searchMaterial(materialToSearch)
-                .subscribe(material => {
-                  material.map(materialData => {
-                    if (materialData.name_material === materialToSearch) {
-                      this.projectsService
-                        .addSchemeProject({
-                          construction_system: data.Sistema_constructivo,
-                          comercial_name: data.Material,
-                          quantity: data.Cantidad,
-                          provider_distance: 0,
-                          material_id: materialData.id,
-                          project_id: projectId,
-                          origin_id: 2,
-                          section_id: parseInt(key, 10) + 1,
-                          value: null,
-                          distance_init:
-                            data.distancia_1 === '' ||
-                            data.distancia_1 === undefined
-                              ? 0
-                              : parseInt(data.distancia_1, 10),
-                          distance_end:
-                            data.distancia_2 === '' ||
-                            data.distancia_2 === undefined
-                              ? 0
-                              : parseInt(data.distancia_2, 10),
-                          replaces:
-                            data.reemplazos === '' ||
-                            data.reemplazos === undefined
-                              ? 0
-                              : data.reemplazos,
-                          city_id_origin: this.ciudadOrigenSeleccionada,
-                          state_id_origin: 1,
-                          city_id_end: 1,
-                          transport_id_origin:
-                            data.transporte_1 === '' ||
-                            data.transporte_1 === undefined
-                              ? null
-                              : data.transporte_1,
-                          transport_id_end:
-                            data.transporte_2 === '' ||
-                            data.transporte_2 === undefined
-                              ? null
-                              : data.transporte_2,
-                          unit_text: data.Unidad,
-                          description_material: data['Descripción de Material'],
-                        })
-                        .subscribe(data => {
-                          console.log(
-                            'Success Modelo Revit o Template EVAMED!'
-                          );
-                          console.log(data);
-                        });
-                    }
-                  });
-                });
-            }
-          }
-        });
-      });
-    });
+  private isNumeric(value): boolean {
+    return value !== null && value !== undefined && String(value).trim() !== '' && !isNaN(Number(value));
   }
 
 onSCSelected(event: MatSelectionListChange | any, originId: number) {
