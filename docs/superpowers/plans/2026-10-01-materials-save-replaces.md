@@ -511,3 +511,12 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 1. **Existing duplicates.** Dev has 50 extra identical rows in 7 projects (441, 458, 460, 505, 506, 577, 582). Some may be legitimate repeated Excel lines, so deleting them is the user's call, project by project. To inspect one project: `SELECT construction_system, comercial_name, quantity, count(*) FROM projects_api_materialschemeproject WHERE project_id_id = <id> GROUP BY 1,2,3 HAVING count(*) > 1;`.
 2. **Usuario_Plataforma (origin 3).** `saveStepOne()` never saved `SOU` before this plan, and still doesn't. Whether user-added systems should be saved from this page is a product question.
 3. **Click-through on dev.** Create a project, import the template, toggle systems and switch sheets for a minute, then check that the project's row count in the DB equals its selected rows.
+
+## Execution notes (2026-10-04)
+
+Executed inline, followed by a whole-branch review on Opus. What shipped differs from the tasks above in these ways:
+
+- **Scope is origins × sections.** The request has a required `sections` list, and only rows in both the given origins and the given sections are replaced. The page sends only sheets whose selections are loaded for both origins. Origin-only scope wiped every saved row when the page was opened again (Back, reload), because nothing was loaded yet.
+- **Rows are validated one by one.** Invalid rows are skipped and returned as `skipped: [{index, errors}]`; only an item outside the given origins or sections still returns 400. All-or-nothing validation let one bad Excel cell block every save, retrying every 5 s.
+- **Blank text cells are accepted** (`construction_system`, `comercial_name`, `unit_text`, `description_material`). Quantities are rounded to the column's 20 decimal places, and rows without a numeric quantity are left out on the client.
+- **One save at a time.** The client never sends a replace while one is in flight, and the server locks the project row (`select_for_update`). A tick that can't save (catalogue not loaded, save in flight, save failed) resets the autosave signature, so the next tick retries.
