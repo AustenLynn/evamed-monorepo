@@ -50,5 +50,6 @@ urlpatterns = [
     path('materials-stage/', views.MaterialStageView.as_view()),
     path('materials-stage/update/', views.MaterialStageUpdateView.as_view()),
     path('projects/<int:project_id>/results/', views.ProjectResultsView.as_view()),
+    path('projects/<int:project_id>/material-scheme/', views.ProjectMaterialSchemeView.as_view()),
     path('', include(router.urls))
 ]

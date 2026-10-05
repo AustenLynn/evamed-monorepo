@@ -896,3 +896,19 @@ class DataBaseMaterialSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         """Handle updating a section"""
         return super().update(instance, validated_data)
+
+
+class MaterialSchemeReplaceRowSerializer(MaterialSchemeProjectSerializer):
+    """One row of a replace. Empty Excel cells arrive as '' in these text
+    fields; reject them and one blank cell would block the whole save."""
+    class Meta(MaterialSchemeProjectSerializer.Meta):
+        extra_kwargs = {
+            field: {'allow_blank': True}
+            for field in ('construction_system', 'comercial_name', 'unit_text', 'description_material')
+        }
+
+
+class MaterialSchemeReplaceSerializer(serializers.Serializer):
+    """Body of PUT projects/<id>/material-scheme/: the full set of rows for some origins."""
+    origins = serializers.ListField(child=serializers.IntegerField(), allow_empty=False)
+    items = serializers.ListField(child=serializers.DictField(), allow_empty=True)
