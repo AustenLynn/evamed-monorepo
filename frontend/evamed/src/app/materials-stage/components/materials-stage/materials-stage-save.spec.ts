@@ -1,4 +1,4 @@
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 
 // Compile the component in its NgModule's context.
 import '../../materials-stage.module';
@@ -18,7 +18,8 @@ describe('MaterialsStageComponent saving', () => {
     ];
 
   const replaceMock = () =>
-    vi.fn((_projectId: number, _origins: number[], _items: any[]) => of({ items: [] as any[] }));
+    vi.fn((_projectId: number, _origins: number[], _sections: number[], _items: any[]) =>
+      of({ items: [] as any[], skipped: [] as any[] }));
 
   const build = (replace: ReturnType<typeof replaceMock> = replaceMock()) => {
     const component: any = Object.create(MaterialsStageComponent.prototype);
@@ -40,9 +41,10 @@ describe('MaterialsStageComponent saving', () => {
     component.saveStepOne();
 
     expect(replace).toHaveBeenCalledTimes(1);
-    const [projectId, origins, items] = replace.mock.calls[0];
+    const [projectId, origins, sections, items] = replace.mock.calls[0];
     expect(projectId).toBe(42);
     expect(origins).toEqual([1, 2]);
+    expect(sections).toEqual([1]);
     expect(items.map((i: any) => [i.construction_system, i.material_id, i.origin_id])).toEqual([
       ['Muro A', 1, 1],
       ['Muro A', 1, 1], // a legitimate duplicate row in the Excel is kept
@@ -66,20 +68,64 @@ describe('MaterialsStageComponent saving', () => {
     component.SOR = [[]];
     component.saveStepOne();
 
-    expect(replace.mock.calls[1][2].map((i: any) => i.construction_system)).toEqual(['Losa']);
+    expect(replace.mock.calls[1][3].map((i: any) => i.construction_system)).toEqual(['Losa']);
   });
 
-  it('sends nothing until the materials catalogue has loaded', () => {
+  it('sends nothing until the materials catalogue has loaded, and retries once it has', () => {
     const { component, replace } = build();
     component.materialsList = undefined;
+    component.lastAutosaveSignature = 'state-before-catalogue';
+
+    component.saveStepOne();
+
+    expect(replace).not.toHaveBeenCalled();
+    expect(component.lastAutosaveSignature).toBeNull(); // the next tick tries again
+  });
+
+  // Coming back to the page (Back, reload) starts with no sheet loaded. Saving
+  // then must not claim, and so clear, sheets whose selections it doesn't know.
+  it('saves nothing for a freshly opened page with no sheet loaded', () => {
+    const { component, replace } = build();
+    component.SOR = [];
+    component.SOD = [];
 
     component.saveStepOne();
 
     expect(replace).not.toHaveBeenCalled();
   });
 
+  it('only claims sheets whose selections are known for both origins', () => {
+    const { component, replace } = build();
+    component.contentData = [[], sheet, sheet, sheet];
+    component.SOR = [['Muro A'], ['Muro A'], undefined];
+    component.SOD = [['Losa'], undefined, ['Losa']];
+
+    component.saveStepOne();
+
+    expect(replace.mock.calls[0][2]).toEqual([1]);
+    expect(new Set(replace.mock.calls[0][3].map((i: any) => i.section_id))).toEqual(new Set([1]));
+  });
+
+  // Overlapping saves can interleave on the server; send one at a time.
+  it('does not start a save while one is in flight, and retries after', () => {
+    const pending = new Subject<{ items: any[]; skipped: any[] }>();
+    const { component, replace } = build(vi.fn(() => pending) as any);
+    component.saveStepOne();
+    component.lastAutosaveSignature = 'newer-state';
+
+    component.saveStepOne();
+
+    expect(replace).toHaveBeenCalledTimes(1);
+    expect(component.lastAutosaveSignature).toBeNull();
+
+    pending.next({ items: [], skipped: [] });
+    pending.complete();
+    component.saveStepOne();
+    expect(replace).toHaveBeenCalledTimes(2);
+  });
+
   it('lets the next autosave retry after a failed save', () => {
-    const { component } = build(vi.fn((_p: number, _o: number[], _i: any[]) => throwError(() => new Error('offline'))) as any);
+    const { component } = build(vi.fn((_p: number, _o: number[], _s: number[], _i: any[]) => throwError(() => new Error('offline'))) as any);
     component.lastAutosaveSignature = 'saved-state';
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
@@ -102,7 +148,7 @@ describe('MaterialsStageComponent saving', () => {
 
     component.saveStepOne();
 
-    const quantities = replace.mock.calls[0][2].map((i: any) => i.quantity);
+    const quantities = replace.mock.calls[0][3].map((i: any) => i.quantity);
     expect(quantities).toEqual([12.5, 12.5, '4.5', 7]);
   });
 });

@@ -101,10 +101,21 @@ export class ProjectsService {
         })
       );
   }
-  /** Sets the project's material rows for `origins` to exactly `items` (server-side, atomically). */
-  replaceMaterialScheme(projectId: number, origins: number[], items: object[]): Observable<{ items: any[] }> {
+  /**
+   * Sets the project's material rows for `origins` x `sections` to exactly `items`
+   * (server-side, atomically). Rows the API can't store come back in `skipped`.
+   */
+  replaceMaterialScheme(
+    projectId: number,
+    origins: number[],
+    sections: number[],
+    items: object[]
+  ): Observable<{ items: any[]; skipped: { index: number; errors: any }[] }> {
     return this.http
-      .put<{ items: any[] }>(`${environment.api_projects}${projectId}/material-scheme/`, { origins, items })
+      .put<{ items: any[]; skipped: { index: number; errors: any }[] }>(
+        `${environment.api_projects}${projectId}/material-scheme/`,
+        { origins, sections, items }
+      )
       .pipe(tap(() => this.clearMaterialSchemeCache()));
   }
 

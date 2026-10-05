@@ -488,46 +488,55 @@ class ProjectResultsView(APIView):
 
 class ProjectMaterialSchemeView(APIView):
     """
-    Replace a project's material rows for some origins in one step.
+    Replace a project's material rows for some origins and sections in one step.
 
     PUT /api-projects/projects/<id>/material-scheme/
-    {"origins": [1, 2], "items": [<MaterialSchemeProject fields, no project_id>]}
+    {"origins": [1, 2], "sections": [1, 4], "items": [<MaterialSchemeProject fields, no project_id>]}
 
     The new-project materials page autosaves its whole selection; appending
     each time duplicated rows, so it sends the full set and the server swaps it.
-    Rows of origins not listed are left alone.
+    Only the listed origins and sections are replaced: the page lists just the
+    sheets it has loaded, so the others are never cleared. An invalid row is
+    skipped and reported, as the old per-row saves lost only that row.
     """
 
     permission_classes = (IsAuthenticated,)
 
     @transaction.atomic
     def put(self, request, project_id):
-        project = access.owned_projects(request.user).filter(id=project_id).first()
+        # Lock the project so two overlapping saves can't both delete-then-insert.
+        project = access.owned_projects(request.user).select_for_update().filter(id=project_id).first()
         if project is None:
             return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
 
         body = serializers.MaterialSchemeReplaceSerializer(data=request.data)
         body.is_valid(raise_exception=True)
         origins = set(body.validated_data['origins'])
+        sections = set(body.validated_data['sections'])
 
-        rows = serializers.MaterialSchemeReplaceRowSerializer(
-            data=[dict(item, project_id=project.id) for item in body.validated_data['items']],
-            many=True,
-        )
-        rows.is_valid(raise_exception=True)
-        outside = [row['origin_id'].id for row in rows.validated_data if row.get('origin_id') is None or row['origin_id'].id not in origins]
-        if outside:
-            return Response(
-                {'detail': 'Every item must use one of the given origins.'},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        valid, skipped = [], []
+        for index, item in enumerate(body.validated_data['items']):
+            row = serializers.MaterialSchemeReplaceRowSerializer(data=dict(item, project_id=project.id))
+            if not row.is_valid():
+                skipped.append({'index': index, 'errors': row.errors})
+                continue
+            origin, section = row.validated_data.get('origin_id'), row.validated_data.get('section_id')
+            if origin is None or origin.id not in origins or section is None or section.id not in sections:
+                return Response(
+                    {'detail': 'Every item must use one of the given origins and sections.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            valid.append(row.validated_data)
 
-        models.MaterialSchemeProject.objects.filter(project_id=project, origin_id__in=origins).delete()
+        models.MaterialSchemeProject.objects.filter(
+            project_id=project, origin_id__in=origins, section_id__in=sections
+        ).delete()
         created = models.MaterialSchemeProject.objects.bulk_create(
-            [models.MaterialSchemeProject(**row) for row in rows.validated_data]
+            [models.MaterialSchemeProject(**row) for row in valid]
         )
         data = serializers.MaterialSchemeProjectSerializer(created, many=True).data
-        return Response({'items': data}, status=status.HTTP_200_OK)
+        return Response({'items': data, 'skipped': skipped}, status=status.HTTP_200_OK)
+
 
 class MaterialStageView(APIView):
     """Handle materials-stage checkbox options"""

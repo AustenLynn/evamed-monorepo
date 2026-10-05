@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 import { CatalogsService } from 'src/app/core/services/catalogs/catalogs.service';
 import { UntypedFormControl } from '@angular/forms';
 import { forkJoin, Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { finalize, map, startWith } from 'rxjs/operators';
 import { AddConstructiveElementComponent } from '../add-constructive-element/add-constructive-element.component';
 import { AddConstructiveSystemComponent } from '../add-constructive-system/add-constructive-system.component';
 import { AddConstructiveMaterialComponent } from '../add-constructive-material/add-constructive-material.component';
@@ -98,6 +98,7 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
   endSave = false;
   private autosaveIntervalId: ReturnType<typeof setInterval> | null = null;
   private lastAutosaveSignature: string | null = null;
+  private saveInFlight = false;
   private selectionIdByKey: { [key: string]: number } = {};
 
   constructor(
@@ -613,36 +614,68 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
   }
 
   saveStepOne(): void {
-    // Material names resolve to ids through the catalogue. Without it every
-    // row would be dropped and the replace would wipe the project's materials.
-    if (!this.projectId || !this.materialsList) {
+    // Material names resolve to ids through the catalogue; without it every row
+    // would be dropped. And one save at a time: overlapping replaces can
+    // interleave on the server. Either way, not saved: the next tick retries.
+    if (!this.projectId || !this.materialsList || this.saveInFlight) {
+      this.lastAutosaveSignature = null;
+      return;
+    }
+
+    // Only sheets whose saved selections are loaded for both origins. After
+    // Back or a reload nothing is loaded yet, and claiming a sheet we haven't
+    // seen would clear its saved rows.
+    const sheets = this.knownSheets();
+    if (sheets.length === 0) {
       return;
     }
 
     const items = [
-      ...this.buildSchemeItems(this.SOR, 1, ['Modelo de Revit', 'Template EVAMED'], value => parseInt(value, 10)),
-      ...this.buildSchemeItems(this.SOD, 2, ['Opciones EVAMED'], value => value),
+      ...this.buildSchemeItems(this.SOR, sheets, 1, ['Modelo de Revit', 'Template EVAMED'], value => parseInt(value, 10)),
+      ...this.buildSchemeItems(this.SOD, sheets, 2, ['Opciones EVAMED'], value => value),
     ];
+    const sections = sheets.map(sheet => sheet + 1);
 
-    this.projectsService.replaceMaterialScheme(this.projectId, [1, 2], items).subscribe({
-      error: error => {
-        console.error('No se pudieron guardar los materiales', error);
-        // Not saved: let the next autosave tick send it again.
-        this.lastAutosaveSignature = null;
-      },
-    });
+    this.saveInFlight = true;
+    this.projectsService
+      .replaceMaterialScheme(this.projectId, [1, 2], sections, items)
+      .pipe(finalize(() => (this.saveInFlight = false)))
+      .subscribe({
+        next: response => {
+          if (response?.skipped?.length) {
+            console.warn('Materiales no guardados (datos inválidos en el Excel)', response.skipped);
+          }
+        },
+        error: error => {
+          console.error('No se pudieron guardar los materiales', error);
+          this.lastAutosaveSignature = null;
+        },
+      });
+  }
+
+  /** Sheet indexes whose Revit and EVAMED-options selections are both known. */
+  private knownSheets(): number[] {
+    const sheets = [];
+    const count = Math.max(this.SOR?.length ?? 0, this.SOD?.length ?? 0);
+    for (let sheet = 0; sheet < count; sheet++) {
+      if (this.SOR[sheet] !== undefined && this.SOD[sheet] !== undefined) {
+        sheets.push(sheet);
+      }
+    }
+    return sheets;
   }
 
   /** One row per selected Excel line and catalogue match, as the old per-row POSTs built them. */
   private buildSchemeItems(
     selections: string[][],
+    sheets: number[],
     originId: number,
     origens: string[],
     transport: (value: any) => any
   ): object[] {
     const items = [];
-    Object.entries(selections ?? []).forEach(([key, systems]) => {
-      const sheetIndex = parseInt(key, 10);
+    sheets.forEach(sheetIndex => {
+      const systems = selections[sheetIndex];
       (this.contentData[sheetIndex + 1] ?? []).forEach(data => {
         if (!(systems ?? []).includes(data.Sistema_constructivo) || !origens.includes(data.Origen)) {
           return;

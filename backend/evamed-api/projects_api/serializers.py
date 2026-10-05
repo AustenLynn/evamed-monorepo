@@ -1,3 +1,4 @@
+import decimal
 from rest_framework import serializers
 
 from projects_api import models
@@ -898,9 +899,31 @@ class DataBaseMaterialSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
+class RoundedDecimalField(serializers.DecimalField):
+    """Rounds to `decimal_places` instead of rejecting longer input.
+
+    DRF checks precision before quantizing, even with `rounding`; quantities
+    computed in the browser are floats that can carry more than 20 decimals.
+    """
+    def validate_precision(self, value):
+        context = decimal.getcontext().copy()
+        context.prec = self.max_digits
+        try:
+            value = value.quantize(
+                decimal.Decimal(1).scaleb(-self.decimal_places),
+                rounding=decimal.ROUND_HALF_EVEN,
+                context=context,
+            )
+        except decimal.InvalidOperation:
+            self.fail('max_whole_digits', max_whole_digits=self.max_whole_digits)
+        return super().validate_precision(value)
+
+
 class MaterialSchemeReplaceRowSerializer(MaterialSchemeProjectSerializer):
     """One row of a replace. Empty Excel cells arrive as '' in these text
     fields; reject them and one blank cell would block the whole save."""
+    quantity = RoundedDecimalField(max_digits=30, decimal_places=20, allow_null=True, required=False)
+
     class Meta(MaterialSchemeProjectSerializer.Meta):
         extra_kwargs = {
             field: {'allow_blank': True}
@@ -909,6 +932,7 @@ class MaterialSchemeReplaceRowSerializer(MaterialSchemeProjectSerializer):
 
 
 class MaterialSchemeReplaceSerializer(serializers.Serializer):
-    """Body of PUT projects/<id>/material-scheme/: the full set of rows for some origins."""
+    """Body of PUT projects/<id>/material-scheme/: the full set of rows for some origins and sections."""
     origins = serializers.ListField(child=serializers.IntegerField(), allow_empty=False)
+    sections = serializers.ListField(child=serializers.IntegerField(), allow_empty=False)
     items = serializers.ListField(child=serializers.DictField(), allow_empty=True)
