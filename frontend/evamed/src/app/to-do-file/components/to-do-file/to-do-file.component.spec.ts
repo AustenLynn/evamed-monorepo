@@ -97,4 +97,13 @@ describe('ToDoFileComponent upload', () => {
     });
     expect(continueButton().disabled).toBe(true);
   });
+  it('shows the file name as text, not HTML', () => {
+    const name = '<img src=x onerror="window.__pwned=1">Diseño & obra <v2>.xlsm';
+
+    chooseFile(new File(['x'], name));
+
+    const label: HTMLElement = fixture.nativeElement.querySelector('#fileType');
+    expect(label.textContent).toBe(name);
+    expect(label.querySelector('img')).toBeNull();
+  });
 });

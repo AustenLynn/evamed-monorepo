@@ -45,7 +45,8 @@ export class ToDoFileComponent implements OnInit {
 
      file = (document.getElementById('file') as HTMLInputElement).files[0]
       .name;
-    this.renderer2.setProperty(asTitle, 'innerHTML', file);
+    // textContent: the name is user input; innerHTML via Renderer2 isn't sanitized.
+    this.renderer2.setProperty(asTitle, 'textContent', file);
 
     this.renderer2.setAttribute(
       asImage,
