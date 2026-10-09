@@ -272,3 +272,10 @@ If it fails on a **transitive** package, fix it in one of two ways and stop to r
 
 - **Click-through on dev after the Angular update:** sign in, import a project and walk every stage, as in the security-headers plan's Task 3 checklist.
 - **Branch protection:** to have `main` refuse merges while the audit is red, add `audit (dependencies)` to the branch-protection required checks: `gh api -X PUT repos/AustenLynn/evamed-monorepo/branches/main/protection …`, with the same body as before plus the new check.
+
+## Execution notes (2026-10-09)
+
+- **`proxy-addr` 2.0.7 → 2.0.8.** GHSA-jqcg-44mw-7w3h (critical) was published after this plan. It's an in-range lockfile bump under Express 4.22.3. It wasn't reachable, because `server.js` sets no `trust proxy`.
+- **`DATA_UPLOAD_MAX_MEMORY_SIZE = 10 MiB`** in `settings.py`. DRF 3.17.2 parses JSON through `request.body`, which Django caps at 2.5 MiB by default. That would have rejected large whole-project saves to `projects/<id>/material-scheme/`. The test is `test_accepts_a_large_project_in_one_request`.
+- **Local `pip-audit` runs** use a scratch copy of `requirements.txt` with `psycopg2-binary`, because `--no-deps` still builds `psycopg2`. CI audits the real file.
+- **The Angular framework packages resolved to 22.2.2** under `^22.2.1`.
