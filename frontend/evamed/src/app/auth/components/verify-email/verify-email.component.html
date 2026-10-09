@@ -52,7 +52,7 @@ con un menor impacto ambiental durante todo su ciclo de vida <button type="butto
         </p>
       </div>
       <div class="container-label-button-second">
-        <button type="button" class="link-button redirect-get-password verify-resend" (click)="resend()">Reenviar correo</button>
+        <button type="button" class="link-button redirect-get-password verify-resend" [disabled]="!canResend" (click)="resend()">Reenviar correo</button>
       </div>
       <div class="container-label-button-second">
         <button type="button" class="link-button redirect-get-password verify-logout" (click)="logout()">Cerrar sesión</button>

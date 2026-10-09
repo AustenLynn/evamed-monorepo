@@ -185,4 +185,51 @@ describe('VerifyEmailComponent', () => {
     );
     expect(positive).toEqual([]);
   });
+  it('sends one email however often Reenviar is pressed', async () => {
+    let finish: () => void = () => undefined;
+    const resendVerification = vi.fn(() => new Promise<void>(resolve => (finish = resolve)));
+    const { fixture } = setup(unverified, { resendVerification });
+
+    fixture.componentInstance.resend();
+    fixture.componentInstance.resend();
+    finish();
+    await settle();
+
+    expect(resendVerification).toHaveBeenCalledTimes(1);
+  });
+
+  it('waits a minute after a sent email before allowing another', async () => {
+    vi.useFakeTimers();
+    try {
+      const { fixture, auth } = setup(unverified);
+
+      fixture.componentInstance.resend();
+      await vi.advanceTimersByTimeAsync(0);
+      fixture.componentInstance.resend();
+      fixture.detectChanges();
+
+      expect(auth.resendVerification).toHaveBeenCalledTimes(1);
+      expect((fixture.nativeElement.querySelector('.verify-resend') as HTMLButtonElement).disabled).toBe(true);
+
+      await vi.advanceTimersByTimeAsync(60_000);
+      fixture.componentInstance.resend();
+      expect(auth.resendVerification).toHaveBeenCalledTimes(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('allows retrying straight after a failed resend', async () => {
+    const resendVerification = vi.fn()
+      .mockRejectedValueOnce(new Error('auth/network-request-failed'))
+      .mockResolvedValue(undefined);
+    const { fixture } = setup(unverified, { resendVerification });
+
+    fixture.componentInstance.resend();
+    await settle();
+    fixture.componentInstance.resend();
+    await settle();
+
+    expect(resendVerification).toHaveBeenCalledTimes(2);
+  });
 });

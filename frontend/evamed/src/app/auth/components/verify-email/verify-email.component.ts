@@ -5,6 +5,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/services/auth.service';
 
+// Firebase throttles repeated verification emails (auth/too-many-requests).
+export const RESEND_COOLDOWN_MS = 60_000;
+
 // Where AdminGuard sends a signed-in user whose email isn't verified yet. They
 // stay here until they click the link Firebase emailed them.
 @Component({
@@ -22,6 +25,7 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
   email: string | null = null;
   checking = false;
   notYetVerified = false;
+  canResend = true;
   private sub: Subscription;
   // Set by a click on "Ya verifiqué mi correo": the running (or next) check
   // reports its outcome. Focus re-checks alone stay silent.
@@ -87,13 +91,19 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
   }
 
   resend(): void {
+    if (!this.canResend) {
+      return;
+    }
+    this.canResend = false;
     this.authService
       .resendVerification()
       .then(() => {
         this.snackBar.open('Te enviamos un nuevo correo de verificación.', 'OK', { duration: 4000 });
+        setTimeout(() => (this.canResend = true), RESEND_COOLDOWN_MS);
       })
       .catch(() => {
         this.snackBar.open('No se pudo enviar el correo. Intenta nuevamente.', 'OK', { duration: 4000 });
+        this.canResend = true;
       });
   }
 
