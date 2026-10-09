@@ -59,6 +59,38 @@ export class AuthService {
     return this.auth.currentUser?.emailVerified ?? false;
    }
 
+  /**
+   * Firebase keeps the ID token it issued before verification
+   * (email_verified=false) for up to an hour, and the API trusts only the
+   * token. Once the user is verified, make sure the token says so too.
+   */
+  async ensureVerifiedToken(): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!user?.emailVerified) {
+      return;
+    }
+    const { claims } = await user.getIdTokenResult();
+    if (claims['email_verified'] !== true) {
+      await user.getIdToken(true);
+    }
+  }
+
+  /**
+   * Re-reads the signed-in user from Firebase, which picks up a click on the
+   * verification link in another tab. True once verified (with a fresh token).
+   */
+  async refreshVerification(): Promise<boolean> {
+    if (!this.auth.currentUser) {
+      return false;
+    }
+    await this.auth.currentUser.reload();
+    if (!this.auth.currentUser?.emailVerified) {
+      return false;
+    }
+    await this.ensureVerifiedToken();
+    return true;
+  }
+
   // Iniciar sesión con un proveedor social mediante popup.
   loginWithProvider(provider: SocialProvider): Promise<UserCredential> {
     return signInWithPopup(this.auth, this.buildProvider(provider));
