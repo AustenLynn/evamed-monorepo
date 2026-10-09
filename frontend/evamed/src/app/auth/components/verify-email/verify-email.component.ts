@@ -62,6 +62,14 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
     this.check();
   }
 
+  // Mobile tab switches often skip window focus; visibility is reliable there.
+  @HostListener('document:visibilitychange')
+  onVisibilityChange(): void {
+    if (document.visibilityState === 'visible') {
+      this.check();
+    }
+  }
+
   confirm(): void {
     // In an unfocused window the click's focus event has already started a
     // silent check; asking it to report means the click still gets an answer.

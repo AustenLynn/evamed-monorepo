@@ -232,4 +232,51 @@ describe('VerifyEmailComponent', () => {
 
     expect(resendVerification).toHaveBeenCalledTimes(2);
   });
+  // Mobile browsers often don't fire window focus when switching back to a tab.
+  const setVisibility = (state: DocumentVisibilityState) =>
+    Object.defineProperty(document, 'visibilityState', { value: state, configurable: true });
+
+  it('re-checks when the page becomes visible again', async () => {
+    const { navigate } = setup(unverified, { refreshVerification: vi.fn(async () => true) });
+    try {
+      setVisibility('visible');
+      document.dispatchEvent(new Event('visibilitychange'));
+      await settle();
+
+      expect(navigate).toHaveBeenCalledWith(['/']);
+    } finally {
+      delete (document as any).visibilityState;
+    }
+  });
+
+  it('does not re-check when the page is being hidden', async () => {
+    const refreshVerification = vi.fn(async () => true);
+    setup(unverified, { refreshVerification });
+    try {
+      setVisibility('hidden');
+      document.dispatchEvent(new Event('visibilitychange'));
+      await settle();
+
+      expect(refreshVerification).not.toHaveBeenCalled();
+    } finally {
+      delete (document as any).visibilityState;
+    }
+  });
+
+  it('starts one check when focus and visibility arrive together', async () => {
+    let finish: (verified: boolean) => void = () => undefined;
+    const refreshVerification = vi.fn(() => new Promise<boolean>(resolve => (finish = resolve)));
+    setup(unverified, { refreshVerification });
+    try {
+      setVisibility('visible');
+      window.dispatchEvent(new Event('focus'));
+      document.dispatchEvent(new Event('visibilitychange'));
+      finish(false);
+      await settle();
+
+      expect(refreshVerification).toHaveBeenCalledTimes(1);
+    } finally {
+      delete (document as any).visibilityState;
+    }
+  });
 });
