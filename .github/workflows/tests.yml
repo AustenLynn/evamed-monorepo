@@ -88,6 +88,9 @@ jobs:
       - name: Run the unit tests
         run: npm test -- --watch=false
 
+      - name: Test the production web server
+        run: node --test "server/*.test.js"
+
       # The deploy builds this on the 2 GB box; failing here is cheaper.
       - name: Build production
         run: npm run build -- --configuration production
