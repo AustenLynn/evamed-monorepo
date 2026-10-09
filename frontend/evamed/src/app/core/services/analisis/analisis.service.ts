@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { shareReplay, tap } from 'rxjs/operators';
 import { environment } from './../../../../environments/environment';
+import { CatalogueCacheService } from '../catalogue-cache/catalogue-cache.service';
 
 @Injectable({
   providedIn: 'root',
@@ -16,12 +17,11 @@ export class AnalisisService {
   private _potentialTypes$: Observable<any>;
   private _standards$: Observable<any>;
   private _sections$: Observable<any>;
-  private _materials$: Observable<any>;
   private _potentialTransport$: Observable<any>;
   private _conversions$: Observable<any>;
   private _db$: Observable<any>;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private catalogueCache: CatalogueCacheService) {}
 
   // Mutable per-project data — not cached
   getMaterialSchemeProyect() {
@@ -50,20 +50,18 @@ export class AnalisisService {
   }
 
   getMaterialSchemeData() {
-    return this.http.get<any>(environment.api_material_scheme_data).pipe(
-      tap(data => { return data; })
-    );
+    return this.catalogueCache.get<any>(environment.api_material_scheme_data);
   }
 
   updateMaterialSchemeData(id: string, changes) {
     return this.http
       .put(`${environment.api_material_scheme_data}${id}/`, changes)
-      .pipe(tap(data => { return data; }));
+      .pipe(tap(() => this.catalogueCache.invalidate(environment.api_material_scheme_data)));
   }
 
   addMaterialSchemeData(data: object) {
     return this.http.post<any>(environment.api_material_scheme_data, data).pipe(
-      tap(data => { return data; })
+      tap(() => this.catalogueCache.invalidate(environment.api_material_scheme_data))
     );
   }
 
@@ -117,10 +115,7 @@ export class AnalisisService {
   }
 
   getMaterials() {
-    if (!this._materials$) {
-      this._materials$ = this.http.get<any>(environment.api_materials).pipe(shareReplay(1));
-    }
-    return this._materials$;
+    return this.catalogueCache.get<any>(environment.api_materials);
   }
 
   getPotentialTransport() {

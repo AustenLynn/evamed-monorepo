@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { environment } from './../../../../environments/environment';
+import { CatalogueCacheService } from '../catalogue-cache/catalogue-cache.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MaterialsService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private catalogueCache: CatalogueCacheService) {}
 
   getMaterialSchemeProyects() {
     return this.http.get<any>(environment.api_scheme_project).pipe(
@@ -79,11 +80,7 @@ export class MaterialsService {
   }
 
   getMaterials() {
-    return this.http.get<any>(environment.api_materials).pipe(
-      tap(data => {
-        return data;
-      })
-    );
+    return this.catalogueCache.get<any>(environment.api_materials);
   }
 
   searchMaterial(material) {
@@ -98,17 +95,13 @@ export class MaterialsService {
 
   addMaterial(data: object) {
     return this.http.post<any>(environment.api_materials, data).pipe(
-      tap(data => {
-        return data;
-      })
+      tap(() => this.catalogueCache.invalidate(environment.api_materials))
     );
   }
 
   deleteMaterial(id: number) {
     return this.http.delete(`${environment.api_materials}${id}/`).pipe(
-      tap(data => {
-        return data;
-      })
+      tap(() => this.catalogueCache.invalidate(environment.api_materials))
     );
   }
 
@@ -116,17 +109,13 @@ export class MaterialsService {
     return this.http
       .delete(`${environment.api_material_scheme_data}${id}/`)
       .pipe(
-        tap(data => {
-          return data;
-        })
+        tap(() => this.catalogueCache.invalidate(environment.api_material_scheme_data))
       );
   }
 
   updateMaterial(id: string, changes) {
     return this.http.put(`${environment.api_materials}${id}/`, changes).pipe(
-      tap(data => {
-        return data;
-      })
+      tap(() => this.catalogueCache.invalidate(environment.api_materials))
     );
   }
 
