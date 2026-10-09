@@ -21,6 +21,8 @@ describe.each([
   ['end of life', EndLifeStageModule, EndLifeStageComponent],
 ])('%s page for an existing project', (_name, stageModule: any, stage: any) => {
   beforeEach(() => {
+    // The state ActiveProjectService.open() leaves: a project, no imported Excel.
+    sessionStorage.removeItem('dataProject');
     sessionStorage.setItem('primaryDataProject', JSON.stringify({ id: 7, name_project: 'Casa Norte' }));
     const anyRequest = () => of([]),
       catalogs = new Proxy({}, { get: () => anyRequest });

@@ -51,7 +51,11 @@ describe('ToDoFileComponent upload', () => {
     fixture.detectChanges();
   });
 
-  afterEach(() => vi.restoreAllMocks());
+  afterEach(() => {
+    vi.restoreAllMocks();
+    // Specs share one environment; don't leave an upload behind for the next file.
+    sessionStorage.clear();
+  });
 
   it('keeps Continuar disabled until a file is chosen', () => {
     expect(continueButton().disabled).toBe(true);
@@ -97,7 +101,7 @@ describe('ToDoFileComponent upload', () => {
     });
     expect(continueButton().disabled).toBe(true);
   });
-  it('shows the file name as text, not HTML', () => {
+  it('shows the file name as text, not HTML', async () => {
     const name = '<img src=x onerror="window.__pwned=1">Diseño & obra <v2>.xlsm';
 
     chooseFile(new File(['x'], name));
@@ -105,5 +109,9 @@ describe('ToDoFileComponent upload', () => {
     const label: HTMLElement = fixture.nativeElement.querySelector('#fileType');
     expect(label.textContent).toBe(name);
     expect(label.querySelector('img')).toBeNull();
+
+    // Let the upload finish here: its FileReader writes sessionStorage when it
+    // completes, and specs share one environment.
+    await vi.waitFor(() => expect(fixture.componentInstance.processingFile).toBe(false));
   });
 });
