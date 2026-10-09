@@ -158,4 +158,31 @@ describe('VerifyEmailComponent', () => {
     expect(auth.logout).toHaveBeenCalled();
     expect(navigate).toHaveBeenCalledWith(['/auth/login']);
   });
+  it('offers its actions as real buttons', () => {
+    const { el } = setup(unverified);
+
+    for (const selector of ['.verify-resend', '.verify-logout', '.verify-about']) {
+      const action = el.querySelector(selector);
+      expect(action?.tagName, selector).toBe('BUTTON');
+      expect(action?.getAttribute('type'), selector).toBe('button');
+    }
+  });
+
+  it('does not sign out when a letter is typed on the sign-out action', async () => {
+    const { el, auth } = setup(unverified);
+
+    el.querySelector('.verify-logout')!.dispatchEvent(new KeyboardEvent('keypress', { key: 'a', bubbles: true }));
+    await settle();
+
+    expect(auth.logout).not.toHaveBeenCalled();
+  });
+
+  it('keeps the natural tab order (no positive tabindex)', () => {
+    const { el } = setup(unverified);
+
+    const positive = Array.from(el.querySelectorAll('[tabindex]')).filter(
+      element => Number(element.getAttribute('tabindex')) > 0
+    );
+    expect(positive).toEqual([]);
+  });
 });

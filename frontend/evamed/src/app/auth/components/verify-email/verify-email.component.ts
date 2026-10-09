@@ -10,8 +10,11 @@ import { AuthService } from 'src/app/core/services/auth.service';
 @Component({
     selector: 'app-verify-email',
     templateUrl: './verify-email.component.html',
-    // Same layout as the other auth pages.
-    styleUrls: ['../recover-password/recover-password/recover-password.component.scss'],
+    // Same layout as the other auth pages, plus link-styled buttons.
+    styleUrls: [
+      '../recover-password/recover-password/recover-password.component.scss',
+      './verify-email.component.scss',
+    ],
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
