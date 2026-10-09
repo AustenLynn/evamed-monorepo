@@ -183,6 +183,12 @@ REST_FRAMEWORK = {
     'NUM_PROXIES': 1,
 }
 
+# The materials page sends a whole project's rows in one replace
+# (projects/<id>/material-scheme/), and DRF >= 3.17.2 caps JSON bodies at this
+# setting (Django's default is 2.5 MiB). About 450 bytes a row: 10 MiB fits
+# roughly 20 000 rows while still bounding what one request can buffer.
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
+
 # One cache shared by all gunicorn workers in the container, so the API
 # throttles below count per address/user rather than per worker process.
 # Nothing else in the app uses Django's cache.

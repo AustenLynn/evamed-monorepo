@@ -144,6 +144,19 @@ class MaterialSchemeReplaceTests(APITestCase):
         # The response holds the value written; SQLite (local runs) stores decimals as floats.
         self.assertEqual(response.data['items'][0]['quantity'], '0.00001234567890123457')
 
+    def test_accepts_a_large_project_in_one_request(self):
+        # DRF 3.17.2 reads JSON through request.body, which Django caps at
+        # DATA_UPLOAD_MAX_MEMORY_SIZE (2.5 MiB by default). A whole project's
+        # rows are sent in one replace, so a big Revit import must still fit.
+        description = 'x' * 3000
+        items = [dict(self.item(self.revit, system='Muro %d' % n), description_material=description) for n in range(1000)]
+
+        response = self.put(items)
+
+        self.assertGreater(len(response.wsgi_request.body), 2621440)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(self.rows(self.revit).count(), 1000)
+
     def test_anonymous_is_rejected(self):
         self.client.force_authenticate(user=None)
 
