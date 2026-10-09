@@ -37,17 +37,22 @@ docker compose up --build
 ## Pruebas automáticas (CI)
 
 Cada `push` y cada pull request ejecutan `.github/workflows/tests.yml` en GitHub
-Actions, con dos trabajos independientes:
+Actions, con tres trabajos independientes:
 
 - **backend** — instala Python 3.12, levanta PostgreSQL 17 y corre
   `python manage.py test` (115 pruebas).
 - **frontend** — instala Node 22, corre `npm test` (6 pruebas) y compila
   `npm run build -- --configuration production`.
+- **audit** — revisa las dependencias del backend (`pip-audit`, incluidas las
+  transitivas) y del frontend (`npm audit --omit=dev`); falla si alguna tiene
+  una vulnerabilidad conocida. `package.json` fuerza `@grpc/grpc-js` 1.14.5
+  (`overrides`) porque Firestore fija una versión vulnerable; la app no usa
+  Firestore.
 
 Las pruebas no usan ningún secreto: simulan Firebase. El estado de cada
 ejecución se ve en la pestaña **Actions** del repositorio.
 
-Cuando ambos trabajos pasan en `main`, un tercer trabajo, **deploy**, despliega
+Cuando los tres pasan en `main`, un cuarto trabajo, **deploy**, despliega
 automáticamente al servidor de desarrollo (`dev.evamediber.click`). También se
 puede redesplegar `main` a mano con **Actions → tests → Run workflow**. Detalles
 en `deploy/README.md`.
