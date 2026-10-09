@@ -66,7 +66,8 @@ export class RegisterComponent implements OnInit {
         }
         this.authService.verifyEmail();
         this.snackBar.open('Registro correcto', 'OK', { duration: 4000 });
-        this.router.navigate(['/auth/login']);
+        // Firebase has already signed the new user in; they verify before using the platform.
+        this.router.navigate(['/auth/verify-email']);
       })
       .catch(error => {
         const message = error?.code === 'auth/email-already-in-use'

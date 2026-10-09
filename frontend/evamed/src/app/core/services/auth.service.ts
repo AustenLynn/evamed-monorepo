@@ -49,16 +49,6 @@ export class AuthService {
     return sendEmailVerification(this.auth.currentUser);
   }
 
-  // Refresca el estado del usuario para detectar emailVerified tras hacer clic en el correo
-  reloadCurrentUser(): Promise<void> {
-    return this.auth.currentUser?.reload() ?? Promise.resolve();
-  }
-
-   // Verificar usuario
-   isEmailVerified() {
-    return this.auth.currentUser?.emailVerified ?? false;
-   }
-
   /**
    * Firebase keeps the ID token it issued before verification
    * (email_verified=false) for up to an hour, and the API trusts only the
