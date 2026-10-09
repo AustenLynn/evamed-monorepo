@@ -1,15 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { tap, shareReplay } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { environment } from './../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProjectsService {
-  private materialSchemeCache$: Observable<any[]> | null = null;
-
   constructor(private http: HttpClient) {}
 
   addProject(projectData: object) {
@@ -63,20 +61,8 @@ export class ProjectsService {
   }
 
   getMaterialSchemeProyect(): Observable<any[]> {
-    if (!this.materialSchemeCache$) {
-      this.materialSchemeCache$ = this.http.get<any[]>(environment.api_scheme_project).pipe(
-        tap( () => {
-        //tap(data => {
-          // console.log('Material scheme data loaded', data);
-        }),
-        shareReplay(1) // Cache the response and replay for new subscribers
-      );
-    }
-    return this.materialSchemeCache$;
-  }
-
-  clearMaterialSchemeCache(): void {
-    this.materialSchemeCache$ = null;
+    // The signed-in user's own rows: never cached.
+    return this.http.get<any[]>(environment.api_scheme_project);
   }
 
   updateMaterialSchemeProject(id: string, changes: any): Observable<any> {
@@ -84,8 +70,6 @@ export class ProjectsService {
       .put(`${environment.api_scheme_project}${id}/`, changes)
       .pipe(
        tap(data => {
-        // Invalidate cached data after a successful update
-        this.clearMaterialSchemeCache();
         return data;
         })
       );
@@ -96,7 +80,6 @@ export class ProjectsService {
       .delete(`${environment.api_scheme_project}${id}/`)
       .pipe(
         tap(data => {
-          this.clearMaterialSchemeCache();
           return data;
         })
       );
@@ -115,8 +98,7 @@ export class ProjectsService {
       .put<{ items: any[]; skipped: { index: number; errors: any }[] }>(
         `${environment.api_projects}${projectId}/material-scheme/`,
         { origins, sections, items }
-      )
-      .pipe(tap(() => this.clearMaterialSchemeCache()));
+      );
   }
 
 

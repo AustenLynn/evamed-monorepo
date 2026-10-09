@@ -15,7 +15,6 @@ export class AnalisisService {
   private _sourceInformation$: Observable<any>;
   private _potentialTypes$: Observable<any>;
   private _standards$: Observable<any>;
-  private _schemeProject$: Observable<any>;
   private _sections$: Observable<any>;
   private _materials$: Observable<any>;
   private _potentialTransport$: Observable<any>;
@@ -25,6 +24,11 @@ export class AnalisisService {
   constructor(private http: HttpClient) {}
 
   // Mutable per-project data — not cached
+  getMaterialSchemeProyect() {
+    // The signed-in user's own rows: never cached.
+    return this.http.get<any>(environment.api_scheme_project);
+  }
+
   getECDP() {
     return this.http.get<any>(environment.api_electricity_consumption_deconstructive_process);
   }
@@ -103,13 +107,6 @@ export class AnalisisService {
       this._standards$ = this.http.get<any>(environment.api_standards).pipe(shareReplay(1));
     }
     return this._standards$;
-  }
-
-  getMaterialSchemeProyect() {
-    if (!this._schemeProject$) {
-      this._schemeProject$ = this.http.get<any>(environment.api_scheme_project).pipe(shareReplay(1));
-    }
-    return this._schemeProject$;
   }
 
   getSectionsList() {
