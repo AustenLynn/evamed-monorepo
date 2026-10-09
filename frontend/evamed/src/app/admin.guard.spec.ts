@@ -73,6 +73,56 @@ describe('AdminGuard', () => {
 
     expect(target(await outcome)).toBe('/auth/verify-email?returnUrl=%2Fresultados');
   });
+  const never = <T>() => new Promise<T>(() => undefined);
+
+  it('sends an unverified user to the verify page when Firebase never answers', async () => {
+    vi.useFakeTimers();
+    try {
+      const { outcome } = run({ emailVerified: false }, { refreshVerification: vi.fn(() => never<boolean>()) });
+      let settled = false;
+      outcome.then(() => (settled = true));
+
+      await vi.advanceTimersByTimeAsync(4_999);
+      expect(settled).toBe(false);
+      await vi.advanceTimersByTimeAsync(1);
+
+      expect(target(await outcome)).toBe('/auth/verify-email');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('lets a verified user in when the token refresh never answers', async () => {
+    vi.useFakeTimers();
+    try {
+      const { outcome } = run({ emailVerified: true }, { ensureVerifiedToken: vi.fn(() => never<void>()) });
+
+      await vi.advanceTimersByTimeAsync(5_000);
+
+      expect(await outcome).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('ignores a Firebase answer that arrives after the timeout', async () => {
+    vi.useFakeTimers();
+    try {
+      let late: (verified: boolean) => void = () => undefined;
+      const { outcome } = run(
+        { emailVerified: false },
+        { refreshVerification: vi.fn(() => new Promise<boolean>(resolve => (late = resolve))) }
+      );
+
+      await vi.advanceTimersByTimeAsync(5_000);
+      late(true);
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(target(await outcome)).toBe('/auth/verify-email');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
 
 // Social users finish /auth/complete-profile before verifying, and the verify
