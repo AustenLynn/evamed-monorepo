@@ -103,6 +103,23 @@ describe('VerifyEmailComponent', () => {
     expect(refreshVerification).toHaveBeenCalledTimes(1);
   });
 
+  // Clicking the button in an unfocused window fires window:focus first, which
+  // starts a silent check; the click must still get its answer.
+  it('reports the outcome to a click that arrives during a focus re-check', async () => {
+    let finish: (verified: boolean) => void = () => undefined;
+    const refreshVerification = vi.fn(() => new Promise<boolean>(resolve => (finish = resolve)));
+    const { fixture, el } = setup(unverified, { refreshVerification });
+
+    window.dispatchEvent(new Event('focus'));
+    fixture.componentInstance.confirm();
+    finish(false);
+    await settle();
+    fixture.detectChanges();
+
+    expect(refreshVerification).toHaveBeenCalledTimes(1);
+    expect(el.querySelector('.verify-pending')).not.toBeNull();
+  });
+
   it('re-checks when the tab regains focus', async () => {
     const { navigate } = setup(unverified, { refreshVerification: vi.fn(async () => true) });
 

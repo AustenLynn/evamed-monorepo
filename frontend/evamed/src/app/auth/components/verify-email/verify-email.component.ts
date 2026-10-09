@@ -20,6 +20,9 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
   checking = false;
   notYetVerified = false;
   private sub: Subscription;
+  // Set by a click on "Ya verifiqué mi correo": the running (or next) check
+  // reports its outcome. Focus re-checks alone stay silent.
+  private reportOutcome = false;
 
   constructor(
     private authService: AuthService,
@@ -49,14 +52,17 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
   // Coming back from the verification email in another tab.
   @HostListener('window:focus')
   onFocus(): void {
-    this.check(false);
+    this.check();
   }
 
   confirm(): void {
-    this.check(true);
+    // In an unfocused window the click's focus event has already started a
+    // silent check; asking it to report means the click still gets an answer.
+    this.reportOutcome = true;
+    this.check();
   }
 
-  private async check(reportOutcome: boolean): Promise<void> {
+  private async check(): Promise<void> {
     if (this.checking || !this.email) {
       return;
     }
@@ -64,15 +70,16 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
     try {
       if (await this.authService.refreshVerification()) {
         this.router.navigate(['/']);
-      } else if (reportOutcome) {
+      } else if (this.reportOutcome) {
         this.notYetVerified = true;
       }
     } catch {
-      if (reportOutcome) {
+      if (this.reportOutcome) {
         this.snackBar.open('No pudimos comprobar la verificación. Intenta nuevamente.', 'OK', { duration: 4000 });
       }
     } finally {
       this.checking = false;
+      this.reportOutcome = false;
     }
   }
 

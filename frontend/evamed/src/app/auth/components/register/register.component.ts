@@ -64,6 +64,8 @@ export class RegisterComponent implements OnInit {
           await this.authService.deleteCurrentUser();
           throw error;
         }
+        // The platform finds the profile by this key, as after login.
+        localStorage.setItem('email-login', value.email);
         this.authService.verifyEmail();
         this.snackBar.open('Registro correcto', 'OK', { duration: 4000 });
         // Firebase has already signed the new user in; they verify before using the platform.
