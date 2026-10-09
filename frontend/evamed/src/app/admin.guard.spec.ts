@@ -11,7 +11,7 @@ import { AuthService } from './core/services/auth.service';
 // AdminGuard protects every platform route (not only admin pages): the user
 // must be signed in and have verified their email.
 describe('AdminGuard', () => {
-  const run = (user: unknown, overrides: Record<string, unknown> = {}) => {
+  const run = (user: unknown, overrides: Record<string, unknown> = {}, url?: string) => {
     const auth = {
       hasUser: () => of(user),
       refreshVerification: vi.fn(async () => false),
@@ -21,7 +21,10 @@ describe('AdminGuard', () => {
     TestBed.configureTestingModule({
       providers: [provideRouter([]), { provide: AuthService, useValue: auth }],
     });
-    const result = TestBed.inject(AdminGuard).canActivate(null as any, null as any) as Observable<boolean | UrlTree>;
+    const result = TestBed.inject(AdminGuard).canActivate(
+      null as any,
+      (url ? { url } : null) as any
+    ) as Observable<boolean | UrlTree>;
     return { auth, outcome: firstValueFrom(result) };
   };
   const target = (outcome: boolean | UrlTree) =>
@@ -64,6 +67,11 @@ describe('AdminGuard', () => {
     );
 
     expect(await outcome).toBe(true);
+  });
+  it('remembers the requested page when it sends a user to verify', async () => {
+    const { outcome } = run({ emailVerified: false }, {}, '/resultados');
+
+    expect(target(await outcome)).toBe('/auth/verify-email?returnUrl=%2Fresultados');
   });
 });
 

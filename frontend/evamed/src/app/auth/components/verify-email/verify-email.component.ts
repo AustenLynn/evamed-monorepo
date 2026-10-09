@@ -1,5 +1,5 @@
 import { Component, HostListener, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -34,6 +34,7 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private snackBar: MatSnackBar
   ) {}
 
@@ -45,7 +46,7 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
         return;
       }
       if (user.emailVerified) {
-        this.router.navigate(['/']);
+        this.enterPlatform();
         return;
       }
       this.email = user.email;
@@ -55,6 +56,17 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
   }
+  // Back to the page AdminGuard intercepted, if it's a page of this app.
+  private enterPlatform(): void {
+    const requested = this.route.snapshot.queryParamMap.get('returnUrl');
+    const isAppPage = !!requested && /^\/(?![\/\\])/.test(requested) && !requested.startsWith('/auth');
+    if (isAppPage) {
+      this.router.navigateByUrl(requested);
+    } else {
+      this.router.navigate(['/']);
+    }
+  }
+
 
   // Coming back from the verification email in another tab.
   @HostListener('window:focus')
@@ -84,7 +96,7 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
     this.checking = true;
     try {
       if (await this.authService.refreshVerification()) {
-        this.router.navigate(['/']);
+        this.enterPlatform();
       } else if (this.reportOutcome) {
         this.notYetVerified = true;
       }

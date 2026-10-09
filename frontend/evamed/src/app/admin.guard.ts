@@ -33,8 +33,14 @@ export class AdminGuard implements CanActivate {
         }
         // They may have just clicked the link in another tab.
         const verified = await this.authService.refreshVerification().catch(() => false);
-        return verified ? true : this.router.parseUrl('/auth/verify-email');
+        return verified ? true : this.verifyPage(state?.url);
       })
     );
+  }
+
+  // Keep the page they asked for, so they land there once verified.
+  private verifyPage(requested?: string): UrlTree {
+    const queryParams = requested && requested !== '/' ? { returnUrl: requested } : {};
+    return this.router.createUrlTree(['/auth/verify-email'], { queryParams });
   }
 }

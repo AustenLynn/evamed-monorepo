@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { provideRouter, Router } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
 import { of } from 'rxjs';
 
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -10,7 +10,7 @@ import { VerifyEmailComponent } from './verify-email.component';
 describe('VerifyEmailComponent', () => {
   const unverified = { email: 'ana@example.com', emailVerified: false };
 
-  const setup = (user: unknown, overrides: Record<string, unknown> = {}) => {
+  const setup = (user: unknown, overrides: Record<string, unknown> = {}, queryParams: Record<string, string> = {}) => {
     const auth = {
       hasUser: () => of(user),
       refreshVerification: vi.fn(async () => false),
@@ -23,14 +23,17 @@ describe('VerifyEmailComponent', () => {
       imports: [AuthModule],
       providers: [
         provideRouter([]),
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap(queryParams) } } },
         { provide: AuthService, useValue: auth },
         { provide: MatSnackBar, useValue: snackBar },
       ],
     });
-    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    const router = TestBed.inject(Router);
+    const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    const navigateByUrl = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
     const fixture = TestBed.createComponent(VerifyEmailComponent);
     fixture.detectChanges();
-    return { fixture, auth, snackBar, navigate, el: fixture.nativeElement as HTMLElement };
+    return { fixture, auth, snackBar, navigate, navigateByUrl, el: fixture.nativeElement as HTMLElement };
   };
 
   const settle = () => new Promise(resolve => setTimeout(resolve, 0));
@@ -279,4 +282,31 @@ describe('VerifyEmailComponent', () => {
       delete (document as any).visibilityState;
     }
   });
+  it('continues to the page that was asked for', async () => {
+    const { el, navigateByUrl } = setup(
+      unverified, { refreshVerification: vi.fn(async () => true) }, { returnUrl: '/home-evamed?tab=2' });
+
+    await click(el, 'button.yellow-button-login');
+
+    expect(navigateByUrl).toHaveBeenCalledWith('/home-evamed?tab=2');
+  });
+
+  it('sends an already verified user to the page that was asked for', () => {
+    const { navigateByUrl } = setup(
+      { email: 'ana@example.com', emailVerified: true }, {}, { returnUrl: '/resultados' });
+
+    expect(navigateByUrl).toHaveBeenCalledWith('/resultados');
+  });
+
+  for (const unsafe of ['//evil.example', '/\\evil.example', 'https://evil.example', '/auth/login']) {
+    it(`ignores a returnUrl that isn't an app page (${unsafe})`, async () => {
+      const { el, navigate, navigateByUrl } = setup(
+        unverified, { refreshVerification: vi.fn(async () => true) }, { returnUrl: unsafe });
+
+      await click(el, 'button.yellow-button-login');
+
+      expect(navigateByUrl).not.toHaveBeenCalled();
+      expect(navigate).toHaveBeenCalledWith(['/']);
+    });
+  }
 });
