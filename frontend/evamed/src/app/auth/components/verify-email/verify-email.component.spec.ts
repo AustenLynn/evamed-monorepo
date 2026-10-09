@@ -309,4 +309,15 @@ describe('VerifyEmailComponent', () => {
       expect(navigate).toHaveBeenCalledWith(['/']);
     });
   }
+
+  // Same look as the auth pages' links: bold, green (.redirect-get-password).
+  it('keeps the link look on its actions', () => {
+    const { el } = setup(unverified);
+
+    for (const selector of ['.verify-resend', '.verify-logout']) {
+      const style = getComputedStyle(el.querySelector(selector) as HTMLElement);
+      expect(style.fontWeight, selector).toBe('bold');
+      expect(style.paddingBottom, selector).toBe('3px');
+    }
+  });
 });

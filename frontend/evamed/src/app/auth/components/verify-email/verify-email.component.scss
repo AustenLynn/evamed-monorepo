@@ -8,6 +8,13 @@
   cursor: pointer;
 }
 
+// .link-button resets font and padding; restore what .redirect-get-password
+// (recover-password styles) gives the auth pages' links.
+.link-button.redirect-get-password {
+  font-weight: bold;
+  padding-bottom: 3px;
+}
+
 .link-button:disabled {
   cursor: default;
   opacity: 0.5;
