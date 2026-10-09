@@ -28,21 +28,24 @@ export class SocialAuthFlowService {
 
     // Some providers (Apple private relay, Twitter without email scope) may not
     // return an email. The whole app keys off `email-login` / searchUser(email),
-    // so abort rather than corrupt the lookup with a null value.
+    // so abort rather than corrupt the lookup with a null value, and sign out
+    // again: a session without an email would sit on the verify page with
+    // nothing to verify.
     if (!email) {
+      await this.authService.logout().catch(() => undefined);
       throw new Error('no-email');
     }
     localStorage.setItem('email-login', email);
 
     // The API only trusts a verified email. Some providers (Facebook,
     // Microsoft, Twitter) can leave it unverified; send the verification
-    // email once so the banner has something to point to. Google accounts
+    // email once so the verify page has something to point to. Google accounts
     // are always verified, so this never fires for them.
     if (!credential.user.emailVerified) {
       try {
         await sendEmailVerification(credential.user);
       } catch {
-        // e.g. auth/too-many-requests: the banner can resend later.
+        // e.g. auth/too-many-requests: the verify page can resend later.
       }
     }
 
