@@ -1,0 +1,79 @@
+<div class="row">
+  <div class="side">
+    <div class="background-custom">
+      <section class="part-side">
+        <div class="container-title-standard">
+          <img src="./../../../../assets/relevants/Logo EVAMED Final/Logo EVAMED Final/logo_white.png" class="img-logo" alt="EVAMED logo"/>
+        </div>
+        <div class="context-evamed">
+          <div class="title-context-login">
+            Bienvenido
+          </div>
+          <div class="text-context">
+            <strong>EVAMED</strong> es una herramienta para ayudar a los actores interesados en el sector de la
+edificación, a tomar decisiones desde las primeras fases de diseño, para lograr edificios
+con un menor impacto ambiental durante todo su ciclo de vida <a (click)="about()" (keypress)="about()" tabindex="1">Leer más</a>.
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+  <div class="main">
+    <section class="form-login">
+      <div class="container-label-input">
+        <div class="title-context-login">
+          Verifica tu correo electrónico
+        </div>
+        <div class="description-context-login">
+          Te enviamos un enlace de verificación a <strong>{{ email }}</strong>.
+          Ábrelo para activar tu cuenta y vuelve aquí. Revisa también tu
+          carpeta de correo no deseado.
+        </div>
+        @if (notYetVerified) {
+          <div class="description-context-login verify-pending">
+            Aún no vemos la verificación. Abre el enlace del correo e inténtalo de nuevo.
+          </div>
+        }
+      </div>
+      <div class="container-label-button">
+        <button
+          mat-raised-button
+          type="button"
+          class="yellow-button-login"
+          [disabled]="checking"
+          (click)="confirm()"
+        >
+          Ya verifiqué mi correo
+        </button>
+      </div>
+      <div class="container-label-button">
+        <p class="p-context-login">
+          ¿No te llegó el correo?
+        </p>
+      </div>
+      <div class="container-label-button-second">
+        <a class="redirect-get-password verify-resend" (click)="resend()" (keypress)="resend()" tabindex="0">Reenviar correo</a>
+      </div>
+      <div class="container-label-button-second">
+        <a class="redirect-get-password verify-logout" (click)="logout()" (keypress)="logout()" tabindex="0">Cerrar sesión</a>
+      </div>
+      <div class="logos-ibero">
+        <img src="./../../../../assets/relevants/DAUIC_Horizontal_Color.jpg" alt="">
+        <div class="middle-message">
+          Prolongación paseo de la reforma No. 880 <br />
+          Col. Lomas Altas, Del. Álvaro Obregón
+        </div>
+        <div class="phone">
+          +(55)5950-4000 <br /> Ext. 7736
+        </div>
+        <div class="cr">
+          evamed&#64;ibero.mx
+        </div>
+        <div class="ap">
+          Aviso de privacidad <br />
+          Términos y condiciones
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

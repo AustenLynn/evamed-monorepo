@@ -11,6 +11,7 @@ import { MaterialModule } from './../material/material.module';
 import { SharedModule } from './../shared/shared.module';
 import { RecoverPasswordComponent } from './components/recover-password/recover-password/recover-password.component';
 import { CompleteProfileComponent } from './components/complete-profile/complete-profile.component';
+import { VerifyEmailComponent } from './components/verify-email/verify-email.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { CompleteProfileComponent } from './components/complete-profile/complete
     RegisterComponent,
     RecoverPasswordComponent,
     CompleteProfileComponent,
+    VerifyEmailComponent,
     AboutComponent,
   ],
   imports: [
