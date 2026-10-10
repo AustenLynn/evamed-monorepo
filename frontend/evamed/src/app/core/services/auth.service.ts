@@ -2,7 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
   UserCredential, signOut, sendPasswordResetEmail, sendEmailVerification,
   GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, OAuthProvider,
-  AuthProvider, signInWithPopup, deleteUser, onAuthStateChanged, User } from 'firebase/auth';
+  AuthProvider, signInWithPopup, deleteUser, onAuthStateChanged, User,
+  validatePassword, PasswordValidationStatus } from 'firebase/auth';
 import { Observable } from 'rxjs';
 
 import { FIREBASE_AUTH } from './../firebase';
@@ -47,6 +48,12 @@ export class AuthService {
       return Promise.reject(new Error('No hay un usuario autenticado.'));
     }
     return sendEmailVerification(this.auth.currentUser);
+  }
+
+  // Checks a password against the policy configured in Firebase
+  // (Authentication -> Settings -> Password policy).
+  checkPassword(password: string): Promise<PasswordValidationStatus> {
+    return validatePassword(this.auth, password);
   }
 
   /**
