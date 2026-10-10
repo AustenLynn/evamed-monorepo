@@ -13,6 +13,7 @@ import { RecoverPasswordComponent } from './components/recover-password/recover-
 import { CompleteProfileComponent } from './components/complete-profile/complete-profile.component';
 import { VerifyEmailComponent } from './components/verify-email/verify-email.component';
 import { VerifyEmailActionComponent } from './components/email-action/verify-email-action.component';
+import { ResetPasswordActionComponent } from './components/email-action/reset-password-action.component';
 import { PasswordRequirementsComponent } from './components/password-requirements/password-requirements.component';
 
 @NgModule({
@@ -24,6 +25,7 @@ import { PasswordRequirementsComponent } from './components/password-requirement
     VerifyEmailComponent,
     PasswordRequirementsComponent,
     VerifyEmailActionComponent,
+    ResetPasswordActionComponent,
     AboutComponent,
   ],
   imports: [
