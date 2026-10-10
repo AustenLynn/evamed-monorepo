@@ -1,0 +1,42 @@
+@switch (state) {
+  @case ('working') {
+    <div class="container-label-input">
+      <div class="title-context-login">Verificando tu correo…</div>
+    </div>
+  }
+  @case ('done') {
+    <div class="container-label-input">
+      <div class="title-context-login">¡Correo verificado!</div>
+      <div class="description-context-login">
+        {{ signedIn ? 'Te llevamos a EVAmed…' : 'Ya puedes iniciar sesión.' }}
+      </div>
+    </div>
+    <div class="container-label-button">
+      @if (signedIn) {
+        <button mat-raised-button type="button" class="yellow-button-login action-enter" (click)="enter()">Entrar ahora</button>
+      } @else {
+        <button mat-raised-button type="button" class="yellow-button-login action-login" (click)="login()">Iniciar sesión</button>
+      }
+    </div>
+  }
+  @case ('invalid') {
+    <div class="container-label-input">
+      <div class="title-context-login">Este enlace ya no es válido.</div>
+    </div>
+    <div class="container-label-button">
+      @if (signedIn) {
+        <button mat-raised-button type="button" class="yellow-button-login action-resend" (click)="resend()">Reenviar correo de verificación</button>
+      } @else {
+        <button mat-raised-button type="button" class="yellow-button-login action-login" (click)="login()">Iniciar sesión</button>
+      }
+    </div>
+  }
+  @case ('error') {
+    <div class="container-label-input">
+      <div class="title-context-login">No pudimos completar la acción. Intenta nuevamente.</div>
+    </div>
+    <div class="container-label-button">
+      <button mat-raised-button type="button" class="yellow-button-login action-retry" (click)="run()">Reintentar</button>
+    </div>
+  }
+}

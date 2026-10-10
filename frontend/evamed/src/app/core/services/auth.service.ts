@@ -3,7 +3,8 @@ import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
   UserCredential, signOut, sendPasswordResetEmail, sendEmailVerification,
   GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, OAuthProvider,
   AuthProvider, signInWithPopup, deleteUser, onAuthStateChanged, User,
-  validatePassword, PasswordValidationStatus } from 'firebase/auth';
+  validatePassword, PasswordValidationStatus, applyActionCode, checkActionCode,
+  confirmPasswordReset, verifyPasswordResetCode } from 'firebase/auth';
 import { Observable } from 'rxjs';
 
 import { FIREBASE_AUTH } from './../firebase';
@@ -54,6 +55,26 @@ export class AuthService {
   // (Authentication -> Settings -> Password policy).
   checkPassword(password: string): Promise<PasswordValidationStatus> {
     return validatePassword(this.auth, password);
+  }
+
+  // Email action links (/auth/action): Firebase's one-time oobCode.
+  applyActionCode(code: string): Promise<void> {
+    return applyActionCode(this.auth, code);
+  }
+
+  // recoverEmail links: the address the account is being restored to.
+  async checkActionCode(code: string): Promise<{ email: string }> {
+    const info = await checkActionCode(this.auth, code);
+    return { email: info.data.email ?? '' };
+  }
+
+  // resetPassword links: resolves to the account's email.
+  verifyPasswordResetCode(code: string): Promise<string> {
+    return verifyPasswordResetCode(this.auth, code);
+  }
+
+  confirmPasswordReset(code: string, newPassword: string): Promise<void> {
+    return confirmPasswordReset(this.auth, code, newPassword);
   }
 
   /**

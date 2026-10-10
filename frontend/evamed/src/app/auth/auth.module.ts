@@ -12,6 +12,7 @@ import { SharedModule } from './../shared/shared.module';
 import { RecoverPasswordComponent } from './components/recover-password/recover-password/recover-password.component';
 import { CompleteProfileComponent } from './components/complete-profile/complete-profile.component';
 import { VerifyEmailComponent } from './components/verify-email/verify-email.component';
+import { VerifyEmailActionComponent } from './components/email-action/verify-email-action.component';
 import { PasswordRequirementsComponent } from './components/password-requirements/password-requirements.component';
 
 @NgModule({
@@ -22,6 +23,7 @@ import { PasswordRequirementsComponent } from './components/password-requirement
     CompleteProfileComponent,
     VerifyEmailComponent,
     PasswordRequirementsComponent,
+    VerifyEmailActionComponent,
     AboutComponent,
   ],
   imports: [
