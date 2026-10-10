@@ -126,12 +126,10 @@ con un menor impacto ambiental durante todo su ciclo de vida <a (click)="about()
             <input class="input-context-login" placeholder="Coloca aquí tu contraseña" formControlName="password"
               matInput type="password">
           </div>
-          <div class="input-hint" *ngIf="!(form.get('password').touched && form.get('password').hasError('minlength'))">
-            Mínimo 8 caracteres
-          </div>
-          <div class="input-error" *ngIf="form.get('password').touched && form.get('password').hasError('minlength')">
-            La contraseña debe tener al menos 8 caracteres
-          </div>
+          <app-password-requirements
+            [password]="form.get('password').value"
+            (validityChange)="passwordPolicyMet = $event"
+          ></app-password-requirements>
         </div>
         <div class="container-label-input">
           <div class="label-context-login">
@@ -158,7 +156,7 @@ con un menor impacto ambiental durante todo su ciclo de vida <a (click)="about()
           </div>
         </div>
         <div class="container-label-button">
-          <button [disabled]="form.invalid" mat-raised-button type="submit" class="yellow-button-login">
+          <button [disabled]="form.invalid || passwordPolicyMet === false" mat-raised-button type="submit" class="yellow-button-login">
             Enviar registro
           </button>
         </div>

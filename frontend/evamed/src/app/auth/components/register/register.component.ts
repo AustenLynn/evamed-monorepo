@@ -18,6 +18,7 @@ import { CatalogsService } from './../../../core/services/catalogs/catalogs.serv
 export class RegisterComponent implements OnInit {
   form: UntypedFormGroup;
   catalogoPaises: any;
+  passwordPolicyMet: boolean | null = null;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -38,7 +39,7 @@ export class RegisterComponent implements OnInit {
 
   register(event: Event) {
     event.preventDefault();
-    if (!this.form.valid) {
+    if (!this.form.valid || this.passwordPolicyMet === false) {
       return;
     }
     const value = this.form.value;
@@ -74,7 +75,9 @@ export class RegisterComponent implements OnInit {
       .catch(error => {
         const message = error?.code === 'auth/email-already-in-use'
           ? 'El correo ya está registrado, usa otro correo'
-          : 'Error al registrar el usuario. Intenta nuevamente.';
+          : error?.code === 'auth/password-does-not-meet-requirements' || error?.code === 'auth/weak-password'
+            ? 'La contraseña no cumple los requisitos.'
+            : 'Error al registrar el usuario. Intenta nuevamente.';
         this.snackBar.open(message, 'OK', { duration: 4000 });
       });
   }
@@ -84,8 +87,8 @@ export class RegisterComponent implements OnInit {
       name: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       institution: ['', [Validators.required]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      password2: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', [Validators.required]],
+      password2: ['', [Validators.required]],
       sector: ['', [Validators.required]],
       country: ['', [Validators.required]],
     });

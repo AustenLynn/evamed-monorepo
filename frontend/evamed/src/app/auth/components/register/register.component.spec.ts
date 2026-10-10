@@ -59,4 +59,45 @@ describe('RegisterComponent sign-up', () => {
     expect(localStorage.getItem('email-login')).toBe('ana@example.com');
     localStorage.removeItem('email-login');
   });
+
+  const signUp = (createUser: () => Promise<unknown>) => {
+    const component: any = Object.create(RegisterComponent.prototype);
+    component.form = {
+      valid: true,
+      value: {
+        name: 'Ana', email: 'ana@example.com', institution: 'Ibero', sector: 'Academia',
+        country: 1, password: 'Correcta12345', password2: 'Correcta12345',
+      },
+    };
+    component.authService = {
+      createUser: vi.fn(createUser),
+      verifyEmail: vi.fn(async () => undefined),
+      deleteCurrentUser: vi.fn(async () => undefined),
+    };
+    component.user = { addUser: vi.fn(() => of({})) };
+    component.snackBar = { open: vi.fn() };
+    component.router = { navigate: vi.fn() };
+    return component;
+  };
+
+  it('does not sign up while the password misses the policy', async () => {
+    const component = signUp(async () => ({}));
+    component.passwordPolicyMet = false;
+
+    component.register(new Event('submit'));
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    expect(component.authService.createUser).not.toHaveBeenCalled();
+  });
+
+  it('explains a password Firebase rejects for the policy', async () => {
+    const component = signUp(async () => {
+      throw Object.assign(new Error('rejected'), { code: 'auth/password-does-not-meet-requirements' });
+    });
+
+    component.register(new Event('submit'));
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    expect(component.snackBar.open).toHaveBeenCalledWith('La contraseña no cumple los requisitos.', 'OK', { duration: 4000 });
+  });
 });
