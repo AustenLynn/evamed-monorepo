@@ -20,6 +20,8 @@ export class VerifyEmailActionComponent implements OnInit, OnDestroy {
   state: 'working' | 'done' | 'invalid' | 'error' = 'working';
   signedIn = false;
   private timer: ReturnType<typeof setTimeout> | null = null;
+  // Set once the page is left: pending Firebase calls must not navigate then.
+  private destroyed = false;
 
   constructor(
     private authService: AuthService,
@@ -31,6 +33,7 @@ export class VerifyEmailActionComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
     this.stopTimer();
   }
 
@@ -53,6 +56,9 @@ export class VerifyEmailActionComponent implements OnInit, OnDestroy {
     if (this.signedIn) {
       // Make the token say verified first, so their projects load at once.
       await this.authService.refreshVerification().catch(() => false);
+      if (this.destroyed) {
+        return;
+      }
       this.timer = setTimeout(() => this.enter(), AUTO_ENTER_MS);
     }
   }
@@ -60,7 +66,9 @@ export class VerifyEmailActionComponent implements OnInit, OnDestroy {
   // A spent link usually means they already verified: then just go in.
   private async linkNoLongerValid(): Promise<void> {
     if (this.signedIn && (await this.authService.refreshVerification().catch(() => false))) {
-      this.enter();
+      if (!this.destroyed) {
+        this.enter();
+      }
       return;
     }
     this.state = 'invalid';

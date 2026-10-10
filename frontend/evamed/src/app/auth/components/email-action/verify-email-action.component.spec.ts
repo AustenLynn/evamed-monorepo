@@ -92,6 +92,41 @@ describe('VerifyEmailActionComponent', () => {
     }
   });
 
+  it('does not navigate when the page is left while the token is still refreshing', async () => {
+    vi.useFakeTimers();
+    try {
+      let finishRefresh: (verified: boolean) => void = () => undefined;
+      const { fixture, navigate } = setup({
+        refreshVerification: vi.fn(() => new Promise<boolean>(resolve => (finishRefresh = resolve))),
+      });
+      await vi.advanceTimersByTimeAsync(0);
+
+      fixture.destroy();
+      finishRefresh(true);
+      await vi.advanceTimersByTimeAsync(2_000);
+
+      expect(navigate).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('does not enter when the page is left while a spent link is being checked', async () => {
+    let finishRefresh: (verified: boolean) => void = () => undefined;
+    const spentLink = Object.assign(new Error('spent'), { code: 'auth/invalid-action-code' });
+    const { fixture, navigate } = setup({
+      applyActionCode: vi.fn(async () => { throw spentLink; }),
+      refreshVerification: vi.fn(() => new Promise<boolean>(resolve => (finishRefresh = resolve))),
+    });
+    await settle(fixture);
+
+    fixture.destroy();
+    finishRefresh(true);
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
   it('waits for a saved session to be restored before deciding', async () => {
     const user$ = new Subject<unknown>();
     const { fixture, auth, el } = setup({ hasUser: () => user$ });
