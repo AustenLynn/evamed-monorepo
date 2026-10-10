@@ -104,7 +104,7 @@ Each item is ticked as it's met. It's driven by the status object: a criterion F
   - recover: success then resend, invalid code;
   - password policy: the checklist reflects each `validatePassword` criterion and hides undefined ones; sign-up and reset submit are blocked until met; `password-does-not-meet-requirements` shows the message; a policy fetch failure falls back to plain text without blocking.
 - **The container:** each `mode` renders the right child; unknown or missing renders "not valid".
-- **`AuthService` wrappers:** each calls the right SDK function with the code (the SDK is faked at `FIREBASE_AUTH`, as in `auth.service.spec.ts`).
+- **`AuthService` wrappers** (`applyActionCode`, `verifyPasswordResetCode`, `confirmPasswordReset`, `checkActionCode`, `checkPassword`): one-line delegations to the SDK, covered by type-checking and the manual run. Unlike `onAuthStateChanged`, these SDK functions call Firebase's REST API internally, so they can't be faked at `FIREBASE_AUTH`. Every component that uses them is tested against a mocked `AuthService`.
 - **Routing test:** `/auth/action` exists and is unguarded (with the existing "leave /auth unguarded" test).
 - **Manual on dev,** after the console change:
   - sign up, then click the link in the same browser, and in another browser;
