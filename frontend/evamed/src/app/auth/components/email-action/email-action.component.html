@@ -1,0 +1,62 @@
+<div class="row">
+  <div class="side">
+    <div class="background-custom">
+      <section class="part-side">
+        <div class="container-title-standard">
+          <img src="./../../../../assets/relevants/Logo EVAMED Final/Logo EVAMED Final/logo_white.png" class="img-logo" alt="EVAMED logo"/>
+        </div>
+        <div class="context-evamed">
+          <div class="title-context-login">
+            Bienvenido
+          </div>
+          <div class="text-context">
+            <strong>EVAMED</strong> es una herramienta para ayudar a los actores interesados en el sector de la
+edificación, a tomar decisiones desde las primeras fases de diseño, para lograr edificios
+con un menor impacto ambiental durante todo su ciclo de vida <button type="button" class="link-button link-button--inline" (click)="about()">Leer más</button>.
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+  <div class="main">
+    <section class="form-login">
+      @if (handled) {
+        @switch (mode) {
+          @case ('verifyEmail') {
+            <app-verify-email-action [oobCode]="oobCode!"></app-verify-email-action>
+          }
+          @case ('resetPassword') {
+            <app-reset-password-action [oobCode]="oobCode!"></app-reset-password-action>
+          }
+          @case ('recoverEmail') {
+            <app-recover-email-action [oobCode]="oobCode!"></app-recover-email-action>
+          }
+        }
+      } @else {
+        <div class="container-label-input">
+          <div class="title-context-login action-invalid">Este enlace ya no es válido.</div>
+        </div>
+        <div class="container-label-button">
+          <button mat-raised-button type="button" class="yellow-button-login action-login" (click)="login()">Iniciar sesión</button>
+        </div>
+      }
+      <div class="logos-ibero">
+        <img src="./../../../../assets/relevants/DAUIC_Horizontal_Color.jpg" alt="">
+        <div class="middle-message">
+          Prolongación paseo de la reforma No. 880 <br />
+          Col. Lomas Altas, Del. Álvaro Obregón
+        </div>
+        <div class="phone">
+          +(55)5950-4000 <br /> Ext. 7736
+        </div>
+        <div class="cr">
+          evamed&#64;ibero.mx
+        </div>
+        <div class="ap">
+          Aviso de privacidad <br />
+          Términos y condiciones
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

@@ -5,6 +5,7 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { CompleteProfileComponent } from './components/complete-profile/complete-profile.component';
 import { VerifyEmailComponent } from './components/verify-email/verify-email.component';
+import { EmailActionComponent } from './components/email-action/email-action.component';
 import { AboutComponent } from './components/about/about.component';
 
 const routes: Routes = [
@@ -27,6 +28,11 @@ const routes: Routes = [
   {
     path: 'verify-email',
     component: VerifyEmailComponent,
+  },
+  {
+    // Firebase's email links (verify, password reset, email-change undo).
+    path: 'action',
+    component: EmailActionComponent,
   },
   {
     path: 'about',
