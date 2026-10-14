@@ -4,7 +4,7 @@ The catalogue is small (hundreds of rows) and every item's impact level
 depends on its whole group, so each request loads a stage once, then
 filters, facets and pages the list in memory.
 """
-from collections import Counter, defaultdict
+from collections import defaultdict
 
 from projects_api import models
 from projects_api.explorer import derive
@@ -53,26 +53,22 @@ def _gwp_type_id():
     return models.PotentialType.objects.filter(name_potential_type=GWP).values_list('id', flat=True).first()
 
 
-def _comparison_groups(items):
-    """Each item's comparison group: its category and unit if that group is big enough, else its unit."""
-    sizes = Counter((item['category'], item['unit']) for item in items if item['gwp'] is not None)
-    return {
-        item['id']: (item['category'], item['unit'])
-        if item['category'] and sizes[(item['category'], item['unit'])] >= MIN_CATEGORY_GROUP
-        else (None, item['unit'])
-        for item in items
-    }
-
-
 def _add_impact_levels(items):
-    groups, members = _comparison_groups(items), defaultdict(dict)
+    """Rank each item within its category and unit when that group is big enough,
+    else within every item of its unit (HANDOFF §5.4)."""
+    by_unit, by_category = defaultdict(dict), defaultdict(dict)
     for item in items:
         if item['gwp'] is not None and item['unit']:
-            members[groups[item['id']]][item['id']] = item['gwp']
-    levels = {}
-    for values in members.values():
-        levels.update(derive.impact_levels(values))
+            by_unit[item['unit']][item['id']] = item['gwp']
+            if item['category']:
+                by_category[(item['category'], item['unit'])][item['id']] = item['gwp']
+    unit_levels = {unit: derive.impact_levels(values) for unit, values in by_unit.items()}
+    category_levels = {
+        key: derive.impact_levels(values)
+        for key, values in by_category.items() if len(values) >= MIN_CATEGORY_GROUP}
     for item in items:
+        key = (item['category'], item['unit'])
+        levels = category_levels.get(key) or unit_levels.get(item['unit'], {})
         item['impact_level'] = levels.get(item['id'])
 
 
