@@ -1,0 +1,8 @@
+<ng-container *ngIf="stage$ | async as stage">
+  <app-stage-tabs [current]="stage.key"></app-stage-tabs>
+
+  <header class="explorer-header">
+    <h1 class="ev-page-title">{{ stage.title }}</h1>
+    <p class="ev-page-subtitle">{{ stage.subtitle }}</p>
+  </header>
+</ng-container>

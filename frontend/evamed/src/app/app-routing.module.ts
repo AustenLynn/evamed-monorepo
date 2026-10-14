@@ -3,7 +3,7 @@ import { Routes, RouterModule, NoPreloading } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
 import { AdminGuard } from './admin.guard';
 
-const routes: Routes = [
+export const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
@@ -60,6 +60,13 @@ const routes: Routes = [
           import('./end-life-stage/end-life-stage.module').then(
             m => m.EndLifeStageModule
           ),
+      },
+      {
+        path: 'explorador',
+        canActivate: [AdminGuard],
+        data: { layout: 'wide' },
+        loadChildren: () =>
+          import('./explorer/explorer.module').then(m => m.ExplorerModule),
       },
       {
         path: 'resultados',

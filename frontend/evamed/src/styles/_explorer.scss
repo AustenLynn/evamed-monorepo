@@ -1,0 +1,43 @@
+// Explorador de recursos: the app's own colours (R-18), defined once so the
+// explorer's component styles never hold raw hex.
+//
+// Where an app colour is too light for text (R-19), the -text variant is a
+// darker shade of the same hue; the original stays for fills and borders.
+:root {
+  --ev-bg: #f8f8f8;
+  --ev-surface: #ffffff;
+  --ev-surface-muted: #efefef;
+  --ev-border: #cbcbcb;
+  --ev-divider: #ededed;
+
+  --ev-text: #000000;
+  // #767676 is the app's caption grey: 4.5:1 on white, but not on --ev-bg.
+  --ev-text-muted: #767676;
+  --ev-text-muted-on-bg: #595959;
+
+  --ev-green: #7fa20b;
+  --ev-green-light: #a8d024;
+  --ev-green-text: #5b7408;
+  --ev-yellow: #edc903;
+}
+
+.container.container--wide {
+  max-width: 1440px !important;
+}
+
+// The app's section title (.title-standard-second), with text dark enough to read.
+.ev-page-title {
+  display: inline-block;
+  margin: 0;
+  padding-bottom: 5px;
+  border-bottom: 4px solid var(--ev-green);
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--ev-green-text);
+}
+
+.ev-page-subtitle {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: var(--ev-text-muted-on-bg);
+}

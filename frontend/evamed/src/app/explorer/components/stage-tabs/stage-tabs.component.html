@@ -1,0 +1,19 @@
+<nav class="stage-tabs" aria-label="Etapas">
+  <a
+    *ngFor="let stage of stages"
+    class="stage-tab"
+    [class.stage-tab--active]="stage.key === current"
+    [routerLink]="['/explorador', stage.key]"
+    [attr.aria-current]="stage.key === current ? 'page' : null"
+  >
+    <img
+      class="stage-tab__image"
+      [src]="stage.key === current ? stage.image.active : stage.image.idle"
+      alt=""
+      width="60"
+      height="60"
+    />
+    <span class="stage-tab__title">{{ stage.tabTitle }}</span>
+    <span class="stage-tab__subtitle">{{ stage.tabSubtitle }}</span>
+  </a>
+</nav>
