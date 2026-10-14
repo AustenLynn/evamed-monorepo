@@ -1,0 +1,109 @@
+<form class="edit" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="edit__main">
+    <h2 class="edit__title">Agregar material al proyecto</h2>
+    <p class="edit__context">
+      <span *ngIf="context.section">{{ context.section }} · </span>Sistema constructivo: <strong>{{ context.system }}</strong>
+    </p>
+
+    <fieldset class="edit__panel">
+      <legend class="edit__legend">Material</legend>
+      <mat-form-field appearance="outline" class="edit__wide">
+        <mat-label>Nombre comercial</mat-label>
+        <textarea matInput formControlName="comercialName" rows="2" required></textarea>
+        <mat-error *ngIf="error('comercialName')">Escribe el nombre del material.</mat-error>
+      </mat-form-field>
+      <div class="edit__row">
+        <mat-form-field appearance="outline">
+          <mat-label>Cantidad</mat-label>
+          <input matInput type="number" min="0" step="any" formControlName="quantity" required />
+          <mat-error *ngIf="error('quantity')">La cantidad debe ser mayor que 0.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Unidad</mat-label>
+          <!-- The quantity must be in the catalogue's declared unit for the calculation to hold. -->
+          <input matInput [value]="detail.unit || '—'" readonly />
+          <mat-hint>Unidad declarada del material</mat-hint>
+        </mat-form-field>
+      </div>
+      <mat-form-field appearance="outline" class="edit__wide">
+        <mat-label>Comentarios</mat-label>
+        <textarea matInput formControlName="comments" rows="2"></textarea>
+      </mat-form-field>
+    </fieldset>
+
+    <fieldset class="edit__panel" *ngIf="transports$ | async as transports">
+      <legend class="edit__legend">Transporte</legend>
+
+      <h3 class="edit__subtitle">Transporte 1 · Origen → frontera (internacional)</h3>
+      <div class="edit__row">
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo de transporte</mat-label>
+          <mat-select formControlName="transportOrigin" placeholder="Selecciona un modo…">
+            <mat-option [value]="null">Sin transporte</mat-option>
+            <mat-option *ngFor="let transport of transports" [value]="transport.id">{{ transport.name }}</mat-option>
+          </mat-select>
+          <mat-hint>Predeterminado del cálculo: transporte por océano, buque carguero</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Distancia (km)</mat-label>
+          <input matInput type="number" min="0" step="any" formControlName="distanceOrigin" />
+          <mat-error *ngIf="error('distanceOrigin')">La distancia no puede ser negativa.</mat-error>
+        </mat-form-field>
+      </div>
+      <p *ngIf="legError('transportOrigin')" class="edit__error" role="alert">Elige el tipo de transporte para esta distancia.</p>
+
+      <h3 class="edit__subtitle">Transporte 2 · Frontera → obra (nacional)</h3>
+      <div class="edit__row">
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo de transporte</mat-label>
+          <mat-select formControlName="transportEnd" placeholder="Selecciona un modo…">
+            <mat-option [value]="null">Sin transporte</mat-option>
+            <mat-option *ngFor="let transport of transports" [value]="transport.id">{{ transport.name }}</mat-option>
+          </mat-select>
+          <mat-hint>Predeterminado del cálculo: vehículo de carga mayor a 32 t</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Distancia (km)</mat-label>
+          <input matInput type="number" min="0" step="any" formControlName="distanceEnd" />
+          <mat-error *ngIf="error('distanceEnd')">La distancia no puede ser negativa.</mat-error>
+        </mat-form-field>
+      </div>
+      <p *ngIf="legError('transportEnd')" class="edit__error" role="alert">Elige el tipo de transporte para esta distancia.</p>
+    </fieldset>
+
+    <fieldset class="edit__panel">
+      <legend class="edit__legend">Tiempo de vida del material</legend>
+      <div class="edit__row">
+        <mat-form-field appearance="outline">
+          <mat-label>Tiempo de vida (años)</mat-label>
+          <input matInput type="number" min="1" step="any" formControlName="lifeYears" (input)="onLifeChange()" />
+          <mat-hint>Vida útil del proyecto: {{ context.projectLife }} años</mat-hint>
+          <mat-error *ngIf="error('lifeYears')">Debe ser de al menos 1 año.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Reemplazos</mat-label>
+          <input matInput type="number" min="0" step="1" formControlName="replaces" (input)="onReplacesChange()" />
+          <mat-error *ngIf="error('replaces')">No puede ser negativo.</mat-error>
+        </mat-form-field>
+      </div>
+    </fieldset>
+
+    <div class="edit__actions">
+      <button mat-stroked-button type="button" (click)="back.emit()">Cancelar</button>
+      <button mat-flat-button type="submit" class="edit__submit">Agregar material</button>
+    </div>
+  </div>
+
+  <aside class="edit__summary" aria-label="Material del catálogo">
+    <h3 class="edit__summary-name">{{ detail.display_name }}</h3>
+    <p class="edit__summary-gwp">{{ detail.gwp | gwp }} <span>kg CO₂e{{ detail.unit ? ' / ' + detail.unit : '' }} (A1–A3)</span></p>
+    <app-impact-badge [level]="detail.impact_level"></app-impact-badge>
+    <dl class="edit__summary-facts">
+      <dt>Base de datos</dt>
+      <dd><app-source-chip [source]="detail.source"></app-source-chip></dd>
+      <dt>Unidad declarada</dt>
+      <dd>{{ detail.unit || '—' }}</dd>
+    </dl>
+    <button mat-button type="button" class="edit__summary-link" (click)="back.emit()">Ver ficha completa</button>
+  </aside>
+</form>

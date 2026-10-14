@@ -7,7 +7,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from './../material/material.module';
 import { AddConstructiveElementComponent } from './components/add-constructive-element/add-constructive-element.component';
 import { AddConstructiveSystemComponent } from './components/add-constructive-system/add-constructive-system.component';
-import { AddConstructiveMaterialComponent } from './components/add-constructive-material/add-constructive-material.component';
 import { IntermedialComponent } from './components/intermedial/intermedial.component';
 import { PassStepComponent } from './components/pass-step/pass-step.component';
 import { MaterialStageUpdateComponent } from './components/material-stage-update/material-stage-update.component';
@@ -18,7 +17,6 @@ import { MaterialStageUpdateComponent } from './components/material-stage-update
         MaterialStageUpdateComponent,
         AddConstructiveElementComponent,
         AddConstructiveSystemComponent,
-        AddConstructiveMaterialComponent,
         IntermedialComponent,
         PassStepComponent
     ],

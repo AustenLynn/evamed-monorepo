@@ -4,6 +4,7 @@ import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { ExplorerItem, ExplorerQuery } from '../../explorer.models';
+import { ExplorerService } from '../../services/explorer.service';
 import { StageConfig, stageConfig } from '../../stage-config';
 import { ExplorerView } from '../explorer-browser/explorer-browser.component';
 
@@ -31,12 +32,15 @@ export class ExplorerPageComponent {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    explorer: ExplorerService
   ) {
     this.state$ = combineLatest([route.data, route.queryParamMap]).pipe(
       map(([data, params]) => {
         const stage = stageConfig(data['stage']);
         this.stage = stage;
+        // A detail page goes back to exactly this list.
+        explorer.lastListUrl = router.url;
         return stage ? ExplorerPageComponent.fromUrl(stage, params) : null;
       })
     );

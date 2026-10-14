@@ -18,6 +18,8 @@ export class ResultsTableComponent {
   @Input() page = 1;
   @Input() favorites: ReadonlySet<number> = new Set();
   @Input() linkFor: ((item: ExplorerItem) => unknown[] | null) | null = null;
+  @Input() openable = false;
+  @Output() readonly itemOpen = new EventEmitter<ExplorerItem>();
   @Output() readonly pageChange = new EventEmitter<number>();
   @Output() readonly favoriteToggle = new EventEmitter<ExplorerItem>();
 

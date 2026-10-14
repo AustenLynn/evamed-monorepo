@@ -1,0 +1,131 @@
+.edit {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .edit {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .edit__summary {
+    order: -1;
+  }
+}
+
+.edit__title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ev-text);
+}
+
+.edit__context {
+  margin: 4px 0 16px;
+  color: var(--ev-text-muted-on-bg);
+}
+
+.edit__panel {
+  margin: 0 0 16px;
+  padding: 16px 20px 8px;
+  background: var(--ev-surface);
+  border: 1px solid var(--ev-border);
+  border-radius: 12px;
+  min-width: 0;
+}
+
+.edit__legend {
+  padding: 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ev-text);
+}
+
+.edit__subtitle {
+  margin: 8px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ev-text);
+}
+
+.edit__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0 16px;
+}
+
+.edit__wide {
+  width: 100%;
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.edit__error {
+  margin: -4px 0 12px;
+  font-size: 12px;
+  color: var(--ev-impact-high-text);
+}
+
+.edit__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.edit__submit {
+  background: var(--ev-green-light);
+  color: var(--ev-text);
+}
+
+.edit__summary {
+  padding: 20px;
+  background: var(--ev-surface);
+  border: 1px solid var(--ev-border);
+  border-radius: 12px;
+}
+
+.edit__summary-name {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.edit__summary-gwp {
+  margin: 0 0 6px;
+  font-size: 24px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+
+  span {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--ev-text-muted);
+  }
+}
+
+.edit__summary-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 12px;
+  margin: 16px 0 8px;
+  font-size: 13px;
+
+  dt {
+    color: var(--ev-text-muted);
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+.edit__summary-link {
+  padding-left: 0;
+  color: var(--ev-green-text);
+}

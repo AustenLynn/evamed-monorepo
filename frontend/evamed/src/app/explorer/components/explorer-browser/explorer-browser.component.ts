@@ -45,6 +45,9 @@ export class ExplorerBrowserComponent implements OnChanges, OnDestroy {
   @Input() tablePage = 1;
   /** Detail links for items; null for none. */
   @Input() linkFor: ((item: ExplorerItem) => unknown[] | null) | null = null;
+  /** Items open through itemOpen instead of a link (the picker). */
+  @Input() openable = false;
+  @Output() readonly itemOpen = new EventEmitter<ExplorerItem>();
   @Output() readonly queryChange = new EventEmitter<ExplorerQuery>();
   @Output() readonly viewChange = new EventEmitter<ExplorerView>();
   @Output() readonly tablePageChange = new EventEmitter<number>();

@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { ExplorerQuery } from '../../explorer.models';
-import { ExplorerModule } from '../../explorer.module';
+import { ExplorerUiModule } from '../../explorer-ui.module';
 import { STAGES } from '../../stage-config';
 import { FilterPanelComponent } from './filter-panel.component';
 
@@ -10,7 +10,7 @@ describe('FilterPanelComponent', () => {
 
   const render = (query: ExplorerQuery = { search: '', filters: {} }) => {
     vi.useFakeTimers();
-    TestBed.configureTestingModule({ imports: [ExplorerModule] });
+    TestBed.configureTestingModule({ imports: [ExplorerUiModule] });
     const fixture = TestBed.createComponent(FilterPanelComponent),
       emitted: ExplorerQuery[] = [];
     fixture.componentRef.setInput('filters', STAGES.find(stage => stage.key === 'uso')!.filters);

@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { ExplorerItem } from '../../explorer.models';
-import { ExplorerModule } from '../../explorer.module';
+import { ExplorerUiModule } from '../../explorer-ui.module';
 import { ResultsCardsComponent } from './results-cards.component';
 
 const items = (count: number) =>
@@ -33,7 +33,7 @@ describe('ResultsCardsComponent', () => {
   });
 
   const render = (inputs: Partial<ResultsCardsComponent>) => {
-      TestBed.configureTestingModule({ imports: [ExplorerModule] });
+      TestBed.configureTestingModule({ imports: [ExplorerUiModule] });
       const fixture = TestBed.createComponent(ResultsCardsComponent),
         loadMore = vi.fn();
       Object.entries(inputs).forEach(([name, value]) => fixture.componentRef.setInput(name, value));

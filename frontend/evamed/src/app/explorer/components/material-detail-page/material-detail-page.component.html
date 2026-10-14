@@ -1,0 +1,13 @@
+<app-stage-tabs current="produccion"></app-stage-tabs>
+
+<nav class="detail-page__nav" aria-label="Ruta">
+  <ol class="detail-page__crumbs">
+    <li><a class="detail-page__crumb" [attr.href]="backUrl" (click)="back($event)">Explorador de materiales</a></li>
+    <li aria-current="page">Ficha del material</li>
+  </ol>
+  <a mat-icon-button [attr.href]="backUrl" aria-label="Cerrar la ficha y volver a la lista" (click)="back($event)">
+    <mat-icon>close</mat-icon>
+  </a>
+</nav>
+
+<app-material-detail *ngIf="id$ | async as id" [materialId]="id"></app-material-detail>

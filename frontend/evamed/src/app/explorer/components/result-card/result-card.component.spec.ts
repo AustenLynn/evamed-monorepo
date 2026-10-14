@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
 import { ExplorerItem } from '../../explorer.models';
-import { ExplorerModule } from '../../explorer.module';
+import { ExplorerUiModule } from '../../explorer-ui.module';
 import { ResultCardComponent } from './result-card.component';
 
 describe('ResultCardComponent', () => {
@@ -19,7 +19,7 @@ describe('ResultCardComponent', () => {
       impact_level: 'bajo',
     },
     render = (inputs: Partial<{ item: ExplorerItem; favorite: boolean; link: unknown[] | null }> = {}) => {
-      TestBed.configureTestingModule({ imports: [ExplorerModule], providers: [provideRouter([])] });
+      TestBed.configureTestingModule({ imports: [ExplorerUiModule], providers: [provideRouter([])] });
       const fixture = TestBed.createComponent(ResultCardComponent);
       fixture.componentRef.setInput('item', inputs.item ?? item);
       if (inputs.favorite !== undefined) {

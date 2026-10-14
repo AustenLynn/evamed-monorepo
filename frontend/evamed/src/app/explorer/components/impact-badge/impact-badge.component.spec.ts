@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
 import { ImpactLevel } from '../../explorer.models';
-import { ExplorerModule } from '../../explorer.module';
+import { ExplorerUiModule } from '../../explorer-ui.module';
 import { ImpactBadgeComponent } from './impact-badge.component';
 
 describe('ImpactBadgeComponent', () => {
   const render = (level: ImpactLevel) => {
-    TestBed.configureTestingModule({ imports: [ExplorerModule] });
+    TestBed.configureTestingModule({ imports: [ExplorerUiModule] });
     const fixture = TestBed.createComponent(ImpactBadgeComponent);
     fixture.componentRef.setInput('level', level);
     fixture.detectChanges();

@@ -8,8 +8,10 @@ import { Router } from '@angular/router';
 import { CatalogsService } from 'src/app/core/services/catalogs/catalogs.service';
 import { UntypedFormControl } from '@angular/forms';
 import { forkJoin, Observable } from 'rxjs';
-import { map, startWith, take } from 'rxjs/operators';
+import { finalize, map, startWith, take } from 'rxjs/operators';
 import { AnalisisService } from 'src/app/core/services/analisis/analisis.service';
+import { ExplorerPickerService } from '../../../explorer/explorer-picker.service';
+import { toSchemeProject } from '../../picked-material';
 
 export interface Material {
   id: number;
@@ -81,6 +83,8 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
   description_material_selected: any;
   SCseleccionado = '';
   currentPanelItem = '';
+  /** A material from the explorer is being saved. */
+  adding = false;
 
   myControl = new UntypedFormControl();
   options: Material[];
@@ -97,6 +101,7 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
     private router: Router,
     private selectionService: SelectionService,
     private cdr: ChangeDetectorRef,
+    private explorerPicker: ExplorerPickerService,
   ) {
     this.materialsService.getMaterials().subscribe(data => {
       this.materialsList = data;
@@ -840,7 +845,37 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
       });
   }
 
-  removeMaterial(event) {
+  /** Adds a material from the explorer to the system shown in the panel (R-20). */
+  async exploreMaterials(): Promise<void> {
+    const system = this.currentPanelItem,
+      projectId = parseInt(localStorage.getItem('idProyectoConstrucción') ?? '', 10),
+      sectionId = this.indexSheet + 1;
+    if (!system || !Number.isFinite(projectId) || this.indexSheet === undefined) {
+      return;
+    }
+    const picked = await this.explorerPicker.pick({
+      system,
+      section: this.sheetNames[this.indexSheet] ?? null,
+      projectLife: Number(this.vidaUtilSeleccionado) || 50,
+    });
+    if (!picked) {
+      return;
+    }
+    this.adding = true;
+    this.cdr.markForCheck();
+    this.projectsService
+      .addSchemeProject(toSchemeProject(picked, { projectId, sectionId, system }))
+      .pipe(finalize(() => {
+        this.adding = false;
+        this.cdr.markForCheck();
+      }))
+      .subscribe({
+        next: () => this.ngOnInit(),
+        error: error => console.error('No se pudo agregar el material', error),
+      });
+  }
+
+    removeMaterial(event) {
     event.stopPropagation();
     console.log('entra a remove materials');
   }

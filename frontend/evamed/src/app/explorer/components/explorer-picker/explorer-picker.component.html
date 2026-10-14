@@ -1,0 +1,48 @@
+<header class="picker__bar">
+  <div class="picker__heading">
+    <h1 class="picker__title" mat-dialog-title>Explorador de materiales</h1>
+    <p class="picker__context">
+      <span *ngIf="context.section">{{ context.section }} · </span>{{ context.system }}
+    </p>
+  </div>
+  <button mat-icon-button type="button" aria-label="Cerrar el explorador sin agregar" (click)="close()">
+    <mat-icon>close</mat-icon>
+  </button>
+</header>
+
+<div #body class="picker__body">
+  <nav *ngIf="step.kind !== 'list'" class="picker__crumbs" aria-label="Ruta">
+    <button mat-button type="button" (click)="backToList()">
+      <mat-icon aria-hidden="true">arrow_back</mat-icon> Materiales
+    </button>
+  </nav>
+
+  <!-- Kept alive while a material is open, so the list comes back as it was. -->
+  <app-explorer-browser
+    [hidden]="step.kind !== 'list'"
+    [stage]="stage"
+    [query]="query"
+    [view]="view"
+    [tablePage]="tablePage"
+    [openable]="true"
+    (itemOpen)="open($event)"
+    (queryChange)="onQuery($event)"
+    (viewChange)="view = $event"
+    (tablePageChange)="tablePage = $event"
+  ></app-explorer-browser>
+
+  <app-material-detail
+    *ngIf="step.kind === 'detail'"
+    [materialId]="$any(step).id"
+    [canSelect]="true"
+    (selected)="select($event)"
+  ></app-material-detail>
+
+  <app-material-edit
+    *ngIf="step.kind === 'edit'"
+    [detail]="$any(step).detail"
+    [context]="context"
+    (back)="backToDetail($any(step).detail)"
+    (save)="add($event)"
+  ></app-material-edit>
+</div>

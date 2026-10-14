@@ -37,4 +37,10 @@ describe('ExplorerService', () => {
     expect(service.feed('uso', { search: 'a', filters: { source: ['EPDs', 'EPiC'] } })).not.toBe(first);
     expect(service.feed('produccion', { search: 'b', filters: {} })).not.toBe(first);
   });
+
+  it('asks for one material', () => {
+    service.material(12).subscribe();
+
+    expect(http.expectOne(() => true).request.url).toBe(`${environment.api_explorer}produccion/12/`);
+  });
 });

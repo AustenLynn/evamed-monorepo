@@ -10,7 +10,8 @@ import { forkJoin, Observable } from 'rxjs';
 import { finalize, map, startWith } from 'rxjs/operators';
 import { AddConstructiveElementComponent } from '../add-constructive-element/add-constructive-element.component';
 import { AddConstructiveSystemComponent } from '../add-constructive-system/add-constructive-system.component';
-import { AddConstructiveMaterialComponent } from '../add-constructive-material/add-constructive-material.component';
+import { ExplorerPickerService } from '../../../explorer/explorer-picker.service';
+import { toExcelRow } from '../../picked-material';
 import { MatDialog } from '@angular/material/dialog';
 import { AnalisisService } from 'src/app/core/services/analisis/analisis.service';
 
@@ -107,6 +108,7 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
     private router: Router,
     private catalogsService: CatalogsService,
     public dialog: MatDialog,
+    private explorerPicker: ExplorerPickerService,
     private analisis: AnalisisService
   ) {
     this.materialsService.getMaterials().subscribe(data => {
@@ -1257,34 +1259,19 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
     });
   }
 
-  addConstructiveMaterialDialog(origin) {
-    const dialogRef = this.dialog.open(AddConstructiveMaterialComponent, {
-      width: '680px',
-      data: {
-        //newConstructiveMaterial: this.newConstructiveMaterial,
-      },
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (Object.keys(result).length > 1) {
-        const mappedResult = {
-          'Administrador EPDs': "-",
-          'Base de datos': result.material?.database,
-          'Cantidad': result.cantidad,
-          'Descripción de Material': result.descripcion,
-          'Material': result.material?.name || result.name,
-          // TODO: considerar distancias
-          'Objetivo Geográfico': '-',
-          'Origen': origin,
-          'Sistema_constructivo': this.currentPanelItem,
-          'Unidad': result.unidad,
-          'reemplazos': result.reemplazos,
-          'vidaUtil': result.vidaUtil?.value
-        };
-
-        this.listData.push(mappedResult);
-        this.showMaterials(this.currentPanelItem, 'revit-user');
-      }
-    });
+  /** Adds a material from the explorer to the system shown in the panel (R-20). */
+  async exploreMaterials(origin: string): Promise<void> {
+    const system = this.currentPanelItem,
+      picked = await this.explorerPicker.pick({
+        system,
+        section: this.selectedSheet ?? null,
+        projectLife: Number(this.vidaUtilSeleccionado) || 50,
+      });
+    if (!picked) {
+      return;
+    }
+    this.listData.push(toExcelRow(picked, system, origin));
+    this.showMaterials(system, 'revit-user');
   }
+
 }

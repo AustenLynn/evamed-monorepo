@@ -1,0 +1,134 @@
+<ng-container [ngSwitch]="load.status" *ngIf="load$ | async as load">
+  <p *ngSwitchCase="'loading'" role="status" class="detail__status">Cargando material…</p>
+
+  <div *ngSwitchCase="'error'" role="alert" class="detail__error">
+    <ng-container *ngIf="$any(load).notFound; else failed">Este material ya no está en el catálogo.</ng-container>
+    <ng-template #failed>
+      No se pudo cargar el material.
+      <button mat-stroked-button type="button" (click)="retry()">Reintentar</button>
+    </ng-template>
+  </div>
+
+  <article *ngSwitchCase="'ready'" class="detail" [attr.aria-labelledby]="'detail-title'">
+    <ng-container *ngIf="$any(load).detail as detail">
+      <header class="detail__header">
+        <div class="detail__heading">
+          <h1 id="detail-title" class="detail__title">{{ detail.display_name }}</h1>
+          <button
+            *ngIf="favorites$ | async as favorites"
+            mat-icon-button
+            type="button"
+            class="detail__star"
+            [class.detail__star--on]="isFavorite(favorites, detail)"
+            [attr.aria-pressed]="isFavorite(favorites, detail)"
+            [attr.aria-label]="isFavorite(favorites, detail) ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+            (click)="toggleFavorite(detail)"
+          >
+            <mat-icon>{{ isFavorite(favorites, detail) ? 'star' : 'star_border' }}</mat-icon>
+          </button>
+        </div>
+        <div class="detail__chips">
+          <app-source-chip [source]="detail.source"></app-source-chip>
+          <span *ngIf="detail.unit" class="detail__chip">Unidad: {{ detail.unit }}</span>
+        </div>
+        <button
+          *ngIf="canSelect"
+          mat-flat-button
+          type="button"
+          class="detail__select"
+          (click)="selected.emit(detail)"
+        >
+          Seleccionar recurso
+        </button>
+      </header>
+
+      <div class="detail__grid">
+        <section class="detail__panel" aria-labelledby="detail-description">
+          <h2 id="detail-description" class="detail__section">Descripción</h2>
+          <p *ngIf="detail.description; else noDescription" class="detail__description" [class.detail__description--open]="descriptionOpen">
+            {{ detail.description }}
+          </p>
+          <ng-template #noDescription><p class="detail__muted">Sin descripción.</p></ng-template>
+          <button
+            *ngIf="detail.description && detail.description.length > 400"
+            mat-button
+            type="button"
+            class="detail__more"
+            [attr.aria-expanded]="descriptionOpen"
+            (click)="descriptionOpen = !descriptionOpen"
+          >
+            {{ descriptionOpen ? 'Ver menos' : 'Ver más' }}
+          </button>
+        </section>
+
+        <section class="detail__panel" aria-labelledby="detail-general">
+          <h2 id="detail-general" class="detail__section">Información general</h2>
+          <dl class="detail__facts">
+            <dt>Base de datos</dt>
+            <dd>{{ detail.source || '—' }}</dd>
+            <dt>Categoría</dt>
+            <dd>{{ detail.category || '—' }}</dd>
+            <dt>Unidad declarada</dt>
+            <dd>{{ detail.unit || '—' }}</dd>
+            <dt>Etapa</dt>
+            <dd>A1–A3 (producción)</dd>
+            <ng-container *ngIf="detail.ecoinvent as ecoinvent">
+              <dt>Dataset ecoinvent</dt>
+              <dd>{{ ecoinvent.dataset_id }}<ng-container *ngIf="ecoinvent.version"> · versión {{ ecoinvent.version }}</ng-container></dd>
+            </ng-container>
+          </dl>
+          <div class="detail__gwp">
+            <span class="detail__gwp-value" [class.detail__gwp-value--credit]="detail.gwp !== null && detail.gwp < 0">{{ detail.gwp | gwp }}</span>
+            <span class="detail__muted">kg CO₂e{{ detail.unit ? ' / ' + detail.unit : '' }} (A1–A3)</span>
+            <app-impact-badge [level]="detail.impact_level"></app-impact-badge>
+          </div>
+        </section>
+      </div>
+
+      <section class="detail__panel" aria-labelledby="detail-indicators">
+        <h2 id="detail-indicators" class="detail__section">Indicadores ambientales</h2>
+        <div class="detail__table-scroll">
+          <table class="detail__table">
+            <thead>
+              <tr>
+                <th scope="col">Indicador</th>
+                <th scope="col">Unidad</th>
+                <th scope="col" class="detail__number">A1</th>
+                <th scope="col" class="detail__number">A2</th>
+                <th scope="col" class="detail__number">A3</th>
+                <th scope="col" class="detail__number">A1–A3</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let indicator of detail.indicators">
+                <th scope="row">{{ indicator.name }} <span class="detail__muted">({{ indicator.code }})</span></th>
+                <td>{{ indicator.unit }}</td>
+                <td class="detail__number">{{ indicator.a1 | gwp }}</td>
+                <td class="detail__number">{{ indicator.a2 | gwp }}</td>
+                <td class="detail__number">{{ indicator.a3 | gwp }}</td>
+                <td class="detail__number detail__total">{{ indicator.a1_a3 | gwp }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p *ngIf="!detail.indicators.length" class="detail__muted">Este material no tiene indicadores en la base de datos.</p>
+      </section>
+
+      <section *ngIf="detail.comparison as comparison" class="detail__panel" aria-labelledby="detail-comparison">
+        <h2 id="detail-comparison" class="detail__section">Comparación en su categoría</h2>
+        <p class="detail__muted">
+          GWP A1–A3 frente a los {{ comparison.n }} materiales de «{{ comparison.group }}» medidos en {{ comparison.unit }}.
+        </p>
+        <ul class="detail__bars">
+          <li *ngFor="let bar of bars(comparison)" class="detail__bar-row">
+            <span class="detail__bar-label">{{ bar.label }}</span>
+            <span class="detail__bar-track" aria-hidden="true">
+              <span class="detail__bar" [class.detail__bar--current]="bar.current" [style.width.%]="bar.width"></span>
+            </span>
+            <span class="detail__bar-value">{{ bar.value | gwp }} kg CO₂e</span>
+          </li>
+        </ul>
+      </section>
+    </ng-container>
+  </article>
+</ng-container>

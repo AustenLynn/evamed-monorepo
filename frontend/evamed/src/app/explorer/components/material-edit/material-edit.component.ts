@@ -1,0 +1,146 @@
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AbstractControl, FormBuilder, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+import { CatalogsService } from '../../../core/services/catalogs/catalogs.service';
+import { MaterialDetail } from '../../explorer.models';
+import {
+  DEFAULT_TRANSPORT_END,
+  DEFAULT_TRANSPORT_ORIGIN,
+  lifeFor,
+  PickedMaterial,
+  PickerContext,
+  replacesFor,
+} from '../../picker.models';
+
+interface TransportOption {
+  id: number;
+  name: string;
+}
+
+/** A distance needs a transport type to count (HANDOFF §4 validation). */
+const legNeedsTransport =
+  (distance: string, transport: string): ValidatorFn =>
+  (group: AbstractControl): ValidationErrors | null => {
+    const km = Number(group.get(distance)?.value);
+    return km > 0 && !group.get(transport)?.value ? { [`${transport}Required`]: true } : null;
+  };
+
+/** Edición de material en el proyecto (HANDOFF §4, screen 03). */
+@Component({
+  selector: 'app-material-edit',
+  templateUrl: './material-edit.component.html',
+  styleUrls: ['./material-edit.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
+})
+export class MaterialEditComponent implements OnInit {
+  @Input({ required: true }) detail!: MaterialDetail;
+  @Input({ required: true }) context!: PickerContext;
+  @Output() readonly back = new EventEmitter<void>();
+  @Output() readonly save = new EventEmitter<PickedMaterial>();
+
+  readonly transports$: Observable<TransportOption[]>;
+  readonly form;
+  submitted = false;
+
+  constructor(
+    private fb: FormBuilder,
+    catalogs: CatalogsService
+  ) {
+    this.transports$ = catalogs.getTransports().pipe(
+      map((rows: { id: number; name_transport: string }[]) =>
+        rows
+          .map(row => ({ id: row.id, name: cleanTransport(row.name_transport) }))
+          .sort((a, b) => a.id - b.id)
+      )
+    );
+    this.form = this.fb.nonNullable.group(
+      {
+        comercialName: ['', Validators.required],
+        quantity: [null as number | null, [Validators.required, Validators.min(Number.MIN_VALUE)]],
+        comments: [''],
+        transportOrigin: [DEFAULT_TRANSPORT_ORIGIN as number | null],
+        distanceOrigin: [null as number | null, Validators.min(0)],
+        transportEnd: [DEFAULT_TRANSPORT_END as number | null],
+        distanceEnd: [null as number | null, Validators.min(0)],
+        lifeYears: [0, [Validators.required, Validators.min(1)]],
+        replaces: [0, [Validators.required, Validators.min(0)]],
+      },
+      {
+        validators: [
+          legNeedsTransport('distanceOrigin', 'transportOrigin'),
+          legNeedsTransport('distanceEnd', 'transportEnd'),
+        ],
+      }
+    );
+  }
+
+  ngOnInit(): void {
+    const life = this.context.projectLife;
+    this.form.patchValue({
+      comercialName: this.detail.display_name,
+      lifeYears: life,
+      replaces: replacesFor(life, life),
+    });
+  }
+
+  /** Life and replacements follow each other, as in the stage pages (K-09). */
+  onLifeChange(): void {
+    const life = Number(this.form.controls.lifeYears.value);
+    if (life > 0) {
+      this.form.controls.replaces.setValue(replacesFor(this.context.projectLife, life));
+    }
+  }
+
+  onReplacesChange(): void {
+    const replaces = Number(this.form.controls.replaces.value);
+    if (replaces >= 0) {
+      this.form.controls.lifeYears.setValue(lifeFor(this.context.projectLife, replaces));
+    }
+  }
+
+  submit(): void {
+    this.submitted = true;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    const value = this.form.getRawValue(),
+      number = (input: number | null) => (input === null || String(input) === '' ? null : Number(input));
+    this.save.emit({
+      material: {
+        id: this.detail.id,
+        name: this.detail.name,
+        unit: this.detail.unit,
+        source: this.detail.source,
+      },
+      comercialName: value.comercialName.trim(),
+      quantity: Number(value.quantity),
+      comments: value.comments.trim(),
+      transportOrigin: value.transportOrigin,
+      distanceOrigin: number(value.distanceOrigin),
+      transportEnd: value.transportEnd,
+      distanceEnd: number(value.distanceEnd),
+      lifeYears: Number(value.lifeYears),
+      replaces: Number(value.replaces),
+    });
+  }
+
+  error(name: string): boolean {
+    const control = this.form.get(name);
+    return !!control && control.invalid && (control.touched || this.submitted);
+  }
+
+  legError(transport: 'transportOrigin' | 'transportEnd'): boolean {
+    return !!this.form.errors?.[`${transport}Required`] && (this.submitted || this.form.touched);
+  }
+}
+
+/** "Vehículo de carga, mayor a 32 Ton, tipo EURO 3 (RoW)-Ecoinvent 3" → without the source suffix. */
+export const cleanTransport = (name: string): string =>
+  name
+    .replace(/\s*-\s*Ecoinvent 3$/i, '')
+    .replace(/\s+/g, ' ')
+    .trim();

@@ -1,0 +1,32 @@
+:host {
+  display: block;
+  padding: 20px 16px 40px;
+}
+
+.detail-page__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.detail-page__crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  color: var(--ev-text-muted-on-bg);
+
+  li + li::before {
+    content: '›';
+    margin-right: 6px;
+  }
+}
+
+.detail-page__crumb {
+  color: var(--ev-green-text);
+}

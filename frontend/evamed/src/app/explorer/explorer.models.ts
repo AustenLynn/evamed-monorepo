@@ -37,3 +37,30 @@ export interface ExplorerQuery {
 }
 
 export const PAGE_SIZE = 24;
+
+export interface Indicator {
+  code: string;
+  name: string;
+  unit: string;
+  a1: number | null;
+  a2: number | null;
+  a3: number | null;
+  a1_a3: number | null;
+}
+
+/** The material within its category and unit (HANDOFF §5.3); null below 5 materials. */
+export interface Comparison {
+  group: string;
+  unit: string;
+  n: number;
+  mean: number;
+  p25: number;
+  value: number;
+}
+
+/** GET /explorer/produccion/<id>/ */
+export interface MaterialDetail extends ExplorerItem {
+  ecoinvent: { dataset_id: number; version: string | null; system_model: string | null } | null;
+  indicators: Indicator[];
+  comparison: Comparison | null;
+}

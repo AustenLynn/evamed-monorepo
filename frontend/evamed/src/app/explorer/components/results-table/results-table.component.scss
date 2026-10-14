@@ -33,8 +33,20 @@
   color: var(--ev-text);
 }
 
+.results-table__open {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
 a.results-table__name:hover,
-a.results-table__name:focus-visible {
+a.results-table__name:focus-visible,
+.results-table__open:hover,
+.results-table__open:focus-visible {
   color: var(--ev-green-text);
 }
 
