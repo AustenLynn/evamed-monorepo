@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Explorador de construcción</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#1F6B1F}a:hover{color:#14501A}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #F3F5F8; font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1B2330">
+<div style="max-width: 1440px; margin: 0 auto">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding: 12px 24px; background: #FFFFFF; border-bottom: 1px solid #DDE2EA">
+  <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap">
+    <div style="display: flex; align-items: center; gap: 8px">
+      <div aria-hidden="true" style="position: relative; width: 26px; height: 26px">
+        <div style="position: absolute; left: 0; top: 7px; width: 18px; height: 19px; background: #D7262E; border-radius: 2px"></div>
+        <div style="position: absolute; left: 6px; top: 0; width: 14px; height: 12px; background: #3A9B3A; border-radius: 2px"></div>
+      </div>
+      <span style="font-weight: 700; font-size: 22px; letter-spacing: 0.02em">EVAMED</span>
+    </div>
+    <button type="button" style="display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px; border: 0; background: transparent; font: inherit; font-size: 14px; color: #1B2330; cursor: pointer">Explorador de recursos
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+    </button>
+  </div>
+  <nav aria-label="Ayuda" style="display: flex; gap: 8px">
+    <a href="#" style="display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; font-size: 13px; color: #5A6474; text-decoration: none">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8h.01M11 12h1v5h1"></path></svg>Acerca de</a>
+    <a href="#" style="display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; font-size: 13px; color: #5A6474; text-decoration: none">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h11l5 5v11H4z M14 4v5h5 M8 13h8 M8 17h5"></path></svg>Manual de usuario</a>
+  </nav>
+</header>
+
+<nav aria-label="Etapas del ciclo de vida" style="display: flex; flex-wrap: wrap; gap: 8px; padding: 16px 24px 0">
+  <a href="Main.dc.html" style="flex: 1 1 200px; display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 10px 14px; border-radius: 12px; background: #E8ECF1; color: #1B2330; text-decoration: none">
+    <span style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: #FFFFFF"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V10l5 3v-3l5 3V5h4l2 16z M3 21h18 M7 17h2 M12 17h2"></path></svg></span>
+    <span style="display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 15px">Producción</span><span style="font-size: 12px; color: #5A6474">Materiales y productos</span></span>
+  </a>
+  <a href="Construccion.dc.html" aria-current="page" style="flex: 1 1 200px; display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 10px 14px; border-radius: 12px; background: #F2A900; color: #1B2330; text-decoration: none">
+    <span style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.55)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 20h13 M3 16h11v4H3z M5 16v-4h5l2 4 M10 12l5-7 5 4-3 3 M17 12l2 4h-3"></path></svg></span>
+    <span style="display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 15px">Construcción</span><span style="font-size: 12px">Maquinaria y procesos</span></span>
+  </a>
+  <a href="Uso.dc.html" style="flex: 1 1 200px; display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 10px 14px; border-radius: 12px; background: #E8ECF1; color: #1B2330; text-decoration: none">
+    <span style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: #FFFFFF"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"></path></svg></span>
+    <span style="display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 15px">Uso</span><span style="font-size: 12px; color: #5A6474">Energía y sistemas</span></span>
+  </a>
+  <a href="FinDeVida.dc.html" style="flex: 1 1 200px; display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 10px 14px; border-radius: 12px; background: #E8ECF1; color: #1B2330; text-decoration: none">
+    <span style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: #FFFFFF"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-15 6.7 M3 12a9 9 0 0 1 15-6.7 M18 2v4h-4 M6 22v-4h4"></path></svg></span>
+    <span style="display: flex; flex-direction: column"><span style="font-weight: 600; font-size: 15px">Fin de vida</span><span style="font-size: 12px; color: #5A6474">Escenarios y tratamiento</span></span>
+  </a>
+</nav>
+
+<div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 24px; padding: 20px 24px 12px">
+  <h1 style="margin: 0; font-size: 24px; font-weight: 600">Explorador de construcción</h1>
+  <p style="margin: 0; font-size: 14px; color: #5A6474">Maquinaria, procesos y consumos de obra.</p>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 20px; padding: 0 24px 32px">
+
+  <aside aria-label="Filtros" style="flex: 1 1 260px; max-width: 320px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; padding: 20px; background: #FFFFFF; border: 1px solid #DDE2EA; border-radius: 12px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <h2 style="margin: 0; font-size: 17px; font-weight: 600">Filtros</h2>
+      <button type="button" style="min-height: 32px; padding: 0 4px; border: 0; background: transparent; font: inherit; font-size: 13px; color: #5A6474; cursor: pointer">Limpiar filtros</button>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label for="q" style="font-size: 13px; font-weight: 600">Buscar</label>
+      <div style="display: flex; gap: 6px">
+        <input id="q" type="search" placeholder="Ej. excavadora" style="flex: 1; min-width: 0; height: 38px; box-sizing: border-box; padding: 0 10px; border: 1px solid #CBD2DC; border-radius: 8px; font: inherit; font-size: 14px; color: #1B2330">
+        <button type="button" aria-label="Buscar" style="display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border: 0; border-radius: 8px; background: #267A26; color: #FFFFFF; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg></button>
+      </div>
+    </div>
+
+    <fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 4px">
+      <legend style="padding: 0; margin-bottom: 6px; font-size: 13px; font-weight: 600">Tipo de maquinaria</legend>
+      <label style="display: flex; align-items: center; gap: 8px; min-height: 28px; font-size: 14px"><input type="checkbox" style="width: 16px; height: 16px; margin: 0; accent-color: #267A26">Excavación</label>
+      <label style="display: flex; align-items: center; gap: 8px; min-height: 28px; font-size: 14px"><input type="checkbox" style="width: 16px; height: 16px; margin: 0; accent-color: #267A26">Movimiento de tierras</label>
+      <label style="display: flex; align-items: center; gap: 8px; min-height: 28px; font-size: 14px"><input type="checkbox" style="width: 16px; height: 16px; margin: 0; accent-color: #267A26">Concreto</label>
+      <label style="display: flex; align-items: center; gap: 8px; min-height: 28px; font-size: 14px"><input type="checkbox" style="width: 16px; height: 16px; margin: 0; accent-color: #267A26">Elevación</label>
+      <label style="display: flex; align-items: center; gap: 8px; min-height: 28px; font-size: 14px"><input type="checkbox" style="width: 16px; height: 16px; margin: 0; accent-color: #267A26">Generadores</label>
+      <label style="display: flex; align-items: center; gap: 8px; min-height: 28px; font-size: 14px"><input type="checkbox" style="width: 16px; height: 16px; margin: 0; accent-color: #267A26">Herramientas</label>
+    </fieldset>
+
+    <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600">Combustible
+      <select style="height: 38px; padding: 0 10px; border: 1px solid #CBD2DC; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 400; color: #1B2330"><option>Todos</option><option>Diésel</option><option>Eléctrico</option><option>Gasolina</option></select>
+    </label>
+    <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600">Unidad
+      <select style="height: 38px; padding: 0 10px; border: 1px solid #CBD2DC; border-radius: 8px; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 400; color: #1B2330"><option>hora (h)</option><option>litro (L)</option><option>m³ de obra</option></select>
+    </label>
+
+    <button type="button" style="align-self: flex-start; display: flex; align-items: center; gap: 4px; min-height: 36px; padding: 0; border: 0; background: transparent; font: inherit; font-size: 13px; font-weight: 600; color: #1F6B1F; cursor: pointer">Filtros avanzados
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+    </button>
+  </aside>
+
+  <section aria-label="Resultados" style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; padding: 20px; background: #FFFFFF; border: 1px solid #DDE2EA; border-radius: 12px">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+      <h2 style="margin: 0; font-size: 18px; font-weight: 600">Resultados (48)</h2>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+        <div role="group" aria-label="Vista" style="display: flex; border: 1px solid #CBD2DC; border-radius: 8px; overflow: hidden">
+          <button type="button" onClick="{{setTable}}" aria-pressed="{{pressTable}}" style="display: flex; align-items: center; gap: 6px; min-height: 38px; padding: 0 14px; border: 0; background: {{tabBg}}; color: {{tabFg}}; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v14H3z M3 10h18 M3 15h18 M9 5v14"></path></svg>Tabla</button>
+          <button type="button" onClick="{{setCards}}" aria-pressed="{{pressCards}}" style="display: flex; align-items: center; gap: 6px; min-height: 38px; padding: 0 14px; border: 0; background: {{cardBg}}; color: {{cardFg}}; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h8v7H3z M13 4h8v7h-8z M3 13h8v7H3z M13 13h8v7h-8z"></path></svg>Tarjetas</button>
+        </div>
+      </div>
+    </div>
+
+    <sc-if value="{{showCards}}" hint-placeholder-val="{{ true }}">
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px">
+      <sc-for list="{{cards}}" as="c" hint-placeholder-count="5">
+        <article style="display: flex; flex-direction: column; gap: 14px; padding: 16px; background: #FFFFFF; border: 1px solid #DDE2EA; border-radius: 12px">
+          <div style="display: flex; align-items: flex-start; gap: 8px">
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+              <h3 style="margin: 0; font-size: 16px; font-weight: 700; line-height: 1.3">{{c.name}}</h3>
+              <p style="margin: 0; font-size: 13px; color: #5A6474">{{c.sub}}</p>
+            </div>
+            <button type="button" onClick="{{c.toggleFav}}" aria-pressed="{{c.fav}}" aria-label="Favorito" style="flex: 0 0 auto; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; margin: -6px -6px 0 0; padding: 0; border: 0; background: transparent; cursor: pointer">
+              <sc-if value="{{c.fav}}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="#F2B705" stroke="#D99A00" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"></path></svg></sc-if>
+              <sc-if value="{{c.notFav}}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A93A3" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"></path></svg></sc-if>
+            </button>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px 12px">
+            <div style="display: flex; flex-direction: column">
+              <span style="font-size: 30px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums">{{c.gwp}}</span>
+              <span style="font-size: 13px; color: #3A4352">kg CO₂e / h</span>
+            </div>
+            <sc-if value="{{c.bajo}}" hint-placeholder-val="{{ true }}"><span style="display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 12px; border-radius: 999px; background: #E5F3E5; color: #1F6B1F; font-size: 13px; font-weight: 600"><span aria-hidden="true" style="display: inline-flex; gap: 3px"><span style="width: 8px; height: 8px; border-radius: 50%; background: currentColor"></span><span style="width: 8px; height: 8px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px currentColor; opacity: 0.6"></span><span style="width: 8px; height: 8px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px currentColor; opacity: 0.6"></span></span>Bajo impacto</span></sc-if>
+            <sc-if value="{{c.medio}}" hint-placeholder-val="{{ false }}"><span style="display: inline-flex; align-items: center; min-height: 30px; padding: 0 12px; border-radius: 999px; background: #FDF1D2; color: #7A4F00; font-size: 13px; font-weight: 600; gap: 6px"><span aria-hidden="true" style="display: inline-flex; gap: 3px"><span style="width: 8px; height: 8px; border-radius: 50%; background: currentColor"></span><span style="width: 8px; height: 8px; border-radius: 50%; background: currentColor"></span><span style="width: 8px; height: 8px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px currentColor; opacity: 0.6"></span></span>Impacto medio</span></sc-if>
+            <sc-if value="{{c.alto}}" hint-placeholder-val="{{ false }}"><span style="display: inline-flex; align-items: center; min-height: 30px; padding: 0 12px; border-radius: 999px; background: #FBE4E2; color: #A3241B; font-size: 13px; font-weight: 600; gap: 6px"><span aria-hidden="true" style="display: inline-flex; gap: 3px"><span style="width: 8px; height: 8px; border-radius: 50%; background: currentColor"></span><span style="width: 8px; height: 8px; border-radius: 50%; background: currentColor"></span><span style="width: 8px; height: 8px; border-radius: 50%; background: currentColor"></span></span>Alto impacto</span></sc-if>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 12px; border-top: 1px solid #EDF0F4; font-size: 13px">
+            <span style="display: flex; align-items: center; gap: 6px"><span style="padding: 1px 5px; border-radius: 4px; background: #EEF1F5; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: #3A4352">{{c.geoCode}}</span>{{c.geoName}}</span>
+            <span style="display: flex; align-items: center; gap: 6px; min-height: 28px; padding: 0 10px; border: 1px solid #DDE2EA; border-radius: 8px; color: #3A4352"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3z M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6 M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"></path></svg>{{c.origin}}</span>
+          </div>
+        </article>
+      </sc-for>
+      <div aria-hidden="true" style="min-height: 190px; border: 1px solid #E3E7ED; border-radius: 12px; background: #EEF1F5"></div>
+      <div aria-hidden="true" style="min-height: 190px; border: 1px solid #E3E7ED; border-radius: 12px; background: #EEF1F5"></div>
+      <div aria-hidden="true" style="min-height: 190px; border: 1px solid #E3E7ED; border-radius: 12px; background: #EEF1F5"></div>
+    </div>
+    <p role="status" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0; font-size: 13px; color: #5A6474"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#267A26" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"></path></svg>Cargando más resultados… · 5 de 48</p>
+    </sc-if>
+
+    <sc-if value="{{showTable}}" hint-placeholder-val="{{ false }}">
+    <div style="overflow-x: auto; border: 1px solid #DDE2EA; border-radius: 10px">
+      <div role="table" aria-label="Maquinaria y procesos" style="min-width: 820px">
+        <div role="row" style="display: grid; grid-template-columns: minmax(240px, 2.4fr) 140px 120px 150px 160px 52px; align-items: center; background: #F7F9FB; border-bottom: 1px solid #DDE2EA; font-size: 12px; font-weight: 600; color: #5A6474">
+          <div role="columnheader" style="padding: 10px 12px">Nombre / Descripción</div>
+          <div role="columnheader" style="padding: 10px 12px">Geografía</div>
+          <div role="columnheader" style="padding: 10px 12px; text-align: right; line-height: 1.3">GWP<br><span style="font-weight: 400">(kg CO₂e/h)</span></div>
+          <div role="columnheader" style="padding: 10px 12px">Impacto</div>
+          <div role="columnheader" style="padding: 10px 12px">Base de datos</div>
+          <div role="columnheader" style="padding: 10px 4px"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Favorito</span></div>
+        </div>
+        <sc-for list="{{cards}}" as="c" hint-placeholder-count="5">
+          <div role="row" style="display: grid; grid-template-columns: minmax(240px, 2.4fr) 140px 120px 150px 160px 52px; align-items: center; min-height: 56px; border-bottom: 1px solid #EDF0F4; font-size: 14px">
+            <div role="cell" style="padding: 8px 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600">{{c.name}}</span><span style="font-size: 12px; color: #5A6474">{{c.sub}}</span></div>
+            <div role="cell" style="padding: 8px 12px; font-size: 13px; display: flex; align-items: center; gap: 6px"><span style="padding: 1px 5px; border-radius: 4px; background: #EEF1F5; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: #3A4352">{{c.geoCode}}</span>{{c.geoName}}</div>
+            <div role="cell" style="padding: 8px 12px; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums">{{c.gwp}}</div>
+            <div role="cell" style="padding: 8px 12px">
+              <sc-if value="{{c.bajo}}" hint-placeholder-val="{{ true }}"><span style="display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; background: #E5F3E5; color: #1F6B1F; font-size: 12px; font-weight: 600; gap: 6px"><span aria-hidden="true" style="display: inline-flex; gap: 3px"><span style="width: 8px; height: 8px; border-radius: 50%; background: currentColor"></span><span style="width: 8px; height: 8px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px currentColor; opacity: 0.6"></span><span style="width: 8px; height: 8px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px currentColor; opacity: 0.6"></span></span>Bajo impacto</span></sc-if>
+              <sc-if value="{{c.medio}}" hint-placeholder-val="{{ false }}"><span style="display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; background: #FDF1D2; color: #7A4F00; font-size: 12px; font-weight: 600; gap: 6px"><span aria-hidden="true" style="display: inline-flex; gap: 3px"><span style="width: 8px; height: 8px; border-radius: 50%; background: currentColor"></span><span style="width: 8px; height: 8px; border-radius: 50%; background: currentColor"></span><span style="width: 8px; height: 8px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px currentColor; opacity: 0.6"></span></span>Impacto medio</span></sc-if>
+              <sc-if value="{{c.alto}}" hint-placeholder-val="{{ false }}"><span style="display: inline-flex; align-items: center; min-height: 26px; padding: 0 10px; border-radius: 999px; background: #FBE4E2; color: #A3241B; font-size: 12px; font-weight: 600; gap: 6px"><span aria-hidden="true" style="display: inline-flex; gap: 3px"><span style="width: 8px; height: 8px; border-radius: 50%; background: currentColor"></span><span style="width: 8px; height: 8px; border-radius: 50%; background: currentColor"></span><span style="width: 8px; height: 8px; border-radius: 50%; background: currentColor"></span></span>Alto impacto</span></sc-if>
+            </div>
+            <div role="cell" style="padding: 8px 12px; font-size: 13px">{{c.origin}}</div>
+            <div role="cell" style="padding: 4px 8px">
+              <button type="button" onClick="{{c.toggleFav}}" aria-pressed="{{c.fav}}" aria-label="Favorito" style="display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; padding: 0; border: 0; background: transparent; cursor: pointer">
+                <sc-if value="{{c.fav}}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="#F2B705" stroke="#D99A00" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"></path></svg></sc-if>
+                <sc-if value="{{c.notFav}}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A93A3" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"></path></svg></sc-if>
+              </button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{showTable}}" hint-placeholder-val="{{ false }}">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+      <p style="margin: 0; font-size: 13px; color: #5A6474">Mostrando 1–5 de 48 resultados</p>
+      <nav aria-label="Paginación" style="display: flex; gap: 4px">
+        <button type="button" aria-label="Página anterior" style="width: 36px; height: 36px; border: 1px solid #DDE2EA; border-radius: 8px; background: #FFFFFF; color: #5A6474; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button>
+        <button type="button" aria-current="page" style="width: 36px; height: 36px; border: 0; border-radius: 8px; background: #267A26; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer">1</button>
+        <button type="button" style="width: 36px; height: 36px; border: 1px solid #DDE2EA; border-radius: 8px; background: #FFFFFF; color: #1B2330; font: inherit; font-size: 13px; cursor: pointer">2</button>
+        <button type="button" style="width: 36px; height: 36px; border: 1px solid #DDE2EA; border-radius: 8px; background: #FFFFFF; color: #1B2330; font: inherit; font-size: 13px; cursor: pointer">3</button>
+        <button type="button" aria-label="Página siguiente" style="width: 36px; height: 36px; border: 1px solid #DDE2EA; border-radius: 8px; background: #FFFFFF; color: #5A6474; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button>
+      </nav>
+    </div>
+    </sc-if>
+  </section>
+</div>
+
+<footer style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; padding: 16px 24px 24px; font-size: 12px; color: #5A6474; border-top: 1px solid #DDE2EA">
+  <span>EVAMED · Evaluación ambiental para un mejor hábitat</span>
+  <span>Universidad Iberoamericana Ciudad de México · Departamento de Arquitectura, Urbanismo e Ingeniería Civil</span>
+</footer>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":940}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sel: {}, fav: {}, view: "cards" };
+  }
+  renderVals() {
+    var base = [
+      { name: "Excavadora (20 t)", sub: "Diésel", geo: "[GEO]", gwp: "18.5", unit: "h", icon: "M2 20h13 M3 16h11v4H3z M5 16v-4h5l2 4 M10 12l5-7 5 4-3 3 M17 12l2 4h-3" },
+      { name: "Grúa torre", sub: "Diésel", geo: "[GEO]", gwp: "12.1", unit: "h", icon: "M8 21V4 M4 21h8 M8 5l13 2 M8 5H4 M18 7v5 M16 12h4 M8 9l4-4 M8 13l4-4" },
+      { name: "Camión hormigonera", sub: "Diésel", geo: "[GEO]", gwp: "25.4", unit: "h", icon: "M2 16h20 M3 16V9h6v7 M10 14l2-6 8 1v5 M5 18a2 2 0 1 0 4 0a2 2 0 1 0 -4 0 M15 18a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" },
+      { name: "Bomba de concreto", sub: "Diésel", geo: "[GEO]", gwp: "28.7", unit: "h", icon: "M2 16h11v3H2z M5 16v-3h5v3 M10 13l6-8 5 3 M16 5v14" },
+      { name: "Generador 100 kVA", sub: "Diésel", geo: "[GEO]", gwp: "31.2", unit: "h", icon: "M3 7h18v11H3z M7 18v2 M17 18v2 M12 9l-2 4h4l-2 4" }
+    ];
+    var self = this;
+    var vals = base.map(function (r) { return parseFloat(r.gwp.replace("−", "-")); });
+    var sorted = vals.slice().sort(function (a, b) { return a - b; });
+    var n = vals.length;
+    var geoNames = { MX: "México", RER: "Europa", GLO: "Global" };
+    var isTable = this.state.view === "table";
+    return {
+      showCards: !isTable, showTable: isTable,
+      pressTable: isTable, pressCards: !isTable,
+      tabBg: isTable ? "#267A26" : "#FFFFFF", tabFg: isTable ? "#FFFFFF" : "#1B2330",
+      cardBg: isTable ? "#FFFFFF" : "#267A26", cardFg: isTable ? "#1B2330" : "#FFFFFF",
+      setTable: function () { self.setState({ view: "table" }); },
+      setCards: function () { self.setState({ view: "cards" }); },
+      cards: base.map(function (r, i) {
+        var rank = sorted.indexOf(vals[i]);
+        var lvl = rank < n / 3 ? "bajo" : rank < (2 * n) / 3 ? "medio" : "alto";
+        var fav = !!self.state.fav[i];
+        return Object.assign({}, r, {
+          fav: fav, notFav: !fav,
+          bajo: lvl === "bajo", medio: lvl === "medio", alto: lvl === "alto",
+          geoCode: geoNames[r.geo] ? r.geo : "—",
+          geoName: geoNames[r.geo] || "[Geografía]",
+          origin: r.origin || "[Base de datos]",
+          toggleFav: function () { var f = Object.assign({}, self.state.fav); f[i] = !f[i]; self.setState({ fav: f }); }
+        });
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>
