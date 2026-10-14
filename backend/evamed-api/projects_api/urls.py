@@ -3,6 +3,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from projects_api import views
+from projects_api.explorer import views as explorer_views
 
 router = DefaultRouter()
 router.register('users-platform', views.UserPlatformViewSet)
@@ -51,5 +52,7 @@ urlpatterns = [
     path('materials-stage/update/', views.MaterialStageUpdateView.as_view()),
     path('projects/<int:project_id>/results/', views.ProjectResultsView.as_view()),
     path('projects/<int:project_id>/material-scheme/', views.ProjectMaterialSchemeView.as_view()),
+    path('explorer/produccion/<int:pk>/', explorer_views.ExplorerMaterialDetailView.as_view()),
+    path('explorer/<slug:stage>/', explorer_views.ExplorerListView.as_view()),
     path('', include(router.urls))
 ]
