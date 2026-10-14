@@ -1,5 +1,16 @@
 export type StageKey = 'produccion' | 'construccion' | 'uso' | 'fin-de-vida';
 
+/** A checkbox filter: the API's query parameter, its name in the page URL, and its facet. */
+export interface StageFilter {
+  param: 'source' | 'type';
+  urlParam: 'base' | 'tipo';
+  facet: 'sources' | 'types';
+  label: string;
+}
+
+const SOURCE: StageFilter = { param: 'source', urlParam: 'base', facet: 'sources', label: 'Base de datos' },
+  TYPE: StageFilter = { param: 'type', urlParam: 'tipo', facet: 'types', label: 'Tipo' };
+
 export interface StageConfig {
   key: StageKey;
   /** Stage tab. */
@@ -10,6 +21,12 @@ export interface StageConfig {
   /** Page header. */
   title: string;
   subtitle: string;
+  /** Filters backed by real data (HANDOFF §6, K-01, K-02, K-05). */
+  filters: StageFilter[];
+  /** Whether items open a detail page (Producción only). */
+  hasDetail: boolean;
+  /** Shown instead of the explorer when the stage has no catalogue (K-06). */
+  emptyMessage?: string;
 }
 
 const ETAPAS = 'assets/images/Etapas/';
@@ -24,6 +41,8 @@ export const STAGES: readonly StageConfig[] = [
     image: { active: ETAPAS + 'Produccion.png', idle: ETAPAS + 'Produccion_.png' },
     title: 'Explorador de materiales',
     subtitle: 'Busca, filtra y compara los materiales de las bases de datos de EVAMED.',
+    filters: [SOURCE],
+    hasDetail: true,
   },
   {
     key: 'construccion',
@@ -32,6 +51,8 @@ export const STAGES: readonly StageConfig[] = [
     image: { active: ETAPAS + 'Construcción.png', idle: ETAPAS + 'Construcción_.png' },
     title: 'Explorador de construcción',
     subtitle: 'Maquinaria y procesos de obra.',
+    filters: [TYPE],
+    hasDetail: false,
   },
   {
     key: 'uso',
@@ -40,6 +61,8 @@ export const STAGES: readonly StageConfig[] = [
     image: { active: ETAPAS + 'Uso.png', idle: ETAPAS + 'Uso_.png' },
     title: 'Explorador de uso',
     subtitle: 'Fuentes de energía para la operación del edificio.',
+    filters: [SOURCE, TYPE],
+    hasDetail: false,
   },
   {
     key: 'fin-de-vida',
@@ -49,6 +72,12 @@ export const STAGES: readonly StageConfig[] = [
     image: { active: ETAPAS + 'Fin_.png', idle: ETAPAS + 'fin.png' },
     title: 'Explorador de fin de vida',
     subtitle: 'Escenarios de fin de vida.',
+    filters: [],
+    hasDetail: false,
+    emptyMessage:
+      'Aún no hay escenarios de fin de vida con factores de impacto en la base de datos. ' +
+      'Por ahora, EVAMED calcula solo el consumo de energía de la deconstrucción (C1), ' +
+      'con la maquinaria del explorador de construcción.',
   },
 ];
 

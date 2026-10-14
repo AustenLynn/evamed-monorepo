@@ -19,6 +19,20 @@
   --ev-green-light: #a8d024;
   --ev-green-text: #5b7408;
   --ev-yellow: #edc903;
+  --ev-melon: #ed8484;
+  // A favourite star: the app's yellow, darkened to stand out on white (3.7:1).
+  --ev-star: #9c8300;
+
+  // Impact badges: tints of the app's green, yellow and melon, with text dark
+  // enough to read on them (5.8:1, 6.3:1, 6.0:1).
+  --ev-impact-low-bg: #eef5d6;
+  --ev-impact-low-text: #4f6607;
+  --ev-impact-mid-bg: #fcf4c6;
+  --ev-impact-mid-text: #6b5800;
+  --ev-impact-high-bg: #fbe1e1;
+  --ev-impact-high-text: #9e2a2a;
+
+  --ev-skeleton: #ededed;
 }
 
 .container.container--wide {
@@ -40,4 +54,16 @@
   margin: 8px 0 0;
   font-size: 14px;
   color: var(--ev-text-muted-on-bg);
+}
+
+.ev-visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }

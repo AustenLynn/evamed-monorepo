@@ -1,0 +1,35 @@
+<div #grid class="results-cards">
+  <app-result-card
+    *ngFor="let item of items; trackBy: trackItem"
+    [item]="item"
+    [favorite]="favorites.has(item.id)"
+    [link]="linkFor ? linkFor(item) : null"
+    (favoriteToggle)="favoriteToggle.emit(item)"
+  ></app-result-card>
+  <div *ngFor="let skeleton of skeletons" class="results-cards__skeleton" aria-hidden="true"></div>
+</div>
+
+<div #sentinel class="results-cards__sentinel"></div>
+
+<div class="results-cards__status">
+  <p role="status" class="results-cards__message">
+    <ng-container *ngIf="loading && items.length">Cargando más resultados… · {{ items.length }} de {{ count }}</ng-container>
+    <ng-container *ngIf="loading && !items.length">Cargando resultados…</ng-container>
+    <ng-container *ngIf="!loading && !hasMore && items.length">No hay más resultados</ng-container>
+  </p>
+
+  <div *ngIf="failed" class="results-cards__error" role="alert">
+    No se pudieron cargar los resultados.
+    <button mat-stroked-button type="button" (click)="retry.emit()">Reintentar</button>
+  </div>
+
+  <button
+    *ngIf="canLoadMore && items.length"
+    mat-stroked-button
+    type="button"
+    class="results-cards__more"
+    (click)="requestMore()"
+  >
+    Cargar más
+  </button>
+</div>

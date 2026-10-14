@@ -39,7 +39,8 @@ const apiEvamed = 'http://localhost:8000/api-projects',
  potentialTranposrt = '/potential-transport/',
  conversion = '/conversions/',
  dbMaterial = '/database-material/',
- me = '/me/';
+ me = '/me/',
+ explorer = '/explorer/';
 
 export const environment = {
   production: false,
@@ -81,6 +82,7 @@ export const environment = {
   api_conversions: `${apiEvamed}${conversion}`,
   api_db_material: `${apiEvamed}${dbMaterial}`,
   api_me: `${apiEvamed}${me}`,
+  api_explorer: `${apiEvamed}${explorer}`,
   firebaseConfig: {
     apiKey: "AIzaSyC3t_NpPrGwj7i26j5cfIQCt1aaq3f9k-I",
     authDomain: "evamed-ac3f8.firebaseapp.com",

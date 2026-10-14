@@ -1,0 +1,78 @@
+.filter-panel {
+  padding: 16px;
+  background: var(--ev-surface);
+  border: 1px solid var(--ev-border);
+  border-radius: 12px;
+}
+
+.filter-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.filter-panel__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ev-text);
+}
+
+.filter-panel__clear {
+  color: var(--ev-green-text);
+}
+
+.filter-panel__label {
+  display: block;
+  margin: 0 0 6px;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ev-text);
+}
+
+.filter-panel__search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  border: 2px solid var(--ev-border);
+  border-radius: 10px;
+  color: var(--ev-text-muted);
+
+  &:focus-within {
+    border-color: var(--ev-green);
+  }
+}
+
+// Inputs inside the panel must shrink with it (a real overflow bug in the mockups).
+.filter-panel__input {
+  width: 100%;
+  min-width: 0;
+  height: 34px;
+  border: 0;
+  outline: none;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ev-text);
+  background: transparent;
+}
+
+.filter-panel__group {
+  margin: 18px 0 0;
+  padding: 14px 0 0;
+  border: 0;
+  border-top: 1px solid var(--ev-divider);
+  min-width: 0;
+}
+
+.filter-panel__option {
+  display: block;
+}
+
+.filter-panel__count,
+.filter-panel__none {
+  color: var(--ev-text-muted);
+  font-size: 12px;
+}

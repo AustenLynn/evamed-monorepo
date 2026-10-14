@@ -6,3 +6,23 @@
 .explorer-header {
   margin-bottom: 24px;
 }
+
+.explorer-empty {
+  display: flex;
+  gap: 12px;
+  max-width: 720px;
+  padding: 24px;
+  background: var(--ev-surface);
+  border: 1px solid var(--ev-border);
+  border-radius: 12px;
+  color: var(--ev-text);
+
+  mat-icon {
+    flex: none;
+    color: var(--ev-text-muted);
+  }
+
+  p {
+    margin: 0;
+  }
+}

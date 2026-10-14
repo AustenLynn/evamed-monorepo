@@ -1,6 +1,8 @@
 // The app routes reference LayoutComponent: compile it in its NgModule's context.
 import '../../../app.module';
 
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router, RouterModule, ROUTES } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
@@ -13,7 +15,11 @@ import { ExplorerModule } from '../../explorer.module';
 describe('ExplorerPageComponent', () => {
   const setup = async (url: string) => {
     TestBed.configureTestingModule({
-      providers: [provideRouter([{ path: 'explorador', loadChildren: () => ExplorerModule }])],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([{ path: 'explorador', loadChildren: () => ExplorerModule }]),
+      ],
     });
     const harness = await RouterTestingHarness.create(url);
     return { harness, el: () => harness.routeNativeElement as HTMLElement };

@@ -1,0 +1,71 @@
+<div class="explorer-browser" *ngIf="vm$ | async as vm">
+  <app-filter-panel
+    class="explorer-browser__filters"
+    [filters]="stage.filters"
+    [facets]="vm.state.facets"
+    [query]="query"
+    (queryChange)="queryChange.emit($event)"
+  ></app-filter-panel>
+
+  <section class="explorer-browser__results" aria-labelledby="results-title">
+    <header class="explorer-browser__header">
+      <h2 id="results-title" class="explorer-browser__title">
+        Resultados<ng-container *ngIf="vm.state.count !== null"> ({{ vm.state.count }})</ng-container>
+      </h2>
+      <mat-button-toggle-group
+        [value]="view"
+        aria-label="Vista de resultados"
+        (change)="viewChange.emit($event.value)"
+      >
+        <mat-button-toggle value="tabla">
+          <mat-icon aria-hidden="true">table_rows</mat-icon> Tabla
+        </mat-button-toggle>
+        <mat-button-toggle value="tarjetas">
+          <mat-icon aria-hidden="true">grid_view</mat-icon> Tarjetas
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </header>
+
+    <!-- Nothing matches -->
+    <div *ngIf="vm.state.count === 0; else results" class="explorer-browser__empty">
+      <p>No encontramos resultados{{ filtered ? ' con estos filtros' : '' }}.</p>
+      <button *ngIf="filtered" mat-stroked-button type="button" (click)="clearFilters()">Limpiar filtros</button>
+    </div>
+
+    <ng-template #results>
+      <app-results-cards
+        *ngIf="view === 'tarjetas'"
+        [items]="vm.feed.cards()"
+        [count]="vm.state.count"
+        [loading]="vm.state.loading !== null"
+        [failed]="vm.state.failed !== null"
+        [hasMore]="vm.feed.hasMore"
+        [favorites]="vm.favorites"
+        [linkFor]="linkFor"
+        (loadMore)="vm.feed.loadMore()"
+        (retry)="vm.feed.retry()"
+        (favoriteToggle)="toggleFavorite($event)"
+      ></app-results-cards>
+
+      <ng-container *ngIf="view === 'tabla'">
+        <app-results-table
+          *ngIf="tableItems(vm.state) as items; else tableState"
+          [items]="items"
+          [count]="vm.state.count ?? 0"
+          [page]="tablePage"
+          [favorites]="vm.favorites"
+          [linkFor]="linkFor"
+          (pageChange)="tablePageChange.emit($event)"
+          (favoriteToggle)="toggleFavorite($event)"
+        ></app-results-table>
+        <ng-template #tableState>
+          <p *ngIf="vm.state.failed === null" role="status" class="explorer-browser__status">Cargando resultados…</p>
+          <div *ngIf="vm.state.failed !== null" role="alert" class="explorer-browser__error">
+            No se pudieron cargar los resultados.
+            <button mat-stroked-button type="button" (click)="vm.feed.retry()">Reintentar</button>
+          </div>
+        </ng-template>
+      </ng-container>
+    </ng-template>
+  </section>
+</div>

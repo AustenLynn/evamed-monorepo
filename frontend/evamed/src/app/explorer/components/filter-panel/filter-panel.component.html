@@ -1,0 +1,34 @@
+<section class="filter-panel" aria-labelledby="filter-panel-title">
+  <header class="filter-panel__header">
+    <h2 id="filter-panel-title" class="filter-panel__title">Filtros</h2>
+    <button mat-button type="button" class="filter-panel__clear" [disabled]="!active" (click)="clear()">
+      Limpiar filtros
+    </button>
+  </header>
+
+  <label class="filter-panel__label" for="explorer-search">Buscar</label>
+  <div class="filter-panel__search">
+    <mat-icon aria-hidden="true">search</mat-icon>
+    <input
+      id="explorer-search"
+      type="search"
+      class="filter-panel__input"
+      placeholder="Nombre o descripción"
+      autocomplete="off"
+      [formControl]="search"
+    />
+  </div>
+
+  <fieldset *ngFor="let filter of filters" class="filter-panel__group">
+    <legend class="filter-panel__label">{{ filter.label }}</legend>
+    <mat-checkbox
+      *ngFor="let option of options(filter); trackBy: trackOption"
+      class="filter-panel__option"
+      [checked]="option.checked"
+      (change)="toggle(filter, option.value, $event.checked)"
+    >
+      {{ option.value }} <span class="filter-panel__count">({{ option.count }})</span>
+    </mat-checkbox>
+    <p *ngIf="facets && !options(filter).length" class="filter-panel__none">Sin opciones</p>
+  </fieldset>
+</section>

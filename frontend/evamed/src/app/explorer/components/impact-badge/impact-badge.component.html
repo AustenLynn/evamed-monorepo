@@ -1,0 +1,9 @@
+<span *ngIf="badge as badge" class="impact-badge" [ngClass]="'impact-badge--' + level">
+  <span class="impact-badge__gauge" aria-hidden="true">
+    <mat-icon *ngIf="level === 'credito'; else dots" class="impact-badge__icon">recycling</mat-icon>
+    <ng-template #dots>
+      <span *ngFor="let dot of gauge" class="impact-badge__dot" [class.impact-badge__dot--on]="dot <= badge.dots"></span>
+    </ng-template>
+  </span>
+  {{ badge.label }}
+</span>

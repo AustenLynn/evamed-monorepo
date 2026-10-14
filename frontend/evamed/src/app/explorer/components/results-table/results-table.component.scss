@@ -1,0 +1,73 @@
+:host {
+  display: block;
+  background: var(--ev-surface);
+  border: 1px solid var(--ev-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+// Wide tables scroll inside their box, never the page (HANDOFF §8).
+.results-table__scroll {
+  overflow-x: auto;
+}
+
+.results-table {
+  width: 100%;
+  min-width: 760px;
+
+  th {
+    background: var(--ev-surface-muted);
+    color: var(--ev-text);
+    font-weight: 700;
+  }
+
+  td {
+    color: var(--ev-text);
+    vertical-align: middle;
+  }
+}
+
+.results-table__name {
+  display: block;
+  font-weight: 700;
+  color: var(--ev-text);
+}
+
+a.results-table__name:hover,
+a.results-table__name:focus-visible {
+  color: var(--ev-green-text);
+}
+
+.results-table__description {
+  display: block;
+  max-width: 360px;
+  font-size: 12px;
+  color: var(--ev-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.results-table__number {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.results-table__unit {
+  display: block;
+  font-size: 12px;
+  color: var(--ev-text-muted);
+}
+
+.results-table__credit {
+  color: var(--ev-green-text);
+}
+
+.results-table__star {
+  color: var(--ev-text-muted);
+}
+
+.results-table__star--on {
+  color: var(--ev-star);
+}

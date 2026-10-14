@@ -1,0 +1,67 @@
+<div class="results-table__scroll">
+  <table mat-table [dataSource]="items" class="results-table">
+    <caption class="ev-visually-hidden">Resultados, página {{ page }}</caption>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef scope="col">Nombre / Descripción</th>
+      <td mat-cell *matCellDef="let item">
+        <a *ngIf="linkFor?.(item) as link; else plain" class="results-table__name" [routerLink]="link">{{ item.display_name }}</a>
+        <ng-template #plain><span class="results-table__name">{{ item.display_name }}</span></ng-template>
+        <span *ngIf="item.description" class="results-table__description">{{ item.description }}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="category">
+      <th mat-header-cell *matHeaderCellDef scope="col">Categoría</th>
+      <td mat-cell *matCellDef="let item">{{ item.category || item.type || '—' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="source">
+      <th mat-header-cell *matHeaderCellDef scope="col">Base de datos</th>
+      <td mat-cell *matCellDef="let item"><app-source-chip [source]="item.source"></app-source-chip></td>
+    </ng-container>
+
+    <ng-container matColumnDef="gwp">
+      <th mat-header-cell *matHeaderCellDef scope="col" class="results-table__number">GWP (kg CO₂e)</th>
+      <td mat-cell *matCellDef="let item" class="results-table__number">
+        <span [class.results-table__credit]="item.gwp !== null && item.gwp < 0">{{ item.gwp | gwp }}</span>
+        <span class="results-table__unit">{{ item.unit ? '/ ' + item.unit : 'por unidad de referencia' }}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="impact">
+      <th mat-header-cell *matHeaderCellDef scope="col">Impacto</th>
+      <td mat-cell *matCellDef="let item"><app-impact-badge [level]="item.impact_level"></app-impact-badge></td>
+    </ng-container>
+
+    <ng-container matColumnDef="favorite">
+      <th mat-header-cell *matHeaderCellDef scope="col"><span class="ev-visually-hidden">Favorito</span></th>
+      <td mat-cell *matCellDef="let item">
+        <button
+          mat-icon-button
+          type="button"
+          class="results-table__star"
+          [class.results-table__star--on]="favorites.has(item.id)"
+          [attr.aria-pressed]="favorites.has(item.id)"
+          [attr.aria-label]="(favorites.has(item.id) ? 'Quitar de favoritos: ' : 'Agregar a favoritos: ') + item.display_name"
+          (click)="favoriteToggle.emit(item)"
+        >
+          <mat-icon>{{ favorites.has(item.id) ? 'star' : 'star_border' }}</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+  </table>
+</div>
+
+<mat-paginator
+  [length]="count"
+  [pageIndex]="page - 1"
+  [pageSize]="pageSize"
+  [hidePageSize]="true"
+  [showFirstLastButtons]="true"
+  aria-label="Páginas de resultados"
+  (page)="onPage($event)"
+></mat-paginator>

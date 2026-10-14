@@ -1,0 +1,37 @@
+<article class="result-card" tabindex="-1">
+  <header class="result-card__header">
+    <h3 class="result-card__name">
+      <a *ngIf="link; else plainName" [routerLink]="link">{{ item.display_name }}</a>
+      <ng-template #plainName>{{ item.display_name }}</ng-template>
+    </h3>
+    <button
+      mat-icon-button
+      type="button"
+      class="result-card__star"
+      [class.result-card__star--on]="favorite"
+      [attr.aria-pressed]="favorite"
+      [attr.aria-label]="(favorite ? 'Quitar de favoritos: ' : 'Agregar a favoritos: ') + item.display_name"
+      (click)="favoriteToggle.emit()"
+    >
+      <mat-icon>{{ favorite ? 'star' : 'star_border' }}</mat-icon>
+    </button>
+  </header>
+
+  <p class="result-card__description" [title]="item.description || ''">
+    {{ item.description || item.category || '' }}
+  </p>
+
+  <div class="result-card__impact">
+    <span class="result-card__gwp" [class.result-card__gwp--credit]="item.gwp !== null && item.gwp < 0">
+      {{ item.gwp | gwp }}
+    </span>
+    <span class="result-card__unit">
+      kg CO₂e {{ item.unit ? '/ ' + item.unit : 'por unidad de referencia' }}
+    </span>
+    <app-impact-badge [level]="item.impact_level"></app-impact-badge>
+  </div>
+
+  <footer class="result-card__footer">
+    <app-source-chip [source]="item.source"></app-source-chip>
+  </footer>
+</article>

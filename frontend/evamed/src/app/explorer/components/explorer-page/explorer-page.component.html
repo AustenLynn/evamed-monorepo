@@ -1,8 +1,26 @@
-<ng-container *ngIf="stage$ | async as stage">
-  <app-stage-tabs [current]="stage.key"></app-stage-tabs>
+<ng-container *ngIf="state$ | async as state">
+  <app-stage-tabs [current]="state.stage.key"></app-stage-tabs>
 
   <header class="explorer-header">
-    <h1 class="ev-page-title">{{ stage.title }}</h1>
-    <p class="ev-page-subtitle">{{ stage.subtitle }}</p>
+    <h1 class="ev-page-title">{{ state.stage.title }}</h1>
+    <p class="ev-page-subtitle">{{ state.stage.subtitle }}</p>
   </header>
+
+  <div *ngIf="state.stage.emptyMessage; else browser" class="explorer-empty" role="status">
+    <mat-icon aria-hidden="true">info</mat-icon>
+    <p>{{ state.stage.emptyMessage }}</p>
+  </div>
+
+  <ng-template #browser>
+    <app-explorer-browser
+      [stage]="state.stage"
+      [query]="state.query"
+      [view]="state.view"
+      [tablePage]="state.tablePage"
+      [linkFor]="linkFor"
+      (queryChange)="onQuery(state, $event)"
+      (viewChange)="onView($event)"
+      (tablePageChange)="onTablePage($event)"
+    ></app-explorer-browser>
+  </ng-template>
 </ng-container>
