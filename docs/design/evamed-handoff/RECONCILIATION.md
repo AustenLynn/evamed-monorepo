@@ -10,10 +10,10 @@
 |---|---|---|---|---|
 | Missing data | 1 | 4 | 1 | 6 |
 | Inconsistency | 1 | 2 | 15 | 18 |
-| Error | 1 | 6 | 4 | 11 |
+| Error | 1 | 7 | 4 | 12 |
 | Decision | 1 | 6 | 9 | 16 |
 | Repo drift | 0 | 0 | 1 | 1 |
-| **Total** | **4** | **18** | **30** | **52** |
+| **Total** | **4** | **19** | **30** | **53** |
 
 Blocking: **R-01** (GWP of 61 EPD materials), **K-08** (screen 03 approach), **R-02** (fields screen 03 needs to add a material), **R-03** (Transporte 1/2 meaning). **All four decided 2026-10-14**, together with K-02 (no geography) and R-18 (keep the app's design system). Rows still `Open (default …)` proceed with that default and are marked `Assumed` when implemented.
 
@@ -79,4 +79,5 @@ Blocking: **R-01** (GWP of 61 EPD materials), **K-08** (screen 03 approach), **R
 | R-32 | Decision | Minor | screen 03 "Cantidad + Unidad" | The unit is shown read-only: the catalogue's declared unit. The old dialog let the user pick any unit, but the calculation multiplies the quantity by a factor per declared unit, so another unit would silently be wrong. | `calculos.ts:110-115` | — | — | Assumed (phase 4) |
 | R-33 | Decision | Minor | HANDOFF §4 Ficha actions | "Comparar" and "Ver fuente" are left out: no behaviour is defined and there are no source URLs in the data. "Seleccionar recurso" appears only in the stage page's picker; `/explorador/produccion/:id` is browse-only (R-20). | `models.py` (no URL fields) | — | — | Assumed (phase 4) |
 | R-34 | Decision | Minor | screen 03 | When the project's useful life isn't loaded yet, the edit screen assumes 50 years, as the old dialog did. | old `add-constructive-material.component.ts` `ngOnInit` | — | — | Assumed (phase 4) |
-| R-35 | Inconsistency | Minor | existing-project page | After a material is added, the page reloads (`ngOnInit`, as "Duplicar" does) and the user re-selects the system to see it. | `material-stage-update.component.ts` `duplicateMaterial` | A) as built B) re-open the same system after the reload (touches the page's selection flow) | A | Assumed (phase 4) |
+| R-35 | Inconsistency | Minor | existing-project page | After a material is added, the page reloads (`ngOnInit`, as "Duplicar" does) and the user re-selects the system to see it. | `material-stage-update.component.ts` `duplicateMaterial` | A) as built B) re-open the same system after the reload (touches the page's selection flow) | A | Fixed 2026-10-16 → B: after adding, the page reloads the rows and re-opens the same system |
+| R-36 | Error | Major | `materials-stage.component.ts` (`exploreMaterials`, `duplicateMaterial`) | Reported by the owner on dev, 2026-10-16: a material added from the explorer didn't come back when Producción was opened again. The new-project page reloads its imported Excel from `sessionStorage['dataProject']` each time, and its autosave replaces the project's rows with it. The added row (and any duplicated row, pre-existing) only reached memory, so it vanished and the next autosave deleted it from the database. Dev had no explorer-added row in `projects_api_materialschemeproject`. Fixed: both write the sheet back (`storeSheet()`), as deleting already did. | dev DB query (newest rows, all origin 1 from the Excel); `explore-materials.spec.ts` fails without the fix | — | — | Fixed 2026-10-16 |
