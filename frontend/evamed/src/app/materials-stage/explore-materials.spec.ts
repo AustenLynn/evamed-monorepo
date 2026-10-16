@@ -22,6 +22,8 @@ const picked: PickedMaterial = {
 
 // "Explorar materiales" replaces the Materiales panel's ⊕ on both stage pages (R-20).
 describe('Explorar materiales on the new-project page', () => {
+  afterEach(() => sessionStorage.clear());
+
   const build = (answer: PickedMaterial | undefined) => {
     const component: any = Object.create(MaterialsStageComponent.prototype),
       sheet: any[] = [];
@@ -31,7 +33,9 @@ describe('Explorar materiales on the new-project page', () => {
     component.selectedSheet = 'Muros exteriores';
     component.vidaUtilSeleccionado = '50';
     component.listData = sheet;
+    component.indexSheet = 0;
     component.contentData = [[], sheet];
+    sessionStorage.setItem('dataProject', JSON.stringify({ sheetNames: ['Muros exteriores'], data: [[], []] }));
     component.SOR = [['Muro A']];
     component.SOD = [[]];
     component.materialsList = [{ id: 2, name_material: 'Concreto_Bloque hueco' }];
@@ -54,6 +58,16 @@ describe('Explorar materiales on the new-project page', () => {
       projectLife: 50,
     });
     expect(component.listData).toEqual([]);
+  });
+
+  it('keeps the material when Producción is opened again (the page reloads the stored Excel)', async () => {
+    const component = build(picked);
+
+    await component.exploreMaterials('Modelo de Revit');
+
+    const stored = JSON.parse(sessionStorage.getItem('dataProject')!);
+    expect(stored.sheetNames).toEqual(['Muros exteriores']);
+    expect(stored.data[1].map((row: any) => row.Material)).toEqual(['Block hueco 15']);
   });
 
   it('adds the material to the panel, and the autosave stores it with its transport', async () => {
@@ -94,13 +108,16 @@ describe('Explorar materiales on the existing-project page', () => {
     component.vidaUtilSeleccionado = 60;
     component.cdr = { markForCheck: vi.fn() };
     component.explorerPicker = { pick: vi.fn(async () => answer) };
-    component.projectsService = { addSchemeProject: vi.fn(() => of({ id: 99 })) };
-    component.ngOnInit = vi.fn();
+    component.projectsService = {
+      addSchemeProject: vi.fn(() => of({ id: 99 })),
+      getMaterialSchemeProyect: vi.fn(() => of([{ id: 99, project_id: 42 }, { id: 7, project_id: 5 }])),
+    };
+    component.showMaterials = vi.fn();
     localStorage.setItem('idProyectoConstrucción', '42');
     return component;
   };
 
-  it('saves the material as a new row of the project and reloads', async () => {
+  it('saves the material as a new row, then shows the system with it at once', async () => {
     const component = build(picked);
 
     await component.exploreMaterials();
@@ -109,7 +126,8 @@ describe('Explorar materiales on the existing-project page', () => {
     expect(component.projectsService.addSchemeProject).toHaveBeenCalledWith(
       toSchemeProject(picked, { projectId: 42, sectionId: 4, system: 'Losa' })
     );
-    expect(component.ngOnInit).toHaveBeenCalled();
+    expect(component.listData2).toEqual([{ id: 99, project_id: 42 }]);
+    expect(component.showMaterials).toHaveBeenCalledWith(null, 'Losa', 'revit-user');
     expect(component.adding).toBe(false);
   });
 

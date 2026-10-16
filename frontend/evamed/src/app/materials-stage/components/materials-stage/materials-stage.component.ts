@@ -885,13 +885,7 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
         });
       });
 
-      this.contentData[this.indexSheet + 1] = this.listData;
-      const storedDataProject = sessionStorage.getItem('dataProject');
-      if (storedDataProject) {
-        const parsedDataProject = JSON.parse(storedDataProject);
-        parsedDataProject.data = this.contentData;
-        sessionStorage.setItem('dataProject', JSON.stringify(parsedDataProject));
-      }
+      this.storeSheet();
 
       this.finalizeDeletedSystems(systemsToDelete, sectionId);
     };
@@ -1131,7 +1125,7 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
     toDuplicate.forEach(item => {
       this.listData.push({ ...item });
     });
-    this.contentData[this.indexSheet + 1] = this.listData;
+    this.storeSheet();
     this.showMaterials(sc, origin === 'user' ? 'revit-user' : origin);
   }
 
@@ -1271,7 +1265,24 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
       return;
     }
     this.listData.push(toExcelRow(picked, system, origin));
+    this.storeSheet();
     this.showMaterials(system, 'revit-user');
+  }
+
+  /**
+   * Keeps the current sheet's rows where the page reads them back from: the
+   * page reloads the imported Excel from sessionStorage['dataProject'] each
+   * time Producción opens, and the autosave replaces the project's rows with
+   * it. A row left out of it disappears, and is deleted by the next save.
+   */
+  private storeSheet(): void {
+    this.contentData[this.indexSheet + 1] = this.listData;
+    const stored = sessionStorage.getItem('dataProject');
+    if (stored) {
+      const dataProject = JSON.parse(stored);
+      dataProject.data = this.contentData;
+      sessionStorage.setItem('dataProject', JSON.stringify(dataProject));
+    }
   }
 
 }

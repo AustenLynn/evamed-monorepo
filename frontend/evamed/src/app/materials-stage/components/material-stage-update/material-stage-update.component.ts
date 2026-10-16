@@ -870,9 +870,18 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
         this.cdr.markForCheck();
       }))
       .subscribe({
-        next: () => this.ngOnInit(),
+        next: () => this.reloadAndShow(system, projectId),
         error: error => console.error('No se pudo agregar el material', error),
       });
+  }
+
+  /** Reloads the project's rows and re-opens the system, so the new material shows at once (R-35). */
+  private reloadAndShow(system: string, projectId: number): void {
+    this.projectsService.getMaterialSchemeProyect().subscribe(data => {
+      this.listData2 = data.filter(item => item.project_id === projectId);
+      this.showMaterials(null, system, 'revit-user');
+      this.cdr.markForCheck();
+    });
   }
 
     removeMaterial(event) {
