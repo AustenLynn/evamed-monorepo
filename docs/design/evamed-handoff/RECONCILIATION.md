@@ -10,10 +10,10 @@
 |---|---|---|---|---|
 | Missing data | 1 | 4 | 1 | 6 |
 | Inconsistency | 1 | 2 | 15 | 18 |
-| Error | 1 | 7 | 4 | 12 |
-| Decision | 1 | 6 | 9 | 16 |
+| Error | 2 | 7 | 4 | 13 |
+| Decision | 1 | 7 | 9 | 17 |
 | Repo drift | 0 | 0 | 1 | 1 |
-| **Total** | **4** | **19** | **30** | **53** |
+| **Total** | **5** | **20** | **30** | **55** |
 
 Blocking: **R-01** (GWP of 61 EPD materials), **K-08** (screen 03 approach), **R-02** (fields screen 03 needs to add a material), **R-03** (Transporte 1/2 meaning). **All four decided 2026-10-14**, together with K-02 (no geography) and R-18 (keep the app's design system). Rows still `Open (default …)` proceed with that default and are marked `Assumed` when implemented.
 
@@ -81,3 +81,5 @@ Blocking: **R-01** (GWP of 61 EPD materials), **K-08** (screen 03 approach), **R
 | R-34 | Decision | Minor | screen 03 | When the project's useful life isn't loaded yet, the edit screen assumes 50 years, as the old dialog did. | old `add-constructive-material.component.ts` `ngOnInit` | — | — | Assumed (phase 4) |
 | R-35 | Inconsistency | Minor | existing-project page | After a material is added, the page reloads (`ngOnInit`, as "Duplicar" does) and the user re-selects the system to see it. | `material-stage-update.component.ts` `duplicateMaterial` | A) as built B) re-open the same system after the reload (touches the page's selection flow) | A | Fixed 2026-10-16 → B: after adding, the page reloads the rows and re-opens the same system |
 | R-36 | Error | Major | `materials-stage.component.ts` (`exploreMaterials`, `duplicateMaterial`) | Reported by the owner on dev, 2026-10-16: a material added from the explorer didn't come back when Producción was opened again. The new-project page reloads its imported Excel from `sessionStorage['dataProject']` each time, and its autosave replaces the project's rows with it. The added row (and any duplicated row, pre-existing) only reached memory, so it vanished and the next autosave deleted it from the database. Dev had no explorer-added row in `projects_api_materialschemeproject`. Fixed: both write the sheet back (`storeSheet()`), as deleting already did. | dev DB query (newest rows, all origin 1 from the Excel); `explore-materials.spec.ts` fails without the fix | — | — | Fixed 2026-10-16 |
+| R-37 | Error | Blocking | `picked-material.ts` · `MaterialSchemeProjectSerializer` | Reported by the owner on dev, 2026-10-16: still no material after adding (existing-project page). With "Comentarios" empty, the page sent `description_material: ""`, which the create endpoint refuses (`Este campo no puede estar en blanco`, 400); the page only logged it to the console. Fixed: empty comments go as `null`, and a failed add or save now says so in a snackbar. The autosave endpoint (new-project page) accepts blanks; it wasn't affected. | dry run of the page's payload against dev's serializer: invalid with `""`, valid with `null` | — | — | Fixed 2026-10-16 |
+| R-38 | Decision | Major | stage pages' Materiales panel | Owner, 2026-10-16: clicking a material in the panel opens the explorer's **Edición** screen instead of the old inline "Edición de material" form, on both stage pages. It starts from the row's values, keeps the row's origin, section, state and city, and offers "Cambiar material" to pick another catalogue material. A row with no catalogue match starts on the list. A row entered in another unit than the catalogue's gets a warning. The old inline form's markup and methods are now unreachable and can be removed in a cleanup. | owner, chat | — | — | Decided 2026-10-16 |

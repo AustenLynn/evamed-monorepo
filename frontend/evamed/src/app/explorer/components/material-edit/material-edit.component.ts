@@ -39,6 +39,8 @@ export class MaterialEditComponent implements OnInit {
   @Input({ required: true }) detail!: MaterialDetail;
   @Input({ required: true }) context!: PickerContext;
   @Output() readonly back = new EventEmitter<void>();
+  /** Edit mode: pick another catalogue material for this row. */
+  @Output() readonly changeMaterial = new EventEmitter<void>();
   @Output() readonly save = new EventEmitter<PickedMaterial>();
 
   readonly transports$: Observable<TransportOption[]>;
@@ -77,13 +79,38 @@ export class MaterialEditComponent implements OnInit {
     );
   }
 
+  get editing(): boolean {
+    return this.context.mode === 'edit';
+  }
+
+  /** The row was entered in another unit than the catalogue's declared one. */
+  get unitMismatch(): string | null {
+    const unit = this.context.initial?.rowUnit;
+    return unit && this.detail.unit && unit.toLowerCase() !== this.detail.unit.toLowerCase() ? unit : null;
+  }
+
   ngOnInit(): void {
-    const life = this.context.projectLife;
+    const life = this.context.projectLife,
+      initial = this.context.initial;
     this.form.patchValue({
       comercialName: this.detail.display_name,
       lifeYears: life,
       replaces: replacesFor(life, life),
     });
+    if (initial) {
+      const replaces = initial.replaces ?? 0;
+      this.form.patchValue({
+        comercialName: initial.comercialName || this.detail.display_name,
+        quantity: initial.quantity,
+        comments: initial.comments,
+        transportOrigin: initial.transportOrigin,
+        distanceOrigin: initial.distanceOrigin,
+        transportEnd: initial.transportEnd,
+        distanceEnd: initial.distanceEnd,
+        replaces,
+        lifeYears: lifeFor(life, replaces),
+      });
+    }
   }
 
   /** Life and replacements follow each other, as in the stage pages (K-09). */

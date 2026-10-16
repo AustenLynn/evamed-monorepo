@@ -1,5 +1,6 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { MatListOption } from '@angular/material/list';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MaterialsService } from './../../../core/services/materials/materials.service';
 import { ProjectsService } from './../../../core/services/projects/projects.service';
 import { SelectionService } from '../../../core/services/selection/selection.service';
@@ -11,7 +12,7 @@ import { forkJoin, Observable } from 'rxjs';
 import { finalize, map, startWith, take } from 'rxjs/operators';
 import { AnalisisService } from 'src/app/core/services/analisis/analisis.service';
 import { ExplorerPickerService } from '../../../explorer/explorer-picker.service';
-import { toSchemeProject } from '../../picked-material';
+import { fromSchemeRow, toSchemeProject } from '../../picked-material';
 
 export interface Material {
   id: number;
@@ -102,6 +103,7 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
     private selectionService: SelectionService,
     private cdr: ChangeDetectorRef,
     private explorerPicker: ExplorerPickerService,
+    private snackBar: MatSnackBar,
   ) {
     this.materialsService.getMaterials().subscribe(data => {
       this.materialsList = data;
@@ -870,18 +872,24 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
         this.cdr.markForCheck();
       }))
       .subscribe({
-        next: () => this.reloadAndShow(system, projectId),
-        error: error => console.error('No se pudo agregar el material', error),
+        next: () => this.reloadAndShow(system, projectId, 'revit-user'),
+        error: error => this.failed('No se pudo agregar el material.', error),
       });
   }
 
   /** Reloads the project's rows and re-opens the system, so the new material shows at once (R-35). */
-  private reloadAndShow(system: string, projectId: number): void {
+  private reloadAndShow(system: string, projectId: number, origin: 'revit-user' | 'dynamo'): void {
     this.projectsService.getMaterialSchemeProyect().subscribe(data => {
       this.listData2 = data.filter(item => item.project_id === projectId);
-      this.showMaterials(null, system, 'revit-user');
+      this.showMaterials(null, system, origin);
       this.cdr.markForCheck();
     });
+  }
+
+  /** Says so when a save fails, instead of only logging it (R-37). */
+  private failed(message: string, error: unknown): void {
+    console.error(message, error);
+    this.snackBar.open(message + ' Intenta de nuevo.', 'Cerrar', { duration: 6000 });
   }
 
     removeMaterial(event) {
@@ -930,12 +938,39 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onSelectedMaterial(event, value) {
-    this.selectState(value.selected[0]?.value.value.state_id_origin);
-    this.dataMaterialSelected = value.selected[0]?.value.value;
-    this.dataMaterialSelected.materialSelectedDB =
-      this.dataMaterialSelected.name_material;
-    this.selectedMaterial = true;
+  /** A material in the panel opens the explorer's Edición screen (it replaced the inline form). */
+  async onSelectedMaterial(_event, value): Promise<void> {
+    const row = value.selected[0]?.value.value;
+    if (!row?.material_scheme_project_id) {
+      return;
+    }
+    const system = row.construction_system,
+      picked = await this.explorerPicker.pick({
+        mode: 'edit',
+        system,
+        section: this.sheetNames[row.section_id - 1] ?? null,
+        projectLife: Number(this.vidaUtilSeleccionado) || 50,
+        materialId: row.material_id ?? null,
+        initial: fromSchemeRow(row),
+      });
+    if (!picked) {
+      return;
+    }
+    const changes = {
+      ...toSchemeProject(picked, {
+        projectId: row.project_id,
+        sectionId: row.section_id,
+        system,
+        originId: row.origin_id,
+      }),
+      state_id_origin: row.state_id_origin ?? 1,
+      city_id_origin: row.city_id_origin ?? 2,
+      city_id_end: row.city_id_end ?? 1,
+    };
+    this.projectsService.updateMaterialSchemeProject(row.material_scheme_project_id, changes).subscribe({
+      next: () => this.reloadAndShow(system, row.project_id, row.origin_id === 2 ? 'dynamo' : 'revit-user'),
+      error: error => this.failed('No se pudo guardar el material.', error),
+    });
   }
 
   selectCountry(id) {

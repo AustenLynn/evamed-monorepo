@@ -1,6 +1,6 @@
 <form class="edit" [formGroup]="form" (ngSubmit)="submit()" novalidate>
   <div class="edit__main">
-    <h2 class="edit__title">Agregar material al proyecto</h2>
+    <h2 class="edit__title">{{ editing ? 'Editar material' : 'Agregar material al proyecto' }}</h2>
     <p class="edit__context">
       <span *ngIf="context.section">{{ context.section }} · </span>Sistema constructivo: <strong>{{ context.system }}</strong>
     </p>
@@ -25,6 +25,9 @@
           <mat-hint>Unidad declarada del material</mat-hint>
         </mat-form-field>
       </div>
+      <p *ngIf="unitMismatch as rowUnit" class="edit__warning" role="note">
+        Este renglón se capturó en «{{ rowUnit }}», pero el material se declara en «{{ detail.unit }}». Revisa que la cantidad esté en {{ detail.unit }}.
+      </p>
       <mat-form-field appearance="outline" class="edit__wide">
         <mat-label>Comentarios</mat-label>
         <textarea matInput formControlName="comments" rows="2"></textarea>
@@ -90,7 +93,7 @@
 
     <div class="edit__actions">
       <button mat-stroked-button type="button" (click)="back.emit()">Cancelar</button>
-      <button mat-flat-button type="submit" class="edit__submit">Agregar material</button>
+      <button mat-flat-button type="submit" class="edit__submit">{{ editing ? 'Guardar cambios' : 'Agregar material' }}</button>
     </div>
   </div>
 
@@ -105,5 +108,8 @@
       <dd>{{ detail.unit || '—' }}</dd>
     </dl>
     <button mat-button type="button" class="edit__summary-link" (click)="back.emit()">Ver ficha completa</button>
+    <button *ngIf="editing" mat-button type="button" class="edit__summary-link" (click)="changeMaterial.emit()">
+      Cambiar material
+    </button>
   </aside>
 </form>

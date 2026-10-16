@@ -71,6 +71,15 @@ mat-form-field {
   color: var(--ev-impact-high-text);
 }
 
+.edit__warning {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  background: var(--ev-impact-mid-bg);
+  color: var(--ev-impact-mid-text);
+}
+
 .edit__actions {
   display: flex;
   justify-content: flex-end;

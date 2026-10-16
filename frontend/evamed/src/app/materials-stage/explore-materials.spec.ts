@@ -1,11 +1,11 @@
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 // Compile the components in their NgModule's context.
 import './materials-stage.module';
 import { PickedMaterial } from '../explorer/picker.models';
 import { MaterialStageUpdateComponent } from './components/material-stage-update/material-stage-update.component';
 import { MaterialsStageComponent } from './components/materials-stage/materials-stage.component';
-import { toExcelRow, toSchemeProject } from './picked-material';
+import { fromExcelRow, fromSchemeRow, toExcelRow, toSchemeProject } from './picked-material';
 
 const picked: PickedMaterial = {
   material: { id: 2, name: 'Concreto_Bloque hueco', unit: 'Pz', source: 'EPiC' },
@@ -113,6 +113,7 @@ describe('Explorar materiales on the existing-project page', () => {
       getMaterialSchemeProyect: vi.fn(() => of([{ id: 99, project_id: 42 }, { id: 7, project_id: 5 }])),
     };
     component.showMaterials = vi.fn();
+    component.snackBar = { open: vi.fn() };
     localStorage.setItem('idProyectoConstrucción', '42');
     return component;
   };
@@ -149,7 +150,103 @@ describe('Explorar materiales on the existing-project page', () => {
   });
 });
 
+describe('Editing a material from the panel', () => {
+  afterEach(() => sessionStorage.clear());
+
+  it('new-project page: opens Edición with the row, and writes the changes back to the sheet', async () => {
+    const row: any = {
+        Material: 'Agua_Water_mortero_aplanado', Cantidad: 90.51, Unidad: 'kg', 'Descripción de Material': '-',
+        Origen: 'Opciones EVAMED', Sistema_constructivo: 'EPS wall', distancia_2: '30', transporte_2: '4', reemplazos: '1',
+      },
+      component: any = Object.create(MaterialsStageComponent.prototype);
+    component.listData = [row];
+    component.indexSheet = 0;
+    component.contentData = [[], component.listData];
+    component.selectedSheet = 'Muros interiores';
+    component.vidaUtilSeleccionado = '50';
+    component.materialsList = [{ id: 382, name_material: 'Agua_Water_mortero_aplanado' }];
+    component.explorerPicker = { pick: vi.fn(async () => ({ ...picked, comercialName: 'Agua de obra', comments: '' })) };
+    sessionStorage.setItem('dataProject', JSON.stringify({ data: [[], []] }));
+    const initial = fromExcelRow(row);
+
+    await component.onSelectedMaterial({ selected: [{ value: { value: row } }] });
+
+    expect(component.explorerPicker.pick).toHaveBeenCalledWith({
+      mode: 'edit',
+      system: 'EPS wall',
+      section: 'Muros interiores',
+      projectLife: 50,
+      materialId: 382,
+      initial,
+    });
+    expect(row).toMatchObject({ Material: 'Agua de obra', Origen: 'Opciones EVAMED', Cantidad: 120, 'Descripción de Material': null });
+    expect(JSON.parse(sessionStorage.getItem('dataProject')!).data[1][0].Material).toBe('Agua de obra');
+  });
+
+  it('existing-project page: saves the row in place, keeping its origin, and shows it again', async () => {
+    const row = {
+        material_scheme_project_id: 10636, material_id: 382, project_id: 640, section_id: 2, origin_id: 2,
+        construction_system: 'EPS wall', comercial_name: 'Agua_Water_mortero_aplanado', quantity: 90.51, unit_text: 'kg',
+        description_material: '-', transporte_1: null, transporte_2: null, distancia_1: 0, distancia_2: 0, reemplazos: 0,
+        state_id_origin: 5, city_id_origin: 9, city_id_end: 1,
+      },
+      component: any = Object.create(MaterialStageUpdateComponent.prototype);
+    component.sheetNames = ['Cimentación', 'Muros interiores'];
+    component.vidaUtilSeleccionado = 50;
+    component.cdr = { markForCheck: vi.fn() };
+    component.snackBar = { open: vi.fn() };
+    component.explorerPicker = { pick: vi.fn(async () => picked) };
+    component.projectsService = {
+      updateMaterialSchemeProject: vi.fn(() => of({})),
+      getMaterialSchemeProyect: vi.fn(() => of([{ id: 10636, project_id: 640 }])),
+    };
+    component.showMaterials = vi.fn();
+
+    await component.onSelectedMaterial(null, { selected: [{ value: { value: row } }] });
+
+    expect(component.explorerPicker.pick).toHaveBeenCalledWith(expect.objectContaining({
+      mode: 'edit', materialId: 382, section: 'Muros interiores', initial: fromSchemeRow(row),
+    }));
+    const [id, changes] = component.projectsService.updateMaterialSchemeProject.mock.calls[0];
+    expect(id).toBe(10636);
+    expect(changes).toMatchObject({ origin_id: 2, section_id: 2, material_id: 2, state_id_origin: 5, city_id_origin: 9 });
+    expect(component.showMaterials).toHaveBeenCalledWith(null, 'EPS wall', 'dynamo');
+  });
+
+  it('existing-project page: says so when saving fails', async () => {
+    const component: any = Object.create(MaterialStageUpdateComponent.prototype);
+    component.currentPanelItem = 'Losa';
+    component.indexSheet = 0;
+    component.sheetNames = ['Cimentación'];
+    component.cdr = { markForCheck: vi.fn() };
+    component.snackBar = { open: vi.fn() };
+    component.explorerPicker = { pick: vi.fn(async () => picked) };
+    component.projectsService = { addSchemeProject: vi.fn(() => throwError(() => ({ status: 400 }))) };
+    localStorage.setItem('idProyectoConstrucción', '42');
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    await component.exploreMaterials();
+
+    expect(component.snackBar.open).toHaveBeenCalledWith('No se pudo agregar el material. Intenta de nuevo.', 'Cerrar', { duration: 6000 });
+    localStorage.clear();
+  });
+});
+
 describe('picked material rows', () => {
+  it('sends empty comments as null: the API refuses a blank description (R-37)', () => {
+    const empty = { ...picked, comments: '  ' };
+
+    expect(toSchemeProject(empty, { projectId: 1, sectionId: 1, system: 'X' })['description_material']).toBeNull();
+    expect(toExcelRow(empty, 'X', 'Modelo de Revit')['Descripción de Material']).toBeNull();
+  });
+
+  it('reads a row back as the form’s starting values', () => {
+    expect(fromExcelRow({ Material: 'A', Cantidad: '12.5', Unidad: 'Ton', 'Descripción de Material': '-', transporte_1: '', distancia_1: '', transporte_2: '4', distancia_2: '30', reemplazos: undefined })).toEqual({
+      comercialName: 'A', quantity: 12.5, comments: '', transportOrigin: null, distanceOrigin: null,
+      transportEnd: 4, distanceEnd: 30, replaces: null, rowUnit: 'Ton',
+    });
+  });
+
   it('keeps empty legs empty in the Excel row, so the save writes 0 and no transport', () => {
     const row = toExcelRow({ ...picked, transportEnd: null, distanceEnd: null }, 'Muro A', 'Modelo de Revit');
 

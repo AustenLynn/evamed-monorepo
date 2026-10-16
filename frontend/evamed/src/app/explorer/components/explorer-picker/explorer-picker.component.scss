@@ -47,6 +47,10 @@
   }
 }
 
+.picker__status {
+  color: var(--ev-text-muted-on-bg);
+}
+
 .picker__crumbs {
   margin-bottom: 8px;
 

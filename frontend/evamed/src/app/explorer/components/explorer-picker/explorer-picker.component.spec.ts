@@ -34,7 +34,7 @@ describe('ExplorerPickerService', () => {
       target!.click();
       await settle();
     },
-    start = async () => {
+    start = async (extra: object = {}) => {
       TestBed.configureTestingModule({
         imports: [ExplorerUiModule],
         providers: [
@@ -48,6 +48,7 @@ describe('ExplorerPickerService', () => {
         system: 'Muro de block',
         section: 'Muros exteriores',
         projectLife: 50,
+        ...extra,
       });
       // The picker's code loads on first use.
       for (let tries = 0; tries < 50 && !overlay()?.querySelector('app-explorer-browser'); tries++) {
@@ -124,5 +125,32 @@ describe('ExplorerPickerService', () => {
     await click('button[aria-label="Cerrar el explorador sin agregar"]');
 
     expect(await result).toBeUndefined();
+  });
+
+  it('edit mode: opens Edición directly with the row’s values', async () => {
+    const { result } = await start({
+      mode: 'edit',
+      materialId: 12,
+      initial: {
+        comercialName: 'Block del muro', quantity: 90, comments: '', transportOrigin: null, distanceOrigin: null,
+        transportEnd: 4, distanceEnd: 30, replaces: 1, rowUnit: 'Ton',
+      },
+    });
+    http.expectOne(request => request.url.endsWith('/explorer/produccion/12/')).flush(DETAIL);
+    await settle();
+
+    expect(overlay().querySelector('.picker__title')?.textContent).toContain('Editar material');
+    expect(overlay().querySelector<HTMLTextAreaElement>('textarea[formcontrolname=comercialName]')!.value).toBe('Block del muro');
+    expect(overlay().querySelector('.edit__warning')?.textContent).toContain('«Ton»');
+    await click('button[type=submit]', 'Guardar cambios');
+
+    expect(await result).toMatchObject({ comercialName: 'Block del muro', quantity: 90, distanceEnd: 30, replaces: 1, lifeYears: 25 });
+  });
+
+  it('edit mode: a row without a catalogue material starts on the list', async () => {
+    await start({ mode: 'edit', materialId: null });
+
+    expect(overlay().querySelector<HTMLElement>('app-explorer-browser')!.hidden).toBe(false);
+    expect(overlay().querySelector('app-material-edit')).toBeNull();
   });
 });

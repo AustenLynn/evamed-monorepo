@@ -1,5 +1,25 @@
+/** A project row's own values, to start the edit form from. */
+export interface PickerInitial {
+  comercialName: string;
+  quantity: number | null;
+  comments: string;
+  transportOrigin: number | null;
+  distanceOrigin: number | null;
+  transportEnd: number | null;
+  distanceEnd: number | null;
+  replaces: number | null;
+  /** The unit the row was entered in, when it isn't the catalogue's. */
+  rowUnit: string | null;
+}
+
 /** What the stage page knows when it opens the explorer (R-02, R-20). */
 export interface PickerContext {
+  /** 'add' a new material (default) or 'edit' a row already in the project. */
+  mode?: 'add' | 'edit';
+  /** Edit: the row's catalogue material, to open Edición directly; null when it has none. */
+  materialId?: number | null;
+  /** Edit: the row's values. */
+  initial?: PickerInitial;
   /** The constructive system the material goes into. */
   system: string;
   /** The section (Excel sheet) it belongs to, for display. */

@@ -218,7 +218,7 @@
         <!--Listado de materiales-->
         <!-- TODO: add button to delete material -->
         <mat-selection-list #materials [multiple]="false" hideSingleSelectionIndicator
-          (selectionChange)="onSelectedMaterial(materials.selectedOptions)"
+          (selectionChange)="onSelectedMaterial(materials.selectedOptions); materials.deselectAll()"
           *ngIf="shouldShowMaterials && !selectedMaterial && !showSearch">
           <mat-list-option *ngFor="let material of listMateriales | keyvalue" [value]="material">
             <div class="table-materials">

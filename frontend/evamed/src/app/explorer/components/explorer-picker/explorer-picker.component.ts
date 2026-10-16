@@ -1,12 +1,17 @@
-import { ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { ExplorerItem, ExplorerQuery, MaterialDetail } from '../../explorer.models';
 import { PickedMaterial, PickerContext } from '../../picker.models';
+import { ExplorerService } from '../../services/explorer.service';
 import { StageConfig, stageConfig } from '../../stage-config';
 import { ExplorerView } from '../explorer-browser/explorer-browser.component';
 
-type Step = { kind: 'list' } | { kind: 'detail'; id: number } | { kind: 'edit'; detail: MaterialDetail };
+type Step =
+  | { kind: 'loading' }
+  | { kind: 'list' }
+  | { kind: 'detail'; id: number }
+  | { kind: 'edit'; detail: MaterialDetail };
 
 /**
  * The explorer as the stage page's material picker (R-20): list → Ficha →
@@ -32,8 +37,25 @@ export class ExplorerPickerComponent {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) readonly context: PickerContext,
-    private dialogRef: MatDialogRef<ExplorerPickerComponent, PickedMaterial>
-  ) {}
+    private dialogRef: MatDialogRef<ExplorerPickerComponent, PickedMaterial>,
+    explorer: ExplorerService,
+    private cdr: ChangeDetectorRef
+  ) {
+    // Editing a row with a catalogue material opens Edición at once.
+    const id = context.materialId;
+    if (context.mode === 'edit' && id) {
+      this.step = { kind: 'loading' };
+      explorer.material(id).subscribe({
+        next: detail => this.show({ kind: 'edit', detail }),
+        // The Ficha explains the failure and offers to retry.
+        error: () => this.show({ kind: 'detail', id }),
+      });
+    }
+  }
+
+  get title(): string {
+    return this.context.mode === 'edit' ? 'Editar material' : 'Explorador de materiales';
+  }
 
   onQuery(query: ExplorerQuery): void {
     this.query = query;
@@ -64,6 +86,11 @@ export class ExplorerPickerComponent {
 
   close(): void {
     this.dialogRef.close();
+  }
+
+  private show(step: Step): void {
+    this.go(step);
+    this.cdr.markForCheck();
   }
 
   private go(step: Step): void {

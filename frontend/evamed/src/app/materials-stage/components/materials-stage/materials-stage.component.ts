@@ -11,7 +11,7 @@ import { finalize, map, startWith } from 'rxjs/operators';
 import { AddConstructiveElementComponent } from '../add-constructive-element/add-constructive-element.component';
 import { AddConstructiveSystemComponent } from '../add-constructive-system/add-constructive-system.component';
 import { ExplorerPickerService } from '../../../explorer/explorer-picker.service';
-import { toExcelRow } from '../../picked-material';
+import { fromExcelRow, toExcelRow } from '../../picked-material';
 import { MatDialog } from '@angular/material/dialog';
 import { AnalisisService } from 'src/app/core/services/analisis/analisis.service';
 
@@ -442,54 +442,30 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
       });
   }
 
-  onSelectedMaterial(value) {
-    this.dataMaterialSelected = value.selected[0]?.value.value;
-
-    console.log('ON SELECTED MATERIAL!!!!!');
-    console.log(this.dataMaterialSelected);
-
-    this.dataMaterialSelected.vidaUtil = this.dataMaterialSelected.vidaUtil === undefined
-      ? (this.dataMaterialSelected.vidaUtil = parseInt(
-          this.vidaUtilSeleccionado,
-          10
-        ))
-      : this.dataMaterialSelected.vidaUtil;
-
-      this.dataMaterialSelected.reemplazos = this.dataMaterialSelected.reemplazos === undefined
-      ? (this.dataMaterialSelected.reemplazos = 0)
-      : this.dataMaterialSelected.reemplazos;
-
-    this.catalogoTransportesLocal = [];
-    this.catalogsService.getTransports().subscribe(data => {
-      data.map(item => {
-        this.catalogoTransportesLocal.push(item);
+  /** A material in the panel opens the explorer's Edición screen (it replaced the inline form). */
+  async onSelectedMaterial(value): Promise<void> {
+    const row = value.selected[0]?.value.value;
+    if (!row) {
+      return;
+    }
+    const name = row.materialSelectedDB ?? row.Material,
+      material = (this.materialsList ?? []).find(candidate => candidate.name_material === name),
+      picked = await this.explorerPicker.pick({
+        mode: 'edit',
+        system: row.Sistema_constructivo,
+        section: this.selectedSheet ?? null,
+        projectLife: Number(this.vidaUtilSeleccionado) || 50,
+        materialId: material?.id ?? null,
+        initial: fromExcelRow(row),
       });
-    });
-
-    this.materialsList.map(material => {
-      if (material.name_material === this.dataMaterialSelected.Material) {
-        this.dataMaterialSelected.name_material_db = material.name_material;
-      }
-    });
-
-    this.dataMaterialSelected.materialSelectedDB = 'Buscar material';
-    if (this.dataMaterialSelected.name_material_db !== undefined) {
-      this.dataMaterialSelected.materialSelectedDB =
-        this.dataMaterialSelected.name_material_db;
+    if (!picked) {
+      return;
     }
-
-    if (this.dataMaterialSelected.materialDB !== undefined) {
-      this.dataMaterialSelected.materialSelectedDB =
-        this.dataMaterialSelected.materialDB.name_material;
-    }
-
-    if (this.dataMaterialSelected.name !== undefined) {
-      this.dataMaterialSelected.materialSelectedDB =
-        this.dataMaterialSelected.name;
-    }
-
-    this.selectedMaterial = true;
+    Object.assign(row, toExcelRow(picked, row.Sistema_constructivo, row.Origen));
+    row.signal = true;
+    this.storeSheet();
   }
+
 
   changeLifeTime(reemplazos) {
     let lifeTime = this.vidaUtilSeleccionado;

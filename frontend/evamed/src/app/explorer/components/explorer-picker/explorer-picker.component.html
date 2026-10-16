@@ -1,6 +1,6 @@
 <header class="picker__bar">
   <div class="picker__heading">
-    <h1 class="picker__title" mat-dialog-title>Explorador de materiales</h1>
+    <h1 class="picker__title" mat-dialog-title>{{ title }}</h1>
     <p class="picker__context">
       <span *ngIf="context.section">{{ context.section }} · </span>{{ context.system }}
     </p>
@@ -11,7 +11,9 @@
 </header>
 
 <div #body class="picker__body">
-  <nav *ngIf="step.kind !== 'list'" class="picker__crumbs" aria-label="Ruta">
+  <p *ngIf="step.kind === 'loading'" role="status" class="picker__status">Cargando material…</p>
+
+  <nav *ngIf="step.kind !== 'list' && step.kind !== 'loading'" class="picker__crumbs" aria-label="Ruta">
     <button mat-button type="button" (click)="backToList()">
       <mat-icon aria-hidden="true">arrow_back</mat-icon> Materiales
     </button>
@@ -43,6 +45,7 @@
     [detail]="$any(step).detail"
     [context]="context"
     (back)="backToDetail($any(step).detail)"
+    (changeMaterial)="backToList()"
     (save)="add($event)"
   ></app-material-edit>
 </div>
