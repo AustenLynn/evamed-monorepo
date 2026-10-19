@@ -207,9 +207,9 @@
         <p>
           Materiales<span class="sc-selected"> {{ SCseleccionado }} </span>
         </p>
-        <button mat-stroked-button type="button" class="explore-materials" [disabled]="!SCseleccionado"
-          (click)="exploreMaterials('Modelo de Revit')">
-          <mat-icon aria-hidden="true">travel_explore</mat-icon> Explorar materiales
+        <button mat-icon-button type="button" [disabled]="!SCseleccionado" aria-label="Explorar materiales"
+          matTooltip="Explorar materiales" (click)="exploreMaterials('Modelo de Revit')">
+          <mat-icon>add_circle</mat-icon>
         </button>
       </div>
 

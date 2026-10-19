@@ -205,9 +205,9 @@
     <section class="container-details">
       <div class="tab-title-sections">
         <p>Materiales</p>
-        <button mat-stroked-button type="button" class="explore-materials" [disabled]="!currentPanelItem || adding"
-          (click)="exploreMaterials()">
-          <mat-icon aria-hidden="true">travel_explore</mat-icon> Explorar materiales
+        <button mat-icon-button type="button" [disabled]="!currentPanelItem || adding" aria-label="Explorar materiales"
+          matTooltip="Explorar materiales" (click)="exploreMaterials()">
+          <mat-icon>add_circle</mat-icon>
         </button>
       </div>
 
