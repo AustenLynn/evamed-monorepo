@@ -30,6 +30,22 @@ describe('ExplorerService', () => {
     expect(http.expectOne(() => true).request.params.has('search')).toBe(false);
   });
 
+  it('asks for an order other than the default by name', () => {
+    service.page('produccion', { search: '', filters: {}, sort: 'impacto' }, 1).subscribe();
+    service.page('produccion', { search: '', filters: {}, sort: 'nombre' }, 1).subscribe();
+
+    const [impact, byName] = http.match(() => true);
+    expect(impact.request.params.get('sort')).toBe('impacto');
+    expect(byName.request.params.has('sort')).toBe(false);
+  });
+
+  it('keeps one feed per order', () => {
+    const byName = service.feed('produccion', { search: '', filters: {} });
+
+    expect(service.feed('produccion', { search: '', filters: {}, sort: 'nombre' })).toBe(byName);
+    expect(service.feed('produccion', { search: '', filters: {}, sort: 'categoria' })).not.toBe(byName);
+  });
+
   it('keeps one feed per stage and query, whatever the filter order', () => {
     const first = service.feed('produccion', { search: 'a', filters: { source: ['EPiC', 'EPDs'], type: [] } });
 

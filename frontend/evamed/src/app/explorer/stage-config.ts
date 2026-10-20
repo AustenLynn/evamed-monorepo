@@ -25,6 +25,8 @@ export interface StageConfig {
   filters: StageFilter[];
   /** Whether items open a detail page (Producción only). */
   hasDetail: boolean;
+  /** Whether the list can be ordered by impact or category: only items with a unit compare (R-04). */
+  sortable: boolean;
   /** Shown instead of the explorer when the stage has no catalogue (K-06). */
   emptyMessage?: string;
 }
@@ -43,6 +45,7 @@ export const STAGES: readonly StageConfig[] = [
     subtitle: 'Busca, filtra y compara los materiales de las bases de datos de EVAMED.',
     filters: [SOURCE],
     hasDetail: true,
+    sortable: true,
   },
   {
     key: 'construccion',
@@ -53,6 +56,7 @@ export const STAGES: readonly StageConfig[] = [
     subtitle: 'Maquinaria y procesos de obra.',
     filters: [TYPE],
     hasDetail: false,
+    sortable: false,
   },
   {
     key: 'uso',
@@ -63,6 +67,7 @@ export const STAGES: readonly StageConfig[] = [
     subtitle: 'Fuentes de energía para la operación del edificio.',
     filters: [SOURCE, TYPE],
     hasDetail: false,
+    sortable: false,
   },
   {
     key: 'fin-de-vida',
@@ -74,6 +79,7 @@ export const STAGES: readonly StageConfig[] = [
     subtitle: 'Escenarios de fin de vida.',
     filters: [],
     hasDetail: false,
+    sortable: false,
     emptyMessage:
       'Aún no hay escenarios de fin de vida con factores de impacto en la base de datos. ' +
       'Por ahora, EVAMED calcula solo el consumo de energía de la deconstrucción (C1), ' +

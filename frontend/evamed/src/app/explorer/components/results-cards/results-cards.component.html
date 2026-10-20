@@ -1,11 +1,13 @@
 <div #grid class="results-cards">
-  <app-result-card
-    *ngFor="let item of items; trackBy: trackItem"
-    [item]="item"
-    [link]="linkFor ? linkFor(item) : null"
-    [openable]="openable"
-    (itemOpen)="itemOpen.emit(item)"
-  ></app-result-card>
+  <ng-container *ngFor="let item of items; let index = index; trackBy: trackItem">
+    <h3 *ngIf="groupHeading(index) as heading" class="results-cards__group">{{ heading }}</h3>
+    <app-result-card
+      [item]="item"
+      [link]="linkFor ? linkFor(item) : null"
+      [openable]="openable"
+      (itemOpen)="itemOpen.emit(item)"
+    ></app-result-card>
+  </ng-container>
   <div *ngFor="let skeleton of skeletons" class="results-cards__skeleton" aria-hidden="true"></div>
 </div>
 

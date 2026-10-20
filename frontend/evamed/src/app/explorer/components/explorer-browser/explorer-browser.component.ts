@@ -11,7 +11,7 @@ import {
 import { Observable, ReplaySubject } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
-import { ExplorerItem, ExplorerQuery } from '../../explorer.models';
+import { ExplorerItem, ExplorerQuery, SortKey, SORTS } from '../../explorer.models';
 import { ExplorerFeed, FeedState } from '../../services/explorer-feed';
 import { ExplorerService } from '../../services/explorer.service';
 import { StageConfig } from '../../stage-config';
@@ -50,6 +50,8 @@ export class ExplorerBrowserComponent implements OnChanges, OnDestroy {
   @Output() readonly viewChange = new EventEmitter<ExplorerView>();
   @Output() readonly tablePageChange = new EventEmitter<number>();
 
+  readonly sorts = SORTS;
+
   private readonly feed$ = new ReplaySubject<ExplorerFeed>(1);
   private feed?: ExplorerFeed;
   readonly vm$: Observable<ViewModel>;
@@ -84,8 +86,16 @@ export class ExplorerBrowserComponent implements OnChanges, OnDestroy {
     return state.pages.get(this.tablePage);
   }
 
+  get sort(): SortKey {
+    return this.query.sort ?? 'nombre';
+  }
+
+  sortBy(sort: SortKey): void {
+    this.queryChange.emit({ ...this.query, sort });
+  }
+
   clearFilters(): void {
-    this.queryChange.emit({ search: '', filters: {} });
+    this.queryChange.emit({ ...this.query, search: '', filters: {} });
   }
 
   private loadVisible(): void {

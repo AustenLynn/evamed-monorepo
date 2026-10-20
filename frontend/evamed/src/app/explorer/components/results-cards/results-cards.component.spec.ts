@@ -44,6 +44,27 @@ describe('ResultsCardsComponent', () => {
     scrollToEnd = () =>
       observed!([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver);
 
+  it('marks where each group starts when the order groups them', () => {
+    const grouped = [
+        { id: 1, display_name: 'Viga', category: 'Acero', unit: 'm²', gwp: 2 },
+        { id: 2, display_name: 'Alambre', category: 'Acero', unit: 'm²', gwp: 13 },
+        { id: 3, display_name: 'Bloque', category: 'Concreto', unit: 'kg', gwp: 1 },
+        { id: 4, display_name: 'Ánfora', category: null, unit: null, gwp: null },
+      ] as ExplorerItem[],
+      headings = (el: HTMLElement) =>
+        Array.from(el.querySelectorAll('.results-cards__group'), heading => heading.textContent?.trim());
+
+    expect(headings(render({ items: grouped, groupBy: 'categoria' }).el)).toEqual([
+      'Acero · m²',
+      'Concreto · kg',
+      'Sin categoría · sin unidad',
+    ]);
+    TestBed.resetTestingModule();
+    expect(headings(render({ items: grouped, groupBy: 'impacto' }).el)).toEqual(['Por m²', 'Por kg', 'Sin unidad']);
+    TestBed.resetTestingModule();
+    expect(headings(render({ items: grouped, groupBy: 'nombre' }).el)).toEqual([]);
+  });
+
   it('loads the next batch when the end of the grid comes into view', () => {
     const { loadMore } = render({ items: items(24), count: 30, hasMore: true });
 

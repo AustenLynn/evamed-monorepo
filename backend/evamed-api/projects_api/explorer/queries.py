@@ -4,7 +4,7 @@ The catalogue is small (hundreds of rows) and every item's impact level
 depends on its whole group, so each request loads a stage once, then
 filters, facets and pages the list in memory.
 """
-from collections import defaultdict
+from collections import Counter, defaultdict
 
 from projects_api import models
 from projects_api.explorer import derive
@@ -136,9 +136,27 @@ def end_of_life_items():
     return []
 
 
-def ordered(items):
-    """Name A→Z (K-07), items without GWP last."""
-    return sorted(items, key=lambda item: (item['gwp'] is None, derive.sort_key(item['display_name']), item['id']))
+SORTS = ('nombre', 'impacto', 'categoria')
+
+
+def ordered(items, sort='nombre', population=None):
+    """Items in one of SORTS; items without GWP last within their group.
+
+    nombre: name A→Z (K-07). impacto: by unit, lowest GWP first, since values
+    per kg and per m³ don't compare. categoria: category A→Z, then as impacto.
+    Units go most materials first, counted over the whole stage (population) so
+    the order doesn't move as filters change. No unit or category goes last.
+    """
+    by_name = lambda item: (derive.sort_key(item['display_name']), item['id'])
+    if sort == 'nombre':
+        return sorted(items, key=lambda item: (item['gwp'] is None, *by_name(item)))
+    counts = Counter(item['unit'] for item in (population if population is not None else items))
+    unit_key = lambda unit: (unit is None, -counts[unit], derive.sort_key(unit or ''))
+    impact = lambda item: (*unit_key(item['unit']), item['gwp'] is None, item['gwp'] or 0, *by_name(item))
+    if sort == 'impacto':
+        return sorted(items, key=impact)
+    return sorted(items, key=lambda item: (
+        item['category'] is None, derive.sort_key(item['category'] or ''), *impact(item)))
 
 
 def material_detail(material_id):

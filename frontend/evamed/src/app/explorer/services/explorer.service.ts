@@ -25,6 +25,9 @@ export class ExplorerService {
     Object.keys(query.filters).sort().forEach(param => {
       query.filters[param].forEach(value => (params = params.append(param, value)));
     });
+    if (query.sort && query.sort !== 'nombre') {
+      params = params.set('sort', query.sort);
+    }
     return this.http.get<ExplorerPage>(`${environment.api_explorer}${stage}/`, { params });
   }
 

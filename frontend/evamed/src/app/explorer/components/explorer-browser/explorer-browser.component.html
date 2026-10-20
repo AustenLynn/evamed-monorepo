@@ -12,6 +12,12 @@
       <h2 id="results-title" class="explorer-browser__title">
         Resultados<ng-container *ngIf="vm.state.count !== null"> ({{ vm.state.count }})</ng-container>
       </h2>
+      <mat-form-field *ngIf="stage.sortable" appearance="outline" subscriptSizing="dynamic" class="explorer-browser__sort">
+        <mat-label>Ordenar por</mat-label>
+        <mat-select [value]="sort" (selectionChange)="sortBy($event.value)">
+          <mat-option *ngFor="let option of sorts" [value]="option.value">{{ option.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
       <mat-button-toggle-group
         [value]="view"
         aria-label="Vista de resultados"
@@ -40,6 +46,7 @@
         [loading]="vm.state.loading !== null"
         [failed]="vm.state.failed !== null"
         [hasMore]="vm.feed.hasMore"
+        [groupBy]="stage.sortable ? sort : 'nombre'"
         [linkFor]="linkFor"
         [openable]="openable"
         (itemOpen)="itemOpen.emit($event)"

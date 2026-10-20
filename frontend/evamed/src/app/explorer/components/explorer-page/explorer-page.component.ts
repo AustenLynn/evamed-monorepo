@@ -3,7 +3,7 @@ import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ExplorerItem, ExplorerQuery } from '../../explorer.models';
+import { ExplorerItem, ExplorerQuery, SortKey, SORTS } from '../../explorer.models';
 import { ExplorerService } from '../../services/explorer.service';
 import { StageConfig, stageConfig } from '../../stage-config';
 import { ExplorerView } from '../explorer-browser/explorer-browser.component';
@@ -17,7 +17,7 @@ interface PageState {
 
 /**
  * One page for every stage (the route's data.stage picks the config). Search,
- * filters, view and table page live in the URL (HANDOFF §7.1).
+ * filters, order, view and table page live in the URL (HANDOFF §7.1).
  */
 @Component({
   selector: 'app-explorer-page',
@@ -54,10 +54,12 @@ export class ExplorerPageComponent {
         filters[filter.param] = values;
       }
     });
-    const page = Number(params.get('pagina'));
+    const page = Number(params.get('pagina')),
+      order = params.get('orden'),
+      sort = stage.sortable && SORTS.some(option => option.value === order) ? (order as SortKey) : 'nombre';
     return {
       stage,
-      query: { search: params.get('buscar') ?? '', filters },
+      query: { search: params.get('buscar') ?? '', filters, sort },
       view: params.get('vista') === 'tabla' ? 'tabla' : 'tarjetas',
       tablePage: Number.isInteger(page) && page > 1 ? page : 1,
     };
@@ -67,7 +69,11 @@ export class ExplorerPageComponent {
     this.stage?.hasDetail ? ['/explorador', item.stage, item.id] : null;
 
   onQuery(state: PageState, query: ExplorerQuery): void {
-    const params: Params = { buscar: query.search.trim() || null, pagina: null };
+    const params: Params = {
+      buscar: query.search.trim() || null,
+      orden: query.sort && query.sort !== 'nombre' ? query.sort : null,
+      pagina: null,
+    };
     state.stage.filters.forEach(filter => {
       const values = query.filters[filter.param] ?? [];
       params[filter.urlParam] = values.length ? values : null;

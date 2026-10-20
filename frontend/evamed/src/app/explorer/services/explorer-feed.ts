@@ -17,6 +17,7 @@ export interface FeedState {
 export const queryKey = (query: ExplorerQuery): string =>
   JSON.stringify([
     query.search.trim(),
+    query.sort ?? 'nombre',
     Object.keys(query.filters)
       .sort()
       .filter(param => query.filters[param].length)

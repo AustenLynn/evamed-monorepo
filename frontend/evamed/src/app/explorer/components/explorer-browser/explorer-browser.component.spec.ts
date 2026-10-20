@@ -133,6 +133,40 @@ describe('Explorer (routed)', () => {
     expect(el().querySelectorAll('tr.mat-mdc-row').length).toBe(6);
   });
 
+  it('reads the order from the URL and groups the cards', async () => {
+    await open('/explorador/produccion?orden=categoria');
+
+    const request = only();
+    expect(request.request.params.toString()).toBe('page=1&page_size=24&sort=categoria');
+    answer(request, page(1, 2, 2));
+
+    expect(Array.from(el().querySelectorAll('.results-cards__group'), heading => heading.textContent?.trim())).toEqual([
+      'Concreto · kg',
+    ]);
+  });
+
+  it('writes a chosen order to the URL and starts over, keeping the filters', async () => {
+    await open('/explorador/produccion?base=EPiC&vista=tabla&pagina=2');
+    answer(only(), page(25, 30, 30));
+
+    el().querySelector<HTMLElement>('.explorer-browser__sort .mat-mdc-select-trigger')!.click();
+    await settle();
+    Array.from(document.querySelectorAll<HTMLElement>('mat-option'))
+      .find(option => option.textContent?.includes('Menor impacto'))!
+      .click();
+    await settle();
+
+    expect(url()).toBe('/explorador/produccion?base=EPiC&vista=tabla&orden=impacto');
+    expect(only().request.params.toString()).toBe('page=1&page_size=24&source=EPiC&sort=impacto');
+  });
+
+  it('offers no order on stages without units', async () => {
+    await open('/explorador/construccion');
+    answer(only(), { ...page(1, 2, 2), facets: { types: {} } });
+
+    expect(el().querySelector('.explorer-browser__sort')).toBeNull();
+  });
+
   it('offers to retry a failed load', async () => {
     await open('/explorador/produccion');
     only().flush('down', { status: 503, statusText: 'Unavailable' });
@@ -146,8 +180,8 @@ describe('Explorer (routed)', () => {
     expect(el().querySelector('[role=alert]')).toBeNull();
   });
 
-  it('explains an empty result and offers to clear the filters', async () => {
-    await open('/explorador/produccion?buscar=zzz');
+  it('explains an empty result and offers to clear the filters, keeping the order', async () => {
+    await open('/explorador/produccion?buscar=zzz&orden=impacto');
     answer(only(), { ...page(1, 0, 0), facets: { sources: {} } });
 
     expect(el().querySelector('.explorer-browser__empty')?.textContent).toContain(
@@ -155,7 +189,7 @@ describe('Explorer (routed)', () => {
     );
     el().querySelector<HTMLButtonElement>('.explorer-browser__empty button')!.click();
     await settle();
-    expect(url()).toBe('/explorador/produccion');
+    expect(url()).toBe('/explorador/produccion?orden=impacto');
     answer(only(), page(1, 1, 1));
   });
 

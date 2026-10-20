@@ -4,6 +4,20 @@
   gap: 16px;
 }
 
+.results-cards__group {
+  grid-column: 1 / -1;
+  margin: 8px 0 -4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--ev-border);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ev-text-muted-on-bg);
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
 .results-cards__skeleton {
   min-height: 190px;
   background: var(--ev-skeleton);

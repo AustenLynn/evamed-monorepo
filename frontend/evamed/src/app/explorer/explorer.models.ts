@@ -30,10 +30,21 @@ export interface ExplorerPage {
   facets: Facets;
 }
 
-/** What narrows the list: the search text and, per query parameter, the chosen values. */
+/** How the API orders a stage: by name, by unit then lowest GWP, or by category then as impacto. */
+export type SortKey = 'nombre' | 'impacto' | 'categoria';
+
+export const SORTS: readonly { value: SortKey; label: string }[] = [
+  { value: 'nombre', label: 'Nombre (A→Z)' },
+  { value: 'impacto', label: 'Menor impacto' },
+  { value: 'categoria', label: 'Categoría' },
+];
+
+/** What narrows the list: the search text and, per query parameter, the chosen values; and its order. */
 export interface ExplorerQuery {
   search: string;
   filters: Record<string, string[]>;
+  /** Absent means 'nombre'. */
+  sort?: SortKey;
 }
 
 export const PAGE_SIZE = 24;

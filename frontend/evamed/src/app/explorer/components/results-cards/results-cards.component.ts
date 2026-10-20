@@ -13,7 +13,7 @@ import {
   ViewChild,
 } from '@angular/core';
 
-import { ExplorerItem } from '../../explorer.models';
+import { ExplorerItem, SortKey } from '../../explorer.models';
 
 const CARD_MIN_WIDTH = 220,
   GAP = 16;
@@ -32,6 +32,8 @@ export class ResultsCardsComponent implements OnChanges, AfterViewInit, OnDestro
   @Input() loading = false;
   @Input() failed = false;
   @Input() hasMore = false;
+  /** The list's order: impacto and categoria get a heading where each group starts. */
+  @Input() groupBy: SortKey = 'nombre';
   @Input() linkFor: ((item: ExplorerItem) => unknown[] | null) | null = null;
   @Input() openable = false;
   @Output() readonly itemOpen = new EventEmitter<ExplorerItem>();
@@ -86,6 +88,21 @@ export class ResultsCardsComponent implements OnChanges, AfterViewInit, OnDestro
   requestMore(): void {
     this.focusIndex = this.items.length;
     this.loadMore.emit();
+  }
+
+  /** The heading before items[index], or null when it continues the previous item's group. */
+  groupHeading(index: number): string | null {
+    if (this.groupBy === 'nombre') {
+      return null;
+    }
+    const label = (item: ExplorerItem) =>
+      this.groupBy === 'impacto'
+        ? item.unit
+          ? `Por ${item.unit}`
+          : 'Sin unidad'
+        : `${item.category ?? 'Sin categoría'} · ${item.unit ?? 'sin unidad'}`,
+      heading = label(this.items[index]);
+    return index > 0 && label(this.items[index - 1]) === heading ? null : heading;
   }
 
   trackItem(_index: number, item: ExplorerItem): number {

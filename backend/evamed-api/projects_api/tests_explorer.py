@@ -205,6 +205,33 @@ class ExplorerApiTests(APITestCase):
         self.assertEqual(names[-1], 'Ánfora sin datos')
         self.assertEqual(names[:-1], sorted(names[:-1], key=derive.sort_key))
 
+    def test_sort_by_name_is_the_default(self):
+        self.assertEqual(self.get('produccion', sort='nombre'), self.get('produccion'))
+
+    def test_sort_by_impact_groups_by_unit_most_materials_first(self):
+        names = [item['name'] for item in self.get('produccion', sort='impacto', page_size=100)['results']]
+        self.assertEqual(names, [
+            'Ladrillo_Clay brick', *('Concreto_Bloque %s' % i for i in range(6)),  # kg: 7 materials
+            'Acero_Viga split', 'Acero_Alambre', 'Ánfora sin datos',  # m²: 3, missing GWP last
+        ])
+
+    def test_sort_by_category_then_unit_then_impact(self):
+        names = [item['name'] for item in self.get('produccion', sort='categoria', page_size=100)['results']]
+        self.assertEqual(names, [
+            'Acero_Viga split', 'Acero_Alambre',
+            *('Concreto_Bloque %s' % i for i in range(6)),
+            'Ladrillo_Clay brick',
+            'Ánfora sin datos',  # no category: last
+        ])
+
+    def test_unit_order_does_not_depend_on_the_filters(self):
+        names = [item['name'] for item in self.get(
+            'produccion', sort='impacto', source=['EPDs', 'ECOINVENT 3'], page_size=100)['results']]
+        self.assertEqual(names, ['Ladrillo_Clay brick', 'Acero_Viga split', 'Ánfora sin datos'])
+
+    def test_unknown_sort(self):
+        self.assertEqual(self.client.get(URL % 'produccion', {'sort': 'precio'}).status_code, 400)
+
     # Filters and facets
 
     def test_search_ignores_case_and_accents(self):

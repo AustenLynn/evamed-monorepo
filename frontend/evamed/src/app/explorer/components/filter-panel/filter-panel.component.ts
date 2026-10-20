@@ -82,7 +82,7 @@ export class FilterPanelComponent implements OnChanges, OnDestroy {
 
   clear(): void {
     this.search.setValue('', { emitEvent: false });
-    this.queryChange.emit({ search: '', filters: {} });
+    this.queryChange.emit({ ...this.query, search: '', filters: {} });
   }
 
   trackOption(_index: number, option: Option): string {
