@@ -33,7 +33,7 @@ describe('MaterialEditComponent', () => {
     };
 
   it('starts from the catalogue name, the project life and the calculation defaults', () => {
-    const { component, el } = render();
+    const { component } = render();
 
     expect(component.form.getRawValue()).toEqual({
       comercialName: 'AAC block',
@@ -46,7 +46,6 @@ describe('MaterialEditComponent', () => {
       lifeYears: 50,
       replaces: 0,
     });
-    expect(el.querySelector('.edit__context')?.textContent).toContain('Muros exteriores · Sistema constructivo: Muro de block');
   });
 
   it('needs a quantity above zero', () => {

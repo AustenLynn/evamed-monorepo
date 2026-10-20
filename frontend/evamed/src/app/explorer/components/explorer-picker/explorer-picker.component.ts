@@ -54,7 +54,10 @@ export class ExplorerPickerComponent {
   }
 
   get title(): string {
-    return this.context.mode === 'edit' ? 'Editar material' : 'Explorador de materiales';
+    if (this.context.mode === 'edit') {
+      return 'Editar material';
+    }
+    return this.step.kind === 'edit' ? 'Agregar material al proyecto' : 'Explorador de materiales';
   }
 
   onQuery(query: ExplorerQuery): void {

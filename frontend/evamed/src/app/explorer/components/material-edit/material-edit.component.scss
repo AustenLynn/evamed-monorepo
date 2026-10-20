@@ -1,3 +1,9 @@
+// Compact fields so the whole form fits one screen without scrolling.
+:host {
+  --mat-form-field-container-height: 44px;
+  --mat-form-field-container-vertical-padding: 10px;
+}
+
 .edit {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
@@ -15,21 +21,16 @@
   }
 }
 
-.edit__title {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--ev-text);
-}
-
-.edit__context {
-  margin: 4px 0 16px;
-  color: var(--ev-text-muted-on-bg);
+@media (max-width: 1100px) {
+  .edit__legs,
+  .edit__footer {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .edit__panel {
-  margin: 0 0 16px;
-  padding: 16px 20px 8px;
+  margin: 0 0 12px;
+  padding: 8px 16px 12px;
   background: var(--ev-surface);
   border: 1px solid var(--ev-border);
   border-radius: 12px;
@@ -44,16 +45,47 @@
 }
 
 .edit__subtitle {
-  margin: 8px 0;
-  font-size: 14px;
+  margin: 4px 0 8px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--ev-text);
 }
 
 .edit__row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 0 16px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0 12px;
+}
+
+.edit__row--material {
+  grid-template-columns: minmax(200px, 2fr) repeat(2, minmax(120px, 1fr));
+}
+
+@media (max-width: 600px) {
+  .edit__row--material {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.edit__legs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 24px;
+}
+
+.edit__leg .edit__row {
+  grid-template-columns: minmax(0, 3fr) minmax(100px, 2fr);
+}
+
+.edit__footer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0 24px;
+  align-items: end;
+}
+
+.edit__panel--life {
+  margin-bottom: 0;
 }
 
 .edit__wide {
@@ -62,11 +94,16 @@
 
 mat-form-field {
   width: 100%;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.edit__panel mat-form-field:last-child,
+.edit__row:last-child mat-form-field {
+  margin-bottom: 0;
 }
 
 .edit__error {
-  margin: -4px 0 12px;
+  margin: 4px 0 0;
   font-size: 12px;
   color: var(--ev-impact-high-text);
 }
@@ -84,6 +121,7 @@ mat-form-field {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+  padding-top: 12px;
 }
 
 .edit__submit {
@@ -92,7 +130,7 @@ mat-form-field {
 }
 
 .edit__summary {
-  padding: 20px;
+  padding: 16px 20px;
   background: var(--ev-surface);
   border: 1px solid var(--ev-border);
   border-radius: 12px;

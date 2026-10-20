@@ -1,99 +1,99 @@
 <form class="edit" [formGroup]="form" (ngSubmit)="submit()" novalidate>
   <div class="edit__main">
-    <h2 class="edit__title">{{ editing ? 'Editar material' : 'Agregar material al proyecto' }}</h2>
-    <p class="edit__context">
-      <span *ngIf="context.section">{{ context.section }} · </span>Sistema constructivo: <strong>{{ context.system }}</strong>
-    </p>
-
     <fieldset class="edit__panel">
       <legend class="edit__legend">Material</legend>
-      <mat-form-field appearance="outline" class="edit__wide">
-        <mat-label>Nombre comercial</mat-label>
-        <textarea matInput formControlName="comercialName" rows="2" required></textarea>
-        <mat-error *ngIf="error('comercialName')">Escribe el nombre del material.</mat-error>
-      </mat-form-field>
-      <div class="edit__row">
-        <mat-form-field appearance="outline">
+      <div class="edit__row edit__row--material">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Nombre comercial</mat-label>
+          <input matInput formControlName="comercialName" required />
+          <mat-error *ngIf="error('comercialName')">Escribe el nombre del material.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Cantidad</mat-label>
           <input matInput type="number" min="0" step="any" formControlName="quantity" required />
           <mat-error *ngIf="error('quantity')">La cantidad debe ser mayor que 0.</mat-error>
         </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Unidad</mat-label>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Unidad declarada</mat-label>
           <!-- The quantity must be in the catalogue's declared unit for the calculation to hold. -->
           <input matInput [value]="detail.unit || '—'" readonly />
-          <mat-hint>Unidad declarada del material</mat-hint>
         </mat-form-field>
       </div>
       <p *ngIf="unitMismatch as rowUnit" class="edit__warning" role="note">
         Este renglón se capturó en «{{ rowUnit }}», pero el material se declara en «{{ detail.unit }}». Revisa que la cantidad esté en {{ detail.unit }}.
       </p>
-      <mat-form-field appearance="outline" class="edit__wide">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="edit__wide">
         <mat-label>Comentarios</mat-label>
-        <textarea matInput formControlName="comments" rows="2"></textarea>
+        <textarea matInput formControlName="comments" rows="1"></textarea>
       </mat-form-field>
     </fieldset>
 
     <fieldset class="edit__panel" *ngIf="transports$ | async as transports">
       <legend class="edit__legend">Transporte</legend>
-
-      <h3 class="edit__subtitle">Transporte 1 · Origen → frontera (internacional)</h3>
-      <div class="edit__row">
-        <mat-form-field appearance="outline">
-          <mat-label>Tipo de transporte</mat-label>
-          <mat-select formControlName="transportOrigin" placeholder="Selecciona un modo…">
-            <mat-option [value]="null">Sin transporte</mat-option>
-            <mat-option *ngFor="let transport of transports" [value]="transport.id">{{ transport.name }}</mat-option>
-          </mat-select>
-          <mat-hint>Predeterminado del cálculo: transporte por océano, buque carguero</mat-hint>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Distancia (km)</mat-label>
-          <input matInput type="number" min="0" step="any" formControlName="distanceOrigin" />
-          <mat-error *ngIf="error('distanceOrigin')">La distancia no puede ser negativa.</mat-error>
-        </mat-form-field>
-      </div>
-      <p *ngIf="legError('transportOrigin')" class="edit__error" role="alert">Elige el tipo de transporte para esta distancia.</p>
-
-      <h3 class="edit__subtitle">Transporte 2 · Frontera → obra (nacional)</h3>
-      <div class="edit__row">
-        <mat-form-field appearance="outline">
-          <mat-label>Tipo de transporte</mat-label>
-          <mat-select formControlName="transportEnd" placeholder="Selecciona un modo…">
-            <mat-option [value]="null">Sin transporte</mat-option>
-            <mat-option *ngFor="let transport of transports" [value]="transport.id">{{ transport.name }}</mat-option>
-          </mat-select>
-          <mat-hint>Predeterminado del cálculo: vehículo de carga mayor a 32 t</mat-hint>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Distancia (km)</mat-label>
-          <input matInput type="number" min="0" step="any" formControlName="distanceEnd" />
-          <mat-error *ngIf="error('distanceEnd')">La distancia no puede ser negativa.</mat-error>
-        </mat-form-field>
-      </div>
-      <p *ngIf="legError('transportEnd')" class="edit__error" role="alert">Elige el tipo de transporte para esta distancia.</p>
-    </fieldset>
-
-    <fieldset class="edit__panel">
-      <legend class="edit__legend">Tiempo de vida del material</legend>
-      <div class="edit__row">
-        <mat-form-field appearance="outline">
-          <mat-label>Tiempo de vida (años)</mat-label>
-          <input matInput type="number" min="1" step="any" formControlName="lifeYears" (input)="onLifeChange()" />
-          <mat-hint>Vida útil del proyecto: {{ context.projectLife }} años</mat-hint>
-          <mat-error *ngIf="error('lifeYears')">Debe ser de al menos 1 año.</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Reemplazos</mat-label>
-          <input matInput type="number" min="0" step="1" formControlName="replaces" (input)="onReplacesChange()" />
-          <mat-error *ngIf="error('replaces')">No puede ser negativo.</mat-error>
-        </mat-form-field>
+      <div class="edit__legs">
+        <div class="edit__leg">
+          <h3 class="edit__subtitle">Transporte 1 · Origen → frontera (internacional)</h3>
+          <div class="edit__row">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Tipo de transporte</mat-label>
+              <mat-select formControlName="transportOrigin" placeholder="Selecciona un modo…">
+                <mat-option [value]="null">Sin transporte</mat-option>
+                <mat-option *ngFor="let transport of transports" [value]="transport.id">{{ transport.name }}</mat-option>
+              </mat-select>
+              <mat-hint>Predeterminado: buque carguero</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Distancia (km)</mat-label>
+              <input matInput type="number" min="0" step="any" formControlName="distanceOrigin" />
+              <mat-error *ngIf="error('distanceOrigin')">La distancia no puede ser negativa.</mat-error>
+            </mat-form-field>
+          </div>
+          <p *ngIf="legError('transportOrigin')" class="edit__error" role="alert">Elige el tipo de transporte para esta distancia.</p>
+        </div>
+        <div class="edit__leg">
+          <h3 class="edit__subtitle">Transporte 2 · Frontera → obra (nacional)</h3>
+          <div class="edit__row">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Tipo de transporte</mat-label>
+              <mat-select formControlName="transportEnd" placeholder="Selecciona un modo…">
+                <mat-option [value]="null">Sin transporte</mat-option>
+                <mat-option *ngFor="let transport of transports" [value]="transport.id">{{ transport.name }}</mat-option>
+              </mat-select>
+              <mat-hint>Predeterminado: carga &gt; 32 t</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Distancia (km)</mat-label>
+              <input matInput type="number" min="0" step="any" formControlName="distanceEnd" />
+              <mat-error *ngIf="error('distanceEnd')">La distancia no puede ser negativa.</mat-error>
+            </mat-form-field>
+          </div>
+          <p *ngIf="legError('transportEnd')" class="edit__error" role="alert">Elige el tipo de transporte para esta distancia.</p>
+        </div>
       </div>
     </fieldset>
 
-    <div class="edit__actions">
-      <button mat-stroked-button type="button" (click)="back.emit()">Cancelar</button>
-      <button mat-flat-button type="submit" class="edit__submit">{{ editing ? 'Guardar cambios' : 'Agregar material' }}</button>
+    <div class="edit__footer">
+      <fieldset class="edit__panel edit__panel--life">
+        <legend class="edit__legend">Tiempo de vida del material</legend>
+        <div class="edit__row">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Tiempo de vida (años)</mat-label>
+            <input matInput type="number" min="1" step="any" formControlName="lifeYears" (input)="onLifeChange()" />
+            <mat-hint>Vida útil del proyecto: {{ context.projectLife }} años</mat-hint>
+            <mat-error *ngIf="error('lifeYears')">Debe ser de al menos 1 año.</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Reemplazos</mat-label>
+            <input matInput type="number" min="0" step="1" formControlName="replaces" (input)="onReplacesChange()" />
+            <mat-error *ngIf="error('replaces')">No puede ser negativo.</mat-error>
+          </mat-form-field>
+        </div>
+      </fieldset>
+
+      <div class="edit__actions">
+        <button mat-stroked-button type="button" (click)="back.emit()">Cancelar</button>
+        <button mat-flat-button type="submit" class="edit__submit">{{ editing ? 'Guardar cambios' : 'Agregar material' }}</button>
+      </div>
     </div>
   </div>
 

@@ -80,6 +80,7 @@ describe('ExplorerPickerService', () => {
     await settle();
     await click('.detail__select');
 
+    expect(overlay().querySelector('.picker__title')?.textContent).toContain('Agregar material al proyecto');
     const quantity = overlay().querySelector<HTMLInputElement>('input[formcontrolname=quantity]')!;
     quantity.value = '30';
     quantity.dispatchEvent(new Event('input'));
@@ -140,7 +141,7 @@ describe('ExplorerPickerService', () => {
     await settle();
 
     expect(overlay().querySelector('.picker__title')?.textContent).toContain('Editar material');
-    expect(overlay().querySelector<HTMLTextAreaElement>('textarea[formcontrolname=comercialName]')!.value).toBe('Block del muro');
+    expect(overlay().querySelector<HTMLInputElement>('input[formcontrolname=comercialName]')!.value).toBe('Block del muro');
     expect(overlay().querySelector('.edit__warning')?.textContent).toContain('«Ton»');
     await click('button[type=submit]', 'Guardar cambios');
 
