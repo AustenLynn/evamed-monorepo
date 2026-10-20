@@ -18,13 +18,10 @@ describe('ResultCardComponent', () => {
       gwp: 12.3456,
       impact_level: 'bajo',
     },
-    render = (inputs: Partial<{ item: ExplorerItem; favorite: boolean; link: unknown[] | null }> = {}) => {
+    render = (inputs: Partial<{ item: ExplorerItem; link: unknown[] | null }> = {}) => {
       TestBed.configureTestingModule({ imports: [ExplorerUiModule], providers: [provideRouter([])] });
       const fixture = TestBed.createComponent(ResultCardComponent);
       fixture.componentRef.setInput('item', inputs.item ?? item);
-      if (inputs.favorite !== undefined) {
-        fixture.componentRef.setInput('favorite', inputs.favorite);
-      }
       if (inputs.link !== undefined) {
         fixture.componentRef.setInput('link', inputs.link);
       }
@@ -56,18 +53,6 @@ describe('ResultCardComponent', () => {
 
     const link = render({ link: ['/explorador', 'produccion', 12] }).el.querySelector('.result-card__name a');
     expect(link?.getAttribute('href')).toBe('/explorador/produccion/12');
-  });
-
-  it('toggles the favourite with a pressed button', () => {
-    const { fixture, el } = render({ favorite: true }),
-      toggled = vi.fn();
-    fixture.componentInstance.favoriteToggle.subscribe(toggled);
-    const star = el.querySelector<HTMLButtonElement>('.result-card__star')!;
-
-    expect(star.getAttribute('aria-pressed')).toBe('true');
-    expect(star.getAttribute('aria-label')).toBe('Quitar de favoritos: AAC block');
-    star.click();
-    expect(toggled).toHaveBeenCalled();
   });
 
   it('shows a negative value as a green credit with a true minus', () => {

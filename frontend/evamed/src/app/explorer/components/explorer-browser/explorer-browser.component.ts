@@ -8,13 +8,12 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { combineLatest, Observable, ReplaySubject } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
 import { ExplorerItem, ExplorerQuery } from '../../explorer.models';
 import { ExplorerFeed, FeedState } from '../../services/explorer-feed';
 import { ExplorerService } from '../../services/explorer.service';
-import { FavoritesService } from '../../services/favorites.service';
 import { StageConfig } from '../../stage-config';
 
 export type ExplorerView = 'tarjetas' | 'tabla';
@@ -22,7 +21,6 @@ export type ExplorerView = 'tarjetas' | 'tabla';
 interface ViewModel {
   state: FeedState;
   feed: ExplorerFeed;
-  favorites: ReadonlySet<number>;
 }
 
 /**
@@ -56,20 +54,8 @@ export class ExplorerBrowserComponent implements OnChanges, OnDestroy {
   private feed?: ExplorerFeed;
   readonly vm$: Observable<ViewModel>;
 
-  constructor(
-    private explorer: ExplorerService,
-    private favoriteStore: FavoritesService
-  ) {
-    this.vm$ = combineLatest([
-      this.feed$.pipe(switchMap(feed => feed.state$.pipe(map(state => ({ feed, state }))))),
-      this.favoriteStore.favorites$,
-    ]).pipe(
-      map(([{ feed, state }, favorites]) => ({
-        feed,
-        state,
-        favorites: this.idsFor(favorites),
-      }))
-    );
+  constructor(private explorer: ExplorerService) {
+    this.vm$ = this.feed$.pipe(switchMap(feed => feed.state$.pipe(map(state => ({ feed, state })))));
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -98,10 +84,6 @@ export class ExplorerBrowserComponent implements OnChanges, OnDestroy {
     return state.pages.get(this.tablePage);
   }
 
-  toggleFavorite(item: ExplorerItem): void {
-    this.favoriteStore.toggle(this.stage.key, item.id);
-  }
-
   clearFilters(): void {
     this.queryChange.emit({ search: '', filters: {} });
   }
@@ -122,12 +104,5 @@ export class ExplorerBrowserComponent implements OnChanges, OnDestroy {
       const y = feed.scrollY;
       setTimeout(() => window.scrollTo({ top: y }));
     }
-  }
-
-  private idsFor(favorites: ReadonlySet<string>): ReadonlySet<number> {
-    const prefix = `${this.stage.key}:`;
-    return new Set(
-      [...favorites].filter(key => key.startsWith(prefix)).map(key => Number(key.slice(prefix.length)))
-    );
   }
 }

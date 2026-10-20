@@ -11,11 +11,9 @@ import { ExplorerItem } from '../../explorer.models';
 })
 export class ResultCardComponent {
   @Input({ required: true }) item!: ExplorerItem;
-  @Input() favorite = false;
   /** Where the name leads; null keeps it plain text. */
   @Input() link: unknown[] | null = null;
   /** Without a link, the name can still open the item through itemOpen (the picker). */
   @Input() openable = false;
-  @Output() readonly favoriteToggle = new EventEmitter<void>();
   @Output() readonly itemOpen = new EventEmitter<void>();
 }

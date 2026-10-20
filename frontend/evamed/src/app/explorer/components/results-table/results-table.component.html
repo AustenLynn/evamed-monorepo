@@ -39,22 +39,6 @@
       <td mat-cell *matCellDef="let item"><app-impact-badge [level]="item.impact_level"></app-impact-badge></td>
     </ng-container>
 
-    <ng-container matColumnDef="favorite">
-      <th mat-header-cell *matHeaderCellDef scope="col"><span class="ev-visually-hidden">Favorito</span></th>
-      <td mat-cell *matCellDef="let item">
-        <button
-          mat-icon-button
-          type="button"
-          class="results-table__star"
-          [class.results-table__star--on]="favorites.has(item.id)"
-          [attr.aria-pressed]="favorites.has(item.id)"
-          [attr.aria-label]="(favorites.has(item.id) ? 'Quitar de favoritos: ' : 'Agregar a favoritos: ') + item.display_name"
-          (click)="favoriteToggle.emit(item)"
-        >
-          <mat-icon>{{ favorites.has(item.id) ? 'star' : 'star_border' }}</mat-icon>
-        </button>
-      </td>
-    </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="columns"></tr>
     <tr mat-row *matRowDef="let row; columns: columns"></tr>

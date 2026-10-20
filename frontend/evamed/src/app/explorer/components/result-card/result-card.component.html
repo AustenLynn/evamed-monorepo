@@ -9,17 +9,6 @@
       </ng-template>
       <ng-template #plainName>{{ item.display_name }}</ng-template>
     </h3>
-    <button
-      mat-icon-button
-      type="button"
-      class="result-card__star"
-      [class.result-card__star--on]="favorite"
-      [attr.aria-pressed]="favorite"
-      [attr.aria-label]="(favorite ? 'Quitar de favoritos: ' : 'Agregar a favoritos: ') + item.display_name"
-      (click)="favoriteToggle.emit()"
-    >
-      <mat-icon>{{ favorite ? 'star' : 'star_border' }}</mat-icon>
-    </button>
   </header>
 
   <p class="result-card__description" [title]="item.description || ''">

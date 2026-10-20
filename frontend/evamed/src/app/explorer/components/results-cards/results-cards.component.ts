@@ -32,13 +32,11 @@ export class ResultsCardsComponent implements OnChanges, AfterViewInit, OnDestro
   @Input() loading = false;
   @Input() failed = false;
   @Input() hasMore = false;
-  @Input() favorites: ReadonlySet<number> = new Set();
   @Input() linkFor: ((item: ExplorerItem) => unknown[] | null) | null = null;
   @Input() openable = false;
   @Output() readonly itemOpen = new EventEmitter<ExplorerItem>();
   @Output() readonly loadMore = new EventEmitter<void>();
   @Output() readonly retry = new EventEmitter<void>();
-  @Output() readonly favoriteToggle = new EventEmitter<ExplorerItem>();
 
   @ViewChild('grid', { static: true }) grid!: ElementRef<HTMLElement>;
   @ViewChild('sentinel', { static: true }) sentinel!: ElementRef<HTMLElement>;

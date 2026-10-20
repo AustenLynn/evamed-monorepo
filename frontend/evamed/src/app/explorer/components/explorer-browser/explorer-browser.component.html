@@ -40,13 +40,11 @@
         [loading]="vm.state.loading !== null"
         [failed]="vm.state.failed !== null"
         [hasMore]="vm.feed.hasMore"
-        [favorites]="vm.favorites"
         [linkFor]="linkFor"
         [openable]="openable"
         (itemOpen)="itemOpen.emit($event)"
         (loadMore)="vm.feed.loadMore()"
         (retry)="vm.feed.retry()"
-        (favoriteToggle)="toggleFavorite($event)"
       ></app-results-cards>
 
       <ng-container *ngIf="view === 'tabla'">
@@ -55,13 +53,11 @@
           [items]="items"
           [count]="vm.state.count ?? 0"
           [page]="tablePage"
-          [favorites]="vm.favorites"
-          [linkFor]="linkFor"
+            [linkFor]="linkFor"
           [openable]="openable"
           (itemOpen)="itemOpen.emit($event)"
           (pageChange)="tablePageChange.emit($event)"
-          (favoriteToggle)="toggleFavorite($event)"
-        ></app-results-table>
+          ></app-results-table>
         <ng-template #tableState>
           <p *ngIf="vm.state.failed === null" role="status" class="explorer-browser__status">Cargando resultados…</p>
           <div *ngIf="vm.state.failed !== null" role="alert" class="explorer-browser__error">

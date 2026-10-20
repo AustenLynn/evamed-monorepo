@@ -16,14 +16,12 @@ export class ResultsTableComponent {
   @Input() count = 0;
   /** 1-based. */
   @Input() page = 1;
-  @Input() favorites: ReadonlySet<number> = new Set();
   @Input() linkFor: ((item: ExplorerItem) => unknown[] | null) | null = null;
   @Input() openable = false;
   @Output() readonly itemOpen = new EventEmitter<ExplorerItem>();
   @Output() readonly pageChange = new EventEmitter<number>();
-  @Output() readonly favoriteToggle = new EventEmitter<ExplorerItem>();
 
-  readonly columns = ['name', 'category', 'source', 'gwp', 'impact', 'favorite'];
+  readonly columns = ['name', 'category', 'source', 'gwp', 'impact'];
   readonly pageSize = PAGE_SIZE;
 
   onPage(event: PageEvent): void {

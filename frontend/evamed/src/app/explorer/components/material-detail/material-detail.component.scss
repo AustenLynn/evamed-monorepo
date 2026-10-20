@@ -43,15 +43,6 @@
   overflow-wrap: anywhere;
 }
 
-.detail__star {
-  flex: none;
-  color: var(--ev-text-muted);
-}
-
-.detail__star--on {
-  color: var(--ev-star);
-}
-
 .detail__chips {
   display: flex;
   flex-wrap: wrap;

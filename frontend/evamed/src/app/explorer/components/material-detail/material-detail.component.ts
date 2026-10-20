@@ -12,7 +12,6 @@ import { catchError, map, startWith, switchMap } from 'rxjs/operators';
 
 import { Comparison, MaterialDetail } from '../../explorer.models';
 import { ExplorerService } from '../../services/explorer.service';
-import { FavoritesService } from '../../services/favorites.service';
 
 type Load = { status: 'loading' } | { status: 'error'; notFound: boolean } | { status: 'ready'; detail: MaterialDetail };
 
@@ -40,14 +39,9 @@ export class MaterialDetailComponent implements OnChanges {
   private readonly id$ = new BehaviorSubject<number | null>(null);
   private readonly retry$ = new BehaviorSubject<void>(undefined);
   readonly load$: Observable<Load>;
-  readonly favorites$;
   descriptionOpen = false;
 
-  constructor(
-    private explorer: ExplorerService,
-    private favoriteStore: FavoritesService
-  ) {
-    this.favorites$ = favoriteStore.favorites$;
+  constructor(private explorer: ExplorerService) {
     this.load$ = this.retry$.pipe(
       switchMap(() => this.id$),
       switchMap(id =>
@@ -71,14 +65,6 @@ export class MaterialDetailComponent implements OnChanges {
 
   retry(): void {
     this.retry$.next();
-  }
-
-  isFavorite(favorites: ReadonlySet<string>, detail: MaterialDetail): boolean {
-    return favorites.has(FavoritesService.key('produccion', detail.id));
-  }
-
-  toggleFavorite(detail: MaterialDetail): void {
-    this.favoriteStore.toggle('produccion', detail.id);
   }
 
   /** This material, the group's mean and its best quarter, on one scale. */

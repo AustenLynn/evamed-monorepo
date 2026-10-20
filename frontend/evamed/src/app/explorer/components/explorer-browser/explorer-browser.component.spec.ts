@@ -159,18 +159,6 @@ describe('Explorer (routed)', () => {
     answer(only(), page(1, 1, 1));
   });
 
-  it('stars a favourite and remembers it', async () => {
-    await open('/explorador/produccion');
-    answer(only(), page(1, 2, 2));
-
-    el().querySelector<HTMLButtonElement>('.result-card__star')!.click();
-    harness.detectChanges();
-
-    expect(el().querySelector('.result-card__star')?.getAttribute('aria-pressed')).toBe('true');
-    expect(localStorage.getItem('explorer-favorites')).toBe('["produccion:1"]');
-    localStorage.clear();
-  });
-
   it('comes back to a list without fetching it again', async () => {
     await open('/explorador/produccion?buscar=bloque');
     answer(only(), page(1, 24, 30));

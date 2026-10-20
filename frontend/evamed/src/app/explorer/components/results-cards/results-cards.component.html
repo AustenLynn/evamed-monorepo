@@ -2,11 +2,9 @@
   <app-result-card
     *ngFor="let item of items; trackBy: trackItem"
     [item]="item"
-    [favorite]="favorites.has(item.id)"
     [link]="linkFor ? linkFor(item) : null"
     [openable]="openable"
     (itemOpen)="itemOpen.emit(item)"
-    (favoriteToggle)="favoriteToggle.emit(item)"
   ></app-result-card>
   <div *ngFor="let skeleton of skeletons" class="results-cards__skeleton" aria-hidden="true"></div>
 </div>

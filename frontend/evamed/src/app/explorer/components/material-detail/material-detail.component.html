@@ -14,18 +14,6 @@
       <header class="detail__header">
         <div class="detail__heading">
           <h1 id="detail-title" class="detail__title">{{ detail.display_name }}</h1>
-          <button
-            *ngIf="favorites$ | async as favorites"
-            mat-icon-button
-            type="button"
-            class="detail__star"
-            [class.detail__star--on]="isFavorite(favorites, detail)"
-            [attr.aria-pressed]="isFavorite(favorites, detail)"
-            [attr.aria-label]="isFavorite(favorites, detail) ? 'Quitar de favoritos' : 'Agregar a favoritos'"
-            (click)="toggleFavorite(detail)"
-          >
-            <mat-icon>{{ isFavorite(favorites, detail) ? 'star' : 'star_border' }}</mat-icon>
-          </button>
         </div>
         <div class="detail__chips">
           <app-source-chip [source]="detail.source"></app-source-chip>
