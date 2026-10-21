@@ -32,7 +32,7 @@ export class ResultsCardsComponent implements OnChanges, AfterViewInit, OnDestro
   @Input() loading = false;
   @Input() failed = false;
   @Input() hasMore = false;
-  /** The list's order: impacto and categoria get a heading where each group starts. */
+  /** The list's order: the impact and category orders get a heading where each group starts. */
   @Input() groupBy: SortKey = 'nombre';
   @Input() linkFor: ((item: ExplorerItem) => unknown[] | null) | null = null;
   @Input() openable = false;
@@ -96,7 +96,7 @@ export class ResultsCardsComponent implements OnChanges, AfterViewInit, OnDestro
       return null;
     }
     const label = (item: ExplorerItem) =>
-      this.groupBy === 'impacto'
+      this.groupBy === 'impacto' || this.groupBy === 'mayor-impacto'
         ? item.unit
           ? `Por ${item.unit}`
           : 'Sin unidad'

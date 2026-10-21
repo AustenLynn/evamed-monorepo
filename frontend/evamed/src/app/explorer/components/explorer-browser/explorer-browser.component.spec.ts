@@ -133,6 +133,12 @@ describe('Explorer (routed)', () => {
     expect(el().querySelectorAll('tr.mat-mdc-row').length).toBe(6);
   });
 
+  it('reads the highest-impact order from the URL', async () => {
+    await open('/explorador/produccion?orden=mayor-impacto');
+
+    expect(only().request.params.toString()).toBe('page=1&page_size=24&sort=mayor-impacto');
+  });
+
   it('reads the order from the URL and groups the cards', async () => {
     await open('/explorador/produccion?orden=categoria');
 

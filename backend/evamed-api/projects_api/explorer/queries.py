@@ -136,14 +136,15 @@ def end_of_life_items():
     return []
 
 
-SORTS = ('nombre', 'impacto', 'categoria')
+SORTS = ('nombre', 'impacto', 'mayor-impacto', 'categoria')
 
 
 def ordered(items, sort='nombre', population=None):
     """Items in one of SORTS; items without GWP last within their group.
 
     nombre: name A→Z (K-07). impacto: by unit, lowest GWP first, since values
-    per kg and per m³ don't compare. categoria: category A→Z, then as impacto.
+    per kg and per m³ don't compare. mayor-impacto: the same groups, highest GWP
+    first. categoria: category A→Z, then as impacto.
     Units go most materials first, counted over the whole stage (population) so
     the order doesn't move as filters change. No unit or category goes last.
     """
@@ -152,8 +153,9 @@ def ordered(items, sort='nombre', population=None):
         return sorted(items, key=lambda item: (item['gwp'] is None, *by_name(item)))
     counts = Counter(item['unit'] for item in (population if population is not None else items))
     unit_key = lambda unit: (unit is None, -counts[unit], derive.sort_key(unit or ''))
-    impact = lambda item: (*unit_key(item['unit']), item['gwp'] is None, item['gwp'] or 0, *by_name(item))
-    if sort == 'impacto':
+    sign = -1 if sort == 'mayor-impacto' else 1
+    impact = lambda item: (*unit_key(item['unit']), item['gwp'] is None, sign * (item['gwp'] or 0), *by_name(item))
+    if sort in ('impacto', 'mayor-impacto'):
         return sorted(items, key=impact)
     return sorted(items, key=lambda item: (
         item['category'] is None, derive.sort_key(item['category'] or ''), *impact(item)))

@@ -30,12 +30,13 @@ export interface ExplorerPage {
   facets: Facets;
 }
 
-/** How the API orders a stage: by name, by unit then lowest GWP, or by category then as impacto. */
-export type SortKey = 'nombre' | 'impacto' | 'categoria';
+/** How the API orders a stage: by name, by unit then lowest or highest GWP, or by category then as impacto. */
+export type SortKey = 'nombre' | 'impacto' | 'mayor-impacto' | 'categoria';
 
 export const SORTS: readonly { value: SortKey; label: string }[] = [
   { value: 'nombre', label: 'Nombre (A→Z)' },
   { value: 'impacto', label: 'Menor impacto' },
+  { value: 'mayor-impacto', label: 'Mayor impacto' },
   { value: 'categoria', label: 'Categoría' },
 ];
 

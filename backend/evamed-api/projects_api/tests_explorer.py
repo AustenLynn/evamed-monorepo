@@ -215,6 +215,13 @@ class ExplorerApiTests(APITestCase):
             'Acero_Viga split', 'Acero_Alambre', 'Ánfora sin datos',  # m²: 3, missing GWP last
         ])
 
+    def test_sort_by_highest_impact_keeps_the_unit_groups(self):
+        names = [item['name'] for item in self.get('produccion', sort='mayor-impacto', page_size=100)['results']]
+        self.assertEqual(names, [
+            *('Concreto_Bloque %s' % i for i in reversed(range(6))), 'Ladrillo_Clay brick',  # kg
+            'Acero_Alambre', 'Acero_Viga split', 'Ánfora sin datos',  # m², missing GWP still last
+        ])
+
     def test_sort_by_category_then_unit_then_impact(self):
         names = [item['name'] for item in self.get('produccion', sort='categoria', page_size=100)['results']]
         self.assertEqual(names, [

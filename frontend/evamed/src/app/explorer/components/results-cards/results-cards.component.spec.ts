@@ -62,6 +62,8 @@ describe('ResultsCardsComponent', () => {
     TestBed.resetTestingModule();
     expect(headings(render({ items: grouped, groupBy: 'impacto' }).el)).toEqual(['Por m²', 'Por kg', 'Sin unidad']);
     TestBed.resetTestingModule();
+    expect(headings(render({ items: grouped, groupBy: 'mayor-impacto' }).el)).toEqual(['Por m²', 'Por kg', 'Sin unidad']);
+    TestBed.resetTestingModule();
     expect(headings(render({ items: grouped, groupBy: 'nombre' }).el)).toEqual([]);
   });
 
