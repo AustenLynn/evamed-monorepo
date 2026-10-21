@@ -49,7 +49,10 @@
         [groupBy]="stage.sortable ? sort : 'nombre'"
         [linkFor]="linkFor"
         [openable]="openable"
+        [selectable]="selectable"
+        [selectedIds]="selectedIds"
         (itemOpen)="itemOpen.emit($event)"
+        (selectToggle)="selectToggle.emit($event)"
         (loadMore)="vm.feed.loadMore()"
         (retry)="vm.feed.retry()"
       ></app-results-cards>
@@ -62,7 +65,10 @@
           [page]="tablePage"
             [linkFor]="linkFor"
           [openable]="openable"
+          [selectable]="selectable"
+          [selectedIds]="selectedIds"
           (itemOpen)="itemOpen.emit($event)"
+          (selectToggle)="selectToggle.emit($event)"
           (pageChange)="tablePageChange.emit($event)"
           ></app-results-table>
         <ng-template #tableState>

@@ -5,7 +5,10 @@
       [item]="item"
       [link]="linkFor ? linkFor(item) : null"
       [openable]="openable"
+      [selectable]="selectable"
+      [selected]="selectedIds.has(item.id)"
       (itemOpen)="itemOpen.emit(item)"
+      (selectToggle)="selectToggle.emit(item)"
     ></app-result-card>
   </ng-container>
   <div *ngFor="let skeleton of skeletons" class="results-cards__skeleton" aria-hidden="true"></div>

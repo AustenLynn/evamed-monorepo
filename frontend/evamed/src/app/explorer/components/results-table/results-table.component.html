@@ -2,6 +2,17 @@
   <table mat-table [dataSource]="items" class="results-table">
     <caption class="ev-visually-hidden">Resultados, página {{ page }}</caption>
 
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef scope="col"><span class="ev-visually-hidden">Seleccionar</span></th>
+      <td mat-cell *matCellDef="let item" class="results-table__select">
+        <mat-checkbox
+          [checked]="selectedIds.has(item.id)"
+          [aria-label]="'Seleccionar: ' + item.display_name"
+          (change)="selectToggle.emit(item)"
+        ></mat-checkbox>
+      </td>
+    </ng-container>
+
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef scope="col">Nombre / Descripción</th>
       <td mat-cell *matCellDef="let item">

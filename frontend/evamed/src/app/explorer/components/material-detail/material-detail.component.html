@@ -28,6 +28,17 @@
         >
           Seleccionar recurso
         </button>
+        <button
+          *ngIf="canSelect"
+          mat-stroked-button
+          type="button"
+          class="detail__toggle"
+          [attr.aria-pressed]="inSelection"
+          (click)="selectToggle.emit(detail)"
+        >
+          <mat-icon aria-hidden="true">{{ inSelection ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+          {{ inSelection ? 'En la selección' : 'Agregar a la selección' }}
+        </button>
       </header>
 
       <div class="detail__grid">

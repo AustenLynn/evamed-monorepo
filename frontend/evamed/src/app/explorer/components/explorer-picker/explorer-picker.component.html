@@ -17,7 +17,14 @@
     <button mat-button type="button" (click)="backToList()">
       <mat-icon aria-hidden="true">arrow_back</mat-icon> Materiales
     </button>
+    <button *ngIf="step.kind === 'edit-row'" mat-button type="button" (click)="review()">
+      <mat-icon aria-hidden="true">chevron_right</mat-icon> Seleccionados
+    </button>
   </nav>
+
+  <p *ngIf="failedNames.length" role="alert" class="picker__failed">
+    No se pudo agregar: {{ failedNames.join(', ') }}. Intenta de nuevo.
+  </p>
 
   <!-- Kept alive while a material is open, so the list comes back as it was. -->
   <app-explorer-browser
@@ -27,7 +34,10 @@
     [view]="view"
     [tablePage]="tablePage"
     [openable]="true"
+    [selectable]="selectable"
+    [selectedIds]="selectedIds"
     (itemOpen)="open($event)"
+    (selectToggle)="toggle($event)"
     (queryChange)="onQuery($event)"
     (viewChange)="view = $event"
     (tablePageChange)="tablePage = $event"
@@ -37,7 +47,9 @@
     *ngIf="step.kind === 'detail'"
     [materialId]="$any(step).id"
     [canSelect]="true"
+    [inSelection]="selectedIds.has($any(step).id)"
     (selected)="select($event)"
+    (selectToggle)="toggle($event)"
   ></app-material-detail>
 
   <app-material-edit
@@ -48,4 +60,77 @@
     (changeMaterial)="backToList()"
     (save)="add($event)"
   ></app-material-edit>
+
+  <app-material-edit
+    *ngIf="step.kind === 'edit-row'"
+    [detail]="$any(step).detail"
+    [context]="rowContext($any(step).row)"
+    [inSelection]="true"
+    (back)="review()"
+    (save)="saveRow($any(step).row, $event)"
+  ></app-material-edit>
+
+  <section *ngIf="step.kind === 'selection'" class="selection" aria-labelledby="selection-title">
+    <h2 id="selection-title" class="selection__title">
+      {{ selection.length }} {{ selection.length === 1 ? 'material seleccionado' : 'materiales seleccionados' }}
+    </h2>
+    <p class="selection__hint">
+      Escribe la cantidad de cada uno, en su unidad. El transporte y la vida útil empiezan con los valores
+      predeterminados; usa «Editar» para cambiarlos.
+    </p>
+    <ul class="selection__list">
+      <li *ngFor="let row of selection; trackBy: trackRow" class="selection__row">
+        <div class="selection__material">
+          <span class="selection__name">{{ row.displayName }}</span>
+          <span class="selection__meta">
+            <app-source-chip [source]="row.material.source"></app-source-chip>
+            <span *ngIf="row.values.comercialName !== row.displayName">«{{ row.values.comercialName }}»</span>
+          </span>
+        </div>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="selection__quantity">
+          <mat-label>Cantidad</mat-label>
+          <input
+            matInput
+            type="number"
+            min="0"
+            step="any"
+            [value]="row.quantity ?? ''"
+            (input)="setQuantity(row, $any($event.target).value)"
+            [attr.aria-label]="'Cantidad de ' + row.displayName"
+          />
+          <span matTextSuffix>{{ row.material.unit || '' }}</span>
+        </mat-form-field>
+        <button mat-button type="button" class="selection__edit" (click)="editRow(row)">Editar</button>
+        <button
+          mat-icon-button
+          type="button"
+          [attr.aria-label]="'Quitar de la selección: ' + row.displayName"
+          (click)="remove(row.material.id)"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </li>
+    </ul>
+  </section>
 </div>
+
+<footer *ngIf="selection.length && step.kind !== 'edit-row' && step.kind !== 'loading'" class="picker__tray">
+  <ng-container *ngIf="step.kind === 'selection'; else browsing">
+    <button mat-stroked-button type="button" (click)="backToList()">Seguir explorando</button>
+    <button
+      mat-flat-button
+      type="button"
+      class="picker__add"
+      [disabled]="!selectionReady || saving"
+      (click)="addSelection()"
+    >
+      {{ saving ? 'Agregando…' : 'Agregar ' + selection.length + (selection.length === 1 ? ' material' : ' materiales') }}
+    </button>
+  </ng-container>
+  <ng-template #browsing>
+    <span class="picker__count" role="status">
+      {{ selection.length }} {{ selection.length === 1 ? 'material seleccionado' : 'materiales seleccionados' }}
+    </span>
+    <button mat-flat-button type="button" class="picker__add" (click)="review()">Revisar y agregar</button>
+  </ng-template>
+</footer>

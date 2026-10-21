@@ -24,7 +24,7 @@ const picked: PickedMaterial = {
 describe('Explorar materiales on the new-project page', () => {
   afterEach(() => sessionStorage.clear());
 
-  const build = (answer: PickedMaterial | undefined) => {
+  const build = (answer: PickedMaterial[]) => {
     const component: any = Object.create(MaterialsStageComponent.prototype),
       sheet: any[] = [];
     component.projectId = 42;
@@ -39,7 +39,7 @@ describe('Explorar materiales on the new-project page', () => {
     component.SOR = [['Muro A']];
     component.SOD = [[]];
     component.materialsList = [{ id: 2, name_material: 'Concreto_Bloque hueco' }];
-    component.explorerPicker = { pick: vi.fn(async () => answer) };
+    component.explorerPicker = { pickMany: vi.fn(async () => answer) };
     component.materialsService = { searchMaterial: vi.fn(() => of([])) };
     component.projectsService = {
       replaceMaterialScheme: vi.fn(() => of({ items: [], skipped: [] })),
@@ -48,11 +48,11 @@ describe('Explorar materiales on the new-project page', () => {
   };
 
   it('opens the explorer with the panel’s system, section and project life', async () => {
-    const component = build(undefined);
+    const component = build([]);
 
     await component.exploreMaterials('Modelo de Revit');
 
-    expect(component.explorerPicker.pick).toHaveBeenCalledWith({
+    expect(component.explorerPicker.pickMany).toHaveBeenCalledWith({
       system: 'Muro A',
       section: 'Muros exteriores',
       projectLife: 50,
@@ -61,7 +61,7 @@ describe('Explorar materiales on the new-project page', () => {
   });
 
   it('keeps the material when Producción is opened again (the page reloads the stored Excel)', async () => {
-    const component = build(picked);
+    const component = build([picked]);
 
     await component.exploreMaterials('Modelo de Revit');
 
@@ -70,8 +70,19 @@ describe('Explorar materiales on the new-project page', () => {
     expect(stored.data[1].map((row: any) => row.Material)).toEqual(['Block hueco 15']);
   });
 
+  it('adds several materials at once, in the order chosen', async () => {
+    const component = build([picked, { ...picked, comercialName: 'Mortero', quantity: 3 }]);
+
+    await component.exploreMaterials('Modelo de Revit');
+
+    expect(component.listMateriales.map((row: any) => [row.Material, row.Cantidad])).toEqual([
+      ['Block hueco 15', 120],
+      ['Mortero', 3],
+    ]);
+  });
+
   it('adds the material to the panel, and the autosave stores it with its transport', async () => {
-    const component = build(picked);
+    const component = build([picked]);
 
     await component.exploreMaterials('Modelo de Revit');
     expect(component.listMateriales.map((row: any) => row.Material)).toEqual(['Block hueco 15']);
@@ -100,14 +111,21 @@ describe('Explorar materiales on the new-project page', () => {
 describe('Explorar materiales on the existing-project page', () => {
   afterEach(() => localStorage.clear());
 
-  const build = (answer: PickedMaterial | undefined) => {
+  // The picker saves through context.save, then hands back what it saved.
+  const build = (answer: PickedMaterial[]) => {
     const component: any = Object.create(MaterialStageUpdateComponent.prototype);
     component.currentPanelItem = 'Losa';
     component.indexSheet = 3;
     component.sheetNames = ['Cimentación', 'Muros interiores', 'Muros exteriores', 'Pisos'];
     component.vidaUtilSeleccionado = 60;
     component.cdr = { markForCheck: vi.fn() };
-    component.explorerPicker = { pick: vi.fn(async () => answer) };
+    component.explorerPicker = {
+      pickMany: vi.fn(async (context: any) => {
+        const saved: boolean[] = answer.length ? await context.save(answer) : [];
+        component.saved = saved;
+        return answer.filter((_material, index) => saved[index]);
+      }),
+    };
     component.projectsService = {
       addSchemeProject: vi.fn(() => of({ id: 99 })),
       getMaterialSchemeProyect: vi.fn(() => of([{ id: 99, project_id: 42 }, { id: 7, project_id: 5 }])),
@@ -118,22 +136,40 @@ describe('Explorar materiales on the existing-project page', () => {
     return component;
   };
 
-  it('saves the material as a new row, then shows the system with it at once', async () => {
-    const component = build(picked);
+  it('saves each material as a new row, then shows the system with them at once', async () => {
+    const mortar = { ...picked, comercialName: 'Mortero', quantity: 3 },
+      component = build([picked, mortar]);
 
     await component.exploreMaterials();
 
-    expect(component.explorerPicker.pick).toHaveBeenCalledWith({ system: 'Losa', section: 'Pisos', projectLife: 60 });
-    expect(component.projectsService.addSchemeProject).toHaveBeenCalledWith(
-      toSchemeProject(picked, { projectId: 42, sectionId: 4, system: 'Losa' })
+    expect(component.explorerPicker.pickMany).toHaveBeenCalledWith(
+      expect.objectContaining({ system: 'Losa', section: 'Pisos', projectLife: 60 })
     );
+    expect(component.projectsService.addSchemeProject.mock.calls).toEqual([
+      [toSchemeProject(picked, { projectId: 42, sectionId: 4, system: 'Losa' })],
+      [toSchemeProject(mortar, { projectId: 42, sectionId: 4, system: 'Losa' })],
+    ]);
+    expect(component.saved).toEqual([true, true]);
     expect(component.listData2).toEqual([{ id: 99, project_id: 42 }]);
     expect(component.showMaterials).toHaveBeenCalledWith(null, 'Losa', 'revit-user');
-    expect(component.adding).toBe(false);
+  });
+
+  it('tells the picker which materials failed, so it keeps them to retry', async () => {
+    const component = build([picked, { ...picked, comercialName: 'Mortero' }]);
+    component.projectsService.addSchemeProject = vi
+      .fn()
+      .mockReturnValueOnce(of({ id: 99 }))
+      .mockReturnValueOnce(throwError(() => ({ status: 400 })));
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    await component.exploreMaterials();
+
+    expect(component.saved).toEqual([true, false]);
+    expect(component.showMaterials).toHaveBeenCalled();
   });
 
   it('saves nothing when the explorer is closed', async () => {
-    const component = build(undefined);
+    const component = build([]);
 
     await component.exploreMaterials();
 
@@ -141,12 +177,12 @@ describe('Explorar materiales on the existing-project page', () => {
   });
 
   it('needs an open project and a system', async () => {
-    const component = build(picked);
+    const component = build([picked]);
     localStorage.clear();
 
     await component.exploreMaterials();
 
-    expect(component.explorerPicker.pick).not.toHaveBeenCalled();
+    expect(component.explorerPicker.pickMany).not.toHaveBeenCalled();
   });
 });
 
@@ -211,24 +247,6 @@ describe('Editing a material from the panel', () => {
     expect(id).toBe(10636);
     expect(changes).toMatchObject({ origin_id: 2, section_id: 2, material_id: 2, state_id_origin: 5, city_id_origin: 9 });
     expect(component.showMaterials).toHaveBeenCalledWith(null, 'EPS wall', 'dynamo');
-  });
-
-  it('existing-project page: says so when saving fails', async () => {
-    const component: any = Object.create(MaterialStageUpdateComponent.prototype);
-    component.currentPanelItem = 'Losa';
-    component.indexSheet = 0;
-    component.sheetNames = ['Cimentación'];
-    component.cdr = { markForCheck: vi.fn() };
-    component.snackBar = { open: vi.fn() };
-    component.explorerPicker = { pick: vi.fn(async () => picked) };
-    component.projectsService = { addSchemeProject: vi.fn(() => throwError(() => ({ status: 400 }))) };
-    localStorage.setItem('idProyectoConstrucción', '42');
-    vi.spyOn(console, 'error').mockImplementation(() => undefined);
-
-    await component.exploreMaterials();
-
-    expect(component.snackBar.open).toHaveBeenCalledWith('No se pudo agregar el material. Intenta de nuevo.', 'Cerrar', { duration: 6000 });
-    localStorage.clear();
   });
 });
 

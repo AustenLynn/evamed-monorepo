@@ -1232,15 +1232,15 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
   /** Adds a material from the explorer to the system shown in the panel (R-20). */
   async exploreMaterials(origin: string): Promise<void> {
     const system = this.currentPanelItem,
-      picked = await this.explorerPicker.pick({
+      added = await this.explorerPicker.pickMany({
         system,
         section: this.selectedSheet ?? null,
         projectLife: Number(this.vidaUtilSeleccionado) || 50,
       });
-    if (!picked) {
+    if (!added.length) {
       return;
     }
-    this.listData.push(toExcelRow(picked, system, origin));
+    this.listData.push(...added.map(picked => toExcelRow(picked, system, origin)));
     this.storeSheet();
     this.showMaterials(system, 'revit-user');
   }

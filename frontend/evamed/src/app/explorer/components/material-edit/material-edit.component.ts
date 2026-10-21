@@ -38,6 +38,8 @@ const legNeedsTransport =
 export class MaterialEditComponent implements OnInit {
   @Input({ required: true }) detail!: MaterialDetail;
   @Input({ required: true }) context!: PickerContext;
+  /** Editing a row of the picker's selection: saving goes back to the list. */
+  @Input() inSelection = false;
   @Output() readonly back = new EventEmitter<void>();
   /** Edit mode: pick another catalogue material for this row. */
   @Output() readonly changeMaterial = new EventEmitter<void>();
@@ -81,6 +83,13 @@ export class MaterialEditComponent implements OnInit {
 
   get editing(): boolean {
     return this.context.mode === 'edit';
+  }
+
+  get submitLabel(): string {
+    if (this.inSelection) {
+      return 'Guardar en la selección';
+    }
+    return this.editing ? 'Guardar cambios' : 'Agregar material';
   }
 
   /** The row was entered in another unit than the catalogue's declared one. */

@@ -26,6 +26,12 @@ export interface PickerContext {
   section?: string | null;
   /** The project's useful life, in years. */
   projectLife: number;
+  /**
+   * Add: saves the chosen materials and says, per material, whether it was
+   * saved. Unsaved ones stay in the picker to retry. Without it, the picker
+   * only hands the materials back.
+   */
+  save?: (materials: PickedMaterial[]) => Promise<boolean[]>;
 }
 
 /** The explorer's answer: a catalogue material with the project data entered for it. */
@@ -44,6 +50,15 @@ export interface PickedMaterial {
   replaces: number;
 }
 
+/** A material in the picker's selection: its quantity, and the rest of Edición's values. */
+export interface SelectionRow {
+  material: PickedMaterial['material'];
+  displayName: string;
+  /** null until typed in. */
+  quantity: number | null;
+  values: Omit<PickedMaterial, 'material' | 'quantity'>;
+}
+
 /** calculos.ts uses these when a distance has no transport type. */
 export const DEFAULT_TRANSPORT_ORIGIN = 1,
   DEFAULT_TRANSPORT_END = 4;
@@ -55,3 +70,30 @@ export const replacesFor = (projectLife: number, lifeYears: number): number =>
 /** The material life implied by a number of replacements. */
 export const lifeFor = (projectLife: number, replaces: number): number =>
   Math.round((projectLife / (Math.max(0, replaces) + 1)) * 10) / 10;
+
+/** A selected material starts from Edición's defaults (HANDOFF §4): catalogue name, calculation transports, project life. */
+export const selectionRow = (
+  item: { id: number; name: string; display_name: string; unit: string | null; source: string | null },
+  projectLife: number
+): SelectionRow => ({
+  material: { id: item.id, name: item.name, unit: item.unit, source: item.source },
+  displayName: item.display_name,
+  quantity: null,
+  values: {
+    comercialName: item.display_name,
+    comments: '',
+    transportOrigin: DEFAULT_TRANSPORT_ORIGIN,
+    distanceOrigin: null,
+    transportEnd: DEFAULT_TRANSPORT_END,
+    distanceEnd: null,
+    lifeYears: projectLife,
+    replaces: replacesFor(projectLife, projectLife),
+  },
+});
+
+/** The row as the material it adds; only call it once the quantity is set. */
+export const pickedFrom = (row: SelectionRow): PickedMaterial => ({
+  material: row.material,
+  quantity: row.quantity ?? 0,
+  ...row.values,
+});

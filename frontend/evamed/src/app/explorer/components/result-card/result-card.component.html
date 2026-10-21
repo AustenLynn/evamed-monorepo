@@ -9,6 +9,13 @@
       </ng-template>
       <ng-template #plainName>{{ item.display_name }}</ng-template>
     </h3>
+    <mat-checkbox
+      *ngIf="selectable"
+      class="result-card__check"
+      [checked]="selected"
+      [aria-label]="'Seleccionar: ' + item.display_name"
+      (change)="selectToggle.emit()"
+    ></mat-checkbox>
   </header>
 
   <p class="result-card__description" [title]="item.description || ''">

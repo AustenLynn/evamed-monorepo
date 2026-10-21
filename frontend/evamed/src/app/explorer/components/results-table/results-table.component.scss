@@ -75,3 +75,8 @@ a.results-table__name:focus-visible,
 .results-table__credit {
   color: var(--ev-green-text);
 }
+
+.results-table__select {
+  width: 48px;
+  padding-right: 0;
+}

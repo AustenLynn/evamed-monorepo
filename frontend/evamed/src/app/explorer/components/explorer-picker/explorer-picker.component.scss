@@ -41,6 +41,7 @@
 
 @media (max-width: 600px) {
   .picker__bar,
+  .picker__tray,
   .picker__body {
     padding-left: 16px;
     padding-right: 16px;
@@ -58,6 +59,118 @@
     padding-left: 0;
     color: var(--ev-green-text);
   }
+}
+
+.picker__failed {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--ev-impact-high-bg);
+  color: var(--ev-impact-high-text);
+}
+
+// The selection's tray: always in view while ticking materials (no scroll needed to add them).
+.picker__tray {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 12px 24px;
+  background: var(--ev-surface);
+  border-top: 1px solid var(--ev-border);
+}
+
+.picker__count {
+  margin-right: auto;
+  font-weight: 700;
+  color: var(--ev-text);
+}
+
+// Through Material's own tokens: a plain background loses to its button styles.
+.picker__add {
+  --mat-button-filled-container-color: var(--ev-green-light);
+  --mat-button-filled-label-text-color: var(--ev-text);
+}
+
+.picker__tray button {
+  white-space: nowrap;
+}
+
+.selection {
+  max-width: 960px;
+}
+
+.selection__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ev-text);
+}
+
+.selection__hint {
+  margin: 4px 0 16px;
+  font-size: 13px;
+  color: var(--ev-text-muted-on-bg);
+}
+
+.selection__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--ev-surface);
+  border: 1px solid var(--ev-border);
+  border-radius: 12px;
+}
+
+.selection__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 200px auto auto;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 10px 12px 10px 16px;
+  --mat-form-field-container-height: 40px;
+  --mat-form-field-container-vertical-padding: 8px;
+
+  & + & {
+    border-top: 1px solid var(--ev-divider);
+  }
+}
+
+@media (max-width: 600px) {
+  .selection__row {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .selection__material {
+    grid-column: 1 / -1;
+  }
+}
+
+.selection__material {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.selection__name {
+  font-weight: 700;
+  color: var(--ev-text);
+  overflow-wrap: anywhere;
+}
+
+.selection__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--ev-text-muted);
+}
+
+.selection__edit {
+  --mat-button-text-label-text-color: var(--ev-green-text);
 }
 
 [hidden] {

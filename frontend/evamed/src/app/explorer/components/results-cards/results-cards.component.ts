@@ -36,9 +36,12 @@ export class ResultsCardsComponent implements OnChanges, AfterViewInit, OnDestro
   @Input() groupBy: SortKey = 'nombre';
   @Input() linkFor: ((item: ExplorerItem) => unknown[] | null) | null = null;
   @Input() openable = false;
+  @Input() selectable = false;
+  @Input() selectedIds: ReadonlySet<number> = new Set();
   @Output() readonly itemOpen = new EventEmitter<ExplorerItem>();
   @Output() readonly loadMore = new EventEmitter<void>();
   @Output() readonly retry = new EventEmitter<void>();
+  @Output() readonly selectToggle = new EventEmitter<ExplorerItem>();
 
   @ViewChild('grid', { static: true }) grid!: ElementRef<HTMLElement>;
   @ViewChild('sentinel', { static: true }) sentinel!: ElementRef<HTMLElement>;

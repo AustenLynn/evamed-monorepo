@@ -18,11 +18,18 @@ export class ResultsTableComponent {
   @Input() page = 1;
   @Input() linkFor: ((item: ExplorerItem) => unknown[] | null) | null = null;
   @Input() openable = false;
+  @Input() selectable = false;
+  @Input() selectedIds: ReadonlySet<number> = new Set();
   @Output() readonly itemOpen = new EventEmitter<ExplorerItem>();
   @Output() readonly pageChange = new EventEmitter<number>();
+  @Output() readonly selectToggle = new EventEmitter<ExplorerItem>();
 
-  readonly columns = ['name', 'category', 'source', 'gwp', 'impact'];
   readonly pageSize = PAGE_SIZE;
+
+  get columns(): string[] {
+    const columns = ['name', 'category', 'source', 'gwp', 'impact'];
+    return this.selectable ? ['select', ...columns] : columns;
+  }
 
   onPage(event: PageEvent): void {
     this.pageChange.emit(event.pageIndex + 1);

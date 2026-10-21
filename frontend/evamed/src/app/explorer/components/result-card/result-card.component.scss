@@ -53,6 +53,11 @@
   }
 }
 
+.result-card__check {
+  flex: none;
+  margin: -10px -10px 0 0;
+}
+
 .result-card__description {
   margin: 6px 0 12px;
   font-size: 13px;

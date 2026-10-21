@@ -8,10 +8,11 @@ import { MatSelectionList } from '@angular/material/list';
 import { Router } from '@angular/router';
 import { CatalogsService } from 'src/app/core/services/catalogs/catalogs.service';
 import { UntypedFormControl } from '@angular/forms';
-import { forkJoin, Observable } from 'rxjs';
-import { finalize, map, startWith, take } from 'rxjs/operators';
+import { firstValueFrom, forkJoin, Observable } from 'rxjs';
+import { map, startWith, take } from 'rxjs/operators';
 import { AnalisisService } from 'src/app/core/services/analisis/analisis.service';
 import { ExplorerPickerService } from '../../../explorer/explorer-picker.service';
+import { PickedMaterial } from '../../../explorer/picker.models';
 import { fromSchemeRow, toSchemeProject } from '../../picked-material';
 
 export interface Material {
@@ -84,8 +85,6 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
   description_material_selected: any;
   SCseleccionado = '';
   currentPanelItem = '';
-  /** A material from the explorer is being saved. */
-  adding = false;
 
   myControl = new UntypedFormControl();
   options: Material[];
@@ -855,26 +854,33 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
     if (!system || !Number.isFinite(projectId) || this.indexSheet === undefined) {
       return;
     }
-    const picked = await this.explorerPicker.pick({
+    const added = await this.explorerPicker.pickMany({
       system,
       section: this.sheetNames[this.indexSheet] ?? null,
       projectLife: Number(this.vidaUtilSeleccionado) || 50,
+      save: materials => this.saveNew(materials, { projectId, sectionId, system }),
     });
-    if (!picked) {
-      return;
+    if (added.length) {
+      this.reloadAndShow(system, projectId, 'revit-user');
     }
-    this.adding = true;
-    this.cdr.markForCheck();
-    this.projectsService
-      .addSchemeProject(toSchemeProject(picked, { projectId, sectionId, system }))
-      .pipe(finalize(() => {
-        this.adding = false;
-        this.cdr.markForCheck();
-      }))
-      .subscribe({
-        next: () => this.reloadAndShow(system, projectId, 'revit-user'),
-        error: error => this.failed('No se pudo agregar el material.', error),
-      });
+  }
+
+  /** One new row per material; the picker keeps any that fail, to retry (R-37, R-40). */
+  private saveNew(
+    materials: PickedMaterial[],
+    target: { projectId: number; sectionId: number; system: string }
+  ): Promise<boolean[]> {
+    return Promise.all(
+      materials.map(picked =>
+        firstValueFrom(this.projectsService.addSchemeProject(toSchemeProject(picked, target))).then(
+          () => true,
+          error => {
+            console.error('No se pudo agregar el material.', picked.comercialName, error);
+            return false;
+          }
+        )
+      )
+    );
   }
 
   /** Reloads the project's rows and re-opens the system, so the new material shows at once (R-35). */

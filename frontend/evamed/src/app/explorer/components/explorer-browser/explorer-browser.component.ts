@@ -45,10 +45,14 @@ export class ExplorerBrowserComponent implements OnChanges, OnDestroy {
   @Input() linkFor: ((item: ExplorerItem) => unknown[] | null) | null = null;
   /** Items open through itemOpen instead of a link (the picker). */
   @Input() openable = false;
+  /** The picker: checkboxes add items to its selection. */
+  @Input() selectable = false;
+  @Input() selectedIds: ReadonlySet<number> = new Set();
   @Output() readonly itemOpen = new EventEmitter<ExplorerItem>();
   @Output() readonly queryChange = new EventEmitter<ExplorerQuery>();
   @Output() readonly viewChange = new EventEmitter<ExplorerView>();
   @Output() readonly tablePageChange = new EventEmitter<number>();
+  @Output() readonly selectToggle = new EventEmitter<ExplorerItem>();
 
   readonly sorts = SORTS;
 

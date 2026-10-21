@@ -15,5 +15,9 @@ export class ResultCardComponent {
   @Input() link: unknown[] | null = null;
   /** Without a link, the name can still open the item through itemOpen (the picker). */
   @Input() openable = false;
+  /** The picker: a checkbox adds the item to the selection. */
+  @Input() selectable = false;
+  @Input() selected = false;
   @Output() readonly itemOpen = new EventEmitter<void>();
+  @Output() readonly selectToggle = new EventEmitter<void>();
 }
