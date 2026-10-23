@@ -75,6 +75,11 @@ export class ProjectsService {
       );
   }
 
+  /** Changes only the given fields of a project's material row. */
+  patchMaterialSchemeProject(id: number, changes: object): Observable<any> {
+    return this.http.patch(`${environment.api_scheme_project}${id}/`, changes);
+  }
+
   deleteSchemeProject(id: number): Observable<any> {
     return this.http
       .delete(`${environment.api_scheme_project}${id}/`)

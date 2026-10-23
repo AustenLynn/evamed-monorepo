@@ -1,0 +1,27 @@
+<button
+  *ngIf="!editing; else field"
+  type="button"
+  class="quantity"
+  matTooltip="Editar cantidad"
+  [attr.aria-label]="'Editar cantidad: ' + (value ?? '') + (unit ? ' ' + unit : '')"
+  (click)="start($event)"
+  (keydown)="$event.stopPropagation()"
+>
+  {{ value | number: '1.2-2' }}
+</button>
+<ng-template #field>
+  <input
+    #input
+    class="quantity__input"
+    type="text"
+    inputmode="decimal"
+    autocomplete="off"
+    [attr.aria-label]="'Cantidad' + (unit ? ' en ' + unit : '')"
+    [value]="draft"
+    (input)="draft = $any($event.target).value"
+    (click)="$event.stopPropagation()"
+    (mousedown)="$event.stopPropagation()"
+    (keydown)="onKey($event)"
+    (blur)="commit()"
+  />
+</ng-template>

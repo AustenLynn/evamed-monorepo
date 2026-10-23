@@ -239,7 +239,8 @@
                 {{ material.value.Material }}
               </div>
               <div class="col-cantidad">
-                {{ material.value.Cantidad | number:'1.2-2' }}
+                <app-quantity-cell [value]="material.value.Cantidad" [unit]="material.value.Unidad"
+                  (changed)="setQuantity(material.value, $event)"></app-quantity-cell>
               </div>
               <div class="col-unidad">
                 {{ material.value.Unidad }}

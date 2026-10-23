@@ -479,6 +479,12 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
   }
 
 
+  /** A quantity edited in the list; the autosave stores it with the sheet. */
+  setQuantity(row: Record<string, unknown>, quantity: number): void {
+    row['Cantidad'] = quantity;
+    this.storeSheet();
+  }
+
   changeLifeTime(reemplazos) {
     let lifeTime = this.vidaUtilSeleccionado;
     lifeTime =

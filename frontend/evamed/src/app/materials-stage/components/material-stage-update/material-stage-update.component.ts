@@ -956,6 +956,26 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
     });
   }
 
+  /** A quantity edited in the list, saved at once; on failure the old one comes back. */
+  setQuantity(row: Record<string, any>, quantity: number): void {
+    const previous = row['quantity'],
+      id = row['material_scheme_project_id'];
+    row['quantity'] = quantity;
+    this.projectsService.patchMaterialSchemeProject(id, { quantity }).subscribe({
+      next: () => {
+        const saved = this.listData2.find(item => item.id === id);
+        if (saved) {
+          saved.quantity = quantity;
+        }
+      },
+      error: error => {
+        row['quantity'] = previous;
+        this.failed('No se pudo guardar la cantidad.', error);
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
   /** Says so when a save fails, instead of only logging it (R-37). */
   private failed(message: string, error: unknown): void {
     console.error(message, error);

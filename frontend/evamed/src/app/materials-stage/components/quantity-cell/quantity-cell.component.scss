@@ -1,0 +1,29 @@
+:host {
+  display: inline-block;
+}
+
+// Reads as the number it was, with a hint that it can be clicked.
+.quantity {
+  padding: 2px 4px;
+  border: 0;
+  border-bottom: 1px dashed currentColor;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: text;
+
+  &:hover,
+  &:focus-visible {
+    border-bottom-style: solid;
+  }
+}
+
+.quantity__input {
+  width: 72px;
+  margin-right: 4px;
+  padding: 2px 4px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  font: inherit;
+  text-align: right;
+}
