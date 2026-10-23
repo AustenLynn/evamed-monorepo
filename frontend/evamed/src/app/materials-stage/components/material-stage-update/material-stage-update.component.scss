@@ -402,6 +402,11 @@ td.mat-mdc-footer-cell:first-of-type {
   flex-shrink: 0;
 }
 
+.system-actions {
+  display: flex;
+  align-items: center;
+}
+
 .system-action-button.delete-mode {
   color: #c62828;
 }

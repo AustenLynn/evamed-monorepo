@@ -72,15 +72,27 @@
     <section class="container-systems">
       <div class="tab-title-sections">
         <p>Sistema constructivo</p>
-        <button
-          mat-icon-button
-          class="system-action-button"
-          [class.delete-mode]="deleteMode"
-          [attr.aria-label]="deleteMode ? 'Eliminar sistemas seleccionados' : 'Seleccionar sistemas para eliminar'"
-          (click)="handleSystemAction()"
-        >
-          <mat-icon>{{ deleteMode ? 'delete' : 'edit' }}</mat-icon>
-        </button>
+        <span class="system-actions">
+          <button
+            mat-icon-button
+            type="button"
+            aria-label="Agregar sistema constructivo"
+            matTooltip="Agregar sistema constructivo"
+            [disabled]="indexSheet === undefined || deleteMode"
+            (click)="addConstructiveSystem()"
+          >
+            <mat-icon>add_circle</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            class="system-action-button"
+            [class.delete-mode]="deleteMode"
+            [attr.aria-label]="deleteMode ? 'Eliminar sistemas seleccionados' : 'Seleccionar sistemas para eliminar'"
+            (click)="handleSystemAction()"
+          >
+            <mat-icon>{{ deleteMode ? 'delete' : 'edit' }}</mat-icon>
+          </button>
+        </span>
       </div>
       <mat-accordion *ngIf="indexSheet !== undefined">
         <mat-expansion-panel (opened)="panelOpenFirst = true" (closed)="panelOpenFirst = false" [expanded]="true">
@@ -208,7 +220,7 @@
           Materiales<span class="sc-selected"> {{ SCseleccionado }} </span>
         </p>
         <button mat-icon-button type="button" [disabled]="!SCseleccionado" aria-label="Explorar materiales"
-          matTooltip="Explorar materiales" (click)="exploreMaterials('Modelo de Revit')">
+          matTooltip="Explorar materiales" (click)="exploreMaterials()">
           <mat-icon>add_circle</mat-icon>
         </button>
       </div>

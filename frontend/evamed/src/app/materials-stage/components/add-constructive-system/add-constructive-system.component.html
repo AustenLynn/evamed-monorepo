@@ -2,36 +2,41 @@
   <h1 mat-dialog-title class="title-standard-second-light">
     Nuevo sistema constructivo
   </h1>
-  <button mat-button class="close-icon" [mat-dialog-close]="true" (click)="onNoClick()">
+  <button mat-button type="button" class="close-icon" aria-label="Cancelar" (click)="cancel()">
     <mat-icon style="color: #fff;">close</mat-icon>
   </button>
 </div>
-<div mat-dialog-content>
-  <div class="Row">
-    <div class="Col">
-      <div class="label-general">
-        Nombre del sistema constructivo
-      </div>
-      <div>
-        <mat-form-field>
-          <input
-            class="input-general"
-            [(ngModel)]="data.newConstructiveSystem"
-            matInput
-            type="text"
-            cdkFocusInitial
-          >
-        </mat-form-field>
+<form (ngSubmit)="create()">
+  <div mat-dialog-content>
+    <div class="Row">
+      <div class="Col">
+        <label class="label-general" for="new-system-name">
+          Nombre del sistema constructivo
+        </label>
+        <div>
+          <mat-form-field>
+            <input
+              id="new-system-name"
+              name="name"
+              class="input-general"
+              [(ngModel)]="name"
+              matInput
+              type="text"
+              maxlength="255"
+              autocomplete="off"
+              cdkFocusInitial
+            >
+          </mat-form-field>
+          <p *ngIf="duplicate" class="duplicate" role="alert">
+            Ya existe un sistema con ese nombre en este elemento.
+          </p>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<div mat-dialog-actions class="center">
-  <button
-    mat-button
-    [mat-dialog-close]="data"
-    class="yellow-button"
-  >
-    Crear sistema
-  </button>
-</div>
+  <div mat-dialog-actions class="center">
+    <button mat-button type="submit" class="yellow-button" [disabled]="!valid">
+      Crear sistema
+    </button>
+  </div>
+</form>

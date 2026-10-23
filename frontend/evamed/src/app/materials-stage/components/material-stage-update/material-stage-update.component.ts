@@ -1,5 +1,6 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { MatListOption } from '@angular/material/list';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MaterialsService } from './../../../core/services/materials/materials.service';
 import { ProjectsService } from './../../../core/services/projects/projects.service';
@@ -13,7 +14,11 @@ import { map, startWith, take } from 'rxjs/operators';
 import { AnalisisService } from 'src/app/core/services/analisis/analisis.service';
 import { ExplorerPickerService } from '../../../explorer/explorer-picker.service';
 import { PickedMaterial } from '../../../explorer/picker.models';
-import { fromSchemeRow, toSchemeProject } from '../../picked-material';
+import { fromSchemeRow, toSchemeProject, USER_ORIGIN } from '../../picked-material';
+import { AddConstructiveSystemComponent } from '../add-constructive-system/add-constructive-system.component';
+
+/** The systems' three groups, as the panels name them. */
+type PanelOrigin = 'revit-user' | 'dynamo' | 'user';
 
 export interface Material {
   id: number;
@@ -85,6 +90,8 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
   description_material_selected: any;
   SCseleccionado = '';
   currentPanelItem = '';
+  /** Which group the system shown in the Materiales panel belongs to. */
+  currentPanelOrigin: PanelOrigin = 'revit-user';
 
   myControl = new UntypedFormControl();
   options: Material[];
@@ -103,6 +110,7 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
     private cdr: ChangeDetectorRef,
     private explorerPicker: ExplorerPickerService,
     private snackBar: MatSnackBar,
+    private dialog: MatDialog,
   ) {
     this.materialsService.getMaterials().subscribe(data => {
       this.materialsList = data;
@@ -312,11 +320,21 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
 
       this.ListSCRevit = [...new Set(ListGetSCRevit)];
       this.ListSCDynamo = [...new Set(ListGetSCDimano)];
+      // The explorer saves every material it adds as the user's (R-02), even in
+      // a Revit system: only names no other group has are systems the user made.
+      this.ListSCUsuario = [
+        ...new Set(
+          this.listData2
+            .filter(item => item.origin_id === USER_ORIGIN && this.indexSheet + 1 === item.section_id)
+            .map(item => item.construction_system)
+            .filter(system => !this.ListSCRevit.includes(system) && !this.ListSCDynamo.includes(system))
+        ),
+      ];
 
       // Assign saved selections if available
       this.selectedOptionsRevit = this.SOR?.[this.indexSheet] ?? [];
       this.selectedOptionsDynamo = this.SOD?.[this.indexSheet] ?? [];
-      //this.selectedOptionsUsuario = this.SOU?.[this.indexSheet] ?? [];
+      this.selectedOptionsUsuario = this.SOU?.[this.indexSheet] ?? [];
 
       this.syncSelectionsForCurrentSheet();
 
@@ -345,6 +363,7 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
     const options = [
       ...toItems(this.ListSCRevit || [], 1),
       ...toItems(this.ListSCDynamo || [], 2),
+      ...toItems(this.ListSCUsuario || [], USER_ORIGIN),
     ];
 
     if (options.length === 0) {
@@ -378,6 +397,9 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
             this.selectedOptionsDynamo = items
               .filter(item => item.origin_id === 2 && item.is_selected)
               .map(item => item.label);
+            this.selectedOptionsUsuario = items
+              .filter(item => item.origin_id === USER_ORIGIN && item.is_selected)
+              .map(item => item.label);
 
             // Populate selectedSystems object for toggle switch display binding
             items.forEach(item => {
@@ -392,6 +414,7 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
 
             this.SOR[this.indexSheet] = this.selectedOptionsRevit;
             this.SOD[this.indexSheet] = this.selectedOptionsDynamo;
+            this.SOU[this.indexSheet] = this.selectedOptionsUsuario;
             },
             error: () => {},
           });
@@ -497,7 +520,7 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
     this.listMateriales = {};
   }
 
-  onSystemLabelClick(event: Event, sc: string, origin: string): void {
+  onSystemLabelClick(event: Event, sc: string, origin: PanelOrigin): void {
     event.stopPropagation();
     this.showMaterials(null, sc, origin);
   }
@@ -687,9 +710,10 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
     return Number(numStr);
   }
 
-  showMaterials(event, sc, origin) {
+  showMaterials(event, sc, origin: PanelOrigin) {
     event?.stopPropagation();
     this.currentPanelItem = sc;
+    this.currentPanelOrigin = origin;
     this.SCseleccionado = '/ ' + sc;
     this.selectedMaterial = false;
     this.showSearch = false;
@@ -702,8 +726,8 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
 
     this.listData2.map(item => {
       const prevData = [];
-      if (item.construction_system === sc && origin === 'revit-user') {
-        if (item.origin_id === 1 || item.origin_id === 3) {
+      if (item.construction_system === sc && origin !== 'dynamo') {
+        if (origin === 'user' ? item.origin_id === USER_ORIGIN : item.origin_id === 1 || item.origin_id === 3) {
           this.materialsService
             .searchMaterial(item.material_id)
             .subscribe(material => {
@@ -861,8 +885,48 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
       save: materials => this.saveNew(materials, { projectId, sectionId, system }),
     });
     if (added.length) {
-      this.reloadAndShow(system, projectId, 'revit-user');
+      // The explorer's rows are the user's (R-02): a Revit or EVAMED system lists them with its Revit ones.
+      this.reloadAndShow(system, projectId, this.currentPanelOrigin === 'user' ? 'user' : 'revit-user');
     }
+  }
+
+  /**
+   * "Agregar sistema constructivo": a name, then its materials from the
+   * explorer, saved as they're added. A system is only its rows, so one
+   * closed without materials isn't kept (R-41).
+   */
+  async addConstructiveSystem(): Promise<void> {
+    const projectId = parseInt(localStorage.getItem('idProyectoConstrucción') ?? '', 10);
+    if (this.indexSheet === undefined || this.deleteMode || !Number.isFinite(projectId)) {
+      return;
+    }
+    const sectionId = this.indexSheet + 1,
+      existing = [...(this.ListSCRevit ?? []), ...(this.ListSCDynamo ?? []), ...(this.ListSCUsuario ?? [])],
+      system = await firstValueFrom(
+        this.dialog.open(AddConstructiveSystemComponent, { width: '680px', data: { existing } }).afterClosed()
+      );
+    if (!system) {
+      return;
+    }
+    const added = await this.explorerPicker.pickMany({
+      system,
+      section: this.sheetNames[this.indexSheet] ?? null,
+      projectLife: Number(this.vidaUtilSeleccionado) || 50,
+      save: materials => this.saveNew(materials, { projectId, sectionId, system }),
+    });
+    if (!added.length) {
+      return;
+    }
+    this.selectedSystems[`${USER_ORIGIN}:${system}`] = true;
+    this.projectsService.getMaterialSchemeProyect().subscribe(data => {
+      this.listData2 = data.filter(item => item.project_id === projectId);
+      // Rebuilds the sheet's lists with the new system (saving it switched on), then opens it.
+      this.onGroupsChange(this.selectedSheet);
+      setTimeout(() => {
+        this.showMaterials(null, system, 'user');
+        this.cdr.markForCheck();
+      });
+    });
   }
 
   /** One new row per material; the picker keeps any that fail, to retry (R-37, R-40). */
@@ -884,7 +948,7 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
   }
 
   /** Reloads the project's rows and re-opens the system, so the new material shows at once (R-35). */
-  private reloadAndShow(system: string, projectId: number, origin: 'revit-user' | 'dynamo'): void {
+  private reloadAndShow(system: string, projectId: number, origin: PanelOrigin): void {
     this.projectsService.getMaterialSchemeProyect().subscribe(data => {
       this.listData2 = data.filter(item => item.project_id === projectId);
       this.showMaterials(null, system, origin);
@@ -974,7 +1038,7 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
       city_id_end: row.city_id_end ?? 1,
     };
     this.projectsService.updateMaterialSchemeProject(row.material_scheme_project_id, changes).subscribe({
-      next: () => this.reloadAndShow(system, row.project_id, row.origin_id === 2 ? 'dynamo' : 'revit-user'),
+      next: () => this.reloadAndShow(system, row.project_id, row.origin_id === 2 ? 'dynamo' : this.currentPanelOrigin === 'user' ? 'user' : 'revit-user'),
       error: error => this.failed('No se pudo guardar el material.', error),
     });
   }

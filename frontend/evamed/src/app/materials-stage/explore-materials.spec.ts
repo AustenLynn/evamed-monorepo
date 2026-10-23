@@ -30,6 +30,7 @@ describe('Explorar materiales on the new-project page', () => {
     component.projectId = 42;
     component.ciudadOrigenSeleccionada = 9;
     component.currentPanelItem = 'Muro A';
+    component.currentPanelOrigin = 'revit-user';
     component.selectedSheet = 'Muros exteriores';
     component.vidaUtilSeleccionado = '50';
     component.listData = sheet;
@@ -50,7 +51,7 @@ describe('Explorar materiales on the new-project page', () => {
   it('opens the explorer with the panel’s system, section and project life', async () => {
     const component = build([]);
 
-    await component.exploreMaterials('Modelo de Revit');
+    await component.exploreMaterials();
 
     expect(component.explorerPicker.pickMany).toHaveBeenCalledWith({
       system: 'Muro A',
@@ -63,7 +64,7 @@ describe('Explorar materiales on the new-project page', () => {
   it('keeps the material when Producción is opened again (the page reloads the stored Excel)', async () => {
     const component = build([picked]);
 
-    await component.exploreMaterials('Modelo de Revit');
+    await component.exploreMaterials();
 
     const stored = JSON.parse(sessionStorage.getItem('dataProject')!);
     expect(stored.sheetNames).toEqual(['Muros exteriores']);
@@ -73,7 +74,7 @@ describe('Explorar materiales on the new-project page', () => {
   it('adds several materials at once, in the order chosen', async () => {
     const component = build([picked, { ...picked, comercialName: 'Mortero', quantity: 3 }]);
 
-    await component.exploreMaterials('Modelo de Revit');
+    await component.exploreMaterials();
 
     expect(component.listMateriales.map((row: any) => [row.Material, row.Cantidad])).toEqual([
       ['Block hueco 15', 120],
@@ -84,7 +85,7 @@ describe('Explorar materiales on the new-project page', () => {
   it('adds the material to the panel, and the autosave stores it with its transport', async () => {
     const component = build([picked]);
 
-    await component.exploreMaterials('Modelo de Revit');
+    await component.exploreMaterials();
     expect(component.listMateriales.map((row: any) => row.Material)).toEqual(['Block hueco 15']);
 
     component.saveStepOne();

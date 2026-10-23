@@ -1,0 +1,10 @@
+.duplicate {
+  margin: -12px 0 8px;
+  font-size: 12px;
+  color: #c62828;
+}
+
+button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

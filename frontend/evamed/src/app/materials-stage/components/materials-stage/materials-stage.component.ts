@@ -6,7 +6,7 @@ import { ProjectsService } from './../../../core/services/projects/projects.serv
 import { Router } from '@angular/router';
 import { CatalogsService } from 'src/app/core/services/catalogs/catalogs.service';
 import { UntypedFormControl } from '@angular/forms';
-import { forkJoin, Observable } from 'rxjs';
+import { firstValueFrom, forkJoin, Observable } from 'rxjs';
 import { finalize, map, startWith } from 'rxjs/operators';
 import { AddConstructiveElementComponent } from '../add-constructive-element/add-constructive-element.component';
 import { AddConstructiveSystemComponent } from '../add-constructive-system/add-constructive-system.component';
@@ -14,6 +14,16 @@ import { ExplorerPickerService } from '../../../explorer/explorer-picker.service
 import { fromExcelRow, toExcelRow } from '../../picked-material';
 import { MatDialog } from '@angular/material/dialog';
 import { AnalisisService } from 'src/app/core/services/analisis/analisis.service';
+
+/** The systems' three groups, as the panels name them. */
+type PanelOrigin = 'revit-user' | 'dynamo' | 'user';
+
+/** The Excel "Origen" a material added to each group is written with. */
+const ORIGEN_BY_PANEL: Record<PanelOrigin, string> = {
+  'revit-user': 'Modelo de Revit',
+  dynamo: 'Opciones EVAMED',
+  user: 'Usuario_Plataforma',
+};
 
 export interface Material {
   id: number;
@@ -78,6 +88,8 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
   newConstructiveMaterial: string;
   SCseleccionado = '';
   currentPanelItem = '';
+  /** Which group the system shown in the Materiales panel belongs to. */
+  currentPanelOrigin: PanelOrigin = 'revit-user';
   materialData: any;
   EPDS: Material[] = [];
   EPiC: any;
@@ -608,15 +620,18 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Systems created by the user too, once their selections are known as well.
+    const withUser = sheets.every(sheet => this.SOU?.[sheet] !== undefined);
     const items = [
       ...this.buildSchemeItems(this.SOR, sheets, 1, ['Modelo de Revit', 'Template EVAMED'], value => parseInt(value, 10)),
       ...this.buildSchemeItems(this.SOD, sheets, 2, ['Opciones EVAMED'], value => value),
+      ...(withUser ? this.buildSchemeItems(this.SOU, sheets, 3, ['Usuario_Plataforma'], value => parseInt(value, 10)) : []),
     ];
     const sections = sheets.map(sheet => sheet + 1);
 
     this.saveInFlight = true;
     this.projectsService
-      .replaceMaterialScheme(this.projectId, [1, 2], sections, items)
+      .replaceMaterialScheme(this.projectId, withUser ? [1, 2, 3] : [1, 2], sections, items)
       .pipe(finalize(() => (this.saveInFlight = false)))
       .subscribe({
         next: response => {
@@ -759,7 +774,7 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
     });
 }
 
-  onSystemLabelClick(event: Event, sc: string, origin: string) {
+  onSystemLabelClick(event: Event, sc: string, origin: PanelOrigin) {
     event.stopPropagation();
     this.showMaterials(sc, origin);
   }
@@ -931,8 +946,9 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
     this.onSCSelected(syntheticEvent, originId);
   }
 
-  showMaterials(sc, origin) {
+  showMaterials(sc, origin: PanelOrigin) {
     this.currentPanelItem = sc; // track currently shown item
+    this.currentPanelOrigin = origin;
     this.SCseleccionado = '/ ' + sc;
     this.selectedMaterial = false;
     this.showSearch = false;
@@ -942,10 +958,11 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
      countDynamo = 1;
 
     this.listData.map(data => {
-      if (data.Sistema_constructivo === sc && origin === 'revit-user') {
+      if (data.Sistema_constructivo === sc && origin !== 'dynamo') {
         if (
-          data.Origen === 'Modelo de Revit' ||
-          data.Origen === 'Template EVAMED'
+          origin === 'user'
+            ? data.Origen === ORIGEN_BY_PANEL.user
+            : data.Origen === 'Modelo de Revit' || data.Origen === 'Template EVAMED'
         ) {
           data.signal = false;
           let materialABuscar = data.Material;
@@ -1095,14 +1112,14 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
     const toDuplicate = this.listData.filter(
       item => item.Sistema_constructivo === sc &&
               (origin === 'user'
-                ? item.Origen === 'Creado por el usuario'
+                ? item.Origen === ORIGEN_BY_PANEL.user
                 : item.Origen === origenLabel || item.Origen === 'Template EVAMED')
     );
     toDuplicate.forEach(item => {
       this.listData.push({ ...item });
     });
     this.storeSheet();
-    this.showMaterials(sc, origin === 'user' ? 'revit-user' : origin);
+    this.showMaterials(sc, origin as PanelOrigin);
   }
 
   onReturnListMaterials() {
@@ -1216,22 +1233,43 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
     });
   }
 
-  addConstructiveSystemDialog() {
-    const dialogRef = this.dialog.open(AddConstructiveSystemComponent, {
-      width: '680px',
-      data: {
-        newConstructiveSystem: this.newConstructiveSystem,
-      },
+  /**
+   * "Agregar sistema constructivo": a name, then its materials from the
+   * explorer. A system is only its rows, so one closed without materials
+   * isn't kept (R-41).
+   */
+  async addConstructiveSystem(): Promise<void> {
+    if (this.indexSheet === undefined || this.deleteMode) {
+      return;
+    }
+    const existing = [...(this.ListSCRevit ?? []), ...(this.ListSCDynamo ?? []), ...(this.ListSCUsuario ?? [])],
+      system = await firstValueFrom(
+        this.dialog.open(AddConstructiveSystemComponent, { width: '680px', data: { existing } }).afterClosed()
+      );
+    if (!system) {
+      return;
+    }
+    const added = await this.explorerPicker.pickMany({
+      system,
+      section: this.selectedSheet ?? null,
+      projectLife: Number(this.vidaUtilSeleccionado) || 50,
     });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(result);
-    });
+    if (!added.length) {
+      return;
+    }
+    this.listData.push(...added.map(picked => toExcelRow(picked, system, ORIGEN_BY_PANEL.user)));
+    this.storeSheet();
+    // Switched on, so the autosave keeps it; the sheet's lists are rebuilt with it.
+    this.SOU[this.indexSheet] = [...(this.SOU[this.indexSheet] ?? []), system];
+    this.selectedSystems[`3:${system}`] = true;
+    this.onGroupsChange([{ value: this.selectedSheet } as MatListOption]);
+    this.showMaterials(system, 'user');
   }
 
   /** Adds a material from the explorer to the system shown in the panel (R-20). */
-  async exploreMaterials(origin: string): Promise<void> {
+  async exploreMaterials(): Promise<void> {
     const system = this.currentPanelItem,
+      origin = this.currentPanelOrigin,
       added = await this.explorerPicker.pickMany({
         system,
         section: this.selectedSheet ?? null,
@@ -1240,9 +1278,9 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
     if (!added.length) {
       return;
     }
-    this.listData.push(...added.map(picked => toExcelRow(picked, system, origin)));
+    this.listData.push(...added.map(picked => toExcelRow(picked, system, ORIGEN_BY_PANEL[origin])));
     this.storeSheet();
-    this.showMaterials(system, 'revit-user');
+    this.showMaterials(system, origin);
   }
 
   /**
