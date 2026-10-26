@@ -47,8 +47,8 @@ describe('ExplorerPickerService', () => {
       const picker = TestBed.inject(ExplorerPickerService),
         context = { system: 'Muro de block', section: 'Muros exteriores', projectLife: 50, ...extra },
         result = many ? picker.pickMany(context) : picker.pick(context);
-      // The picker's code loads on first use.
-      for (let tries = 0; tries < 50 && !overlay()?.querySelector('app-explorer-browser'); tries++) {
+      // The picker's code loads on first use; on a busy machine that takes a while.
+      for (let tries = 0; tries < 500 && !overlay()?.querySelector('app-explorer-browser'); tries++) {
         await settle();
       }
       http.expectOne(request => request.url.endsWith('/explorer/produccion/')).flush(body);
@@ -152,45 +152,75 @@ describe('ExplorerPickerService', () => {
     expect(overlay().querySelector('app-material-edit')).toBeNull();
   });
 
+  it('edit mode: "Cambiar material" brings in the new material’s name, keeping the row’s other values', async () => {
+    const beam = { ...DETAIL, id: 13, name: 'Acero_Viga', display_name: 'Viga' },
+      { result } = await start({
+        mode: 'edit',
+        materialId: 12,
+        initial: {
+          comercialName: 'Block del muro', quantity: 90, comments: '', transportOrigin: null, distanceOrigin: null,
+          transportEnd: 4, distanceEnd: 30, replaces: 1, rowUnit: null,
+        },
+      });
+    http.expectOne(request => request.url.endsWith('/explorer/produccion/12/')).flush(DETAIL);
+    await settle();
+
+    await click('.edit__summary-link', 'Cambiar material');
+    await click('.result-card__open');
+    http.expectOne(request => request.url.endsWith('/explorer/produccion/12/')).flush(beam);
+    await settle();
+    await click('.detail__select');
+
+    expect(overlay().querySelector<HTMLInputElement>('input[formcontrolname=comercialName]')!.value).toBe('Viga');
+    await click('button[type=submit]', 'Guardar cambios');
+    expect(await result).toMatchObject({ material: { id: 13 }, comercialName: 'Viga', quantity: 90, distanceEnd: 30 });
+  });
+
+  it('adds a material once, however often "Agregar material" is clicked while it saves', async () => {
+    let finish!: (saved: boolean[]) => void;
+    const save = vi.fn(() => new Promise<boolean[]>(resolve => (finish = resolve))),
+      { result } = await start({ save }, true);
+    await click('.result-card__open');
+    http.expectOne(() => true).flush(DETAIL);
+    await settle();
+    await click('.detail__select');
+    const quantity = overlay().querySelector<HTMLInputElement>('input[formcontrolname=quantity]')!;
+    quantity.value = '30';
+    quantity.dispatchEvent(new Event('input'));
+
+    await click('button[type=submit]');
+    const submit = overlay().querySelector<HTMLButtonElement>('button[type=submit]')!;
+    expect(submit.textContent?.trim()).toBe('Agregando…');
+    expect(submit.disabled).toBe(true);
+    submit.form!.requestSubmit();
+    await settle();
+    finish([true]);
+
+    expect(await result).toHaveLength(1);
+    expect(save).toHaveBeenCalledTimes(1);
+  });
+
   describe('several at once', () => {
     const beam = { ...DETAIL, id: 13, name: 'Acero_Viga', display_name: 'Viga', unit: 'm', source: 'EPDs' },
       two: ExplorerPage = { ...list, count: 2, results: [DETAIL, beam] },
       tick = (index: number) => click(`app-result-card:nth-of-type(${index}) .result-card__check input`),
-      quantity = (index: number, value: string) => {
-        const input = overlay().querySelectorAll<HTMLInputElement>('.selection__quantity input')[index];
-        input.value = value;
-        input.dispatchEvent(new Event('input'));
-        TestBed.tick();
-      },
-      addButton = () =>
-        Array.from(overlay().querySelectorAll<HTMLButtonElement>('.picker__tray button')).find(button =>
-          button.textContent?.includes('Agregar')
-        )!;
+      picked = () => Array.from(overlay().querySelectorAll('.picker__chip-name'), name => name.textContent?.trim());
 
-    it('ticks materials, lists them with a quantity each, and adds them with the defaults', async () => {
+    it('lists the ticked materials, and adds them at once with quantity 0 and the defaults', async () => {
       const { result } = await start({}, true, two);
 
       await tick(1);
       await tick(2);
       expect(overlay().querySelector('.picker__count')?.textContent?.trim()).toBe('2 materiales seleccionados');
-      await click('.picker__tray button', 'Revisar y agregar');
-
-      expect(Array.from(overlay().querySelectorAll('.selection__name'), name => name.textContent?.trim())).toEqual([
-        'AAC block',
-        'Viga',
-      ]);
-      expect(addButton().disabled).toBe(true);
-      quantity(0, '30');
-      quantity(1, '4.5');
-      expect(addButton().textContent?.trim()).toBe('Agregar 2 materiales');
-      expect(addButton().disabled).toBe(false);
-      await click('.picker__tray button', 'Agregar 2 materiales');
+      expect(picked()).toEqual(['AAC block', 'Viga']);
+      expect(overlay().querySelector('.selection__quantity')).toBeNull();
+      await click('.picker__add', 'Agregar 2 materiales');
 
       expect(await result).toEqual([
         {
           material: { id: 12, name: DETAIL.name, unit: 'kg', source: 'ECOINVENT 3' },
           comercialName: 'AAC block',
-          quantity: 30,
+          quantity: 0,
           comments: '',
           transportOrigin: 1,
           distanceOrigin: null,
@@ -199,23 +229,21 @@ describe('ExplorerPickerService', () => {
           lifeYears: 50,
           replaces: 0,
         },
-        expect.objectContaining({ material: expect.objectContaining({ id: 13 }), comercialName: 'Viga', quantity: 4.5 }),
+        expect.objectContaining({ material: expect.objectContaining({ id: 13 }), comercialName: 'Viga', quantity: 0 }),
       ]);
     });
 
-    it('unticks a material, and removes one from the list', async () => {
+    it('unticks a material, and removes one from the tray’s list', async () => {
       await start({}, true, two);
 
       await tick(1);
       await tick(2);
       await tick(1);
-      expect(overlay().querySelector('.picker__count')?.textContent?.trim()).toBe('1 material seleccionado');
-      await click('.picker__tray button', 'Revisar y agregar');
+      expect(picked()).toEqual(['Viga']);
       await click('button[aria-label="Quitar de la selección: Viga"]');
 
-      expect(overlay().querySelector('.selection')).toBeNull();
       expect(overlay().querySelector('.picker__tray')).toBeNull();
-      expect(overlay().querySelector<HTMLElement>('app-explorer-browser')!.hidden).toBe(false);
+      expect(overlay().querySelector('.result-card__check input:checked')).toBeNull();
     });
 
     it('adds from the Ficha too', async () => {
@@ -227,30 +255,29 @@ describe('ExplorerPickerService', () => {
       await click('.detail__toggle', 'Agregar a la selección');
 
       expect(overlay().querySelector('.detail__toggle')?.textContent).toContain('En la selección');
-      expect(overlay().querySelector('.picker__count')?.textContent?.trim()).toBe('1 material seleccionado');
+      expect(picked()).toEqual(['Viga']);
     });
 
-    it('edits one material’s other values in Edición, then goes back to the list', async () => {
+    it('Edición joins the ticked materials with its own values, back on the list', async () => {
       const { result } = await start({}, true, two);
-      await tick(2);
-      await click('.picker__tray button', 'Revisar y agregar');
-
-      await click('.selection__edit');
+      await tick(1);
+      await click('app-result-card:nth-of-type(2) .result-card__open');
       http.expectOne(request => request.url.endsWith('/explorer/produccion/13/')).flush(beam);
       await settle();
-      const name = overlay().querySelector<HTMLInputElement>('input[formcontrolname=comercialName]')!,
-        amount = overlay().querySelector<HTMLInputElement>('input[formcontrolname=quantity]')!,
-        distance = overlay().querySelector<HTMLInputElement>('input[formcontrolname=distanceEnd]')!;
-      [[name, 'Viga IPR'], [amount, '12'], [distance, '80']].forEach(([input, value]) => {
-        (input as HTMLInputElement).value = value as string;
-        (input as HTMLInputElement).dispatchEvent(new Event('input'));
-      });
-      await click('button[type=submit]', 'Guardar en la selección');
+      await click('.detail__select');
+      const amount = overlay().querySelector<HTMLInputElement>('input[formcontrolname=quantity]')!;
+      amount.value = '12';
+      amount.dispatchEvent(new Event('input'));
 
-      expect(overlay().querySelector('.selection__meta')?.textContent).toContain('«Viga IPR»');
-      expect(overlay().querySelector<HTMLInputElement>('.selection__quantity input')!.value).toBe('12');
-      await click('.picker__tray button', 'Agregar 1 material');
-      expect(await result).toEqual([expect.objectContaining({ comercialName: 'Viga IPR', quantity: 12, distanceEnd: 80 })]);
+      await click('button[type=submit]', 'Agregar a la selección');
+
+      expect(overlay().querySelector<HTMLElement>('app-explorer-browser')!.hidden).toBe(false);
+      expect(picked()).toEqual(['AAC block', 'Viga']);
+      await click('.picker__add', 'Agregar 2 materiales');
+      expect(await result).toEqual([
+        expect.objectContaining({ comercialName: 'AAC block', quantity: 0 }),
+        expect.objectContaining({ comercialName: 'Viga', quantity: 12 }),
+      ]);
     });
 
     it('keeps what the project couldn’t save, says so, and hands back what it did', async () => {
@@ -258,17 +285,14 @@ describe('ExplorerPickerService', () => {
         { result } = await start({ save }, true, two);
       await tick(1);
       await tick(2);
-      await click('.picker__tray button', 'Revisar y agregar');
-      quantity(0, '1');
-      quantity(1, '2');
 
-      await click('.picker__tray button', 'Agregar 2 materiales');
+      await click('.picker__add', 'Agregar 2 materiales');
 
       expect(save).toHaveBeenCalledTimes(1);
       expect(overlay().querySelector('.picker__failed')?.textContent).toContain('No se pudo agregar: Viga.');
-      expect(Array.from(overlay().querySelectorAll('.selection__name'), name => name.textContent?.trim())).toEqual(['Viga']);
+      expect(picked()).toEqual(['Viga']);
       await click('button[aria-label="Cerrar el explorador sin agregar"]');
-      expect(await result).toEqual([expect.objectContaining({ comercialName: 'AAC block', quantity: 1 })]);
+      expect(await result).toEqual([expect.objectContaining({ comercialName: 'AAC block', quantity: 0 })]);
     });
 
     it('offers no checkboxes when editing a project row', async () => {

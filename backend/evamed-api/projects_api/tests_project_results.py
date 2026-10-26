@@ -151,3 +151,32 @@ class ProductionStageAggregationTests(APITestCase):
         response = self.client.get(RESULTS_URL.format(self.project.id), {'databases': 'EPiC'})
 
         self.assertEqual(response.data['datos'][GWP_NAME]['Producción'].get('A1-A3', 0), 0)
+
+    def _in_system(self, material, quantity, system, section, origin):
+        return models.MaterialSchemeProject.objects.create(
+            material_id=material, project_id=self.project, quantity=quantity,
+            construction_system=system, section_id=section, origin_id=origin,
+        )
+
+    def test_switched_off_system_is_left_out(self):
+        """Systems switched off on the Materiales page leave the totals, as on Resultados."""
+        walls = models.Section.objects.create(name_section='Muros exteriores')
+        revit = models.Origin.objects.create(name_origin='Modelo de Revit')
+        user = models.Origin.objects.create(name_origin='Usuario_Plataforma')
+        material = self._material('EPiC')
+        self._impact(material, self.std_agg, 10)
+        self._in_system(material, 1, 'Muro A', walls, revit)
+        self._in_system(material, 2, 'Muro B', walls, revit)
+        # Same name in another origin: still counted.
+        self._in_system(material, 4, 'Muro B', walls, user)
+        models.MaterialStageSystemSelection.objects.create(
+            project_id=self.project, section_id=walls, origin_id=revit,
+            construction_system='Muro B', is_selected=False,
+        )
+        models.MaterialStageSystemSelection.objects.create(
+            project_id=self.project, section_id=walls, origin_id=revit,
+            construction_system='Muro A', is_selected=True,
+        )
+
+        self.assertEqual(self._production().get('A1-A3'), 50)
+

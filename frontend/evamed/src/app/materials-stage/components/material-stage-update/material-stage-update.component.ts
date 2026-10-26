@@ -16,6 +16,7 @@ import { ExplorerPickerService } from '../../../explorer/explorer-picker.service
 import { PickedMaterial } from '../../../explorer/picker.models';
 import { fromSchemeRow, toSchemeProject, USER_ORIGIN } from '../../picked-material';
 import { AddConstructiveSystemComponent } from '../add-constructive-system/add-constructive-system.component';
+import { byIndex, RECENT_MS, sortByName } from '../../material-list';
 
 /** The systems' three groups, as the panels name them. */
 type PanelOrigin = 'revit-user' | 'dynamo' | 'user';
@@ -92,6 +93,9 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
   currentPanelItem = '';
   /** Which group the system shown in the Materiales panel belongs to. */
   currentPanelOrigin: PanelOrigin = 'revit-user';
+  readonly byIndex = byIndex;
+  /** Rows just added from the explorer, highlighted for a moment (R-43). */
+  recentIds = new Set<number>();
 
   myControl = new UntypedFormControl();
   options: Material[];
@@ -99,6 +103,8 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
 
   displayedColumns: string[] = ['Standard', 'Potencial', 'Valor', 'Unidad'];
   private selectionIdByKey: { [key: string]: number } = {};
+  /** The rows before an explorer add, to highlight the new ones once reloaded. */
+  private recentAfterReload: Set<number> | null = null;
 
   constructor(
     private materialsService: MaterialsService,
@@ -763,6 +769,7 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
                   prevData['distancia_2'] = parseInt(item.distance_end);
                   prevData['key'] = counterRevit++;
                   listMateriales.push(prevData);
+                  sortByName(listMateriales, row => row['name_material']);
                 }
               });
             });
@@ -806,6 +813,7 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
                   prevData['key'] = countDynamo++;
 
                   listMateriales.push(prevData);
+                  sortByName(listMateriales, row => row['name_material']);
                 }
               });
             });
@@ -878,13 +886,15 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
     if (!system || !Number.isFinite(projectId) || this.indexSheet === undefined) {
       return;
     }
-    const added = await this.explorerPicker.pickMany({
-      system,
-      section: this.sheetNames[this.indexSheet] ?? null,
-      projectLife: Number(this.vidaUtilSeleccionado) || 50,
-      save: materials => this.saveNew(materials, { projectId, sectionId, system }),
-    });
+    const before = this.rowIds(),
+      added = await this.explorerPicker.pickMany({
+        system,
+        section: this.sheetNames[this.indexSheet] ?? null,
+        projectLife: Number(this.vidaUtilSeleccionado) || 50,
+        save: materials => this.saveNew(materials, { projectId, sectionId, system }),
+      });
     if (added.length) {
+      this.recentAfterReload = before;
       // The explorer's rows are the user's (R-02): a Revit or EVAMED system lists them with its Revit ones.
       this.reloadAndShow(system, projectId, this.currentPanelOrigin === 'user' ? 'user' : 'revit-user');
     }
@@ -908,18 +918,20 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
     if (!system) {
       return;
     }
-    const added = await this.explorerPicker.pickMany({
-      system,
-      section: this.sheetNames[this.indexSheet] ?? null,
-      projectLife: Number(this.vidaUtilSeleccionado) || 50,
-      save: materials => this.saveNew(materials, { projectId, sectionId, system }),
-    });
+    const before = this.rowIds(),
+      added = await this.explorerPicker.pickMany({
+        system,
+        section: this.sheetNames[this.indexSheet] ?? null,
+        projectLife: Number(this.vidaUtilSeleccionado) || 50,
+        save: materials => this.saveNew(materials, { projectId, sectionId, system }),
+      });
     if (!added.length) {
       return;
     }
     this.selectedSystems[`${USER_ORIGIN}:${system}`] = true;
     this.projectsService.getMaterialSchemeProyect().subscribe(data => {
       this.listData2 = data.filter(item => item.project_id === projectId);
+      this.markRecent(before);
       // Rebuilds the sheet's lists with the new system (saving it switched on), then opens it.
       this.onGroupsChange(this.selectedSheet);
       setTimeout(() => {
@@ -951,6 +963,10 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
   private reloadAndShow(system: string, projectId: number, origin: PanelOrigin): void {
     this.projectsService.getMaterialSchemeProyect().subscribe(data => {
       this.listData2 = data.filter(item => item.project_id === projectId);
+      if (this.recentAfterReload) {
+        this.markRecent(this.recentAfterReload);
+        this.recentAfterReload = null;
+      }
       this.showMaterials(null, system, origin);
       this.cdr.markForCheck();
     });
@@ -974,6 +990,26 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
         this.cdr.markForCheck();
       },
     });
+  }
+
+  isRecent(row: Record<string, any>): boolean {
+    return this.recentIds.has(row['material_scheme_project_id']);
+  }
+
+  private rowIds(): Set<number> {
+    return new Set((this.listData2 ?? []).map(item => item.id));
+  }
+
+  /** Highlights the rows that weren't there before, so their quantities are easy to find and fill in. */
+  private markRecent(before: Set<number>): void {
+    const recent = new Set((this.listData2 ?? []).map(item => item.id).filter(id => !before.has(id)));
+    this.recentIds = recent;
+    setTimeout(() => {
+      if (this.recentIds === recent) {
+        this.recentIds = new Set();
+        this.cdr.markForCheck();
+      }
+    }, RECENT_MS);
   }
 
   /** Says so when a save fails, instead of only logging it (R-37). */

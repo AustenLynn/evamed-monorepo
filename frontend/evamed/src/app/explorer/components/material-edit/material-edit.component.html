@@ -92,7 +92,7 @@
 
       <div class="edit__actions">
         <button mat-stroked-button type="button" (click)="back.emit()">Cancelar</button>
-        <button mat-flat-button type="submit" class="edit__submit">{{ submitLabel }}</button>
+        <button mat-flat-button type="submit" class="edit__submit" [disabled]="saving">{{ submitLabel }}</button>
       </div>
     </div>
   </div>
@@ -107,7 +107,7 @@
       <dt>Unidad declarada</dt>
       <dd>{{ detail.unit || '—' }}</dd>
     </dl>
-    <button *ngIf="!inSelection" mat-button type="button" class="edit__summary-link" (click)="back.emit()">
+    <button mat-button type="button" class="edit__summary-link" (click)="back.emit()">
       Ver ficha completa
     </button>
     <button *ngIf="editing" mat-button type="button" class="edit__summary-link" (click)="changeMaterial.emit()">

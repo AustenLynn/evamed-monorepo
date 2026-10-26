@@ -23,7 +23,7 @@ describe.each([
     sessionStorage.clear();
   });
 
-  it('opens the results of the project being filled in', () => {
+  it('opens the results of the project being filled in', async () => {
     localStorage.setItem('idProyectoConstrucción', '3'); // an earlier project
     // Skip the constructor: it starts a dozen requests this test doesn't need.
     const component = Object.create(stage.prototype),
@@ -31,7 +31,8 @@ describe.each([
     component.projectId = 42;
     component.router = { navigateByUrl };
 
-    component.goToResultados();
+    // The materials page saves its last changes first.
+    await component.goToResultados();
 
     expect(sessionStorage.getItem('projectID')).toBe('42');
     expect(navigateByUrl).toHaveBeenCalledWith('resultados');

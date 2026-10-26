@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inje
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { ExplorerItem, ExplorerQuery, MaterialDetail } from '../../explorer.models';
-import { PickedMaterial, pickedFrom, PickerContext, PickerInitial, SelectionRow, selectionRow } from '../../picker.models';
+import { PickedMaterial, pickedFrom, PickerContext, SelectionRow, selectionRow } from '../../picker.models';
 import { ExplorerService } from '../../services/explorer.service';
 import { StageConfig, stageConfig } from '../../stage-config';
 import { ExplorerView } from '../explorer-browser/explorer-browser.component';
@@ -11,16 +11,14 @@ type Step =
   | { kind: 'loading' }
   | { kind: 'list' }
   | { kind: 'detail'; id: number }
-  | { kind: 'edit'; detail: MaterialDetail }
-  | { kind: 'selection' }
-  /** One selected material in Edición, for the values the list doesn't show. */
-  | { kind: 'edit-row'; detail: MaterialDetail; row: SelectionRow };
+  | { kind: 'edit'; detail: MaterialDetail };
 
 /**
  * The explorer as the stage page's material picker (R-20): list → Ficha →
- * Edición → "Agregar material" adds one; ticking several and "Revisar y
- * agregar" adds them together, each with its quantity. State lives here,
- * not in the URL, so the stage page underneath keeps its own.
+ * Edición → "Agregar material" adds one; ticked materials are listed in the
+ * tray and "Agregar N materiales" adds them at once, with quantity 0 to fill
+ * in the stage page's list (R-43). State lives here, not in the URL, so the
+ * stage page underneath keeps its own.
  */
 @Component({
   selector: 'app-explorer-picker',
@@ -69,19 +67,12 @@ export class ExplorerPickerComponent {
     if (this.context.mode === 'edit') {
       return 'Editar material';
     }
-    if (this.step.kind === 'selection' || this.step.kind === 'edit-row') {
-      return 'Materiales seleccionados';
-    }
     return this.step.kind === 'edit' ? 'Agregar material al proyecto' : 'Explorador de materiales';
   }
 
   /** Several materials can be added at once, but a project row is edited alone. */
   get selectable(): boolean {
     return this.context.mode !== 'edit';
-  }
-
-  get selectionReady(): boolean {
-    return this.selection.length > 0 && this.selection.every(row => (row.quantity ?? 0) > 0);
   }
 
   onQuery(query: ExplorerQuery): void {
@@ -117,58 +108,11 @@ export class ExplorerPickerComponent {
 
   remove(id: number): void {
     this.setSelection(this.selection.filter(row => row.material.id !== id));
-    if (!this.selection.length && this.step.kind === 'selection') {
-      this.backToList();
-    }
   }
 
-  review(): void {
-    if (this.step.kind === 'list') {
-      this.listScrollTop = this.body.nativeElement.scrollTop;
-    }
-    this.go({ kind: 'selection' });
-  }
-
-  setQuantity(row: SelectionRow, value: string): void {
-    const quantity = value === '' ? null : Number(value);
-    row.quantity = quantity !== null && Number.isFinite(quantity) ? quantity : null;
-  }
-
-  editRow(row: SelectionRow): void {
-    this.go({ kind: 'loading' });
-    this.explorer.material(row.material.id).subscribe({
-      next: detail => this.show({ kind: 'edit-row', detail, row }),
-      // The list stays as it was; its quantity box still works.
-      error: () => this.show({ kind: 'selection' }),
-    });
-  }
-
-  /** Edición's starting values for a selected material. */
-  rowContext(row: SelectionRow): PickerContext {
-    const initial: PickerInitial = {
-      comercialName: row.values.comercialName,
-      quantity: row.quantity,
-      comments: row.values.comments,
-      transportOrigin: row.values.transportOrigin,
-      distanceOrigin: row.values.distanceOrigin,
-      transportEnd: row.values.transportEnd,
-      distanceEnd: row.values.distanceEnd,
-      replaces: row.values.replaces,
-      rowUnit: null,
-    };
-    return { ...this.context, initial };
-  }
-
-  saveRow(row: SelectionRow, picked: PickedMaterial): void {
-    const { material, quantity, ...values } = picked;
-    row.material = material;
-    row.quantity = quantity;
-    row.values = values;
-    this.go({ kind: 'selection' });
-  }
-
+  /** "Agregar N materiales": quantities are filled in afterwards, in the stage page's list. */
   addSelection(): void {
-    if (this.selectionReady) {
+    if (this.selection.length) {
       void this.commit(this.selection.map(pickedFrom), true);
     }
   }
@@ -178,6 +122,9 @@ export class ExplorerPickerComponent {
    * materials already ticked, it joins them instead of being added alone.
    */
   add(picked: PickedMaterial): void {
+    if (this.saving) {
+      return;
+    }
     if (this.context.mode === 'edit') {
       this.dialogRef.close([picked]);
     } else if (this.selection.length) {
@@ -185,7 +132,7 @@ export class ExplorerPickerComponent {
         displayName = this.step.kind === 'edit' ? this.step.detail.display_name : material.name,
         row: SelectionRow = { material, displayName, quantity, values };
       this.setSelection([...this.selection.filter(other => other.material.id !== material.id), row]);
-      this.go({ kind: 'selection' });
+      this.backToList();
     } else {
       void this.commit([picked], false);
     }
@@ -197,6 +144,10 @@ export class ExplorerPickerComponent {
 
   /** Saves through the stage page when it can; what doesn't save stays here to retry. */
   private async commit(materials: PickedMaterial[], fromSelection: boolean): Promise<void> {
+    // A second click while the first save runs would add everything twice.
+    if (this.saving) {
+      return;
+    }
     this.saving = true;
     this.failedNames = [];
     this.cdr.markForCheck();

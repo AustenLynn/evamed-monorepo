@@ -54,7 +54,7 @@ export interface PickedMaterial {
 export interface SelectionRow {
   material: PickedMaterial['material'];
   displayName: string;
-  /** null until typed in. */
+  /** 0 when ticked: it's filled in afterwards, in the stage page's list (R-43). */
   quantity: number | null;
   values: Omit<PickedMaterial, 'material' | 'quantity'>;
 }
@@ -78,7 +78,7 @@ export const selectionRow = (
 ): SelectionRow => ({
   material: { id: item.id, name: item.name, unit: item.unit, source: item.source },
   displayName: item.display_name,
-  quantity: null,
+  quantity: 0,
   values: {
     comercialName: item.display_name,
     comments: '',
@@ -91,7 +91,7 @@ export const selectionRow = (
   },
 });
 
-/** The row as the material it adds; only call it once the quantity is set. */
+/** The row as the material it adds. */
 export const pickedFrom = (row: SelectionRow): PickedMaterial => ({
   material: row.material,
   quantity: row.quantity ?? 0,

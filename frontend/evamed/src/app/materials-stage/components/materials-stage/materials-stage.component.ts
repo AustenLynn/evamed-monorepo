@@ -12,6 +12,7 @@ import { AddConstructiveElementComponent } from '../add-constructive-element/add
 import { AddConstructiveSystemComponent } from '../add-constructive-system/add-constructive-system.component';
 import { ExplorerPickerService } from '../../../explorer/explorer-picker.service';
 import { fromExcelRow, toExcelRow } from '../../picked-material';
+import { byIndex, RECENT_MS, sortByName } from '../../material-list';
 import { MatDialog } from '@angular/material/dialog';
 import { AnalisisService } from 'src/app/core/services/analisis/analisis.service';
 
@@ -90,6 +91,9 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
   currentPanelItem = '';
   /** Which group the system shown in the Materiales panel belongs to. */
   currentPanelOrigin: PanelOrigin = 'revit-user';
+  readonly byIndex = byIndex;
+  /** Rows just added from the explorer, highlighted for a moment (R-43). */
+  recentRows = new Set<object>();
   materialData: any;
   EPDS: Material[] = [];
   EPiC: any;
@@ -112,6 +116,8 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
   private autosaveIntervalId: ReturnType<typeof setInterval> | null = null;
   private lastAutosaveSignature: string | null = null;
   private saveInFlight = false;
+  /** The save running now, so leaving the page can wait for it. */
+  private inFlight: Promise<void> = Promise.resolve();
   private selectionIdByKey: { [key: string]: number } = {};
 
   constructor(
@@ -236,6 +242,21 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
     if (this.autosaveIntervalId) {
       clearInterval(this.autosaveIntervalId);
       this.autosaveIntervalId = null;
+    }
+    // Left some other way than the page's own buttons: still save the last changes.
+    void this.flushSave();
+  }
+
+  /**
+   * Saves what the autosave hasn't yet, after any save already running, so
+   * the next page (Resultados above all) reads the last changes (R-43).
+   */
+  async flushSave(): Promise<void> {
+    await this.inFlight;
+    const signature = this.buildAutosaveSignature();
+    if (this.projectId && signature !== this.lastAutosaveSignature) {
+      this.lastAutosaveSignature = signature;
+      await this.saveStepOne();
     }
   }
 
@@ -609,13 +630,13 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
     // console.log(this.selectedMaterial);
   }
 
-  saveStepOne(): void {
+  saveStepOne(): Promise<void> {
     // Material names resolve to ids through the catalogue; without it every row
     // would be dropped. And one save at a time: overlapping replaces can
     // interleave on the server. Either way, not saved: the next tick retries.
     if (!this.projectId || !this.materialsList || this.saveInFlight) {
       this.lastAutosaveSignature = null;
-      return;
+      return this.inFlight;
     }
 
     // Only sheets whose saved selections are loaded for both origins. After
@@ -623,7 +644,7 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
     // seen would clear its saved rows.
     const sheets = this.knownSheets();
     if (sheets.length === 0) {
-      return;
+      return Promise.resolve();
     }
 
     // Systems created by the user too, once their selections are known as well.
@@ -636,20 +657,28 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
     const sections = sheets.map(sheet => sheet + 1);
 
     this.saveInFlight = true;
-    this.projectsService
-      .replaceMaterialScheme(this.projectId, withUser ? [1, 2, 3] : [1, 2], sections, items)
-      .pipe(finalize(() => (this.saveInFlight = false)))
-      .subscribe({
-        next: response => {
-          if (response?.skipped?.length) {
-            console.warn('Materiales no guardados (datos inválidos en el Excel)', response.skipped);
-          }
-        },
-        error: error => {
-          console.error('No se pudieron guardar los materiales', error);
-          this.lastAutosaveSignature = null;
-        },
-      });
+    this.inFlight = new Promise<void>(resolve => {
+      this.projectsService
+        .replaceMaterialScheme(this.projectId, withUser ? [1, 2, 3] : [1, 2], sections, items)
+        .pipe(
+          finalize(() => {
+            this.saveInFlight = false;
+            resolve();
+          })
+        )
+        .subscribe({
+          next: response => {
+            if (response?.skipped?.length) {
+              console.warn('Materiales no guardados (datos inválidos en el Excel)', response.skipped);
+            }
+          },
+          error: error => {
+            console.error('No se pudieron guardar los materiales', error);
+            this.lastAutosaveSignature = null;
+          },
+        });
+    });
+    return this.inFlight;
   }
 
   /** Sheet indexes whose Revit and EVAMED-options selections are both known. */
@@ -1014,7 +1043,7 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
         }
       }
     });
-    this.listMateriales = materiales;
+    this.listMateriales = sortByName(materiales, row => row.Material);
   }
 
   showDetailMaterial(event, material) {
@@ -1134,11 +1163,13 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
     this.showMaterial = false;
   }
 
-  goToMaterialStage() {
+  async goToMaterialStage() {
+    await this.flushSave();
     this.router.navigateByUrl('materials-stage');
   }
 
-  goToConstructionStage() {
+  async goToConstructionStage() {
+    await this.flushSave();
     const projectId = this.projectId ?? parseInt(
       localStorage.getItem('idProyectoConstrucción') ?? '',
       10
@@ -1162,7 +1193,8 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
     });
   }
 
-  goToUsageStage() {
+  async goToUsageStage() {
+    await this.flushSave();
     this.materialsService.getACR().subscribe(acr => {
       const schemaFilter = acr.filter(
         schema => schema.project_id === this.projectId
@@ -1180,7 +1212,8 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
     });
   }
 
-  goToEndLife() {
+  async goToEndLife() {
+    await this.flushSave();
     this.materialsService.getEDCP().subscribe(edcp => {
       const schemaFilter = edcp.filter(
         schema => schema.project_id === this.projectId
@@ -1199,14 +1232,16 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
   }
 
   continue() {
-    this.goToConstructionStage();
+    void this.goToConstructionStage();
   }
 
-  goToHome() {
+  async goToHome() {
+    await this.flushSave();
     this.router.navigateByUrl('home-evamed');
   }
 
-  goToResultados() {
+  async goToResultados() {
+    await this.flushSave();
     // idProyectoConstrucción can still name an earlier project here.
     sessionStorage.setItem('projectID', String(this.projectId));
     this.router.navigateByUrl('resultados');
@@ -1263,8 +1298,10 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
     if (!added.length) {
       return;
     }
-    this.listData.push(...added.map(picked => toExcelRow(picked, system, ORIGEN_BY_PANEL.user)));
+    const rows = added.map(picked => toExcelRow(picked, system, ORIGEN_BY_PANEL.user));
+    this.listData.push(...rows);
     this.storeSheet();
+    this.markRecent(rows);
     // Switched on, so the autosave keeps it; the sheet's lists are rebuilt with it.
     this.SOU[this.indexSheet] = [...(this.SOU[this.indexSheet] ?? []), system];
     this.selectedSystems[`3:${system}`] = true;
@@ -1284,9 +1321,25 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
     if (!added.length) {
       return;
     }
-    this.listData.push(...added.map(picked => toExcelRow(picked, system, ORIGEN_BY_PANEL[origin])));
+    const rows = added.map(picked => toExcelRow(picked, system, ORIGEN_BY_PANEL[origin]));
+    this.listData.push(...rows);
     this.storeSheet();
+    this.markRecent(rows);
     this.showMaterials(system, origin);
+  }
+
+  isRecent(row: object): boolean {
+    return this.recentRows.has(row);
+  }
+
+  /** Highlights the rows just added, so their quantities are easy to find and fill in. */
+  private markRecent(rows: object[]): void {
+    this.recentRows = new Set(rows);
+    setTimeout(() => {
+      if (rows.every(row => this.recentRows.has(row))) {
+        this.recentRows = new Set();
+      }
+    }, RECENT_MS);
   }
 
   /**

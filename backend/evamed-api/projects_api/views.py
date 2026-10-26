@@ -299,10 +299,16 @@ class ProjectResultsView(APIView):
             active_databases = all_db_names
 
         # --- project-scoped data ---
-        scheme_project = list(
-            models.MaterialSchemeProject.objects.filter(project_id=project_id)
-            .select_related('material_id')
+        # Systems switched off on the Materiales page don't count, as on Resultados.
+        switched_off = set(
+            models.MaterialStageSystemSelection.objects.filter(project_id=project_id, is_selected=False)
+            .values_list('section_id_id', 'origin_id_id', 'construction_system')
         )
+        scheme_project = [
+            ps for ps in models.MaterialSchemeProject.objects.filter(project_id=project_id)
+            .select_related('material_id')
+            if (ps.section_id_id, ps.origin_id_id, ps.construction_system) not in switched_off
+        ]
         material_ids = [ps.material_id_id for ps in scheme_project]
 
         # MaterialSchemeData: (material_id, standard_id, potential_type_id) → summed value

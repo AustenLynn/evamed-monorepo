@@ -540,3 +540,9 @@ td.mat-mdc-footer-cell:first-of-type {
 .section-continue .custom-continue {
   margin-top: 0 !important;
 }
+
+// Materials just added from the explorer, so their quantities are easy to find (R-43).
+.material-recent {
+  background: var(--ev-impact-low-bg);
+  transition: background 0.6s;
+}

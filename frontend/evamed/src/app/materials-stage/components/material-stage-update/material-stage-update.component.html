@@ -229,7 +229,8 @@
         <mat-selection-list #materials [multiple]="false" hideSingleSelectionIndicator
           (selectionChange)="onSelectedMaterial($event, materials.selectedOptions); materials.deselectAll()"
           *ngIf="shouldShowMaterials && selectedMaterial === false && showSearch === false">
-          <mat-list-option *ngFor="let material of listMateriales | keyvalue" [value]="material" class="item-yellow-extend">
+          <mat-list-option *ngFor="let material of listMateriales | keyvalue: byIndex" [value]="material" class="item-yellow-extend"
+            [class.material-recent]="isRecent(material.value)">
             <div class="table-materials">
               <div class="col-key">{{ material.value.key }}.</div>
               <div class="col-material">

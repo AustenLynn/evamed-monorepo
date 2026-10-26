@@ -71,7 +71,7 @@ describe('Explorar materiales on the new-project page', () => {
     expect(stored.data[1].map((row: any) => row.Material)).toEqual(['Block hueco 15']);
   });
 
-  it('adds several materials at once, in the order chosen', async () => {
+  it('adds several materials at once, listed A→Z', async () => {
     const component = build([picked, { ...picked, comercialName: 'Mortero', quantity: 3 }]);
 
     await component.exploreMaterials();

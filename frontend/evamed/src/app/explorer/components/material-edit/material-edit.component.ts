@@ -38,8 +38,10 @@ const legNeedsTransport =
 export class MaterialEditComponent implements OnInit {
   @Input({ required: true }) detail!: MaterialDetail;
   @Input({ required: true }) context!: PickerContext;
-  /** Editing a row of the picker's selection: saving goes back to the list. */
+  /** Materials are already ticked in the picker: saving joins them (R-43). */
   @Input() inSelection = false;
+  /** The picker is saving: a second click would add the material twice. */
+  @Input() saving = false;
   @Output() readonly back = new EventEmitter<void>();
   /** Edit mode: pick another catalogue material for this row. */
   @Output() readonly changeMaterial = new EventEmitter<void>();
@@ -86,8 +88,11 @@ export class MaterialEditComponent implements OnInit {
   }
 
   get submitLabel(): string {
+    if (this.saving) {
+      return 'Agregando…';
+    }
     if (this.inSelection) {
-      return 'Guardar en la selección';
+      return 'Agregar a la selección';
     }
     return this.editing ? 'Guardar cambios' : 'Agregar material';
   }
@@ -107,9 +112,11 @@ export class MaterialEditComponent implements OnInit {
       replaces: replacesFor(life, life),
     });
     if (initial) {
-      const replaces = initial.replaces ?? 0;
+      // "Cambiar material" picked another one: its name replaces the old row's.
+      const replaces = initial.replaces ?? 0,
+        changed = this.detail.id !== this.context.materialId;
       this.form.patchValue({
-        comercialName: initial.comercialName || this.detail.display_name,
+        comercialName: (!changed && initial.comercialName) || this.detail.display_name,
         quantity: initial.quantity,
         comments: initial.comments,
         transportOrigin: initial.transportOrigin,
@@ -138,6 +145,9 @@ export class MaterialEditComponent implements OnInit {
   }
 
   submit(): void {
+    if (this.saving) {
+      return;
+    }
     this.submitted = true;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
