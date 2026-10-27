@@ -12,6 +12,9 @@ from pathlib import Path
 from typing import NamedTuple
 from xml.sax.saxutils import escape
 
+from projects_api import models
+from projects_api.explorer.derive import category, region
+
 TEMPLATE_DIR = Path(__file__).resolve().parent
 
 # kind -> (file, most materials the template's Registro sheet can mirror)
@@ -50,6 +53,18 @@ class CatalogueRow(NamedTuple):
 
 class TooManyMaterials(Exception):
     """The catalogue has more materials than the template's Registro sheet can list."""
+
+
+def catalogue_rows() -> list:
+    """Every material with a name, A to Z, as the template's catalogue rows."""
+    materials = models.Material.objects.select_related('unit_id').exclude(name_material__isnull=True)
+    named = [m for m in materials if m.name_material.strip()]
+    named.sort(key=lambda m: m.name_material.casefold())
+    return [CatalogueRow(
+        base=m.database_from or '', categoria=category(m.name_material) or '', tipo='',
+        material=m.name_material, unidad=(m.unit_id.name_unit if m.unit_id else '') or '',
+        administrador='', region=region(m.name_material) or '-', descripcion=m.description or '')
+        for m in named]
 
 
 def build_template(kind: str, rows: list, built_at: datetime) -> bytes:

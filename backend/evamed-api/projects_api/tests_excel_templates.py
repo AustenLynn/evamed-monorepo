@@ -5,10 +5,15 @@ import zipfile
 from datetime import datetime, timezone
 from xml.dom import minidom
 
-from django.test import SimpleTestCase
+from unittest import mock
 
+from django.test import SimpleTestCase
+from rest_framework.test import APITestCase
+
+from projects_api import models
 from projects_api.excel_templates import build
-from projects_api.excel_templates.build import CatalogueRow, TooManyMaterials, build_template
+from projects_api.excel_templates.build import CatalogueRow, TooManyMaterials, build_template, catalogue_rows
+from projects_api.testing import firebase_user
 
 KINDS = ('windows', 'mac')
 BUILT_AT = datetime(2026, 10, 27, 20, tzinfo=timezone.utc)
@@ -178,3 +183,47 @@ class BuildTemplateTests(SimpleTestCase):
     def test_unknown_kind(self):
         with self.assertRaises(KeyError):
             build_template('linux', [], BUILT_AT)
+
+
+CEMENT = 'Cemento_Cement, Portland {RoW}| market for cement, Portland | Cut-off, S'
+BLOCK = 'Block hueco 15x20x40_MX'
+URL = '/api-projects/templates/%s.xlsm'
+
+
+class TemplateDownloadTests(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        kg = models.Unit.objects.create(name_unit='kg')
+        m2 = models.Unit.objects.create(name_unit='m2')
+        models.Material.objects.create(name_material=CEMENT, database_from='ECOINVENT 3', unit_id=kg)
+        models.Material.objects.create(name_material=BLOCK, database_from='EPiC', unit_id=m2)
+        models.Material.objects.create(name_material=None, database_from='EPiC', unit_id=kg)
+
+    def setUp(self):
+        self.client.force_authenticate(user=firebase_user('reader@example.com'))
+
+    def test_rows_sorted_and_mapped(self):
+        found = catalogue_rows()
+        self.assertEqual([r.material for r in found], [BLOCK, CEMENT])
+        self.assertEqual(found[1].categoria, 'Cemento')
+        self.assertEqual(found[1].region, 'Resto del mundo')
+        self.assertEqual(found[0].region, 'México')
+
+    def test_download_windows(self):
+        response = self.client.get(URL % 'windows')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/vnd.ms-excel.sheet.macroEnabled.12')
+        self.assertIn('Formato Windows.xlsm', response['Content-Disposition'])
+        with zipfile.ZipFile(io.BytesIO(response.content)) as z:
+            self.assertIn(BLOCK, z.read(bd_name('windows')).decode('utf-8'))
+
+    def test_download_unknown_kind_404(self):
+        self.assertEqual(self.client.get(URL % 'linux').status_code, 404)
+
+    def test_too_many_is_500(self):
+        with mock.patch('projects_api.excel_templates.build.catalogue_rows', return_value=rows(993)):
+            response = self.client.get(URL % 'windows')
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.json(), {
+            'detail': 'El catálogo tiene más materiales de los que caben en la plantilla.'})
