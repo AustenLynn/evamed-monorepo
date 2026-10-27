@@ -5,6 +5,7 @@ import { FileSaverService } from 'ngx-filesaver';
 import { MatDialog } from '@angular/material/dialog';
 import { PrevStepsComponent } from 'src/app/to-do-file/components/prev-steps/prev-steps.component';
 import { ViewChild, ElementRef, Renderer2 } from '@angular/core';
+import { bySection } from 'src/app/shared/template-sheets';
 type AOA = any[][];
 
 @Component({
@@ -22,6 +23,8 @@ export class ToDoFileComponent implements OnInit {
   fileReady = false;
   processingFile = false;
   uploadError: string | null = null;
+  // Sheets with materials that aren't a building element; their rows aren't imported.
+  unknownSheets: string[] = [];
 
   @ViewChild('asTitle') title: ElementRef;
   @ViewChild('asImage') image: ElementRef;
@@ -64,6 +67,7 @@ export class ToDoFileComponent implements OnInit {
     this.fileReady = false;
     this.processingFile = true;
     this.uploadError = null;
+    this.unknownSheets = [];
 
     const reader: FileReader = new FileReader();
     reader.onload = (e: any) => {
@@ -84,11 +88,16 @@ export class ToDoFileComponent implements OnInit {
           totalData.push(partialData);
         }
 
-        let toRead = {};
-        toRead = {
+        const { unknownSheets, sectionSheets, ...toRead } = bySection({
           sheetNames: wb.SheetNames,
           data: totalData,
-        };
+        });
+        if (sectionSheets === 0) {
+          this.uploadError =
+            'El archivo no tiene hojas de elementos constructivos (Cimentación, Muros interiores…). Usa la plantilla de EVAMED.';
+          return;
+        }
+        this.unknownSheets = unknownSheets;
         sessionStorage.setItem('dataProject', JSON.stringify(toRead));
         this.fileReady = true;
       } catch (error) {

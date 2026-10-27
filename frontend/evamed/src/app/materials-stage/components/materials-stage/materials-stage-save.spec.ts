@@ -26,7 +26,7 @@ describe('MaterialsStageComponent saving', () => {
     component.projectId = 42;
     component.ciudadOrigenSeleccionada = 9;
     component.materialsList = [{ id: 1, name_material: 'Concreto' }, { id: 2, name_material: 'Acero' }];
-    component.contentData = [[], sheet];
+    component.contentData = [sheet];
     component.SOR = [['Muro A']];
     component.SOD = [['Losa']];
     component.SOU = [];
@@ -96,7 +96,7 @@ describe('MaterialsStageComponent saving', () => {
 
   it('only claims sheets whose selections are known for both origins', () => {
     const { component, replace } = build();
-    component.contentData = [[], sheet, sheet, sheet];
+    component.contentData = [sheet, sheet, sheet];
     component.SOR = [['Muro A'], ['Muro A'], undefined];
     component.SOD = [['Losa'], undefined, ['Losa']];
 
@@ -138,7 +138,7 @@ describe('MaterialsStageComponent saving', () => {
   // block every other row. The old per-row POSTs already lost them silently.
   it('leaves out rows without a numeric quantity', () => {
     const { component, replace } = build();
-    component.contentData = [[], [
+    component.contentData = [[
       ...sheet,
       { Sistema_constructivo: 'Muro A', Origen: 'Modelo de Revit', Material: 'Acero', Cantidad: '' },
       { Sistema_constructivo: 'Muro A', Origen: 'Modelo de Revit', Material: 'Acero', Cantidad: null },

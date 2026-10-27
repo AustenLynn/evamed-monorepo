@@ -18,9 +18,11 @@ describe('ToDoFileComponent upload', () => {
 
   const continueButton = (): HTMLButtonElement =>
       fixture.nativeElement.querySelector('.section-continue button'),
-    workbookFile = (): File => {
+    workbookFile = (...sheets: string[]): File => {
       const book = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(book, XLSX.utils.aoa_to_sheet([['Material'], ['Concreto']]), 'Nuevo');
+      (sheets.length ? sheets : ['Cimentación']).forEach(sheet =>
+        XLSX.utils.book_append_sheet(book, XLSX.utils.aoa_to_sheet([['Material'], ['Concreto']]), sheet)
+      );
       const bytes: ArrayBuffer = XLSX.write(book, { type: 'array', bookType: 'xlsx' });
       return new File([bytes], 'proyecto.xlsm');
     },
@@ -78,10 +80,44 @@ describe('ToDoFileComponent upload', () => {
       fixture.detectChanges();
       expect(continueButton().disabled).toBe(false);
     });
-    expect(JSON.parse(sessionStorage.getItem('dataProject')).sheetNames).toEqual(['Nuevo']);
+    const stored = JSON.parse(sessionStorage.getItem('dataProject'));
+    expect(stored.sheetNames[0]).toBe('Cimentación');
+    expect(stored.data[0]).toEqual([{ Material: 'Concreto' }]);
 
     continueButton().click();
     expect(dialog.open).toHaveBeenCalledTimes(1);
+  });
+
+  // EVAMED_WINDOWS.xlsm has no hidden first sheet; rows go by sheet name, not position.
+  it('stores the rows by section whatever the sheet order', async () => {
+    chooseFile(workbookFile('Otros', 'Cimentación'));
+
+    await vi.waitFor(() => expect(fixture.componentInstance.fileReady).toBe(true));
+    const stored = JSON.parse(sessionStorage.getItem('dataProject'));
+    expect(stored.data[0]).toEqual([{ Material: 'Concreto' }]);
+    expect(stored.data[10]).toEqual([{ Material: 'Concreto' }]);
+    expect(stored.data[1]).toEqual([]);
+  });
+
+  it('names the sheets it did not import', async () => {
+    chooseFile(workbookFile('Cimentación', 'Cocina'));
+
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.upload-status')?.textContent).toContain('Cocina');
+    });
+    expect(continueButton().disabled).toBe(false);
+  });
+
+  it('refuses a file with no building-element sheets', async () => {
+    chooseFile(workbookFile('Nuevo'));
+
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.upload-error')).not.toBeNull();
+    });
+    expect(continueButton().disabled).toBe(true);
+    expect(sessionStorage.getItem('dataProject')).toBeNull();
   });
 
   it('stays disabled and says so when the parsed file cannot be stored', async () => {

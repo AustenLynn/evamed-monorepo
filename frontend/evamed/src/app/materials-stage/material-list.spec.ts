@@ -92,7 +92,7 @@ describe('Materials just added', () => {
     component.currentPanelOrigin = 'revit-user';
     component.listData = [old];
     component.indexSheet = 0;
-    component.contentData = [[], component.listData];
+    component.contentData = [component.listData];
     component.recentRows = new Set();
     component.materialsService = { searchMaterial: vi.fn(() => of([])) };
     component.explorerPicker = { pickMany: vi.fn(async () => [picked]) };
@@ -141,7 +141,7 @@ describe('Leaving the new-project page', () => {
     component.materialsList = [{ id: 2, name_material: 'Concreto_Bloque hueco' }];
     component.listData = [{ Origen: 'Modelo de Revit', Sistema_constructivo: 'Muro A', Material: 'Block', materialSelectedDB: 'Concreto_Bloque hueco', name_material_db: 'Concreto_Bloque hueco', Cantidad: 5 }];
     component.indexSheet = 0;
-    component.contentData = [[], component.listData];
+    component.contentData = [component.listData];
     component.SOR = [['Muro A']];
     component.SOD = [[]];
     component.SOU = [[]];

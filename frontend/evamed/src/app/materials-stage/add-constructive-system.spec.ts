@@ -81,7 +81,7 @@ describe('Agregar sistema constructivo on the new-project page', () => {
     component.sheetNames = ['Muros exteriores'];
     component.selectedSheet = 'Muros exteriores';
     component.vidaUtilSeleccionado = '50';
-    component.contentData = [[], sheet];
+    component.contentData = [sheet];
     component.listData = sheet;
     component.indexSheet = 0;
     component.ListSCRevit = ['Muro A'];
@@ -94,7 +94,7 @@ describe('Agregar sistema constructivo on the new-project page', () => {
     component.selectionIdByKey = {};
     component.deleteMode = false;
     component.materialsList = [{ id: 1, name_material: 'Block' }, { id: 2, name_material: 'Concreto_Bloque hueco' }];
-    sessionStorage.setItem('dataProject', JSON.stringify({ sheetNames: ['Muros exteriores'], data: [[], []] }));
+    sessionStorage.setItem('dataProject', JSON.stringify({ sheetNames: ['Muros exteriores'], data: [[]] }));
     component.dialog = { open: vi.fn(() => ({ afterClosed: () => of(name) })) };
     component.explorerPicker = { pickMany: vi.fn(async () => answer) };
     component.materialsService = {
@@ -134,7 +134,7 @@ describe('Agregar sistema constructivo on the new-project page', () => {
       ['Block hueco 15', 'Usuario_Plataforma'],
     ]);
     const stored = JSON.parse(sessionStorage.getItem('dataProject')!);
-    expect(stored.data[1].map((row: any) => row.Sistema_constructivo)).toEqual(['Muro A', 'Muro de block']);
+    expect(stored.data[0].map((row: any) => row.Sistema_constructivo)).toEqual(['Muro A', 'Muro de block']);
   });
 
   it('the autosave keeps the user’s system with the others', async () => {

@@ -13,6 +13,7 @@ import { AddConstructiveSystemComponent } from '../add-constructive-system/add-c
 import { ExplorerPickerService } from '../../../explorer/explorer-picker.service';
 import { fromExcelRow, toExcelRow } from '../../picked-material';
 import { byIndex, RECENT_MS, sortByName } from '../../material-list';
+import { bySection } from 'src/app/shared/template-sheets';
 import { MatDialog } from '@angular/material/dialog';
 import { AnalisisService } from 'src/app/core/services/analisis/analisis.service';
 
@@ -217,23 +218,13 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
       });
     });
 
-    this.sheetNames = [];
     this.nameProject = PDP.name_project;
     this.projectId = PDP.id;
-    data.sheetNames.map(sheetname => {
-      if (
-        sheetname !== 'Muros InterioresBis' &&
-        sheetname !== 'Inicio' &&
-        sheetname !== 'Registro' &&
-        sheetname !== 'ListaElementos' &&
-        sheetname !== 'BD' &&
-        sheetname !== 'Parametros'
-      ) {
-        this.sheetNames.push(sheetname);
-      }
-    });
-
-    this.contentData = data.data;
+    // Sorted by sheet name, so both templates (and a stored upload from before
+    // that) give one row list per section, in section_id order.
+    const sections = bySection(data);
+    this.sheetNames = sections.sheetNames;
+    this.contentData = sections.data;
 
     this.startAutosave();
   }
@@ -354,10 +345,7 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
     });
 
     this.indexSheet = this.sheetNames.indexOf(this.selectedSheet);
-    if (this.indexSheet >= 11) {
-      this.indexSheet = this.indexSheet + 5;
-    }
-    this.listData = this.contentData[this.indexSheet + 1];
+    this.listData = this.contentData[this.indexSheet];
 
     const SCRevit = [],
      SCDynamo = [],
@@ -704,7 +692,7 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
     const items = [];
     sheets.forEach(sheetIndex => {
       const systems = selections[sheetIndex];
-      (this.contentData[sheetIndex + 1] ?? []).forEach(data => {
+      (this.contentData[sheetIndex] ?? []).forEach(data => {
         if (!(systems ?? []).includes(data.Sistema_constructivo) || !origens.includes(data.Origen)) {
           return;
         }
@@ -1349,10 +1337,12 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
    * it. A row left out of it disappears, and is deleted by the next save.
    */
   private storeSheet(): void {
-    this.contentData[this.indexSheet + 1] = this.listData;
+    this.contentData[this.indexSheet] = this.listData;
     const stored = sessionStorage.getItem('dataProject');
     if (stored) {
       const dataProject = JSON.parse(stored);
+      // With the names, so the stored rows stay in section order.
+      dataProject.sheetNames = this.sheetNames;
       dataProject.data = this.contentData;
       sessionStorage.setItem('dataProject', JSON.stringify(dataProject));
     }

@@ -65,6 +65,11 @@
   @if (processingFile) {
     <p class="upload-status">Procesando archivo…</p>
   }
+  @if (unknownSheets.length) {
+    <p class="upload-status">
+      No se importaron estas hojas porque no son un elemento constructivo: {{ unknownSheets.join(', ') }}.
+    </p>
+  }
   @if (uploadError) {
     <p class="upload-error">{{ uploadError }}</p>
   }

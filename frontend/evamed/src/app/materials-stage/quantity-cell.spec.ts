@@ -129,13 +129,14 @@ describe('Quantity edited in the Materiales list', () => {
       row = { Material: 'Block', Cantidad: 5 };
     component.listData = [row];
     component.indexSheet = 0;
-    component.contentData = [[], component.listData];
-    sessionStorage.setItem('dataProject', JSON.stringify({ data: [[], []] }));
+    component.contentData = [component.listData];
+    component.sheetNames = ['Muros exteriores'];
+    sessionStorage.setItem('dataProject', JSON.stringify({ data: [[]] }));
 
     component.setQuantity(row, 12.5);
 
     expect(row.Cantidad).toBe(12.5);
-    expect(JSON.parse(sessionStorage.getItem('dataProject')!).data[1][0].Cantidad).toBe(12.5);
+    expect(JSON.parse(sessionStorage.getItem('dataProject')!).data[0][0].Cantidad).toBe(12.5);
     sessionStorage.clear();
   });
 

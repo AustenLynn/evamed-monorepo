@@ -35,8 +35,9 @@ describe('Explorar materiales on the new-project page', () => {
     component.vidaUtilSeleccionado = '50';
     component.listData = sheet;
     component.indexSheet = 0;
-    component.contentData = [[], sheet];
-    sessionStorage.setItem('dataProject', JSON.stringify({ sheetNames: ['Muros exteriores'], data: [[], []] }));
+    component.contentData = [sheet];
+    component.sheetNames = ['Muros exteriores'];
+    sessionStorage.setItem('dataProject', JSON.stringify({ sheetNames: ['Muros exteriores'], data: [[]] }));
     component.SOR = [['Muro A']];
     component.SOD = [[]];
     component.materialsList = [{ id: 2, name_material: 'Concreto_Bloque hueco' }];
@@ -68,7 +69,7 @@ describe('Explorar materiales on the new-project page', () => {
 
     const stored = JSON.parse(sessionStorage.getItem('dataProject')!);
     expect(stored.sheetNames).toEqual(['Muros exteriores']);
-    expect(stored.data[1].map((row: any) => row.Material)).toEqual(['Block hueco 15']);
+    expect(stored.data[0].map((row: any) => row.Material)).toEqual(['Block hueco 15']);
   });
 
   it('adds several materials at once, listed A→Z', async () => {
@@ -198,12 +199,13 @@ describe('Editing a material from the panel', () => {
       component: any = Object.create(MaterialsStageComponent.prototype);
     component.listData = [row];
     component.indexSheet = 0;
-    component.contentData = [[], component.listData];
+    component.contentData = [component.listData];
+    component.sheetNames = ['Muros exteriores'];
     component.selectedSheet = 'Muros interiores';
     component.vidaUtilSeleccionado = '50';
     component.materialsList = [{ id: 382, name_material: 'Agua_Water_mortero_aplanado' }];
     component.explorerPicker = { pick: vi.fn(async () => ({ ...picked, comercialName: 'Agua de obra', comments: '' })) };
-    sessionStorage.setItem('dataProject', JSON.stringify({ data: [[], []] }));
+    sessionStorage.setItem('dataProject', JSON.stringify({ data: [[]] }));
     const initial = fromExcelRow(row);
 
     await component.onSelectedMaterial({ selected: [{ value: { value: row } }] });
@@ -217,7 +219,7 @@ describe('Editing a material from the panel', () => {
       initial,
     });
     expect(row).toMatchObject({ Material: 'Agua de obra', Origen: 'Opciones EVAMED', Cantidad: 120, 'Descripción de Material': null });
-    expect(JSON.parse(sessionStorage.getItem('dataProject')!).data[1][0].Material).toBe('Agua de obra');
+    expect(JSON.parse(sessionStorage.getItem('dataProject')!).data[0][0].Material).toBe('Agua de obra');
   });
 
   it('existing-project page: saves the row in place, keeping its origin, and shows it again', async () => {
