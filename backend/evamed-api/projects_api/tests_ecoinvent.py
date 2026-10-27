@@ -280,3 +280,83 @@ class ManualPinsFileTests(TestCase):
                 else:
                     self.assertEqual(pin.get('confidence'), 'unresolved')
                     self.assertTrue(pin.get('notes'), pin['entity_name'])
+
+
+class AddMaterialsTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        from projects_api import models
+        cls.kg = models.Unit.objects.create(name_unit='Kg')
+        cls.m3 = models.Unit.objects.create(name_unit='m³')
+
+    def run_command(self, *args):
+        from io import StringIO
+        from django.core.management import call_command
+        out = StringIO()
+        call_command('ecoinvent_add_materials', *args, stdout=out)
+        return out.getvalue()
+
+    def test_data_file_lists_each_dataset_once_with_a_known_unit(self):
+        from projects_api.management.commands.ecoinvent_add_materials import (
+            UNIT_NAMES, load_materials)
+        data = load_materials()
+        ids = [entry['dataset_id'] for entry in data['materials']]
+
+        self.assertEqual(data['version'], '3.12-sandbox')
+        self.assertEqual(len(ids), len(set(ids)))
+        self.assertEqual(
+            {entry['category'] for entry in data['materials']},
+            {'Cemento', 'Acero', 'Concreto', 'Block'})
+        for entry in data['materials']:
+            self.assertIn(entry['unit'], UNIT_NAMES)
+            self.assertTrue(entry['activity'].startswith('market for '), entry)
+
+    def test_name_carries_the_category_and_reads_like_the_other_ecoinvent_rows(self):
+        from projects_api.explorer import derive
+        from projects_api.management.commands.ecoinvent_add_materials import material_name
+        name = material_name({
+            'category': 'Cemento', 'product': 'cement, Portland', 'geography': 'RoW',
+            'activity': 'market for cement, Portland'})
+
+        self.assertEqual(name, 'Cemento_Cement, Portland {RoW}| market for cement, Portland | Cut-off, S')
+        self.assertEqual(derive.category(name), 'Cemento')
+        self.assertEqual(
+            derive.display_name(name), 'Cement, Portland {RoW}| market for cement, Portland | Cut-off, S')
+
+    def test_dry_run_writes_nothing(self):
+        from projects_api import models
+        output = self.run_command()
+
+        self.assertIn('Dry run', output)
+        self.assertFalse(models.Material.objects.exists())
+
+    def test_apply_adds_pinned_materials_in_the_reference_unit_once(self):
+        from projects_api import models
+        from projects_api.management.commands.ecoinvent_add_materials import load_materials
+        listed = len(load_materials()['materials'])
+
+        self.run_command('--apply')
+        self.run_command('--apply')
+
+        materials = models.Material.objects.all()
+        self.assertEqual(materials.count(), listed)
+        rebar = materials.get(ecoinvent_dataset_id=5731)
+        self.assertEqual(
+            rebar.name_material,
+            'Acero_Reinforcing steel {GLO}| market for reinforcing steel | Cut-off, S')
+        self.assertEqual(rebar.unit_id, self.kg)
+        self.assertEqual(rebar.database_from, 'ECOINVENT 3')
+        self.assertEqual(
+            (rebar.ecoinvent_version, rebar.ecoinvent_system_model), ('3.12-sandbox', 'cutoff'))
+        self.assertEqual(materials.get(ecoinvent_dataset_id=21731).unit_id, self.m3)
+        self.assertFalse(materials.filter(ecoinvent_synced_at__isnull=False).exists())
+
+    def test_missing_unit_rows_stop_before_writing(self):
+        from django.core.management.base import CommandError
+        from projects_api import models
+        models.Unit.objects.filter(name_unit='m³').delete()
+
+        with self.assertRaises(CommandError):
+            self.run_command('--apply')
+        self.assertFalse(models.Material.objects.exists())

@@ -1,0 +1,256 @@
+{
+  "_comment": [
+    "Construction materials added from ecoinvent by `ecoinvent_add_materials`.",
+    "",
+    "One 'market for' dataset per product (it includes transport to the market),",
+    "Rest-of-World where ecoinvent has one, else Global: there are no Mexican",
+    "datasets in 3.12-sandbox. Picked from a search on 2026-10-26.",
+    "The category becomes the name's prefix, which is how the explorer groups",
+    "materials. Units are ecoinvent's reference units, so refreshes never skip",
+    "them on a unit mismatch."
+  ],
+  "version": "3.12-sandbox",
+  "system_model": "cutoff",
+  "materials": [
+    {
+      "category": "Cemento",
+      "dataset_id": 7653,
+      "product": "cement, Portland",
+      "activity": "market for cement, Portland",
+      "geography": "RoW",
+      "unit": "kg"
+    },
+    {
+      "category": "Cemento",
+      "dataset_id": 1550,
+      "product": "cement, CEM II/A",
+      "activity": "market for cement, CEM II/A",
+      "geography": "RoW",
+      "unit": "kg"
+    },
+    {
+      "category": "Cemento",
+      "dataset_id": 5070,
+      "product": "cement, CEM II/B",
+      "activity": "market for cement, CEM II/B",
+      "geography": "RoW",
+      "unit": "kg"
+    },
+    {
+      "category": "Cemento",
+      "dataset_id": 20627,
+      "product": "cement, CEM III/A",
+      "activity": "market for cement, CEM III/A",
+      "geography": "RoW",
+      "unit": "kg"
+    },
+    {
+      "category": "Cemento",
+      "dataset_id": 9880,
+      "product": "cement, CEM III/B",
+      "activity": "market for cement, CEM III/B",
+      "geography": "RoW",
+      "unit": "kg"
+    },
+    {
+      "category": "Cemento",
+      "dataset_id": 1469,
+      "product": "cement, CEM IV/A",
+      "activity": "market for cement, CEM IV/A",
+      "geography": "RoW",
+      "unit": "kg"
+    },
+    {
+      "category": "Cemento",
+      "dataset_id": 880,
+      "product": "cement, CEM V/A",
+      "activity": "market for cement, CEM V/A",
+      "geography": "RoW",
+      "unit": "kg"
+    },
+    {
+      "category": "Cemento",
+      "dataset_id": 14646,
+      "product": "cement, unspecified",
+      "activity": "market for cement, unspecified",
+      "geography": "RoW",
+      "unit": "kg"
+    },
+    {
+      "category": "Acero",
+      "dataset_id": 5731,
+      "product": "reinforcing steel",
+      "activity": "market for reinforcing steel",
+      "geography": "GLO",
+      "unit": "kg"
+    },
+    {
+      "category": "Acero",
+      "dataset_id": 7099,
+      "product": "steel, low-alloyed",
+      "activity": "market for steel, low-alloyed",
+      "geography": "GLO",
+      "unit": "kg"
+    },
+    {
+      "category": "Acero",
+      "dataset_id": 7677,
+      "product": "steel, low-alloyed, hot rolled",
+      "activity": "market for steel, low-alloyed, hot rolled",
+      "geography": "GLO",
+      "unit": "kg"
+    },
+    {
+      "category": "Acero",
+      "dataset_id": 4716,
+      "product": "steel, unalloyed",
+      "activity": "market for steel, unalloyed",
+      "geography": "GLO",
+      "unit": "kg"
+    },
+    {
+      "category": "Acero",
+      "dataset_id": 3468,
+      "product": "steel, chromium steel 18/8",
+      "activity": "market for steel, chromium steel 18/8",
+      "geography": "GLO",
+      "unit": "kg"
+    },
+    {
+      "category": "Acero",
+      "dataset_id": 3231,
+      "product": "steel, chromium steel 18/8, hot rolled",
+      "activity": "market for steel, chromium steel 18/8, hot rolled",
+      "geography": "GLO",
+      "unit": "kg"
+    },
+    {
+      "category": "Concreto",
+      "dataset_id": 21487,
+      "product": "concrete, 20MPa",
+      "activity": "market for concrete, 20MPa",
+      "geography": "RoW",
+      "unit": "m3"
+    },
+    {
+      "category": "Concreto",
+      "dataset_id": 21853,
+      "product": "concrete, 25MPa",
+      "activity": "market for concrete, 25MPa",
+      "geography": "RoW",
+      "unit": "m3"
+    },
+    {
+      "category": "Concreto",
+      "dataset_id": 21731,
+      "product": "concrete, 30MPa",
+      "activity": "market for concrete, 30MPa",
+      "geography": "RoW",
+      "unit": "m3"
+    },
+    {
+      "category": "Concreto",
+      "dataset_id": 20679,
+      "product": "concrete, 35MPa",
+      "activity": "market for concrete, 35MPa",
+      "geography": "RoW",
+      "unit": "m3"
+    },
+    {
+      "category": "Concreto",
+      "dataset_id": 21852,
+      "product": "concrete, 40MPa",
+      "activity": "market for concrete, 40MPa",
+      "geography": "RoW",
+      "unit": "m3"
+    },
+    {
+      "category": "Concreto",
+      "dataset_id": 21754,
+      "product": "concrete, 50MPa",
+      "activity": "market for concrete, 50MPa",
+      "geography": "RoW",
+      "unit": "m3"
+    },
+    {
+      "category": "Concreto",
+      "dataset_id": 12483,
+      "product": "concrete, normal strength",
+      "activity": "market for concrete, normal strength",
+      "geography": "RoW",
+      "unit": "m3"
+    },
+    {
+      "category": "Concreto",
+      "dataset_id": 21657,
+      "product": "concrete, medium strength",
+      "activity": "market for concrete, medium strength",
+      "geography": "RoW",
+      "unit": "m3"
+    },
+    {
+      "category": "Concreto",
+      "dataset_id": 12880,
+      "product": "lean concrete",
+      "activity": "market for lean concrete",
+      "geography": "RoW",
+      "unit": "m3"
+    },
+    {
+      "category": "Block",
+      "dataset_id": 21204,
+      "product": "concrete block",
+      "activity": "market for concrete block",
+      "geography": "RoW",
+      "unit": "kg"
+    },
+    {
+      "category": "Block",
+      "dataset_id": 20219,
+      "product": "autoclaved aerated concrete block",
+      "activity": "market for autoclaved aerated concrete block",
+      "geography": "RoW",
+      "unit": "kg"
+    },
+    {
+      "category": "Block",
+      "dataset_id": 15045,
+      "product": "lightweight concrete block, expanded clay",
+      "activity": "market for lightweight concrete block, expanded clay",
+      "geography": "RoW",
+      "unit": "kg"
+    },
+    {
+      "category": "Block",
+      "dataset_id": 19643,
+      "product": "lightweight concrete block, pumice",
+      "activity": "market for lightweight concrete block, pumice",
+      "geography": "RoW",
+      "unit": "kg"
+    },
+    {
+      "category": "Block",
+      "dataset_id": 14775,
+      "product": "lightweight concrete block, expanded perlite",
+      "activity": "market for lightweight concrete block, expanded perlite",
+      "geography": "RoW",
+      "unit": "kg"
+    },
+    {
+      "category": "Block",
+      "dataset_id": 14733,
+      "product": "lightweight concrete block, polystyrene",
+      "activity": "market for lightweight concrete block, polystyrene",
+      "geography": "RoW",
+      "unit": "kg"
+    },
+    {
+      "category": "Block",
+      "dataset_id": 15722,
+      "product": "lightweight concrete block, expanded vermiculite",
+      "activity": "market for lightweight concrete block, expanded vermiculite",
+      "geography": "RoW",
+      "unit": "kg"
+    }
+  ]
+}
