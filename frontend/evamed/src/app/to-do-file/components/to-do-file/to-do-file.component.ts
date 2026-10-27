@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { PrevStepsComponent } from 'src/app/to-do-file/components/prev-steps/prev-steps.component';
 import { ViewChild, ElementRef, Renderer2 } from '@angular/core';
 import { bySection } from 'src/app/shared/template-sheets';
+import { environment } from 'src/environments/environment';
 type AOA = any[][];
 
 @Component({
@@ -118,7 +119,7 @@ export class ToDoFileComponent implements OnInit {
   onDownloadWindows() {
     const fileName = `Formato Windows.xlsm`;
     this.httpClient
-      .get(`assets/files/EVAMED_WINDOWS.xlsm`, {
+      .get(`${environment.api_template}windows.xlsm`, {
         observe: 'response',
         responseType: 'blob',
       })
@@ -131,7 +132,7 @@ export class ToDoFileComponent implements OnInit {
   onDownloadMac() {
     const fileName = `Formato MAC.xlsm`;
     this.httpClient
-      .get(`assets/files/EVAMED_MAC.xlsm`, {
+      .get(`${environment.api_template}mac.xlsm`, {
         observe: 'response',
         responseType: 'blob',
       })

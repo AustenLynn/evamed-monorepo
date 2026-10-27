@@ -1,9 +1,10 @@
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { FileSaverService } from 'ngx-filesaver';
 import * as XLSX from 'xlsx';
+import { environment } from 'src/environments/environment';
 
 import { ToDoFileModule } from '../../to-do-file.module';
 import { ToDoFileComponent } from './to-do-file.component';
@@ -149,5 +150,35 @@ describe('ToDoFileComponent upload', () => {
     // Let the upload finish here: its FileReader writes sessionStorage when it
     // completes, and specs share one environment.
     await vi.waitFor(() => expect(fixture.componentInstance.processingFile).toBe(false));
+  });
+
+  // The Excel templates are served by the API, not bundled in assets/.
+  const clickDownload = (alt: string) => {
+    const img: HTMLImageElement = fixture.nativeElement.querySelector(`img[alt="${alt}"]`);
+    img.closest<HTMLElement>('.icon-download').click();
+  };
+
+  it('downloads the Windows template from the server', () => {
+    const httpMock = TestBed.inject(HttpTestingController),
+      saver = TestBed.inject(FileSaverService),
+      blob = new Blob(['xlsm']);
+
+    clickDownload('Download Windows file');
+
+    httpMock.expectOne(environment.api_template + 'windows.xlsm').flush(blob);
+    expect(saver.save).toHaveBeenCalledWith(blob, 'Formato Windows.xlsm');
+    httpMock.verify();
+  });
+
+  it('downloads the Mac template from the server', () => {
+    const httpMock = TestBed.inject(HttpTestingController),
+      saver = TestBed.inject(FileSaverService),
+      blob = new Blob(['xlsm']);
+
+    clickDownload('Download Mac file');
+
+    httpMock.expectOne(environment.api_template + 'mac.xlsm').flush(blob);
+    expect(saver.save).toHaveBeenCalledWith(blob, 'Formato MAC.xlsm');
+    httpMock.verify();
   });
 });

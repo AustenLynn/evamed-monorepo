@@ -83,6 +83,7 @@ export const environment = {
   api_db_material: `${apiEvamed}${dbMaterial}`,
   api_me: `${apiEvamed}${me}`,
   api_explorer: `${apiEvamed}${explorer}`,
+  api_template: `${apiEvamed}/templates/`,
   firebaseConfig: {
     apiKey: "AIzaSyC3t_NpPrGwj7i26j5cfIQCt1aaq3f9k-I",
     authDomain: "evamed-ac3f8.firebaseapp.com",
