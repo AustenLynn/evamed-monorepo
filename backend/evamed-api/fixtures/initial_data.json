@@ -5187,7 +5187,7 @@
     "name_material": "Clay brick {GLO}| market for | Cut-off, S",
     "unit_id": 2,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "This dataset represents the production of 1 kg of brick (extruded) in the Global geography. Data was obtained from literature values (average data from 12 Swiss brick plants) that were corrected and updated for some flows. Note that no hard coal coke is used within these 12 plants.\nIt includes first ginding process, wet process (includes second ginding, mixing and plastifying), storage, forming (extruding molding method) and cutting, drying, firing, loading, packing and storage.\nnot included: charge of the wastewater and solid waste, it's assumed that the waste heat is totally reused for drying, no hard coal coke is used within these 12 plants\n\nThis dataset corresponds to a mix of different brick production technologies (different firing fuels) in Austria, Germany and Switzerland."
   }
 },
 {
@@ -5197,7 +5197,7 @@
     "name_material": "Panel fotovoltaico, Silicio amorfo (a-Si) (GLO)",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "Production of photovoltaic thin film modules. Deposition of nine thin-film layers on the triple-junction cell. The modules produced at United Solar have a size of 2.3 m2. The weight is 8.2 kg per m2. The efficiency is 6.45% at the beginning of the life time. Degradation has to be taken into account with achieved yields. The rated nominal power is about 128Wp per module.\n\nProduction technology of thin film a-Si cells. The modules contain triple junction cells, which are made in a continuous roll-to-roll deposition on stainless steel. The cell is deposited using a vapour-deposition process at low temperatures."
   }
 },
 {
@@ -5207,7 +5207,7 @@
     "name_material": "Panel fotovoltaico, Silicio monocristalino (single-Si) (GLO)",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "Unit process raw data for 1 m2 of PV panel. Investigated for the production of solar panels and laminates with 60 solar cells a 156*156cm2 with a capacity of 224 Wp. Cell size and amount and capacity might differ between different producers.\n\nModern production plant."
   }
 },
 {
@@ -5217,7 +5217,7 @@
     "name_material": "Panel fotovoltaico Silicio policristalino (multi-Si) (GLO)",
     "unit_id": 5,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "Unit process raw data for 1 m2 of PV panel. Investigated for the production of solar panels and laminates with 60 solar cells a 156*156cm2 with a capacity of 210Wp. Cell size and amount and capacity might differ between different producers.\n\nModern production plant."
   }
 },
 {
@@ -5297,7 +5297,7 @@
     "name_material": "Precious metal from electronics scrap, in anode slime {GLO}| market for | Cut-off, S",
     "unit_id": 2,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "The multi-output-process \"secondary copper refining\" delivers the co-products \"precious metals from electric waste, in anode slime, at refinery\", \"copper, secondary, from electronic and electric scrap recycling, at refinery\" and \"nickel, secondary, from electronic and electric scrap recycling, at refinery\". The product \"precious metals from electric waste, \u2026\" is an intermediary in the production of secondary gold from electric scrap and is not to be used by the LCA practitioner. The flows \"copper, \u2026\" and \"nickel, \u2026\" are by-products of this process that receive part of the burdens allocated. They must not be used.\n\nProduction of cathode copper by electrolytic refining."
   }
 },
 {
@@ -5327,7 +5327,7 @@
     "name_material": "Adhesive mortar {GLO}| market for | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "The raw materials for ready mix product are mixed. After mixing it is internally transported to the packing installation and packed. For the use 0.048 kg water has to be added per kg dry product (not included in this dataset). No direct process emissions are taken into account as they play a subordinate role compared to the emissions of the raw material production (e.g. drying of silica sand) and because no data is available. For inventorying the infrastructure, a yearly production amount of 150'000 tons is assumed. The lifespan of the machines is assumed to be 20 years.\n\nAssumed average current technology. The raw materials are mixed in an assumed average ratio, transported to the packing installation and packed."
   }
 },
 {
@@ -5337,7 +5337,7 @@
     "name_material": "Cement, unspecified {GLO}| market group for cement, unspecified | Cut-off, S",
     "unit_id": 2,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "This is a linking (transfering) activity which links the specific cement to the generic market for cement, unspecified."
   }
 },
 {
@@ -5347,7 +5347,7 @@
     "name_material": "Light mortar {GLO}| market for | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "The raw materials per kg powder blend are mixed in following ratio: sand: 0.187kg, cement: 0.205kg, lime hydrated: 0.026kg, expanded clay: 0.444kg, additives: 0.001kg. After mixing it is internally transported to the packing installation and packed.  For the use 0.137kg water has to be added (not included in this module). No direct process emissions are taken into account as they play a subordinate role compared to the emissions of the raw material production (e.g. drying of silica sand) and because no data are available. For inventoring the infrastructure, a yearly production amount of 150'000 tons is assumed. The lifespan of the machines is assumed to be 20 years.\n\nAssumed average current technology. The raw materials are mixed in a certain ratio, transported to the packing installation and packed."
   }
 },
 {
@@ -5357,7 +5357,7 @@
     "name_material": "Lime mortar {GLO}| market for | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "The raw materials per kg powder blend are mixed in following ratio: sand: 0.868kg, lime hydrated: 0.13kg, additives: 0.0023kg. After mixing it is internally transported to the packing installation and packed. For the use 0.261 kg water has to be added (not included in this module). No direct process emissions are taken into account as they play a subordinate role compared to the emissions of the raw material production (e.g. drying of silica sand) and because no data are available. For inventoring the infrastructure, a yearly production amount of 150'000 tons is assumed. The lifespan of the machines is assumed to be 20 years.\n\nAssumed average current technology. The raw materials are mixed in a certain ratio, transported to the packing installation and packed."
   }
 },
 {
@@ -5367,7 +5367,7 @@
     "name_material": "Light clay brick {GLO}| market for | Cut-off, S",
     "unit_id": 2,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "technical drying by heat from liquid gas (natural gas used as proxy). It is assumed that there is wastewater but as no data is available it is not included. The lifespan of the plant is assumed to be 50 years.\n\nThe raw materials (clay and straw) are mixed with water and poured into a mould. The drying process is technical with the use of a natural gas heater"
   }
 },
 {
@@ -5377,7 +5377,7 @@
     "name_material": "Refractory material, acid {GLO}| kaolin to generic market for refractory material, acid | Cut-off, S",
     "unit_id": 2,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "This activity links kaolin to the generic market for refractory material, acid."
   }
 },
 {
@@ -5387,7 +5387,7 @@
     "name_material": "Refractory, basic, packed {GLO}| market for | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "This dataset represents the production of 1 kg of basic refractory bricks.\n\nThe typical German technology for refractory fireclay production.\nFor the production of one ton of basic refractory 0.95 tons of magnesia (sinter of magnesium oxide) and 0.1 ton of chromite ore is required. The raw materials are fractionated in different coarse size groups and one or several flour components. The grains and flours are mixed in a certain share and a fixing agent (lime milk) is added. The mixture is pressed to bricks, which are baked at 1200 to 1800\u00b0C."
   }
 },
 {
@@ -5397,7 +5397,7 @@
     "name_material": "Refractory, fireclay, packed {GLO}| market for | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "This dataset represents the production of 1 kg of refractory fireclay bricks.\nIncludes the whole manufacturing process, internal processes (transport, etc.), packing and infrastructure. No administration is included.\n\nThe typical German technology for refractory fireclay production.\nFor the production of one ton of fireclay refractory 1.1 ton of chamotte and additionally 10% of clay (0.1 ton) is required. This results in a total amount of 1.2 kg clay for 1 kg of fireclay refractory. The raw materials are fractionated in different coarse size groups and one or several flour components. The grains and flours are mixed in a certain share and a fixing agent (lime milk) is added. The mixture is pressed to bricks, which are baked at 1200 to 1800\u00b0C.\nChamotte is burned and milled clay."
   }
 },
 {
@@ -5407,7 +5407,7 @@
     "name_material": "Refractory, high aluminium oxide, packed {GLO}| market for | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "typical technology for German production"
   }
 },
 {
@@ -5417,7 +5417,7 @@
     "name_material": "Sand-lime brick {GLO}| market for | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "The air emissions are not measured . However, air emissions should all stem from combustion processes, which are accounted for via the modules for energy requirements. No exact information on the composition of the wastewater is available. Thus a proxy is inventoried. The total yearly production amount of a German company is assumed to be 120'000 tons (based on the yearly production volume). The lifespan of the plant is assumed to be 50 years.\n\nThe raw materials are mixed with appropriate proportions. In a reaction vessel the quicklime is hydrated to hydrated lime. Pressing the raw moulded blanks give them a certain form. In an autoclave the blanks are hardened with saturated steam at a pressure of 12 to 16 bar and a temperature of 160 to 200\u00b0C during 4 to 8 hours."
   }
 },
 {
@@ -5427,7 +5427,7 @@
     "name_material": "Shale brick {GLO}| market for | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "This GLO dataset is extrapolated from the Quebec dataset which represents the production of 1 kg of brick from shale in Quebec in 2012.\nThis dataset represents the production of brick from shale in Quebec in 2012.\nSpecific data were collected from the only producer of brick in Quebec on the basis of shale extracted annually. The amount of brick produce annually was calculated by data provider in order to report the specific data by kg of brick produce.  The annual production volume of the region is of 66'957 tons.\n\nThis company also provided data for the datasets ''shale quarry operation, QC, 2012'' and ''brick production facility construction, QC, 2029''.\n\nCurrent technology"
   }
 },
 {
@@ -5437,7 +5437,7 @@
     "name_material": "Ceramic tile {GLO}| market for | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "Data from one producer only. Composition of ceramic might differ from case to case. This dataset refers to oxidic ceramics.\n\nlarge scale, single fired production in Europe. Gas fired kiln"
   }
 },
 {
@@ -5447,7 +5447,7 @@
     "name_material": "Frit, for ceramic tile {GLO}| market for | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "This dataset represents the production of frit in 2012.\n\nFrit is a ceramic chemicals that have been melted together and cooled rapidly, then ground to a fine powder. They are the main component of nearly all ceramic glazes and are present in many compositions of different materials where a glass faze is needed.\n\nThis dataset is an approximation of frit production. The amount of intermediate exchanges have been calculated based on frit raw materials's composition used in ceramic tiles production. (Nicoletti G.M., Notarnicola B. and Tassielli G. (2002) Comparative Life Cylce Assessment of flooring materials: ceramic versus marble tiles. In: Journal of Cleaner Production).\n\ndata represents a rough estimation of the production process"
   }
 },
 {
@@ -5457,7 +5457,7 @@
     "name_material": "Sanitary ceramics {GLO}| market for | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "Data from one producer only. Composition of ceramic might differ from case to case. This dataset refers to oxidic ceramics.\n\nlarge scale production in Europe. Gas fired kiln"
   }
 },
 {
@@ -5467,7 +5467,7 @@
     "name_material": "Cladding, crossbar-pole, aluminium {GLO}| market for | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "The data is calculated per 1 m2 of cladding. The aluminium cladding weighs 86.7 kg per m2.\n\nThe technology represented in this dataset is mainly related to the production of the various parts integrated in the cladding construction."
   }
 },
 {
@@ -5477,7 +5477,7 @@
     "name_material": "Autoclaved aerated concrete block {CH}| market for autoclaved aerated concrete block | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "Hardening is assumed to be by air-drying. It is assumed that there is wastewater and solid waste, but as no exact description on the composition of the wastewater and solid waste is available a proxy for each ('treatment, concrete production effluent, to wastewater treatment, class 3' and 'disposal, municipal solid waste, 22.9% water, to municipal incineration') is used. The lifespan of the plant is assumed to be 50 years.\n\nThe raw materials (sand/gravel, quicklime, anhydrite, cement and aluminium powder) are mixed with water and poured into a mould. The aluminium powder is reacting  with the alcaline and siliceous additives and forms, by hydrogen release, pores with a diameter between 2 and 3mm."
   }
 },
 {
@@ -5487,7 +5487,7 @@
     "name_material": "Concrete roof tile {GLO}| market for | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "No losses and no waste water are taken into account.\n\ntypical technology for Swiss production"
   }
 },
 {
@@ -5497,7 +5497,7 @@
     "name_material": "Concrete, medium strength {GLO}| market group for concrete, medium strength | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "This is a linking (transfering) activity which links the specific concrete types to the generic 'market for concrete, normal strength'.\nThe shares of the different types of concrete are set based on production volumes of the respective activities and geographies."
   }
 },
 {
@@ -5507,7 +5507,7 @@
     "name_material": "Concrete, normal {GLO}| market group for concrete, normal | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "This is a linking (transfering) activity which links the specific concrete types to the generic 'market for concrete, normal strength'.\nThe shares of the different types of concrete are set based on production volumes of the respective activities and geographies."
   }
 },
 {
@@ -5517,7 +5517,7 @@
     "name_material": "Anhydrite floor {GLO}| market for | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "The raw materials for ready mix product are mixed. After mixing it is internally transported to the packing installation and packed. For the use 0.048 kg water has to be added per kg dry product (not included in this dataset). No direct process emissions are taken into account as they play a subordinate role compared to the emissions of the raw material production (e.g. drying of silica sand) and because no data is available. For inventorying the infrastructure, a yearly production amount of 150'000 tons is assumed. The lifespan of the machines is assumed to be 20 years.\n\nAssumed average current technology. The raw materials are mixed in an assumed average ratio, transported to the packing installation and packed."
   }
 },
 {
@@ -5527,7 +5527,7 @@
     "name_material": "Base plaster {GLO}| market for | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "The raw materials are mixed in following ratio: sand: 0.772kg, cement: 0.205kg, lime hydrated: 0.023kg, additives: 0.0002kg. After mixing it is internally transported to the packing installation and packed. For the use 0.082 kg water has to be added (not included in this module). No direct process emissions are taken into account as they play a subordinate role compared to the emissions of the raw material production (e.g. drying of silica sand) and because no data are available. For inventoring the infrastructure, a yearly production amount of 150'000 tons is assumed. The lifespan of the machines is assumed to be 20 years.\n\nAssumed average current technology. The raw materials are mixed in a certain ratio, transported to the packing installation and packed."
   }
 },
 {
@@ -5537,7 +5537,7 @@
     "name_material": "Cement cast plaster floor {GLO}| market for | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "No losses and no waste water have been taken into account. The used cement is \"portland cement, strength class Z 42.5, at plant\"\n\ntypical technology for Swiss production"
   }
 },
 {
@@ -5547,7 +5547,7 @@
     "name_material": "Cement tile {GLO}| market for | Cut-off, S",
     "unit_id": 1,
     "database_from": "ECOINVENT 3",
-    "description": null
+    "description": "No losses and no waste water are taken into account.\n\ntypical technology for Swiss production"
   }
 },
 {
