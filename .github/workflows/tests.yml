@@ -178,14 +178,6 @@ jobs:
             esac
           done
 
-      - name: Open SSH for this runner
-        id: open
-        run: |
-          cidr="$(curl -fsS https://checkip.amazonaws.com | tr -d '[:space:]')/32"
-          aws lightsail open-instance-public-ports --instance-name "$INSTANCE" \
-            --port-info "fromPort=22,toPort=22,protocol=tcp,cidrs=$cidr" >/dev/null
-          echo "cidr=$cidr" >> "$GITHUB_OUTPUT"
-
       # deploy.sh uses accept-new, which still rejects a changed host key.
       - name: Install the deploy key
         env:
@@ -197,23 +189,43 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
 
+      # The runner's public IP can differ between connections, so the /32 seen
+      # by checkip may not be the one the server sees. Each round re-checks the
+      # IP and opens it if it's new; every opened CIDR is closed at the end.
       # Lightsail firewall changes take a few seconds to apply.
-      - name: Wait for port 22
+      - name: Open SSH for this runner
+        id: open
         run: |
-          for _ in $(seq 1 12); do
-            timeout 5 bash -c "</dev/tcp/$EVAMED_DEV_HOST/22" 2>/dev/null && exit 0
-            sleep 5
+          opened=""
+          for round in 1 2 3 4; do
+            cidr="$(curl -fsS https://checkip.amazonaws.com | tr -d '[:space:]')/32"
+            case " $opened " in
+              *" $cidr "*) ;;
+              *)
+                echo "round $round: opening $cidr"
+                aws lightsail open-instance-public-ports --instance-name "$INSTANCE" \
+                  --port-info "fromPort=22,toPort=22,protocol=tcp,cidrs=$cidr" >/dev/null
+                opened="$opened $cidr"
+                echo "cidrs=${opened# }" >> "$GITHUB_OUTPUT"
+                ;;
+            esac
+            for _ in $(seq 1 6); do
+              timeout 5 bash -c "</dev/tcp/$EVAMED_DEV_HOST/22" 2>/dev/null && exit 0
+              sleep 5
+            done
           done
-          echo "port 22 on $EVAMED_DEV_HOST never opened for this runner" >&2
+          echo "port 22 on $EVAMED_DEV_HOST never opened for this runner (opened:$opened)" >&2
           exit 1
 
       - name: Deploy
         run: deploy/deploy.sh
 
       - name: Close SSH for this runner
-        if: always() && steps.open.outputs.cidr != ''
+        if: always() && steps.open.outputs.cidrs != ''
         env:
-          CIDR: ${{ steps.open.outputs.cidr }}
+          CIDRS: ${{ steps.open.outputs.cidrs }}
         run: |
-          aws lightsail close-instance-public-ports --instance-name "$INSTANCE" \
-            --port-info "fromPort=22,toPort=22,protocol=tcp,cidrs=$CIDR" >/dev/null
+          for cidr in $CIDRS; do
+            aws lightsail close-instance-public-ports --instance-name "$INSTANCE" \
+              --port-info "fromPort=22,toPort=22,protocol=tcp,cidrs=$cidr" >/dev/null
+          done
