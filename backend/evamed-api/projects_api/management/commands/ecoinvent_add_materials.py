@@ -4,7 +4,8 @@ Add construction materials from ecoinvent to the EVAmed catalogue.
 Reads the hand-picked datasets in ecoinvent/data/construction_materials.json
 and creates one Material per dataset, already pinned, so `ecoinvent_refresh`
 can fill in its impact values. Rows are matched by dataset id, so running it
-again adds only what's missing.
+again adds only what's missing, and brings existing rows' descriptions up to
+date with the file.
 
 This command makes no API call and spends no quota; the refresh does.
 
@@ -64,15 +65,21 @@ class Command(BaseCommand):
             raise CommandError(
                 'No Unit row for {}. Load the reference data first.'.format(', '.join(missing)))
 
-        existing = set(models.Material.objects.filter(
+        existing = {material.ecoinvent_dataset_id: material for material in models.Material.objects.filter(
             ecoinvent_dataset_id__in=[e['dataset_id'] for e in data['materials']],
             ecoinvent_version=version,
             ecoinvent_system_model=system_model,
-        ).values_list('ecoinvent_dataset_id', flat=True))
+        )}
 
         to_add = [e for e in data['materials'] if e['dataset_id'] not in existing]
-        self.stdout.write('ecoinvent {} / {}: {} listed, {} already in the catalogue, {} to add'.format(
-            version, system_model, len(data['materials']), len(existing), len(to_add)))
+        to_describe = [
+            (existing[e['dataset_id']], e['description']) for e in data['materials']
+            if e['dataset_id'] in existing and existing[e['dataset_id']].description != e['description']]
+        self.stdout.write(
+            'ecoinvent {} / {}: {} listed, {} already in the catalogue, {} to add, '
+            '{} description(s) to update'.format(
+                version, system_model, len(data['materials']), len(existing), len(to_add),
+                len(to_describe)))
         for entry in to_add:
             self.stdout.write('    {:>6}  {:<4} {}'.format(
                 entry['dataset_id'], entry['unit'], material_name(entry)))
@@ -85,14 +92,18 @@ class Command(BaseCommand):
             for entry in to_add:
                 models.Material.objects.create(
                     name_material=material_name(entry),
+                    description=entry['description'],
                     unit_id=units[entry['unit']],
                     database_from=ECOINVENT_DATABASE_NAME,
                     ecoinvent_dataset_id=entry['dataset_id'],
                     ecoinvent_version=version,
                     ecoinvent_system_model=system_model,
                 )
+            for material, description in to_describe:
+                material.description = description
+                material.save(update_fields=['description'])
 
         self.stdout.write(self.style.SUCCESS(
-            'Added {} material(s). Fill in their impacts with: python manage.py '
+            'Added {} material(s), updated {} description(s). Fill in their impacts with: python manage.py '
             'ecoinvent_refresh --only material --max-datasets {} --apply'.format(
-                len(to_add), len(data['materials']))))
+                len(to_add), len(to_describe), len(data['materials']))))

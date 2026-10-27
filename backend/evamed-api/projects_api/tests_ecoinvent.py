@@ -311,6 +311,11 @@ class AddMaterialsTests(TestCase):
         for entry in data['materials']:
             self.assertIn(entry['unit'], UNIT_NAMES)
             self.assertTrue(entry['activity'].startswith('market for '), entry)
+            # ecoinvent's own text, without its boilerplate about markets or v2.
+            self.assertTrue(entry['description'].strip(), entry['dataset_id'])
+            self.assertNotIn('This is a market activity', entry['description'])
+            self.assertNotIn('[This dataset', entry['description'])
+            self.assertTrue(entry['description_from']['dataset_id'])
 
     def test_name_carries_the_category_and_reads_like_the_other_ecoinvent_rows(self):
         from projects_api.explorer import derive
@@ -349,8 +354,22 @@ class AddMaterialsTests(TestCase):
         self.assertEqual(rebar.database_from, 'ECOINVENT 3')
         self.assertEqual(
             (rebar.ecoinvent_version, rebar.ecoinvent_system_model), ('3.12-sandbox', 'cutoff'))
+        self.assertTrue(rebar.description.startswith('This dataset represents Average of World'))
         self.assertEqual(materials.get(ecoinvent_dataset_id=21731).unit_id, self.m3)
         self.assertFalse(materials.filter(ecoinvent_synced_at__isnull=False).exists())
+
+    def test_apply_fills_in_descriptions_of_materials_added_earlier(self):
+        from projects_api import models
+        self.run_command('--apply')
+        models.Material.objects.update(description=None)
+
+        output = self.run_command()
+        self.assertIn('30 description(s) to update', output)
+        self.assertFalse(models.Material.objects.exclude(description=None).exists())
+
+        self.run_command('--apply')
+        self.assertFalse(models.Material.objects.filter(description=None).exists())
+        self.assertEqual(models.Material.objects.count(), 30)
 
     def test_missing_unit_rows_stop_before_writing(self):
         from django.core.management.base import CommandError

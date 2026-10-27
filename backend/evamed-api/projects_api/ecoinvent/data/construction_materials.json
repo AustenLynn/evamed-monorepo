@@ -7,7 +7,11 @@
     "datasets in 3.12-sandbox. Picked from a search on 2026-10-26.",
     "The category becomes the name's prefix, which is how the explorer groups",
     "materials. Units are ecoinvent's reference units, so refreshes never skip",
-    "them on a unit mismatch."
+    "them on a unit mismatch.",
+    "",
+    "'description' is ecoinvent's own text from the product's production",
+    "dataset ('description_from'), with ecoinvent's standard notices removed:",
+    "a market dataset only carries a generic paragraph about markets."
   ],
   "version": "3.12-sandbox",
   "system_model": "cutoff",
@@ -18,7 +22,12 @@
       "product": "cement, Portland",
       "activity": "market for cement, Portland",
       "geography": "RoW",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "The dataset describes the production of Portland cement (CEM I) for the GLO geography.\n\nTo produce the Portland cement, the clinker (>90%) is ground with gypsum and with other materials, such as limestone.",
+      "description_from": {
+        "dataset_id": 1580,
+        "activity": "cement production, Portland"
+      }
     },
     {
       "category": "Cemento",
@@ -26,7 +35,12 @@
       "product": "cement, CEM II/A",
       "activity": "market for cement, CEM II/A",
       "geography": "RoW",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "The dataset describes the production of cement (CEM II/A)",
+      "description_from": {
+        "dataset_id": 4644,
+        "activity": "cement production, CEM II/A"
+      }
     },
     {
       "category": "Cemento",
@@ -34,7 +48,12 @@
       "product": "cement, CEM II/B",
       "activity": "market for cement, CEM II/B",
       "geography": "RoW",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "The dataset describes the production of cement (CEM II/B)",
+      "description_from": {
+        "dataset_id": 6636,
+        "activity": "cement production, CEM II/B"
+      }
     },
     {
       "category": "Cemento",
@@ -42,7 +61,12 @@
       "product": "cement, CEM III/A",
       "activity": "market for cement, CEM III/A",
       "geography": "RoW",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "The dataset describes the production of cement (CEM III/A)",
+      "description_from": {
+        "dataset_id": 20564,
+        "activity": "cement production, CEM III/A"
+      }
     },
     {
       "category": "Cemento",
@@ -50,7 +74,12 @@
       "product": "cement, CEM III/B",
       "activity": "market for cement, CEM III/B",
       "geography": "RoW",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "The dataset describes the production of cement (CEM III/B).",
+      "description_from": {
+        "dataset_id": 1739,
+        "activity": "cement production, CEM III/B"
+      }
     },
     {
       "category": "Cemento",
@@ -58,7 +87,12 @@
       "product": "cement, CEM IV/A",
       "activity": "market for cement, CEM IV/A",
       "geography": "RoW",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "The dataset describes the production of cement (CEM IV/A).",
+      "description_from": {
+        "dataset_id": 6681,
+        "activity": "cement production, CEM IV/A"
+      }
     },
     {
       "category": "Cemento",
@@ -66,7 +100,12 @@
       "product": "cement, CEM V/A",
       "activity": "market for cement, CEM V/A",
       "geography": "RoW",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "The dataset describes the production of cement (CEM V/A).",
+      "description_from": {
+        "dataset_id": 3805,
+        "activity": "cement production, CEM V/A"
+      }
     },
     {
       "category": "Cemento",
@@ -74,7 +113,12 @@
       "product": "cement, unspecified",
       "activity": "market for cement, unspecified",
       "geography": "RoW",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "This is a linking (transfering) activity which links the specific cement to the generic market for cement, unspecified.",
+      "description_from": {
+        "dataset_id": 19768,
+        "activity": "cement, all types to generic market for cement, unspecified"
+      }
     },
     {
       "category": "Acero",
@@ -82,7 +126,12 @@
       "product": "reinforcing steel",
       "activity": "market for reinforcing steel",
       "geography": "GLO",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "This dataset represents Average of World and European production mix. This is assumed to correspond to the consumption mix in Europe\n\ntechnology mix",
+      "description_from": {
+        "dataset_id": 1728,
+        "activity": "reinforcing steel production"
+      }
     },
     {
       "category": "Acero",
@@ -90,7 +139,12 @@
       "product": "steel, low-alloyed",
       "activity": "market for steel, low-alloyed",
       "geography": "GLO",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "Background:\nThis activity represents the production of primary low-alloyed steel in a basic oxygen furnace (BOF), a discontinuous process involving the following steps: 1) pretreatment of hot metal (pig iron) from the blast furnace (desulphurisation, deslagging, etc.); 2) mixing of charge (including alloying additions), weighing, transfer and reladling ; 3) oxidation in the BOF (decarburisation and oxidation of impurities); 4) secondary metallurgical treatment in a ladle furnace; and 5) casting (continuous and/or ingot).\n\nModelling approach:\nData on were mostly taken from the IPPC Best Available Technology report from the European Commission (Remus et al., 2013); note that where only data ranges were provided, the geometric mean of reported values was used here. The proportion of each by-product that is recycled internally (i.e. returned as an input to the process after it has been produced) is based on measured data from plants worldwide reported by worldsteel (2010): slag (including desulphurisation slag, BOF slag, slag from secondary metallurgy and slag from continuous casting), 14%; spittings, 100%; dust and sludge, 22%; and mill scale, 89%.\n\nReferences:\nRemus, R., Aguado-Monsonet, M. A., Roudier, S. & Samcho, L. D. (2013). JRC reference report - Best available techniques (BAT) reference document for iron and steel production. Joint Research Centre - European Commission, Luxemboug.\nWorldsteel (2010). Steel industry by-products. World Steel Association: Brussels, Belgium.\n\nRepresents average European technology; LD converter and secondary metallurgy",
+      "description_from": {
+        "dataset_id": 778,
+        "activity": "steel production, converter, low-alloyed"
+      }
     },
     {
       "category": "Acero",
@@ -98,7 +152,12 @@
       "product": "steel, low-alloyed, hot rolled",
       "activity": "market for steel, low-alloyed, hot rolled",
       "geography": "GLO",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "This dataset represents Average of World and European production mix. This is assumed to correspond to the consumption mix in Europe\n\ntechnology mix",
+      "description_from": {
+        "dataset_id": 10046,
+        "activity": "steel production, low-alloyed, hot rolled"
+      }
     },
     {
       "category": "Acero",
@@ -106,7 +165,12 @@
       "product": "steel, unalloyed",
       "activity": "market for steel, unalloyed",
       "geography": "GLO",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "Background:\nThis activity represents the production of primary steel (carbon; unalloyed) in a basic oxygen furnace (BOF), a discontinuous process involving the following steps: 1) pretreatment of hot metal (pig iron) from the blast furnace (desulphurisation, deslagging, etc.); 2) mixing of charge, weighing, transfer and reladling ; 3) oxidation in the BOF (decarburisation and oxidation of impurities); 4) secondary metallurgical treatment in a ladle furnace; and 5) casting (continuous and/or ingot).\n\nModelling approach:\nData on were mostly taken from the IPPC Best Available Technology report from the European Commission (Remus et al., 2013); note that where only data ranges were provided, the geometric mean of reported values was used here. The proportion of each by-product that is recycled internally (i.e. returned as an input to the process after it has been produced) is based on measured data from plants worldwide reported by worldsteel (2010): slag (including desulphurisation slag, BOF slag, slag from secondary metallurgy and slag from continuous casting), 14%; spittings, 100%; dust and sludge, 22%; and mill scale, 89%.\n\nThe ratio of pig iron to iron scrap inputs was based on average data from European steelmakers. The values were then adjusted to ensure Fe balance. This ratio is, however, highly variable among regions, globally, and the value used may not be representative of a) the average global situation or b) the situation in other regions. We advise caution when appliying these data elsewhere.\nReferences:\nRemus, R., Aguado-Monsonet, M. A., Roudier, S. & Samcho, L. D. (2013). JRC reference report - Best available techniques (BAT) reference document for iron and steel production. Joint Research Centre - European Commission, Luxemboug.\nWorldsteel (2010). Steel industry by-products. World Steel Association: Brussels, Belgium.\"\n\nRepresents average European technology; LD converter and secondary metallurgy",
+      "description_from": {
+        "dataset_id": 8736,
+        "activity": "steel production, converter, unalloyed"
+      }
     },
     {
       "category": "Acero",
@@ -114,7 +178,12 @@
       "product": "steel, chromium steel 18/8",
       "activity": "market for steel, chromium steel 18/8",
       "geography": "GLO",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "Background:\nThis activity represents the production of stainless steel (Type 304, aka. 18/8; assumed composition 68.6% Fe, 9.3% Ni, 19.0% Cr and 0.08% C) in a two-stage process. Raw materials (charge chrome, carbon steel scrap and ferronickel) are loaded into an electric arc furnace (EAF) and melted together. The composition of the charge corresponds to that of the desired steel product, besides the carbon content. The molten metal is then removed from the EAF and transferred to an argon-oxygen decarburisation (AOD) refining vessel, in which the amounts of impurities, principally carbon, are reduced to the desired levels. The purified molten metal is then continuously cast into stainless steel slabs (Norgate et al., 2004).\n\nModelling approach:\nData on the use of electricity, oxygen, argon and electrodes were taken from Norgate et al. (2004) and are specific to stainless steel production. The amounts of steel by-products (dusts, sludges and slags) that are produced are based on measured data from plants worldwide reported by worldsteel (2010). Also based on worldsteel (2010), the following internal recycling rates (i.e. returned as an input to the process after it has been produced) were assumed: EAF slag, 3%; secondary metallurgy slag, 14%; and dust, 10%. All other data were taken from the IPPC Best Available Technology report from the European Commission (Remus et al., 2013) and are representative of typical low- and un-alloyed steel production in an electric arc furnace in Europe. Note that where only data ranges were provided, the geometric mean of reported values was used here.\n\nReferences:\nNorgate, Jahanshahi, S. & Rankin, W. J. (2004). Alternative routes to stainless steel - a life cycle approach. Proceedings: Tenth International Ferroalloys Congress; INFACON X: ‘Transformation through Technology’, 1 – 4 February 2004, Cape Town, South Africa.\nRemus, R., Aguado-Monsonet, M. A., Roudier, S. & Samcho, L. D. (2013). JRC reference report - Best available techniques (BAT) reference document for iron and steel production. Joint Research Centre - European Commission, Luxemboug.\nWorldsteel (2010). Steel industry by-products. World Steel Association: Brussels, Belgium.\n\nRepresents average European technology; furnace with 4th hole and secondary metallurgy",
+      "description_from": {
+        "dataset_id": 9586,
+        "activity": "steel production, electric, chromium steel 18/8"
+      }
     },
     {
       "category": "Acero",
@@ -122,7 +191,12 @@
       "product": "steel, chromium steel 18/8, hot rolled",
       "activity": "market for steel, chromium steel 18/8, hot rolled",
       "geography": "GLO",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "This dataset represents Average of World and European production mix. This is assumed to correspond to the consumption mix in Europe\n\ntechnology mix",
+      "description_from": {
+        "dataset_id": 614,
+        "activity": "steel production, chromium steel 18/8, hot rolled"
+      }
     },
     {
       "category": "Concreto",
@@ -130,7 +204,12 @@
       "product": "concrete, 20MPa",
       "activity": "market for concrete, 20MPa",
       "geography": "RoW",
-      "unit": "m3"
+      "unit": "m3",
+      "description": "This dataset contains the production of 20 MPa ready-mix concrete used for building construction with Portland cement. Density: 2'335 kg/m³. Ingredients (for 1 m³): Cement 204 kg, Water 160 kg, Gravel 1009 kg, Sand 925 kg, Fly ash 36.38 kg, Admixtures (air-entrainers and superplastisizers) 1,2kg. 20 MPa concrete is intended for residential use, such as footings for walls, columns, fireplaces, chimneys, foundations, walls, grade beams, piers, not exposed to freeze-thaw. (following the Canadian CSA specs - http://www.rmcao.org/sites/default/files/CSA%20Quickspec%202012.pdf) Generic concrete mixes (cement, SCM, aggregate, water) provided by the CPCA (Athena (2005):Cement and Structural Concrete: LCI Update 2005; Table 10.1). Admixtures included in the mixes, as provided by the CPCI (Athena and Morrison Hershfield (2012): Life Cycle Assessment of Precast Concrete Commercial Buildings Cradle-to-Grave; Table 5). The average water consumption (not including batch water) is 65 L/m³ of ready mixed concrete. The average amount of water disposed is 35 L/m³. Water not discarded is recycled back into the process or into other products, and therefore not accounted for in this dataset.\n\nTypical technology for average North American production. Data quality indicators adjusted accordingly.",
+      "description_from": {
+        "dataset_id": 26508,
+        "activity": "concrete production, 20MPa, with cement, Portland"
+      }
     },
     {
       "category": "Concreto",
@@ -138,7 +217,12 @@
       "product": "concrete, 25MPa",
       "activity": "market for concrete, 25MPa",
       "geography": "RoW",
-      "unit": "m3"
+      "unit": "m3",
+      "description": "This dataset is a copy of the corresponding activity of CA-QC. This dataset represents the production of Quebec 25 MPa ready-mix concrete. Density: 2\"432 kg/m³. Ingredients (for 1 m³): Cement 279 kg, Water 166 kg, Gravel 1010 kg, Sand 955 kg, Fly ash 21.21 kg, Water reducing admixture 0,9 kg. 25 MPa concrete is intended for interior slabs not exposed to freeze-thaw, including residential, commercial and industrial uses (following the Canadian CSA specs - http://www.rmcao.org/sites/default/files/CSA%20Quickspec%202012.pdf). Generic concrete mixes (cement, SCM, aggregate, water and admixtures) provided by the Technical Committee of Association Béton Québec (Canada). The amount of fly ash indicated above (about 7% of inputs) represents a theoretical average. Producers using it generally add 15-20% of fly ash in the mix. The average water consumption (not including batch water) is 65 L/m³ of ready mixed concrete. The average amount of water disposed is 35 L/m³. Water not discarded is recycled back into the process or into other products, and therefore not accounted for in this dataset.\n\nTypical technology for average North American production.",
+      "description_from": {
+        "dataset_id": 20838,
+        "activity": "concrete production, 25MPa, for building construction, for interior use, with cement, Portland"
+      }
     },
     {
       "category": "Concreto",
@@ -146,7 +230,12 @@
       "product": "concrete, 30MPa",
       "activity": "market for concrete, 30MPa",
       "geography": "RoW",
-      "unit": "m3"
+      "unit": "m3",
+      "description": "This dataset contains the production of 30MPa concrete used for drilled piles with Portland cement from primary aggregates (no input of recycled gravel or sand). This type of concrete is used in concrete pile construction under dry or wet conditions with high requirements (alkali-aggregate reaction (AAR), frost-dew resistance).\nDensity: 2400 kg/m3, content of cement: 355 kg/m3\nExposition class according to EN 206-1: no normative requirements\n\nTypical technology for average Swiss production",
+      "description_from": {
+        "dataset_id": 26126,
+        "activity": "concrete production, 30MPa, for drilled piles, with cement, Portland"
+      }
     },
     {
       "category": "Concreto",
@@ -154,7 +243,12 @@
       "product": "concrete, 35MPa",
       "activity": "market for concrete, 35MPa",
       "geography": "RoW",
-      "unit": "m3"
+      "unit": "m3",
+      "description": "This dataset contains the production of 35MPa ready-mix concrete used in civil engineering for exterior use with Portland cement. Density: 2'315 kg/m³. Ingredients (for 1 m³): Cement 312 kg, Water 162 kg, Gravel 950 kg, Sand 815 kg, Fly ash, Silica fume or Blast furnace slag 73.77 kg, Admixtures (air-entrainers, water reducing admixture and superplastisizers) 3kg. 35 MPa concrete is intended for structurally reinforced commercial and industrial usage, exposed to chlorides and freezing and thawing conditions (e.g. bridge, decks, parking decks and ramps, etc.) (following the Canadian CSA specs - http://www.rmcao.org/sites/default/files/CSA%20Quickspec%202012.pdf). Generic concrete mixes (cement, SCM, aggregate, water, admixtures) provided by the Technical Committee of Association Béton Québec (Canada) (Recipe compliant with Quebec standards for Work of art concrete, Ministère des transports du Québec - Ministry of Transport, Québec- Canada). The average water consumption (not including batch water) is 65 L/m³ of ready mixed concrete. The average amount of water disposed is 35 L/m³. Water not discarded is recycled back into the process or into other products, and therefore not accounted for in this dataset.\n\nTypical technology for average North American production. Data quality indicators adjusted accordingly.",
+      "description_from": {
+        "dataset_id": 26707,
+        "activity": "concrete production, 35MPa, for civil engineering, for exterior use, with cement, Portland"
+      }
     },
     {
       "category": "Concreto",
@@ -162,7 +256,12 @@
       "product": "concrete, 40MPa",
       "activity": "market for concrete, 40MPa",
       "geography": "RoW",
-      "unit": "m3"
+      "unit": "m3",
+      "description": "This dataset represents the production of 40MPa ready-mix concrete in Peru. Density: 2'453 kg/m³ - w/c: 0.55. Ingredients (for 1 m³): cement type ICo 380 kg, Water 195 kg, Gravel 1116 kg, Sand 744kg, Admixtures (retarder 0.3%cem and superplastisizers 0.7%cem) in total 3.8kg/m3.\nThis dataset is a copy of the corresponding PE dataset.\n\nRepresent the current technology for ready-mix concrete production in Peru.",
+      "description_from": {
+        "dataset_id": 21021,
+        "activity": "concrete production, 40MPa, for civil engineering, with cement, Portland"
+      }
     },
     {
       "category": "Concreto",
@@ -170,7 +269,12 @@
       "product": "concrete, 50MPa",
       "activity": "market for concrete, 50MPa",
       "geography": "RoW",
-      "unit": "m3"
+      "unit": "m3",
+      "description": "This dataset represents the production of 1m3 of 50 MPa ready-mix concrete using Portland cement in the Global geography. The density of the reference product is 2344 kg/m³. Ingredients (for 1 m³): Portland cement 480 kg, Water 170 kg, Gravel 1090 kg Sand 600 kg and Supplementary Cementitious Materials (SCM) (air-entrainers, water reducing admixture and superplastisizers) 3.95 kg. Concrete with a strength rating of 50 MPa is intended for structurally reinforced applications where high strength and durability are required. It is typically used in specialized construction projects such as bridges, high-rise buildings, marine structures, and infrastructures that are likely to be exposed to aggressive environments like chlorides orfreezing and thawing conditions. The generic concrete mix (cement, SCM, aggregate, water, admixtures) was provided by the Technical Committee of Association Béton Québec (Canada) while specific modification of the declared mix in the current database is provided by literature-averaged values. The average amount of water disposed is 34.8 L/m³. Water not discarded is recycled back into the process or into other products, and therefore not accounted for in this dataset. Annual production volume of Ready-Mix concrete for North America estimated based on US production, and GDP ratio. Distribution by ready-mix strength class estimated as: 20 MPa = 20% ; 25 MPa = 40% ; 30-32 MPa = 15% ; 35 MPa = 24% ; 50 MPa = 1% (coherent with distribution presented in http://www.ermco.eu/documents/ermco-documents/ermco_-statistics2008_091310.pdf (Table 3).\nSources: Limbachiya, M., Bostanci, S.C., and Kew, H., 2014. Suitability of BS EN 197-1 CEM II and CEM V cement for production of low carbon concrete. Construction and Building Materials 71, 397–405. http://dx.doi.org/10.1016/j.conbuildmat.2014.08.061 Marceau, Medgar L., Nisbet, Michael A., and VanGeem, Martha G. Life Cycle Inventory of Portland Cement Concrete, SN3011, Portland Cement Association, Skokie, Illinois, PCA, 2007, 121 pages. Setiawan et al 2023 IOP Conf. Ser.: Earth Environ. Sci. 1195 012031. DOI 10.1088/1755-1315/1195/1/012031 Rahal, K.N., and Elsayed, K., 2021. Shear strength of 50 MPa longitudinally reinforced concrete beams made with coarse aggregates from low strength recycled waste concrete. Construction and Building Materials 286, 122835. https://doi.org/10.1016/j.conbuildmat.2021.122835. Ambroziak, Andrzej, and Patryk Ziolkowski. 2020. Concrete Compressive Strength under Changing Environmental Conditions during Placement Processes. Materials 13, no. 20: 4577. https://doi.org/10.3390/ma13204577\n\nTypical technology for average North American production. Data quality indicators adjusted accordingly.",
+      "description_from": {
+        "dataset_id": 26305,
+        "activity": "concrete production, 50MPa, with cement, Portland"
+      }
     },
     {
       "category": "Concreto",
@@ -178,7 +282,12 @@
       "product": "concrete, normal strength",
       "activity": "market for concrete, normal strength",
       "geography": "RoW",
-      "unit": "m3"
+      "unit": "m3",
+      "description": "This is a linking (transfering) activity which links the specific concrete types to the generic 'market for concrete, normal strength'.\nThe shares of the different types of concrete are set based on production volumes of the respective activities and geographies.",
+      "description_from": {
+        "dataset_id": 20986,
+        "activity": "concrete, all types to generic market for concrete, normal strength"
+      }
     },
     {
       "category": "Concreto",
@@ -186,7 +295,12 @@
       "product": "concrete, medium strength",
       "activity": "market for concrete, medium strength",
       "geography": "RoW",
-      "unit": "m3"
+      "unit": "m3",
+      "description": "This is a linking (transfering) activity which links the specific concrete types to the generic 'market for concrete, normal strength'.\nThe shares of the different types of concrete are set based on production volumes of the respective activities and geographies.",
+      "description_from": {
+        "dataset_id": 19882,
+        "activity": "concrete, all types to generic market for concrete, medium strength"
+      }
     },
     {
       "category": "Concreto",
@@ -194,7 +308,12 @@
       "product": "lean concrete",
       "activity": "market for lean concrete",
       "geography": "RoW",
-      "unit": "m3"
+      "unit": "m3",
+      "description": "This datasets contains the production of lean concrete with cement CEM II/A from primary aggregates (no input of recycled gravel or sand).\nDensity: 2250 kg/m3, content of cement: 150 kg/m3\nExposition class according to EN 206-1: no normative requirements\nExamples fo this exposition class are blinding layers below foundations.\n\nTypical technology for average Swiss production",
+      "description_from": {
+        "dataset_id": 12630,
+        "activity": "lean concrete production, with cement CEM II/A"
+      }
     },
     {
       "category": "Block",
@@ -202,7 +321,12 @@
       "product": "concrete block",
       "activity": "market for concrete block",
       "geography": "RoW",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "This dataset describes the production of concrete blocks in the Global geography.\nThe dataset includes the reception of materials, dosing and mixing, block production by vibration, curing and storage.\n\nCurrent production technology. The dataset covers the main technologies for concrete block production in Brazil and Ecuador. The manufacturing process begins by dosing and mixing the cement, aggregates and water to make concrete. In the block machine, the steel cast is filled with concrete and the block is shaped and compacted by vibration. The fresh concrete block is then transported to the curing chambers. The cure can be done in the following ways: 1) naturally, leaving the blocks in closed chambers with no water addition; 2) wet cure, spraying water over the blocks to keep relative humidity high in order to ensure proper hydration of the cement; 3) thermal cure with steam, which enables the cement to hydrate faster than in the wet cure and lowers concrete shrinkage. The blocks are then packed in pallets and stored. The process can happen with various automation levels and different types and sizes of block machines. It is common to produce various block shapes and compressive strength classes in a single factory, as well as concrete pavers.",
+      "description_from": {
+        "dataset_id": 3497,
+        "activity": "concrete block production"
+      }
     },
     {
       "category": "Block",
@@ -210,7 +334,12 @@
       "product": "autoclaved aerated concrete block",
       "activity": "market for autoclaved aerated concrete block",
       "geography": "RoW",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "Hardening is assumed to be by air-drying. It is assumed that there is wastewater and solid waste, but as no exact description on the composition of the wastewater and solid waste is available a proxy for each (\"treatment, concrete production effluent, to wastewater treatment, class 3\" and \"disposal, municipal solid waste, 22.9% water, to municipal incineration\") is used. The lifespan of the plant is assumed to be 50 years.\nAutoclaved Aerated Concrete is a Lightweight, Load-bearing, High-insulating, Durable building product, which is produced in a wide range of sizes and strengths. AAC Blocks is lightweight and compare to the red bricks AAC blocks are three times lighter.\nThe Autoclaved Aerated Concrete (AAC) material was developed in 1924 in Sweden. It has become one of the most used building materials in Europe and is rapidly growing in many other countries around the world.\nAAC is produced from the common materials lime, sand, cement and water, and a small amount of rising agent. After mixing and molding, it is then autoclaved under heat and pressure to create its unique properties. AAC has excellent thermal insulation and acoustic absorption properties. AAC is fire and pest resistant, and is economically and environmentally superior to the more traditional structural building materials such as concrete, wood, brick and stone.\nAAC is a highly thermally insulating concrete-based material used for both internal and external construction. Besides AAC's insulating capability, one of its advantages in construction is its quick and easy installation, because the material can be routed, sanded, or cut to size on site using standard carbon steel power tools.\nAAC is well suited for urban areas with high rise buildings and those with high temperature variations. Due to its lower density, high rise buildings constructed using AAC require less steel and concrete for structural members. The requirement of mortar for laying of AAC blocks is reduced due to the lower number of joints. Similarly, the material required for rendering is also lower due to the dimensional accuracy of AAC. The increased thermal efficiency of AAC makes it suitable for use in areas with extreme temperatures, as it eliminates the need for separate materials for construction and insulation, leading to faster construction and cost savings.\n\nThe raw materials (sand/gravel, quicklime, anhydrite, cement and aluminium powder) are mixed with water and poured into a mould. The aluminium powder is reacting  with the alcaline and siliceous additives and forms, by hydrogen release, pores with a diameter between 2 and 3mm.",
+      "description_from": {
+        "dataset_id": 6323,
+        "activity": "autoclaved aerated concrete block production"
+      }
     },
     {
       "category": "Block",
@@ -218,7 +347,12 @@
       "product": "lightweight concrete block, expanded clay",
       "activity": "market for lightweight concrete block, expanded clay",
       "geography": "RoW",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "Hardening is assumed to be by air-drying. It is assumed that there is wastewater and solid waste, but as no exact description on the composition of the wastewater and solid waste is available a proxy for each (\"treatment, concrete production effluent, to wastewater treatment, class 3\" and \"disposal, municipal solid waste, 22.9% water, to municipal incineration\") is used. The lifespan of the plant is assumed to be 50 years.\n\nThe raw material mixture (aggregates, cement and water) of lightweight concrete blocks are poured into a mould then squeezed and finaly hardened by air (assumption for this study)",
+      "description_from": {
+        "dataset_id": 6496,
+        "activity": "lightweight concrete block production, expanded clay"
+      }
     },
     {
       "category": "Block",
@@ -226,7 +360,12 @@
       "product": "lightweight concrete block, pumice",
       "activity": "market for lightweight concrete block, pumice",
       "geography": "RoW",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "Hardening is assumed to be by air-drying. It is assumed that there is wastewater and solid waste, but as no exact description on the composition of the wastewater and solid waste is available a proxy for each (\"treatment, concrete production effluent, to wastewater treatment, class 3\" and \"disposal, municipal solid waste, 22.9% water, to municipal incineration\") is used. The lifespan of the plant is assumed to be 50 years.\n\nThe raw material mixture (aggregates, cement and water) of lightweight concrete blocks are poured into a mould then squeezed and finaly hardened by air (assumption for this study)",
+      "description_from": {
+        "dataset_id": 120,
+        "activity": "lightweight concrete block production, pumice"
+      }
     },
     {
       "category": "Block",
@@ -234,7 +373,12 @@
       "product": "lightweight concrete block, expanded perlite",
       "activity": "market for lightweight concrete block, expanded perlite",
       "geography": "RoW",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "Hardening is assumed to be by air-drying. It is assumed that there is wastewater and solid waste, but as no exact description on the composition of the wastewater and solid waste is available a proxy for each (\"treatment, concrete production effluent, to wastewater treatment, class 3\" and \"disposal, municipal solid waste, 22.9% water, to municipal incineration\") is used. The lifespan of the plant is assumed to be 50 years.\n\nThe raw material mixture (aggregates, cement and water) of lightweight concrete blocks are poured into a mould then squeezed and finaly hardened by air (assumption for this study)",
+      "description_from": {
+        "dataset_id": 6251,
+        "activity": "lightweight concrete block production, expanded perlite"
+      }
     },
     {
       "category": "Block",
@@ -242,7 +386,12 @@
       "product": "lightweight concrete block, polystyrene",
       "activity": "market for lightweight concrete block, polystyrene",
       "geography": "RoW",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "Hardening is assumed to be by air-drying. It is assumed that there is wastewater and solid waste, but as no exact description on the composition of the wastewater and solid waste is available a proxy for each (\"treatment, concrete production effluent, to wastewater treatment, class 3\" and \"disposal, municipal solid waste, 22.9% water, to municipal incineration\") is used. The lifespan of the plant is assumed to be 50 years.\n\nThe raw material mixture (aggregates, cement and water) of lightweight concrete blocks are poured into a mould then squeezed and finaly hardened by air (assumption for this study)",
+      "description_from": {
+        "dataset_id": 6818,
+        "activity": "lightweight concrete block production, polystyrene"
+      }
     },
     {
       "category": "Block",
@@ -250,7 +399,12 @@
       "product": "lightweight concrete block, expanded vermiculite",
       "activity": "market for lightweight concrete block, expanded vermiculite",
       "geography": "RoW",
-      "unit": "kg"
+      "unit": "kg",
+      "description": "Hardening is assumed to be by air-drying. It is assumed that there is wastewater and solid waste, but as no exact description on the composition of the wastewater and solid waste is available a proxy for each (\"treatment, concrete production effluent, to wastewater treatment, class 3\" and \"disposal, municipal solid waste, 22.9% water, to municipal incineration\") is used. The lifespan of the plant is assumed to be 50 years.\n\nThe raw material mixture (aggregates, cement and water) of lightweight concrete blocks are poured into a mould then squeezed and finaly hardened by air (assumption for this study)",
+      "description_from": {
+        "dataset_id": 3569,
+        "activity": "lightweight concrete block production, expanded vermiculite"
+      }
     }
   ]
 }
