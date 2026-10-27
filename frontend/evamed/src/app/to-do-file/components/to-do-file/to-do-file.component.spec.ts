@@ -239,8 +239,48 @@ describe('ToDoFileComponent upload', () => {
     chooseFile(templateFile(true, ['Cemento'], 'Cemento'));
 
     await showsError();
+    expect(fixture.nativeElement.querySelector('.upload-error').textContent).toContain('No se pudo verificar el catálogo');
     expect(continueButton().disabled).toBe(true);
     expect(sessionStorage.getItem('dataProject')).toBeNull();
+  });
+
+  it('lists at most 10 outdated names and counts the rest', async () => {
+    const old = Array.from({ length: 12 }, (_, i) => `Viejo${String(i).padStart(2, '0')}`),
+      book = XLSX.utils.book_new(),
+      bd = [[], [], [], [], ['Llave', 'Base', 'Categoria', 'Tipo', 'Material'], ...['Cemento', ...old].map(m => ['k', 'EPiC', 'C', 'T', m])];
+    XLSX.utils.book_append_sheet(book, XLSX.utils.aoa_to_sheet([['Material'], ...old.map(m => [m])]), 'Cimentación');
+    XLSX.utils.book_append_sheet(book, XLSX.utils.aoa_to_sheet(bd), 'BD');
+    book.Workbook = { Names: [{ Name: 'EVAMED_CATALOGO', Ref: '"2026-10-27T20:00:00Z"' }] };
+    const bytes: ArrayBuffer = XLSX.write(book, { type: 'array', bookType: 'xlsx' });
+
+    chooseFile(new File([bytes], 'proyecto.xlsx'));
+
+    await showsError();
+    const text: string = fixture.nativeElement.querySelector('.upload-error').textContent;
+    expect(old.slice(0, 10).every(name => text.includes(name))).toBe(true);
+    expect(text).not.toContain('Viejo10');
+    expect(text).toContain('Viejo09 y 2 más.');
+  });
+
+  it('shows a message and saves nothing when the template download fails', () => {
+    const httpMock = TestBed.inject(HttpTestingController),
+      saver = TestBed.inject(FileSaverService);
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+    clickDownload('Download Windows file');
+    httpMock.expectOne(environment.api_template + 'windows.xlsm').error(new ProgressEvent('error'), { status: 500, statusText: 'Server Error' });
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.download-error').textContent).toContain(
+      'No se pudo descargar la plantilla. Inténtalo de nuevo.'
+    );
+    expect(saver.save).not.toHaveBeenCalled();
+
+    // A retry clears the message.
+    clickDownload('Download Windows file');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.download-error')).toBeNull();
+    httpMock.expectOne(environment.api_template + 'windows.xlsm').flush(new Blob(['x']));
   });
 
   it('ignores a slower earlier file once a later one has been chosen', async () => {
@@ -266,5 +306,45 @@ describe('ToDoFileComponent upload', () => {
     expect(fixture.componentInstance.uploadError).toBeNull();
     expect(fixture.componentInstance.processingFile).toBe(false);
     expect(continueButton().disabled).toBe(false);
+  });
+});
+
+// The catalogue cache lives as long as the tab; the check must not use an older list.
+describe('ToDoFileComponent upload against the catalogue cache', () => {
+  it('accepts a file that uses a material added after the tab cached the catalogue', async () => {
+    sessionStorage.clear();
+    sessionStorage.setItem('primaryDataProject', JSON.stringify({ name_project: 'Casa' }));
+    TestBed.configureTestingModule({
+      imports: [ToDoFileModule],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: MatDialog, useValue: { open: vi.fn() } },
+        { provide: FileSaverService, useValue: { save: vi.fn() } },
+      ],
+    });
+    const httpMock = TestBed.inject(HttpTestingController),
+      fixture = TestBed.createComponent(ToDoFileComponent);
+    fixture.detectChanges();
+
+    // An earlier page cached the catalogue without 'Nuevo'.
+    TestBed.inject(MaterialsService).getMaterials().subscribe();
+    httpMock.expectOne(environment.api_materials).flush([{ name_material: 'Cemento' }]);
+
+    const book = XLSX.utils.book_new(),
+      bd = [[], [], [], [], ['Llave', 'Base', 'Categoria', 'Tipo', 'Material'], ['k', 'EPiC', 'C', 'T', 'Cemento'], ['k', 'EPiC', 'C', 'T', 'Nuevo']];
+    XLSX.utils.book_append_sheet(book, XLSX.utils.aoa_to_sheet([['Material'], ['Nuevo']]), 'Cimentación');
+    XLSX.utils.book_append_sheet(book, XLSX.utils.aoa_to_sheet(bd), 'BD');
+    book.Workbook = { Names: [{ Name: 'EVAMED_CATALOGO', Ref: '"2026-10-27T20:00:00Z"' }] };
+    const bytes: ArrayBuffer = XLSX.write(book, { type: 'array', bookType: 'xlsx' }),
+      input: HTMLInputElement = fixture.nativeElement.querySelector('#file');
+    Object.defineProperty(input, 'files', { value: [new File([bytes], 'proyecto.xlsx')], configurable: true });
+    input.dispatchEvent(new Event('change'));
+
+    // The check asks the server again instead of replaying the cached list.
+    await vi.waitFor(() => httpMock.expectOne(environment.api_materials).flush([{ name_material: 'Cemento' }, { name_material: 'Nuevo' }]));
+    await vi.waitFor(() => expect(fixture.componentInstance.fileReady).toBe(true));
+    expect(fixture.componentInstance.uploadError).toBeNull();
+    sessionStorage.clear();
   });
 });

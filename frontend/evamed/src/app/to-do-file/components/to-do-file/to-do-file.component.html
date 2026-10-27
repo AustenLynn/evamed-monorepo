@@ -38,6 +38,9 @@
           </div>
         </div>
       </div>
+      @if (downloadError) {
+        <p class="download-error" role="alert">{{ downloadError }}</p>
+      }
     </section>
 
     <section class="container-upload">

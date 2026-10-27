@@ -6,6 +6,7 @@ refs and the workbook's recalculation settings change. Every other part is copie
 """
 import io
 import re
+import unicodedata
 import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -59,12 +60,18 @@ def catalogue_rows() -> list:
     """Every material with a name, A to Z, as the template's catalogue rows."""
     materials = models.Material.objects.select_related('unit_id').exclude(name_material__isnull=True)
     named = [m for m in materials if m.name_material.strip()]
-    named.sort(key=lambda m: m.name_material.casefold())
+    named.sort(key=lambda m: _sort_key(m.name_material))
     return [CatalogueRow(
         base=m.database_from or '', categoria=category(m.name_material) or '', tipo='',
         material=m.name_material, unidad=(m.unit_id.name_unit if m.unit_id else '') or '',
         administrador='', region=region(m.name_material) or '-', descripcion=m.description or '')
         for m in named]
+
+
+def _sort_key(name):
+    """A to Z ignoring case and accents ('Ángulo' sorts with the As); ties keep a stable order."""
+    plain = ''.join(c for c in unicodedata.normalize('NFD', name) if not unicodedata.combining(c))
+    return plain.casefold(), name.casefold(), name
 
 
 def build_template(kind: str, rows: list, built_at: datetime) -> bytes:
@@ -83,6 +90,8 @@ def build_template(kind: str, rows: list, built_at: datetime) -> bytes:
     table = files[table_name].decode('utf-8')
     table = re.sub(r'(<table [^>]*?\bref=")[^"]*"', r'\g<1>A5:AH%d"' % last_row, table, count=1)
     table = re.sub(r'(<autoFilter ref=")[^"]*"', r'\g<1>A5:AH%d"' % last_row, table, count=1)
+    # The Mac template saves a filter on Base (EPiC); the catalogue has every base, so drop it.
+    table = re.sub(r'<filterColumn\b[^>]*?/>|<filterColumn\b.*?</filterColumn>', '', table, flags=re.S)
     files[table_name] = table.encode('utf-8')
     files['xl/workbook.xml'] = _rewrite_workbook(files['xl/workbook.xml'].decode('utf-8'), built_at).encode('utf-8')
     files['xl/_rels/workbook.xml.rels'] = re.sub(

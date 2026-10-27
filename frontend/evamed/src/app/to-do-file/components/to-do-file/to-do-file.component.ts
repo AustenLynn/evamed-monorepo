@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { PrevStepsComponent } from 'src/app/to-do-file/components/prev-steps/prev-steps.component';
 import { ViewChild, ElementRef, Renderer2 } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { CatalogueCacheService } from 'src/app/core/services/catalogue-cache/catalogue-cache.service';
 import { MaterialsService } from 'src/app/core/services/materials/materials.service';
 import { bySection, fileCatalogue, isGeneratedTemplate, outdatedMaterials } from 'src/app/shared/template-sheets';
 import { environment } from 'src/environments/environment';
@@ -26,6 +27,7 @@ export class ToDoFileComponent implements OnInit {
   fileReady = false;
   processingFile = false;
   uploadError: string | null = null;
+  downloadError: string | null = null;
   // Sheets with materials that aren't a building element; their rows aren't imported.
   unknownSheets: string[] = [];
   // Each chosen file gets a number; a slower earlier read must not touch the state of a later one.
@@ -39,7 +41,8 @@ export class ToDoFileComponent implements OnInit {
     private fileSaverService: FileSaverService,
     public dialog: MatDialog,
     private renderer2: Renderer2,
-    private materialsService: MaterialsService
+    private materialsService: MaterialsService,
+    private catalogueCache: CatalogueCacheService
   ) {}
 
   ngOnInit(): void {
@@ -110,6 +113,8 @@ export class ToDoFileComponent implements OnInit {
         if (isGeneratedTemplate(wb)) {
           let current: Set<string>;
           try {
+            // The cached list may predate a material added since this tab loaded it.
+            this.catalogueCache.invalidate(environment.api_materials);
             const materials = await firstValueFrom(this.materialsService.getMaterials());
             current = new Set(materials.map(m => m.name_material));
           } catch (error) {
@@ -159,29 +164,29 @@ export class ToDoFileComponent implements OnInit {
   }
 
   onDownloadWindows() {
-    const fileName = `Formato Windows.xlsm`;
-    this.httpClient
-      .get(`${environment.api_template}windows.xlsm`, {
-        observe: 'response',
-        responseType: 'blob',
-      })
-      .subscribe(res => {
-        this.fileSaverService.save(res.body, fileName);
-      });
-    return;
+    this.downloadTemplate('windows', `Formato Windows.xlsm`);
   }
 
   onDownloadMac() {
-    const fileName = `Formato MAC.xlsm`;
+    this.downloadTemplate('mac', `Formato MAC.xlsm`);
+  }
+
+  private downloadTemplate(kind: string, fileName: string) {
+    this.downloadError = null;
     this.httpClient
-      .get(`${environment.api_template}mac.xlsm`, {
+      .get(`${environment.api_template}${kind}.xlsm`, {
         observe: 'response',
         responseType: 'blob',
       })
-      .subscribe(res => {
-        this.fileSaverService.save(res.body, fileName);
+      .subscribe({
+        next: res => {
+          this.fileSaverService.save(res.body, fileName);
+        },
+        error: error => {
+          console.error('No se pudo descargar la plantilla', error);
+          this.downloadError = 'No se pudo descargar la plantilla. Inténtalo de nuevo.';
+        },
       });
-    return;
   }
 
   onDownloadMated() {

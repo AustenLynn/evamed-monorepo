@@ -57,6 +57,15 @@ class BuildTemplateTests(SimpleTestCase):
         out = parts(build_template(kind, catalogue, BUILT_AT))
         return out, out[bd_name(kind)].decode('utf-8')
 
+    def test_table_keeps_no_saved_filter(self):
+        for kind in KINDS:
+            out, _ = self.built(kind)
+            tables = [d.decode('utf-8') for n, d in out.items()
+                      if n.startswith('xl/tables/') and b' name="BaseDatos"' in d]
+            self.assertEqual(len(tables), 1)
+            self.assertNotIn('filterColumn', tables[0])
+            self.assertIn('<autoFilter ref="A5:AH8"', tables[0])
+
     def test_every_xml_part_is_well_formed(self):
         for kind in KINDS:
             with self.subTest(kind=kind):
@@ -209,6 +218,12 @@ class TemplateDownloadTests(APITestCase):
         self.assertEqual(found[1].categoria, 'Cemento')
         self.assertEqual(found[1].region, 'Resto del mundo')
         self.assertEqual(found[0].region, 'México')
+
+    def test_rows_sort_ignoring_accents_and_case(self):
+        models.Material.objects.create(name_material='Ángulo de acero', database_from='EPiC')
+        models.Material.objects.create(name_material='zinc', database_from='EPiC')
+        names = [r.material for r in catalogue_rows()]
+        self.assertEqual(names, ['Ángulo de acero', BLOCK, CEMENT, 'zinc'])
 
     def test_download_windows(self):
         response = self.client.get(URL % 'windows')
