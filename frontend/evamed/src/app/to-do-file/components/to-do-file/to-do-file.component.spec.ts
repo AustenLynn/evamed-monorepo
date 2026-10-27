@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { FileSaverService } from 'ngx-filesaver';
 import * as XLSX from 'xlsx';
 import { environment } from 'src/environments/environment';
@@ -241,5 +241,30 @@ describe('ToDoFileComponent upload', () => {
     await showsError();
     expect(continueButton().disabled).toBe(true);
     expect(sessionStorage.getItem('dataProject')).toBeNull();
+  });
+
+  it('ignores a slower earlier file once a later one has been chosen', async () => {
+    const slow = new Subject<{ name_material: string }[]>();
+    getMaterials.mockReturnValueOnce(slow);
+
+    // A uses a renamed material, so it would be rejected if it were still current.
+    chooseFile(templateFile(true, ['Cemento', 'Viejo'], 'Viejo'));
+    await vi.waitFor(() => expect(getMaterials).toHaveBeenCalledTimes(1));
+
+    chooseFile(templateFile(true, ['Cemento'], 'Cemento'));
+    await vi.waitFor(() => expect(fixture.componentInstance.fileReady).toBe(true));
+    const stored = sessionStorage.getItem('dataProject');
+
+    slow.next([{ name_material: 'Cemento' }]);
+    slow.complete();
+    await new Promise(resolve => setTimeout(resolve));
+    fixture.detectChanges();
+
+    expect(sessionStorage.getItem('dataProject')).toBe(stored);
+    expect(JSON.parse(stored).data[0]).toEqual([{ Material: 'Cemento' }]);
+    expect(fixture.componentInstance.fileReady).toBe(true);
+    expect(fixture.componentInstance.uploadError).toBeNull();
+    expect(fixture.componentInstance.processingFile).toBe(false);
+    expect(continueButton().disabled).toBe(false);
   });
 });

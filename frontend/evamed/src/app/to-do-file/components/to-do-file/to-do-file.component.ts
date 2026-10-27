@@ -28,6 +28,8 @@ export class ToDoFileComponent implements OnInit {
   uploadError: string | null = null;
   // Sheets with materials that aren't a building element; their rows aren't imported.
   unknownSheets: string[] = [];
+  // Each chosen file gets a number; a slower earlier read must not touch the state of a later one.
+  private currentUpload = 0;
 
   @ViewChild('asTitle') title: ElementRef;
   @ViewChild('asImage') image: ElementRef;
@@ -72,9 +74,13 @@ export class ToDoFileComponent implements OnInit {
     this.processingFile = true;
     this.uploadError = null;
     this.unknownSheets = [];
-
-    const reader: FileReader = new FileReader();
+    const upload = ++this.currentUpload,
+      isStale = () => upload !== this.currentUpload,
+      reader: FileReader = new FileReader();
     reader.onload = async (e: any) => {
+      if (isStale()) {
+        return;
+      }
       try {
         /* read workbook */
         const bstr: string = e.target.result,
@@ -107,8 +113,14 @@ export class ToDoFileComponent implements OnInit {
             const materials = await firstValueFrom(this.materialsService.getMaterials());
             current = new Set(materials.map(m => m.name_material));
           } catch (error) {
+            if (isStale()) {
+              return;
+            }
             console.error('No se pudo obtener el catálogo de materiales', error);
             this.uploadError = 'No se pudo verificar el catálogo de materiales. Inténtalo de nuevo.';
+            return;
+          }
+          if (isStale()) {
             return;
           }
           const used = toRead.data.flat().map(row => row?.['Material']).filter(name => name != null).map(String),
@@ -124,14 +136,22 @@ export class ToDoFileComponent implements OnInit {
         sessionStorage.setItem('dataProject', JSON.stringify(toRead));
         this.fileReady = true;
       } catch (error) {
+        if (isStale()) {
+          return;
+        }
         console.error('No se pudo procesar el archivo', error);
         this.uploadError =
           'No se pudo procesar el archivo. Verifica que sea la plantilla de EVAMED e inténtalo de nuevo.';
       } finally {
-        this.processingFile = false;
+        if (!isStale()) {
+          this.processingFile = false;
+        }
       }
     };
     reader.onerror = () => {
+      if (isStale()) {
+        return;
+      }
       this.processingFile = false;
       this.uploadError = 'No se pudo leer el archivo. Inténtalo de nuevo.';
     };
