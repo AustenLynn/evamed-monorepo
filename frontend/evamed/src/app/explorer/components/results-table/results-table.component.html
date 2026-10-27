@@ -37,6 +37,14 @@
       <td mat-cell *matCellDef="let item"><app-source-chip [source]="item.source"></app-source-chip></td>
     </ng-container>
 
+    <ng-container matColumnDef="region">
+      <th mat-header-cell *matHeaderCellDef scope="col">Región</th>
+      <td mat-cell *matCellDef="let item">
+        <app-region-chip *ngIf="item.region; else noRegion" [region]="item.region"></app-region-chip>
+        <ng-template #noRegion>—</ng-template>
+      </td>
+    </ng-container>
+
     <ng-container matColumnDef="gwp">
       <th mat-header-cell *matHeaderCellDef scope="col" class="results-table__number">GWP (kg CO₂e)</th>
       <td mat-cell *matCellDef="let item" class="results-table__number">

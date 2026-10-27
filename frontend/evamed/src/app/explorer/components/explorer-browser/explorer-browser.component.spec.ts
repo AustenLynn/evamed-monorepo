@@ -13,6 +13,7 @@ const item = (id: number): ExplorerItem => ({
     name: `Concreto_Bloque ${id}`,
     display_name: `Bloque ${id}`,
     category: 'Concreto',
+    region: null,
     description: null,
     source: 'EPiC',
     unit: 'kg',

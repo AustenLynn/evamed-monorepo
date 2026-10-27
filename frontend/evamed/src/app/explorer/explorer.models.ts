@@ -9,6 +9,8 @@ export interface ExplorerItem {
   name: string;
   display_name: string;
   category: string | null;
+  /** The region the name says ('Global', 'México'…); null when it doesn't say (R-44). */
+  region: string | null;
   description: string | null;
   source: string | null;
   /** Construcción and Uso only. */

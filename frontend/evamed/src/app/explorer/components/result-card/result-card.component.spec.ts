@@ -12,6 +12,7 @@ describe('ResultCardComponent', () => {
       name: 'Concreto_AAC block',
       display_name: 'AAC block',
       category: 'Concreto',
+      region: null,
       description: 'Bloque de concreto celular',
       source: 'EPiC',
       unit: 'Pz',
@@ -38,6 +39,17 @@ describe('ResultCardComponent', () => {
     expect(el.querySelector('.result-card__unit')?.textContent?.trim()).toBe('kg CO₂e / Pz');
     expect(el.querySelector('app-impact-badge')?.textContent).toContain('Bajo impacto');
     expect(el.querySelector('app-source-chip img')?.getAttribute('src')).toBe('assets/logos/EPIC.png');
+    // EPiC names don't say a region (R-44).
+    expect(el.querySelector('.region-chip')).toBeNull();
+  });
+
+  it('shows the region the name says next to the database', () => {
+    const { el } = render({ item: { ...item, region: 'Resto del mundo' } }),
+      chip = el.querySelector('.result-card__footer .region-chip')!;
+
+    expect(chip.querySelector('.ev-visually-hidden')?.textContent).toBe('Región:');
+    expect(chip.textContent).toContain('Resto del mundo');
+    expect(chip.getAttribute('title')).toBe('Región: Resto del mundo');
   });
 
   it('says "por unidad de referencia" when the data has no unit (R-04)', () => {

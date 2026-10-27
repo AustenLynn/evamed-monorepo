@@ -11,11 +11,23 @@ from projects_api.explorer import derive, queries
 
 # stage → (items loader, {query param: item field}, {facet name: query param}).
 STAGES = {
-    'produccion': (queries.production_items, {'source': 'source'}, {'sources': 'source'}),
-    'construccion': (queries.construction_items, {'type': 'type'}, {'types': 'type'}),
-    'uso': (queries.use_items, {'source': 'source', 'type': 'type'}, {'sources': 'source', 'types': 'type'}),
+    'produccion': (
+        queries.production_items, {'source': 'source', 'region': 'region'},
+        {'sources': 'source', 'regions': 'region'}),
+    'construccion': (
+        queries.construction_items, {'type': 'type', 'region': 'region'},
+        {'types': 'type', 'regions': 'region'}),
+    'uso': (
+        queries.use_items, {'source': 'source', 'type': 'type', 'region': 'region'},
+        {'sources': 'source', 'types': 'type', 'regions': 'region'}),
     'fin-de-vida': (queries.end_of_life_items, {}, {}),
 }
+
+
+def _value(item, field):
+    """What a filter compares: an item without a region is 'Sin región' (R-44)."""
+    value = item[field]
+    return derive.NO_REGION if value is None and field == 'region' else value
 
 
 class ExplorerPagination(PageNumberPagination):
@@ -33,7 +45,7 @@ def _filtered(items, request, filters, skip=None):
     for param, field in filters.items():
         wanted = request.query_params.getlist(param)
         if wanted and param != skip:
-            items = [item for item in items if item[field] in wanted]
+            items = [item for item in items if _value(item, field) in wanted]
     return items
 
 
@@ -41,14 +53,16 @@ def _facets(items, request, filters, facets):
     """Counts per value, each ignoring its own filter so the other options stay visible."""
     result = {}
     for name, param in facets.items():
-        counts = Counter(item[filters[param]] for item in _filtered(items, request, filters, skip=param))
+        counts = Counter(_value(item, filters[param]) for item in _filtered(items, request, filters, skip=param))
         counts.pop(None, None)
-        result[name] = dict(sorted(counts.items(), key=lambda pair: (-pair[1], derive.sort_key(pair[0]))))
+        # 'Sin región' goes last, however many items it has.
+        result[name] = dict(sorted(counts.items(), key=lambda pair: (
+            pair[0] == derive.NO_REGION, -pair[1], derive.sort_key(pair[0]))))
     return result
 
 
 class ExplorerListView(APIView):
-    """GET /explorer/<stage>/?search=&source=&type=&sort=&page=&page_size="""
+    """GET /explorer/<stage>/?search=&source=&type=&region=&sort=&page=&page_size="""
     permission_classes = (access.IsAdminOrReadOnly,)
 
     def get(self, request, stage):

@@ -17,6 +17,7 @@
         </div>
         <div class="detail__chips">
           <app-source-chip [source]="detail.source"></app-source-chip>
+          <app-region-chip [region]="detail.region"></app-region-chip>
           <span *ngIf="detail.unit" class="detail__chip">Unidad: {{ detail.unit }}</span>
         </div>
         <button

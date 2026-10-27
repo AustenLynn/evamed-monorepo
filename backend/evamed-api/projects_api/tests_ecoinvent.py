@@ -326,8 +326,8 @@ class AddMaterialsTests(TestCase):
 
         self.assertEqual(name, 'Cemento_Cement, Portland {RoW}| market for cement, Portland | Cut-off, S')
         self.assertEqual(derive.category(name), 'Cemento')
-        self.assertEqual(
-            derive.display_name(name), 'Cement, Portland {RoW}| market for cement, Portland | Cut-off, S')
+        self.assertEqual(derive.display_name(name), 'Cement, Portland')
+        self.assertEqual(derive.region(name), 'Resto del mundo')
 
     def test_dry_run_writes_nothing(self):
         from projects_api import models

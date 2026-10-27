@@ -2,14 +2,16 @@ export type StageKey = 'produccion' | 'construccion' | 'uso' | 'fin-de-vida';
 
 /** A checkbox filter: the API's query parameter, its name in the page URL, and its facet. */
 export interface StageFilter {
-  param: 'source' | 'type';
-  urlParam: 'base' | 'tipo';
-  facet: 'sources' | 'types';
+  param: 'source' | 'type' | 'region';
+  urlParam: 'base' | 'tipo' | 'region';
+  facet: 'sources' | 'types' | 'regions';
   label: string;
 }
 
 const SOURCE: StageFilter = { param: 'source', urlParam: 'base', facet: 'sources', label: 'Base de datos' },
-  TYPE: StageFilter = { param: 'type', urlParam: 'tipo', facet: 'types', label: 'Tipo' };
+  TYPE: StageFilter = { param: 'type', urlParam: 'tipo', facet: 'types', label: 'Tipo' },
+  // Read from the names (R-44); items whose name doesn't say are 'Sin región'.
+  REGION: StageFilter = { param: 'region', urlParam: 'region', facet: 'regions', label: 'Región' };
 
 export interface StageConfig {
   key: StageKey;
@@ -21,7 +23,7 @@ export interface StageConfig {
   /** Page header. */
   title: string;
   subtitle: string;
-  /** Filters backed by real data (HANDOFF §6, K-01, K-02, K-05). */
+  /** Filters backed by real data (HANDOFF §6, K-01, K-05, R-44). */
   filters: StageFilter[];
   /** Whether items open a detail page (Producción only). */
   hasDetail: boolean;
@@ -43,7 +45,7 @@ export const STAGES: readonly StageConfig[] = [
     image: { active: ETAPAS + 'Produccion.png', idle: ETAPAS + 'Produccion_.png' },
     title: 'Explorador de materiales',
     subtitle: 'Busca, filtra y compara los materiales de las bases de datos de EVAMED.',
-    filters: [SOURCE],
+    filters: [SOURCE, REGION],
     hasDetail: true,
     sortable: true,
   },
@@ -54,7 +56,7 @@ export const STAGES: readonly StageConfig[] = [
     image: { active: ETAPAS + 'Construcción.png', idle: ETAPAS + 'Construcción_.png' },
     title: 'Explorador de construcción',
     subtitle: 'Maquinaria y procesos de obra.',
-    filters: [TYPE],
+    filters: [TYPE, REGION],
     hasDetail: false,
     sortable: false,
   },
@@ -65,7 +67,7 @@ export const STAGES: readonly StageConfig[] = [
     image: { active: ETAPAS + 'Uso.png', idle: ETAPAS + 'Uso_.png' },
     title: 'Explorador de uso',
     subtitle: 'Fuentes de energía para la operación del edificio.',
-    filters: [SOURCE, TYPE],
+    filters: [SOURCE, TYPE, REGION],
     hasDetail: false,
     sortable: false,
   },

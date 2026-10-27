@@ -17,6 +17,7 @@ describe('FilterPanelComponent', () => {
     fixture.componentRef.setInput('facets', {
       sources: { 'ECOINVENT 3': 3, mexicaniuh: 3 },
       types: { Electricidad: 6, Gas: 1 },
+      regions: { México: 6, Global: 1 },
     });
     fixture.componentRef.setInput('query', query);
     fixture.componentInstance.queryChange.subscribe(change => emitted.push(change));
@@ -45,8 +46,18 @@ describe('FilterPanelComponent', () => {
     const { el } = render(),
       legends = Array.from(el.querySelectorAll('legend')).map(legend => legend.textContent?.trim());
 
-    expect(legends).toEqual(['Base de datos', 'Tipo']);
+    expect(legends).toEqual(['Base de datos', 'Tipo', 'Región']);
     expect(el.querySelector('fieldset')?.textContent).toContain('mexicaniuh (3)');
+  });
+
+  it('filters by region, with the region options in the facets’ order (R-44)', () => {
+    const { el, emitted } = render(),
+      region = el.querySelectorAll('fieldset')[2],
+      labels = Array.from(region.querySelectorAll('mat-checkbox')).map(box => box.textContent?.trim());
+
+    expect(labels).toEqual(['México (6)', 'Global (1)']);
+    region.querySelector<HTMLInputElement>('mat-checkbox input')!.click();
+    expect(emitted).toEqual([{ search: '', filters: { region: ['México'] } }]);
   });
 
   it('adds and removes a value', () => {

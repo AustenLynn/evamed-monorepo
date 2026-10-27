@@ -27,7 +27,7 @@ export class ResultsTableComponent {
   readonly pageSize = PAGE_SIZE;
 
   get columns(): string[] {
-    const columns = ['name', 'category', 'source', 'gwp', 'impact'];
+    const columns = ['name', 'category', 'source', 'region', 'gwp', 'impact'];
     return this.selectable ? ['select', ...columns] : columns;
   }
 

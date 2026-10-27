@@ -27,16 +27,39 @@ class DeriveTests(SimpleTestCase):
         self.assertIsNone(derive.category('Panel fotovoltaico, Silicio amorfo (a-Si) (GLO)'))
         self.assertIsNone(derive.category(None))
 
-    def test_display_name_drops_the_category_and_source_suffix(self):
+    def test_display_name_drops_the_category_source_suffix_and_region(self):
         self.assertEqual(derive.display_name('Concreto_AAC block - 600 mm'), 'AAC block - 600 mm')
-        self.assertEqual(derive.display_name('Arena_Sand_MX_concreto'), 'Sand MX concreto')
-        self.assertEqual(derive.display_name('Panel de yeso marca USG tablaroca_MX'), 'Panel de yeso marca USG tablaroca MX')
+        self.assertEqual(derive.display_name('Arena_Sand_MX_concreto'), 'Sand concreto')
+        self.assertEqual(derive.display_name('Grava_Gravel_MX'), 'Gravel')
+        self.assertEqual(derive.display_name('Panel de yeso marca USG tablaroca_MX'), 'Panel de yeso marca USG tablaroca')
         self.assertEqual(
-            derive.display_name('Excavadora hidráulica (GLO)-Ecoinvent 3'), 'Excavadora hidráulica (GLO)')
+            derive.display_name('Excavadora hidráulica (GLO)-Ecoinvent 3'), 'Excavadora hidráulica')
         self.assertEqual(
-            derive.display_name('Energía eléctrica, Alto voltaje (MX)-ECOINVENT3'), 'Energía eléctrica, Alto voltaje (MX)')
+            derive.display_name('Energía eléctrica, Alto voltaje (MX)-ECOINVENT3'), 'Energía eléctrica, Alto voltaje')
         self.assertEqual(
-            derive.display_name('Energía eléctrica, Alto voltaje (MX)-MEXICANIUH'), 'Energía eléctrica, Alto voltaje (MX)')
+            derive.display_name('Energía eléctrica, Alto voltaje (MX)-MEXICANIUH'), 'Energía eléctrica, Alto voltaje')
+        self.assertEqual(
+            derive.display_name('Panel fotovoltaico, Silicio amorfo (a-Si) (GLO)'), 'Panel fotovoltaico, Silicio amorfo (a-Si)')
+
+    def test_display_name_drops_the_ecoinvent_tail(self):
+        self.assertEqual(derive.display_name('Clay brick {GLO}| market for | Cut-off, S'), 'Clay brick')
+        self.assertEqual(derive.display_name(
+            'Acero_Reinforcing steel {GLO}| market for reinforcing steel | Cut-off, S'), 'Reinforcing steel')
+
+    def test_region_is_read_from_the_name(self):
+        self.assertEqual(derive.region('Clay brick {GLO}| market for | Cut-off, S'), 'Global')
+        self.assertEqual(derive.region('Cemento_Cement, Portland {RoW}| market for cement, Portland | Cut-off, S'),
+                         'Resto del mundo')
+        self.assertEqual(derive.region('Autoclaved aerated concrete block {CH}| market for | Cut-off, S'), 'Suiza')
+        self.assertEqual(derive.region('Excavadora hidráulica (GLO)'), 'Global')
+        self.assertEqual(derive.region('Energía eléctrica, Bajo voltaje (MX)-MEXICANIUH'), 'México')
+        self.assertEqual(derive.region('Varilla corrugada marca TERNIUM_MX'), 'México')
+        self.assertEqual(derive.region('Arena_Sand_MX_concreto'), 'México')
+
+    def test_no_region_when_the_name_does_not_say(self):
+        self.assertIsNone(derive.region('Concreto_AAC block - 600 mm'))
+        self.assertIsNone(derive.region('Bloque_MXL 20'))
+        self.assertIsNone(derive.region(None))
 
     def test_source_from_the_name_suffix(self):
         self.assertEqual(derive.source_from_name('Excavadora (GLO)-Ecoinvent 3'), 'ECOINVENT 3')
@@ -177,6 +200,7 @@ class ExplorerApiTests(APITestCase):
             'name': 'Ladrillo_Clay brick',
             'display_name': 'Clay brick',
             'category': 'Ladrillo',
+            'region': None,
             'description': None,
             'source': 'ECOINVENT 3',
             'unit': 'kg',
@@ -256,11 +280,35 @@ class ExplorerApiTests(APITestCase):
         facets = self.get('produccion', search='Acero')['facets']
         self.assertEqual(facets['sources'], {'EPiC': 1, 'EPDs': 1})
 
+    def test_region_filter_and_facet_with_sin_region_last(self):
+        self.material('Clay brick {GLO}| market for | Cut-off, S', 'ECOINVENT 3', self.kg)
+        self.material('Varilla corrugada marca TERNIUM_MX', 'EPDs', self.kg)
+        self.material('Bloque hueco_MX', 'EPDs', self.kg)
+
+        body = self.get('produccion')
+        self.assertEqual(list(body['facets']['regions'].items()),
+                         [('México', 2), ('Global', 1), ('Sin región', 10)])
+        brick = self.by_name(body)['Clay brick {GLO}| market for | Cut-off, S']
+        self.assertEqual((brick['display_name'], brick['region']), ('Clay brick', 'Global'))
+
+        self.assertEqual(self.get('produccion', region='México')['count'], 2)
+        self.assertEqual(self.get('produccion', region=['México', 'Global'])['count'], 3)
+        unknown = self.get('produccion', region='Sin región')
+        self.assertEqual(unknown['count'], 10)
+        self.assertTrue(all(item['region'] is None for item in unknown['results']))
+        # The region facet ignores its own filter but follows the others.
+        self.assertEqual(self.get('produccion', region='México', source='EPDs')['facets']['regions'],
+                         {'México': 2, 'Sin región': 2})
+
     def test_construction_items_and_type_filter(self):
         body = self.get('construccion')
         self.assertEqual(body['count'], 3)
-        self.assertEqual(body['facets'], {'types': {'Generador': 1, 'Maquinaria pesada': 1, 'Otros': 1}})
+        self.assertEqual(body['facets'], {
+            'types': {'Generador': 1, 'Maquinaria pesada': 1, 'Otros': 1},
+            'regions': {'Global': 3},
+        })
         excavator = self.by_name(body)['Excavadora hidráulica (GLO)']
+        self.assertEqual((excavator['display_name'], excavator['region']), ('Excavadora hidráulica', 'Global'))
         self.assertEqual(excavator['type'], 'Otros')
         self.assertIsNone(excavator['source'])
         # No reference unit in the data (R-04): no unit and no badge.
@@ -273,7 +321,9 @@ class ExplorerApiTests(APITestCase):
         self.assertEqual(body['facets'], {
             'sources': {'ECOINVENT 3': 1, 'mexicaniuh': 1},
             'types': {'Electricidad': 2, 'Gas': 1},
+            'regions': {'México': 2, 'Global': 1},
         })
+        self.assertEqual(self.get('uso', region='Global')['results'][0]['type'], 'Gas')
         self.assertEqual(self.get('uso', source='mexicaniuh')['results'][0]['gwp'], 0.6286)
         self.assertEqual(self.get('uso', type='Gas')['count'], 1)
 

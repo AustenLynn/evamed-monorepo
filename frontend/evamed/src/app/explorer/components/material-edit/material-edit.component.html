@@ -104,6 +104,8 @@
     <dl class="edit__summary-facts">
       <dt>Base de datos</dt>
       <dd><app-source-chip [source]="detail.source"></app-source-chip></dd>
+      <dt>Región</dt>
+      <dd>{{ detail.region || '—' }}</dd>
       <dt>Unidad declarada</dt>
       <dd>{{ detail.unit || '—' }}</dd>
     </dl>

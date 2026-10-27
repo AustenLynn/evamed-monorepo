@@ -7,6 +7,7 @@ export const DETAIL: MaterialDetail = {
   name: 'Concreto_AAC block',
   display_name: 'AAC block',
   category: 'Concreto',
+  region: 'Suiza',
   description: 'Bloque de concreto celular curado en autoclave.',
   source: 'ECOINVENT 3',
   unit: 'kg',

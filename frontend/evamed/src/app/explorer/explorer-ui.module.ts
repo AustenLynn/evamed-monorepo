@@ -12,6 +12,7 @@ import { MaterialDetailComponent } from './components/material-detail/material-d
 import { MaterialEditComponent } from './components/material-edit/material-edit.component';
 import { ResultCardComponent } from './components/result-card/result-card.component';
 import { ResultsCardsComponent } from './components/results-cards/results-cards.component';
+import { RegionChipComponent } from './components/region-chip/region-chip.component';
 import { ResultsTableComponent } from './components/results-table/results-table.component';
 import { SourceChipComponent } from './components/source-chip/source-chip.component';
 import { GwpPipe } from './pipes/gwp.pipe';
@@ -23,6 +24,7 @@ const COMPONENTS = [
   ImpactBadgeComponent,
   MaterialDetailComponent,
   MaterialEditComponent,
+  RegionChipComponent,
   ResultCardComponent,
   ResultsCardsComponent,
   ResultsTableComponent,
