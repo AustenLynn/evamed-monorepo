@@ -2,10 +2,12 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
+import { of, throwError } from 'rxjs';
 import { FileSaverService } from 'ngx-filesaver';
 import * as XLSX from 'xlsx';
 import { environment } from 'src/environments/environment';
 
+import { MaterialsService } from 'src/app/core/services/materials/materials.service';
 import { ToDoFileModule } from '../../to-do-file.module';
 import { ToDoFileComponent } from './to-do-file.component';
 
@@ -15,7 +17,8 @@ import { ToDoFileComponent } from './to-do-file.component';
 // they read nothing, or a previous file's data.
 describe('ToDoFileComponent upload', () => {
   let fixture: ComponentFixture<ToDoFileComponent>,
-    dialog: { open: ReturnType<typeof vi.fn> };
+    dialog: { open: ReturnType<typeof vi.fn> },
+    getMaterials: ReturnType<typeof vi.fn>;
 
   const continueButton = (): HTMLButtonElement =>
       fixture.nativeElement.querySelector('.section-continue button'),
@@ -26,6 +29,18 @@ describe('ToDoFileComponent upload', () => {
       );
       const bytes: ArrayBuffer = XLSX.write(book, { type: 'array', bookType: 'xlsx' });
       return new File([bytes], 'proyecto.xlsm');
+    },
+    // A server-built template: marked with EVAMED_CATALOGO, BD header on row 5.
+    templateFile = (marked: boolean, bdMaterials: string[], used: string): File => {
+      const book = XLSX.utils.book_new(),
+        bd = [[], [], [], [], ['Llave', 'Base', 'Categoria', 'Tipo', 'Material'], ...bdMaterials.map(m => ['k', 'EPiC', 'C', 'T', m])];
+      XLSX.utils.book_append_sheet(book, XLSX.utils.aoa_to_sheet([['Material'], [used]]), 'Cimentación');
+      XLSX.utils.book_append_sheet(book, XLSX.utils.aoa_to_sheet(bd), 'BD');
+      if (marked) {
+        book.Workbook = { Names: [{ Name: 'EVAMED_CATALOGO', Ref: '"2026-10-27T20:00:00Z"' }] };
+      }
+      const bytes: ArrayBuffer = XLSX.write(book, { type: 'array', bookType: 'xlsx' });
+      return new File([bytes], 'proyecto.xlsx');
     },
     chooseFile = (file: File) => {
       const input: HTMLInputElement = fixture.nativeElement.querySelector('#file');
@@ -41,6 +56,7 @@ describe('ToDoFileComponent upload', () => {
     sessionStorage.setItem('dataProject', JSON.stringify({ sheetNames: ['Viejo'], data: [[]] }));
 
     dialog = { open: vi.fn() };
+    getMaterials = vi.fn(() => of([{ name_material: 'Cemento' }]));
     TestBed.configureTestingModule({
       imports: [ToDoFileModule],
       providers: [
@@ -48,6 +64,7 @@ describe('ToDoFileComponent upload', () => {
         provideHttpClientTesting(),
         { provide: MatDialog, useValue: dialog },
         { provide: FileSaverService, useValue: { save: vi.fn() } },
+        { provide: MaterialsService, useValue: { getMaterials } },
       ],
     });
     fixture = TestBed.createComponent(ToDoFileComponent);
@@ -180,5 +197,49 @@ describe('ToDoFileComponent upload', () => {
     httpMock.expectOne(environment.api_template + 'mac.xlsm').flush(blob);
     expect(saver.save).toHaveBeenCalledWith(blob, 'Formato MAC.xlsm');
     httpMock.verify();
+  });
+
+  const showsError = () =>
+    vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.upload-error')).not.toBeNull();
+    });
+
+  it('rejects a new file that uses a renamed material, and names it', async () => {
+    chooseFile(templateFile(true, ['Cemento', 'Viejo'], 'Viejo'));
+
+    await showsError();
+    expect(fixture.nativeElement.querySelector('.upload-error').textContent).toContain('Viejo');
+    expect(continueButton().disabled).toBe(true);
+    expect(sessionStorage.getItem('dataProject')).toBeNull();
+  });
+
+  it('accepts a new file whose unknown names were typed by hand', async () => {
+    chooseFile(templateFile(true, ['Cemento'], 'Mío'));
+
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(continueButton().disabled).toBe(false);
+    });
+  });
+
+  it('checks nothing on a file from before this change', async () => {
+    chooseFile(templateFile(false, ['Viejo'], 'Viejo'));
+
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(continueButton().disabled).toBe(false);
+    });
+    expect(getMaterials).not.toHaveBeenCalled();
+  });
+
+  it('stays disabled when the catalogue cannot be fetched', async () => {
+    getMaterials.mockReturnValue(throwError(() => new Error()));
+
+    chooseFile(templateFile(true, ['Cemento'], 'Cemento'));
+
+    await showsError();
+    expect(continueButton().disabled).toBe(true);
+    expect(sessionStorage.getItem('dataProject')).toBeNull();
   });
 });

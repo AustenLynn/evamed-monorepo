@@ -5,7 +5,9 @@ import { FileSaverService } from 'ngx-filesaver';
 import { MatDialog } from '@angular/material/dialog';
 import { PrevStepsComponent } from 'src/app/to-do-file/components/prev-steps/prev-steps.component';
 import { ViewChild, ElementRef, Renderer2 } from '@angular/core';
-import { bySection } from 'src/app/shared/template-sheets';
+import { firstValueFrom } from 'rxjs';
+import { MaterialsService } from 'src/app/core/services/materials/materials.service';
+import { bySection, fileCatalogue, isGeneratedTemplate, outdatedMaterials } from 'src/app/shared/template-sheets';
 import { environment } from 'src/environments/environment';
 type AOA = any[][];
 
@@ -34,7 +36,8 @@ export class ToDoFileComponent implements OnInit {
     private httpClient: HttpClient,
     private fileSaverService: FileSaverService,
     public dialog: MatDialog,
-    private renderer2: Renderer2
+    private renderer2: Renderer2,
+    private materialsService: MaterialsService
   ) {}
 
   ngOnInit(): void {
@@ -71,7 +74,7 @@ export class ToDoFileComponent implements OnInit {
     this.unknownSheets = [];
 
     const reader: FileReader = new FileReader();
-    reader.onload = (e: any) => {
+    reader.onload = async (e: any) => {
       try {
         /* read workbook */
         const bstr: string = e.target.result,
@@ -97,6 +100,25 @@ export class ToDoFileComponent implements OnInit {
           this.uploadError =
             'El archivo no tiene hojas de elementos constructivos (Cimentación, Muros interiores…). Usa la plantilla de EVAMED.';
           return;
+        }
+        if (isGeneratedTemplate(wb)) {
+          let current: Set<string>;
+          try {
+            const materials = await firstValueFrom(this.materialsService.getMaterials());
+            current = new Set(materials.map(m => m.name_material));
+          } catch (error) {
+            console.error('No se pudo obtener el catálogo de materiales', error);
+            this.uploadError = 'No se pudo verificar el catálogo de materiales. Inténtalo de nuevo.';
+            return;
+          }
+          const used = toRead.data.flat().map(row => row?.['Material']).filter(name => name != null).map(String),
+            outdated = outdatedMaterials(used, fileCatalogue(wb), current);
+          if (outdated.length) {
+            const shown = outdated.slice(0, 10).join(', '),
+              more = outdated.length > 10 ? ` y ${outdated.length - 10} más` : '';
+            this.uploadError = `Esta plantilla usa materiales que ya cambiaron de nombre o se eliminaron: ${shown}${more}. Descarga la plantilla de nuevo y copia tus filas en ella.`;
+            return;
+          }
         }
         this.unknownSheets = unknownSheets;
         sessionStorage.setItem('dataProject', JSON.stringify(toRead));

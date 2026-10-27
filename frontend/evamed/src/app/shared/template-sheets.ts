@@ -1,3 +1,4 @@
+import * as XLSX from 'xlsx';
 import { BUILDING_SECTIONS } from './building-sections';
 
 /** An uploaded EVAMED workbook as sessionStorage['dataProject'] holds it: one row array per sheet. */
@@ -46,4 +47,42 @@ export function bySection(
     }
   });
   return { sheetNames: [...BUILDING_SECTIONS], data, unknownSheets, sectionSheets };
+}
+
+/** The workbook name the server writes into each template it builds. */
+export const TEMPLATE_MARKER = 'EVAMED_CATALOGO';
+
+export function isGeneratedTemplate(wb: XLSX.WorkBook): boolean {
+  return !!wb.Workbook?.Names?.some(name => name.Name === TEMPLATE_MARKER);
+}
+
+/** The materials the file's hidden BD sheet lists (column E under its header row). */
+export function fileCatalogue(wb: XLSX.WorkBook): Set<string> {
+  const sheet = wb.Sheets['BD'],
+    materials = new Set<string>();
+  if (!sheet) {
+    return materials;
+  }
+  // Rows above the header hold other cells (search text), so find the header first.
+  const rows: unknown[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null }),
+    header = rows.findIndex(row => row?.[4] === 'Material');
+  if (header < 0) {
+    return materials;
+  }
+  rows.slice(header + 1).forEach(row => {
+    const name = row?.[4];
+    if (name !== null && name !== undefined && String(name).trim() !== '') {
+      materials.add(String(name));
+    }
+  });
+  return materials;
+}
+
+/**
+ * The used names the file's own catalogue lists but the current one doesn't:
+ * renamed or removed materials. Hand-typed names aren't in the file's list, so
+ * they aren't reported. Distinct, in first-use order.
+ */
+export function outdatedMaterials(used: Iterable<string>, fileList: Set<string>, current: Set<string>): string[] {
+  return [...new Set(used)].filter(name => fileList.has(name) && !current.has(name));
 }

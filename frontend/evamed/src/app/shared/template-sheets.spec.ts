@@ -1,5 +1,6 @@
 import { BUILDING_SECTIONS } from './building-sections';
-import { bySection } from './template-sheets';
+import * as XLSX from 'xlsx';
+import { bySection, fileCatalogue, isGeneratedTemplate, outdatedMaterials } from './template-sheets';
 
 const row = (system: string, material: string) => ({
   Origen: 'Modelo de Revit',
@@ -60,5 +61,41 @@ describe('Uploaded template sheets by section', () => {
 
     expect(twice.sheetNames).toEqual(once.sheetNames);
     expect(twice.data).toEqual(once.data);
+  });
+});
+
+describe('Generated template catalogue', () => {
+  const book = (bd?: unknown[][], names?: XLSX.DefinedName[]): XLSX.WorkBook => {
+    const wb = XLSX.utils.book_new();
+    if (bd) {
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(bd), 'BD');
+    }
+    if (names) {
+      wb.Workbook = { Names: names };
+    }
+    return wb;
+  };
+
+  it('reports the names a file lists that the catalogue no longer has, not hand-typed ones', () => {
+    expect(outdatedMaterials(['A', 'B', 'X', 'A'], new Set(['A', 'B']), new Set(['A']))).toEqual(['B']);
+  });
+
+  it('reads the materials under the BD header row, ignoring the cells above it', () => {
+    const bd: unknown[][] = [[], []];
+    bd[1][33] = 'cem';
+    bd.push([], [], ['Llave', 'Base', 'Categoria', 'Tipo', 'Material'], ['x', 'EPiC', 'C', 'T', 'Cemento']);
+
+    expect(fileCatalogue(book(bd))).toEqual(new Set(['Cemento']));
+  });
+
+  it('has no catalogue without a BD sheet', () => {
+    expect(fileCatalogue(book())).toEqual(new Set());
+  });
+
+  it('tells a generated template by its defined name', () => {
+    expect(isGeneratedTemplate(book())).toBe(false);
+    expect(
+      isGeneratedTemplate(book(undefined, [{ Name: 'EVAMED_CATALOGO', Ref: '"2026-10-27T20:00:00Z"' }]))
+    ).toBe(true);
   });
 });
