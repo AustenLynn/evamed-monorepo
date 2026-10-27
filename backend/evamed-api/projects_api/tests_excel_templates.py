@@ -99,6 +99,22 @@ class BuildTemplateTests(SimpleTestCase):
                 text = e6.getElementsByTagName('t')[0].firstChild.data
                 self.assertEqual(text, name)
 
+    def test_characters_xml_cannot_hold_are_dropped(self):
+        for kind in KINDS:
+            with self.subTest(kind=kind):
+                _, xml = self.built(kind, [row('a\x0bb\x01\x1f')])
+                dom = minidom.parseString(xml.encode('utf-8'))
+                e6 = [c for c in dom.getElementsByTagName('c') if c.getAttribute('r') == 'E6'][0]
+                self.assertEqual(e6.getElementsByTagName('t')[0].firstChild.data, 'ab')
+
+    def test_text_is_cut_to_the_cell_limit(self):
+        for kind in KINDS:
+            with self.subTest(kind=kind):
+                _, xml = self.built(kind, [row('m', descripcion='x' * 40000)])
+                dom = minidom.parseString(xml.encode('utf-8'))
+                m6 = [c for c in dom.getElementsByTagName('c') if c.getAttribute('r') == 'M6'][0]
+                self.assertEqual(len(m6.getElementsByTagName('t')[0].firstChild.data), 32767)
+
     def test_table_ref_matches(self):
         for kind in KINDS:
             with self.subTest(kind=kind):

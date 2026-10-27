@@ -20,6 +20,8 @@ TEMPLATES = {'windows': ('EVAMED_WINDOWS.xlsm', 992), 'mac': ('EVAMED_MAC.xlsm',
 FIRST_ROW = 6
 MARKER_NAME = 'EVAMED_CATALOGO'
 CALC_CHAIN = 'xl/calcChain.xml'
+MAX_CELL_CHARS = 32767  # Excel's limit for one cell
+NOT_XML = re.compile('[^\t\n\r\u0020-\ud7ff\ue000-\ufffd\U00010000-\U0010ffff]')  # XML 1.0 forbids these
 
 # BD column -> CatalogueRow field, for the columns that carry text
 TEXT_COLUMNS = {'B': 'base', 'C': 'categoria', 'D': 'tipo', 'E': 'material', 'F': 'unidad',
@@ -125,6 +127,11 @@ def _rewrite_sheet(xml, rows, last_row):
     return xml
 
 
+def _clean(text):
+    """Drop characters XML cannot hold and cut to what a cell can, or Excel 'repairs' the file."""
+    return NOT_XML.sub('', text)[:MAX_CELL_CHARS]
+
+
 def _row_xml(r, head, styles, row, spill):
     cells = []
     for col, style in styles.items():
@@ -133,7 +140,7 @@ def _row_xml(r, head, styles, row, spill):
             t = ' t="str"' if col in STRING_FORMULAS else ''
             cells.append('<c r="%s"%s%s><f>%s</f></c>' % (ref, style, t, escape(FORMULAS[col].format(r=r))))
         elif col in TEXT_COLUMNS:
-            value = getattr(row, TEXT_COLUMNS[col]) if row else ''
+            value = _clean(getattr(row, TEXT_COLUMNS[col])) if row else ''
             if value:
                 cells.append('<c r="%s"%s t="inlineStr"><is><t xml:space="preserve">%s</t></is></c>'
                              % (ref, style, escape(value)))
