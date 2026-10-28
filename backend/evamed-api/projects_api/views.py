@@ -388,7 +388,7 @@ class ProjectResultsView(APIView):
 
             # ---- Producción ----
             produccion = {}
-            suma_transport = {}  # material_id → transport contribution (reused in B4)
+            row_transport = {}  # row id → that row's transport, which its replacements bring again (B4)
 
             for subetapa in _PRODUCTION_STAGES:
                 subproceso = standards.get(subetapa, str(subetapa))
@@ -418,7 +418,6 @@ class ProjectResultsView(APIView):
             datos[name]['Producción'] = produccion
 
             # ---- Construcción ----
-            transport_seen = set()
             a4_total = 0
             for ps in scheme_project:
                 mat = ps.material_id
@@ -439,11 +438,7 @@ class ProjectResultsView(APIView):
                 peso = conv_lookup.get(mat.id, 1)
                 tv = peso * float(ps.quantity or 0) * (intl + natl)
                 a4_total += tv
-
-                if mat.id not in transport_seen:
-                    suma_transport[mat.id] = 0
-                    transport_seen.add(mat.id)
-                suma_transport[mat.id] += tv
+                row_transport[ps.id] = tv
 
             a5_total = sum(
                 sid_lookup.get((cse.source_information_id_id, impacto.id), 0) * float(cse.quantity or 0)
@@ -459,7 +454,8 @@ class ProjectResultsView(APIView):
                 if db not in active_databases:
                     continue
                 replaces = ps.replaces or 0
-                b4_total += suma_transport.get(mat.id, 0) * replaces
+                # Only this row's transport: the material's other rows have their own replacements.
+                b4_total += row_transport.get(ps.id, 0) * replaces
                 if mat.id not in aggregate_materials:
                     for subetapa in _PRODUCTION_STAGES:
                         b4_total += (

@@ -80,9 +80,8 @@ export class CalculosSegundaSeccion {
         nameImpacto = this.ajustarNombre(nameImpacto);
         Datos[nameImpacto] = {};
         const elementoscreados = [],
-          sumaParaReempazos = {},
-          auxMaterialesTransporte = {},
-          auxMaterialesYaSumados = {},
+          // Each row's own transport, reused for its replacements (B4).
+          transportePorFila = new Map<any, number>(),
         //Cálculos de la sección de producción
           etapas = [2, 3, 4]; //Subetaps A1 A2 y A3
         //let banderaMaterialEP = false;
@@ -103,9 +102,6 @@ export class CalculosSegundaSeccion {
                       if(!elementoscreados.includes(ps['section_id'])) {
                         elementoscreados.push(ps['section_id']);
                         Datos[nameImpacto][ps['section_id']] = 0;
-                        sumaParaReempazos[ps['section_id']] = {};
-                        auxMaterialesYaSumados[ps['section_id']] = [];
-                        auxMaterialesTransporte[ps['section_id']] = [];
                       }
                       Datos[nameImpacto][ps['section_id']] =
                       Datos[nameImpacto][ps['section_id']] +
@@ -126,9 +122,6 @@ export class CalculosSegundaSeccion {
                         if(!elementoscreados.includes(ps['section_id'])) {
                           elementoscreados.push(ps['section_id']);
                           Datos[nameImpacto][ps['section_id']] = 0;
-                          sumaParaReempazos[ps['section_id']] = {};
-                          auxMaterialesYaSumados[ps['section_id']] = [];
-                          auxMaterialesTransporte[ps['section_id']] = [];
                         }
                         Datos[nameImpacto][ps['section_id']] =
                         Datos[nameImpacto][ps['section_id']] +
@@ -185,15 +178,8 @@ export class CalculosSegundaSeccion {
               if(!elementoscreados.includes(ps['section_id'])) {
                 elementoscreados.push(ps['section_id']);
                 Datos[nameImpacto][ps['section_id']] = 0;
-                sumaParaReempazos[ps['section_id']] = {}
-                auxMaterialesTransporte[ps['section_id']] = [];
-                auxMaterialesYaSumados[ps['section_id']] = [];
               }
-              if(!auxMaterialesTransporte[ps['section_id']].includes(ps['material_id'])) {
-                sumaParaReempazos[ps['section_id']][ps['material_id']] = 0;
-                auxMaterialesTransporte[ps['section_id']].push(ps['material_id']);
-              }
-              sumaParaReempazos[ps['section_id']][ps['material_id']] += peso * ps['quantity'] * (nacional + internacional);
+              transportePorFila.set(ps, peso * ps['quantity'] * (nacional + internacional));
 
               Datos[nameImpacto][ps['section_id']] =
               Datos[nameImpacto][ps['section_id']] +
@@ -230,7 +216,8 @@ export class CalculosSegundaSeccion {
                 elementoscreados.push(ps['section_id']);
                 Datos[nameImpacto][ps['section_id']] = 0;
               }
-              const valSum = sumaParaReempazos[ps['section_id']][ps['material_id']];
+              // Each replacement brings the row's own transport again, not every row's of the material.
+              const valSum = transportePorFila.get(ps);
               if(valSum != undefined) {
                 Datos[nameImpacto][ps['section_id']] =
                     Datos[nameImpacto][ps['section_id']] +

@@ -152,3 +152,55 @@ describe('MaterialsStageComponent saving', () => {
     expect(quantities).toEqual([12.5, 12.5, '4.5', 7]);
   });
 });
+
+// The switch beside each system decides what the autosave saves (and so what the results count).
+describe('MaterialsStageComponent system switches', () => {
+  const build = () => {
+    const component: any = Object.create(MaterialsStageComponent.prototype),
+      row = (system: string) => ({ Origen: 'Modelo de Revit', Sistema_constructivo: system, Material: 'Block', Cantidad: 5 }),
+      replace: any = vi.fn(() => of({ items: [], skipped: [] }));
+    component.projectId = 42;
+    component.indexSheet = 0;
+    component.sheetNames = ['Cimentación'];
+    component.contentData = [[row('Muro A'), row('Muro B')]];
+    component.materialsList = [{ id: 2, name_material: 'Block' }];
+    // As loaded: Muro A on, Muro B off.
+    component.selectedOptionsRevit = ['Muro A'];
+    component.SOR = [component.selectedOptionsRevit];
+    component.SOD = [[]];
+    component.SOU = [[]];
+    component.selectedSystems = { '1:Muro A': true, '1:Muro B': false };
+    component.selectionIdByKey = { '1|1|Muro A': 10, '1|1|Muro B': 11 };
+    component.projectsService = { replaceMaterialScheme: replace };
+    component.inFlight = Promise.resolve();
+    return { component, replace };
+  },
+    savedSystems = (replace: any) => replace.mock.calls[0][3].map((item: any) => item.construction_system);
+
+  it('saves a system switched on, and stops saving one switched off', async () => {
+    const { component, replace } = build();
+    component.materialsService = { updateMaterialsStageSelections: vi.fn(() => of({})) };
+
+    component.onToggleSystemSelection({ checked: true }, 'Muro B', 1);
+    component.onToggleSystemSelection({ checked: false }, 'Muro A', 1);
+    await component.saveStepOne();
+
+    expect(component.materialsService.updateMaterialsStageSelections.mock.calls.map((call: any) => call[0].items[0])).toEqual([
+      { sistemaConstructivoId: 11, is_selected: true },
+      { sistemaConstructivoId: 10, is_selected: false },
+    ]);
+    expect(savedSystems(replace)).toEqual(['Muro B']);
+  });
+
+  it('puts the switch and the save back when the server refuses the change', async () => {
+    const { component, replace } = build();
+    component.materialsService = { updateMaterialsStageSelections: vi.fn(() => throwError(() => new Error('500'))) };
+
+    component.onToggleSystemSelection({ checked: true }, 'Muro B', 1);
+    await component.saveStepOne();
+
+    expect(component.isSystemSelected('Muro B', 1)).toBe(false);
+    expect(savedSystems(replace)).toEqual(['Muro A']);
+  });
+});
+

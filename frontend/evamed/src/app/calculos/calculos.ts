@@ -83,7 +83,8 @@ export class Calculos {
         }
       });
       if (impacto_ban) {
-        const sumaParaReempazos = {};
+        // Each row's own transport, reused for its replacements (B4).
+        const transportePorFila = new Map<any, number>();
         nameImpacto = impacto['name_complete_potential_type'];
         nameImpacto = this.ajustarNombre(nameImpacto);
         Datos[nameImpacto] = {};
@@ -116,7 +117,8 @@ export class Calculos {
                         materiales_subetapa[index]['value'] * ps['quantity'];
                     });
                   }
-                }else{
+                }else if (subetapa === etapas[0]) {
+                  // A material with only an A1-A3 value counts once, not once per subetapa.
                   const materiales_subetapa = this.materialSchemeDataList.filter(
                     msd =>
                       msd['material_id'] == ps['material_id'] &&
@@ -135,8 +137,10 @@ export class Calculos {
                     const auxsubproceso = this.standarsList.filter(
                       s => s['id'] == 1
                     )[0]['name_standard'];
+                    // Summed over every such material, not reset by each one.
                     if(!auxEPiC.includes(auxsubproceso)) {
                       Datos[nameImpacto]['Producción'][auxsubproceso] = 0;
+                      auxEPiC.push(auxsubproceso);
                     }
                     Datos[nameImpacto]['Producción'][auxsubproceso] += auxResultado;
                   }
@@ -153,7 +157,6 @@ export class Calculos {
         //Construcción
         Datos[nameImpacto]['Construccion'] = {};
         //A4 Transporte
-        const auxMaterialesTransporte = [];
         if (schemeProyect.length > 0) {
           schemeProyect.forEach(ps => {
             const baseDatosMaterial = this.materialList.filter(bs=> bs['id'] == ps['material_id']);
@@ -195,14 +198,9 @@ export class Calculos {
               peso = conversion_val[0]['value'];
             }
             if(BD[baseDatosMaterial[0]['database_from']]) {
-              if(!auxMaterialesTransporte.includes(ps['material_id'])) {
-                sumaParaReempazos[ps['material_id']] = 0;
-                auxMaterialesTransporte.push(ps['material_id']);
-              }
-              resultado_impacto =
-                resultado_impacto +
-                peso * ps['quantity'] * (nacional + internacional);
-              sumaParaReempazos[ps['material_id']] += peso * ps['quantity'] * (nacional + internacional);
+              const transporteFila = peso * ps['quantity'] * (nacional + internacional);
+              resultado_impacto = resultado_impacto + transporteFila;
+              transportePorFila.set(ps, transporteFila);
             }
           });
         }
@@ -236,13 +234,9 @@ export class Calculos {
           schemeProyect.forEach(ps => {
           const baseDatosMaterial = this.materialList.filter(bs=> bs['id'] == ps['material_id']);
           if(BD[baseDatosMaterial[0]['database_from']]) {
+            // Each replacement brings the row's own transport again, not every row's of the material.
+            resultado_impacto = resultado_impacto + (transportePorFila.get(ps) ?? 0) * ps['replaces'];
             if(!this.aggregateMaterials.has(ps['material_id'])) {
-              if(sumaParaReempazos[ps['material_id']] != undefined) {
-                let valorTransporte = 0
-                valorTransporte = sumaParaReempazos[ps['material_id']];
-                resultado_impacto =
-                        resultado_impacto + (valorTransporte * ps['replaces']);
-              }
               etapas.forEach(subetapa => {
                 const materiales_subetapa = this.materialSchemeDataList.filter(
                   msd =>
@@ -259,12 +253,6 @@ export class Calculos {
                   }
                 });
               }else{
-                if(sumaParaReempazos[ps['material_id']] != undefined) {
-                  let valorTransporte = 0
-                  valorTransporte = sumaParaReempazos[ps['material_id']];
-                  resultado_impacto =
-                          resultado_impacto + (valorTransporte * ps['replaces']);
-                }
                 const materiales_subetapa = this.materialSchemeDataList.filter(
                   msd =>
                     msd['material_id'] == ps['material_id'] &&

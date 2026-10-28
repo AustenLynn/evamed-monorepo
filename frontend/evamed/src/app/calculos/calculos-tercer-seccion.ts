@@ -87,9 +87,9 @@ export class CalculosTercerSeccion {
         DatosMateriales[nameImpacto]['Construccion'] = {'A4': {}};
         DatosMateriales[nameImpacto]['Uso'] = {'B4': {}};
         let elementoscreados = [];
-        const sumaParaReempazos = {},
-          auxMaterialesTransporte = {},
-          auxMaterialesYaSumados = {},
+        // Each row's own transport, reused for its replacements (B4).
+        const transportePorFila = new Map<any, number>(),
+          elementoscreadosA1A3 = [],
         //Cálculos de la sección de producción
           etapas = [2, 3, 4]; //Subetaps A1 A2 y A3
         etapas.forEach(subetapa => {
@@ -101,8 +101,12 @@ export class CalculosTercerSeccion {
               const baseDatosMaterial = this.materialList.filter(bs=> bs['id'] == ps['material_id']);
               if(BD[baseDatosMaterial[0]['database_from']]) {
                 if(this.aggregateMaterials.has(ps['material_id'])) {
-                  const elementoscreadosA1A3 = [],
-                    materiales_subetapa = this.materialSchemeDataList.filter(
+                  // A material with only an A1-A3 value counts once (not once per subetapa),
+                  // and adds to its element's total instead of resetting it.
+                  if (subetapa !== etapas[0]) {
+                    return;
+                  }
+                  const materiales_subetapa = this.materialSchemeDataList.filter(
                       msd =>
                         msd['material_id'] == ps['material_id'] &&
                         msd['standard_id'] == 1 &&
@@ -124,12 +128,10 @@ export class CalculosTercerSeccion {
                           elementoscreadosA1A3.push(ps['section_id']);
                           Datos[nameImpacto]['Producción']['A1-A3'][ps['section_id']] = 0;
                           DatosMateriales[nameImpacto]['Producción']['A1-A3'][ps['section_id']] = {};
-                          sumaParaReempazos[ps['section_id']] = {};
-                          auxMaterialesYaSumados[ps['section_id']] = [];
-                          auxMaterialesTransporte[ps['section_id']] = [];
                         }
-                        const auxres = materiales_subetapa[index]['value'] * ps['quantity'];
-                        DatosMateriales[nameImpacto]['Producción']['A1-A3'][ps['section_id']][ps['material_id']] = auxres;
+                        const auxres = materiales_subetapa[index]['value'] * ps['quantity'],
+                          porMaterialA1A3 = DatosMateriales[nameImpacto]['Producción']['A1-A3'][ps['section_id']];
+                        porMaterialA1A3[ps['material_id']] = (porMaterialA1A3[ps['material_id']] ?? 0) + auxres;
                         Datos[nameImpacto]['Producción']['A1-A3'][ps['section_id']] = Datos[nameImpacto]['Producción']['A1-A3'][ps['section_id']] + auxres;
                         //console.log(ps['material_id'],DatosMateriales[nameImpacto]['Producción'][auxSub][ps['section_id']][ps['material_id']],"res",auxres)
                     });
@@ -147,13 +149,10 @@ export class CalculosTercerSeccion {
                           elementoscreados.push(ps['section_id']);
                           Datos[nameImpacto]['Producción'][auxSub][ps['section_id']] = 0;
                           DatosMateriales[nameImpacto]['Producción'][auxSub][ps['section_id']] = {};
-                          sumaParaReempazos[ps['section_id']] = {};
-                          auxMaterialesYaSumados[ps['section_id']] = [];
-                          auxMaterialesTransporte[ps['section_id']] = [];
                         }
-                        const auxres = materiales_subetapa[index]['value'] * ps['quantity'];
-                        //console.log(DatosMateriales[nameImpacto]['Producción'][auxSub])
-                        DatosMateriales[nameImpacto]['Producción'][auxSub][ps['section_id']][ps['material_id']] = auxres;
+                        const auxres = materiales_subetapa[index]['value'] * ps['quantity'],
+                          porMaterial = DatosMateriales[nameImpacto]['Producción'][auxSub][ps['section_id']];
+                        porMaterial[ps['material_id']] = (porMaterial[ps['material_id']] ?? 0) + auxres;
                         Datos[nameImpacto]['Producción'][auxSub][ps['section_id']] = Datos[nameImpacto]['Producción'][auxSub][ps['section_id']] + auxres;
                         //console.log(ps['material_id'],DatosMateriales[nameImpacto]['Producción'][auxSub][ps['section_id']][ps['material_id']],"res",auxres)
                     });
@@ -207,25 +206,16 @@ export class CalculosTercerSeccion {
               peso = conversion_val[0]['value'];
             }
             if(BD[baseDatosMaterial[0]['database_from']]) {
-              // Always initialize sumaParaReempazos for this section so B4 never crashes
-              if(!sumaParaReempazos[ps['section_id']]) {
-                sumaParaReempazos[ps['section_id']] = {};
-                auxMaterialesYaSumados[ps['section_id']] = [];
-                auxMaterialesTransporte[ps['section_id']] = [];
-              }
-              const auxres = peso * ps['quantity'] * (nacional + internacional)
+              const auxres = peso * ps['quantity'] * (nacional + internacional);
+              transportePorFila.set(ps, auxres);
               if(auxres != 0) {
                 if(!elementoscreados.includes(ps['section_id'])) {
                   elementoscreados.push(ps['section_id']);
                   Datos[nameImpacto]['Construccion']['A4'][ps['section_id']] = 0;
                   DatosMateriales[nameImpacto]['Construccion']['A4'][ps['section_id']] = {};
                 }
-                if(!auxMaterialesTransporte[ps['section_id']].includes(ps['material_id'])) {
-                  sumaParaReempazos[ps['section_id']][ps['material_id']] = 0;
-                  auxMaterialesTransporte[ps['section_id']].push(ps['material_id']);
-                }
-                sumaParaReempazos[ps['section_id']][ps['material_id']] += peso * ps['quantity'] * (nacional + internacional);
-                DatosMateriales[nameImpacto]['Construccion']['A4'][ps['section_id']][ps['material_id']] = auxres;
+                const porMaterialA4 = DatosMateriales[nameImpacto]['Construccion']['A4'][ps['section_id']];
+                porMaterialA4[ps['material_id']] = (porMaterialA4[ps['material_id']] ?? 0) + auxres;
                 Datos[nameImpacto]['Construccion']['A4'][ps['section_id']] =
                 Datos[nameImpacto]['Construccion']['A4'][ps['section_id']] +
                 auxres;
@@ -234,77 +224,43 @@ export class CalculosTercerSeccion {
           });
         }
         elementoscreados = [];
-        //B4 USO
-        //las etapas son las mismas que en la sección de producción
-        etapas.forEach(subetapa => {
-          if (schemeProyect.length > 0) {
-            schemeProyect.forEach(ps => {
-              if(ps['replaces'] != 0) {
-                const baseDatosMaterial = this.materialList.filter(bs=> bs['id'] == ps['material_id']);
-                if(BD[baseDatosMaterial[0]['database_from']]) {
-                  const auxSumaParaReemplazo = sumaParaReempazos[ps['section_id']][ps['material_id']];
-                    if(auxSumaParaReemplazo != undefined) {
-                      if(!elementoscreados.includes(ps['section_id'])) {
-                        elementoscreados.push(ps['section_id']);
-                        Datos[nameImpacto]['Uso']['B4'][ps['section_id']] = 0;
-                        DatosMateriales[nameImpacto]['Uso']['B4'][ps['section_id']] = {};
-                      }
-                      DatosMateriales[nameImpacto]['Uso']['B4'][ps['section_id']][ps['material_id']] = auxSumaParaReemplazo;
-                      console.log(DatosMateriales[nameImpacto]['Uso']['B4'][ps['section_id']][ps['material_id']], auxSumaParaReemplazo)
-                        Datos[nameImpacto]['Uso']['B4'][ps['section_id']] =
-                        Datos[nameImpacto]['Uso']['B4'][ps['section_id']] + auxSumaParaReemplazo;
-                    }
-                  if(this.aggregateMaterials.has(ps['material_id'])) {
-                    const materiales_subetapa = this.materialSchemeDataList.filter(
-                      msd =>
-                        msd['material_id'] == ps['material_id'] &&
-                        msd['standard_id'] == 1 &&
-                        msd['potential_type_id'] == impacto['id']
-                    );
-                    if (materiales_subetapa.length > 0) {
-                      materiales_subetapa.forEach((material, index) => {
-                        if(!elementoscreados.includes(ps['section_id'])) {
-                          elementoscreados.push(ps['section_id']);
-                          Datos[nameImpacto]['Uso']['B4'][ps['section_id']] = 0;
-                          DatosMateriales[nameImpacto]['Uso']['B4'][ps['section_id']] = {};
-                        }
-                        const auxres = ((materiales_subetapa[index]['value'] * ps['quantity'])) * ps['replaces']
-                        DatosMateriales[nameImpacto]['Uso']['B4'][ps['section_id']][ps['material_id']] += auxres;
-                        Datos[nameImpacto]['Uso']['B4'][ps['section_id']] =
-                        Datos[nameImpacto]['Uso']['B4'][ps['section_id']] + auxres;
-                      });
-                    }
-                  }else{
-                    const materiales_subetapa = this.materialSchemeDataList.filter(
-                      msd =>
-                        msd['material_id'] == ps['material_id'] &&
-                        msd['standard_id'] == subetapa &&
-                        msd['potential_type_id'] == impacto['id']
-                    );
-                    if (materiales_subetapa.length > 0) {
-                      materiales_subetapa.forEach((material, index) => {
-                        if(!elementoscreados.includes(ps['section_id'])) {
-                          elementoscreados.push(ps['section_id']);
-                          Datos[nameImpacto]['Uso']['B4'][ps['section_id']] = 0;
-                          DatosMateriales[nameImpacto]['Uso']['B4'][ps['section_id']] = {};
-                        }
-                        const auxres = ((materiales_subetapa[index]['value'] * ps['quantity'])) * ps['replaces']
-                        DatosMateriales[nameImpacto]['Uso']['B4'][ps['section_id']][ps['material_id']] += auxres;
-                        Datos[nameImpacto]['Uso']['B4'][ps['section_id']] =
-                        Datos[nameImpacto]['Uso']['B4'][ps['section_id']] + auxres;
-                      });
-                    }
-                  }
-                }
-              }
-            });
+        //B4 USO: once per row, its replacements times (its own transport + its production).
+        schemeProyect.forEach(ps => {
+          if(!ps['replaces']) {
+            return;
           }
+          const baseDatosMaterial = this.materialList.filter(bs=> bs['id'] == ps['material_id']);
+          if(!BD[baseDatosMaterial[0]['database_from']]) {
+            return;
+          }
+          const estandares = this.aggregateMaterials.has(ps['material_id']) ? [1] : etapas;
+          let auxres = transportePorFila.get(ps) ?? 0;
+          estandares.forEach(estandar => {
+            this.materialSchemeDataList
+              .filter(
+                msd =>
+                  msd['material_id'] == ps['material_id'] &&
+                  msd['standard_id'] == estandar &&
+                  msd['potential_type_id'] == impacto['id']
+              )
+              .forEach(material => {
+                auxres = auxres + material['value'] * ps['quantity'];
+              });
+          });
+          auxres = auxres * ps['replaces'];
+          if(!elementoscreados.includes(ps['section_id'])) {
+            elementoscreados.push(ps['section_id']);
+            Datos[nameImpacto]['Uso']['B4'][ps['section_id']] = 0;
+            DatosMateriales[nameImpacto]['Uso']['B4'][ps['section_id']] = {};
+          }
+          const porMaterialB4 = DatosMateriales[nameImpacto]['Uso']['B4'][ps['section_id']];
+          porMaterialB4[ps['material_id']] = (porMaterialB4[ps['material_id']] ?? 0) + auxres;
+          Datos[nameImpacto]['Uso']['B4'][ps['section_id']] = Datos[nameImpacto]['Uso']['B4'][ps['section_id']] + auxres;
         });
       }
       impacto_ban = true;
     });
 
-    console.log(DatosMateriales)
     const resultado = {'materiales': DatosMateriales, 'Calculos': Datos}
     return resultado;
   }

@@ -560,15 +560,16 @@ export class CompararComponent implements OnInit {
 
   private getFilteredScheme(idProyecto: number): any[] {
     const selections: any[] = this.selectionsByProject[idProyecto] ?? [];
+    // A system is switched off in one element (section), not wherever its name appears.
     const deselectedKeys = new Set(
       selections
         .filter(s => s.is_selected === false)
-        .map(s => `${s.label}:${s.origin_id ?? 'null'}`)
+        .map(s => `${s.section_id}:${s.label}:${s.origin_id ?? 'null'}`)
     );
     if (deselectedKeys.size === 0) return this.materialSchemeProyectList;
     return (this.materialSchemeProyectList as any[]).filter(item => {
       if (item.project_id != idProyecto) return true;
-      const key = `${item.construction_system}:${item.origin_id ?? 'null'}`;
+      const key = `${item.section_id}:${item.construction_system}:${item.origin_id ?? 'null'}`;
       return !deselectedKeys.has(key);
     });
   }

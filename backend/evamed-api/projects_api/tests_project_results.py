@@ -143,6 +143,27 @@ class ProductionStageAggregationTests(APITestCase):
         # 100 * quantity 2 * replaces 3; no transport configured.
         self.assertEqual(response.data['datos'][GWP_NAME]['Uso']['B4'], 600)
 
+    def test_b4_each_row_brings_back_only_its_own_transport(self):
+        # The same block in two systems: 10 kg each, 100 km by truck (0.001 per kg·km),
+        # one replacement each. Each row's replacement adds its own 1 of transport, not 2.
+        truck_id = 4
+        truck = models.Transport.objects.create(id=truck_id, name_transport='Camión')
+        models.PotentialTransport.objects.create(transport_id=truck, potential_type_id=self.gwp, value=0.001)
+        material = self._material('EPiC')
+        self._impact(material, self.std_agg, 2)
+        for _ in range(2):
+            models.MaterialSchemeProject.objects.create(
+                material_id=material, project_id=self.project, quantity=10,
+                distance_end=100, transport_id_end=truck, replaces=1,
+            )
+
+        response = self.client.get(RESULTS_URL.format(self.project.id))
+        datos = response.data['datos'][GWP_NAME]
+
+        self.assertAlmostEqual(datos['Construccion']['A4'], 2)
+        # Per row: (1 transport + 2·10 production) × 1 replacement; two rows.
+        self.assertAlmostEqual(datos['Uso']['B4'], 42)
+
     def test_databases_query_param_still_excludes_ecoinvent(self):
         material = self._material('ECOINVENT 3')
         self._impact(material, self.std_agg, 100)

@@ -785,6 +785,7 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
     // Update local tracking state
     const systemKey = `${originId}:${selectedItem}`;
     this.selectedSystems[systemKey] = !isSelected;
+    this.setSystemSaved(selectedItem, originId, !isSelected);
   };
 
   if (selectionId) {
@@ -987,6 +988,9 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
     
     // Update local state
     this.selectedSystems[key] = newSelectedState;
+    // The autosave saves the rows of the switched-on systems: keep its lists in step,
+    // or a system switched on wouldn't count until the sheet is opened again.
+    this.setSystemSaved(sc, originId, newSelectedState);
     
     // Call the original onSCSelected logic with synthetic event
     const syntheticEvent = {
@@ -997,6 +1001,22 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
     } as any;
     
     this.onSCSelected(syntheticEvent, originId);
+  }
+
+  /** Adds or removes a system from the current sheet's switched-on lists, which saveStepOne saves. */
+  private setSystemSaved(sc: string, originId: number, on: boolean): void {
+    if (this.indexSheet === undefined) {
+      return;
+    }
+    const lists = { 1: 'selectedOptionsRevit', 2: 'selectedOptionsDynamo', 3: 'selectedOptionsUsuario' },
+      saved = { 1: this.SOR, 2: this.SOD, 3: this.SOU }[originId],
+      name = lists[originId];
+    if (!name || !saved) {
+      return;
+    }
+    const others = (this[name] ?? []).filter(item => item !== sc);
+    this[name] = on ? [...others, sc] : others;
+    saved[this.indexSheet] = this[name];
   }
 
   showMaterials(sc, origin: PanelOrigin) {

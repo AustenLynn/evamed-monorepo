@@ -79,3 +79,24 @@ describe('CompararComponent project name', () => {
     expect(CompararComponent.prototype['iniciar_graficas']).toHaveBeenCalledWith(7);
   });
 });
+
+// A system is switched off in one element; the same name elsewhere still counts.
+describe('CompararComponent switched-off systems', () => {
+  it('leaves out only the switched-off system’s section and origin', () => {
+    const component: any = Object.create(CompararComponent.prototype),
+      row = (section_id: number, construction_system: string, origin_id = 1) =>
+        ({ project_id: 7, section_id, construction_system, origin_id });
+    component.materialSchemeProyectList = [
+      row(2, 'Muro A'), row(3, 'Muro A'), row(2, 'Muro A', 3), row(2, 'Muro B'),
+      { project_id: 8, section_id: 2, construction_system: 'Muro A', origin_id: 1 },
+    ];
+    component.selectionsByProject = {
+      7: [{ section_id: 2, label: 'Muro A', origin_id: 1, is_selected: false }],
+    };
+
+    expect(component.getFilteredScheme(7)).toEqual([
+      row(3, 'Muro A'), row(2, 'Muro A', 3), row(2, 'Muro B'),
+      { project_id: 8, section_id: 2, construction_system: 'Muro A', origin_id: 1 },
+    ]);
+  });
+});
