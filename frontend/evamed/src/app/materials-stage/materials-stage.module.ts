@@ -5,6 +5,7 @@ import { MaterialsStageComponent } from './components/materials-stage/materials-
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from './../material/material.module';
+import { ExplorerUiModule } from '../explorer/explorer-ui.module';
 import { AddConstructiveElementComponent } from './components/add-constructive-element/add-constructive-element.component';
 import { AddConstructiveSystemComponent } from './components/add-constructive-system/add-constructive-system.component';
 import { QuantityCellComponent } from './components/quantity-cell/quantity-cell.component';
@@ -29,6 +30,7 @@ import { MaterialStageUpdateComponent } from './components/material-stage-update
         FormsModule,
         ReactiveFormsModule,
         MaterialModule,
+        ExplorerUiModule,
     ],
     exports: [
         AddConstructiveElementComponent,

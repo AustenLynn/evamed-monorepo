@@ -191,7 +191,7 @@ describe('Explorar materiales on the existing-project page', () => {
 describe('Editing a material from the panel', () => {
   afterEach(() => sessionStorage.clear());
 
-  it('new-project page: opens Edición with the row, and writes the changes back to the sheet', async () => {
+  it('new-project page: opens Edición in the panel with the row, and Guardar writes it back to the sheet', async () => {
     const row: any = {
         Material: 'Agua_Water_mortero_aplanado', Cantidad: 90.51, Unidad: 'kg', 'Descripción de Material': '-',
         Origen: 'Opciones EVAMED', Sistema_constructivo: 'EPS wall', distancia_2: '30', transporte_2: '4', reemplazos: '1',
@@ -210,7 +210,8 @@ describe('Editing a material from the panel', () => {
 
     await component.onSelectedMaterial({ selected: [{ value: { value: row } }] });
 
-    expect(component.explorerPicker.pick).toHaveBeenCalledWith({
+    expect(component.explorerPicker.pick).not.toHaveBeenCalled();
+    expect(component.panelEdit).toEqual({
       mode: 'edit',
       system: 'EPS wall',
       section: 'Muros interiores',
@@ -218,8 +219,37 @@ describe('Editing a material from the panel', () => {
       materialId: 382,
       initial,
     });
+    component.savePanelEdit({ ...picked, comercialName: 'Agua de obra', comments: '' });
+
+    expect(component.panelEdit).toBeNull();
     expect(row).toMatchObject({ Material: 'Agua de obra', Origen: 'Opciones EVAMED', Cantidad: 120, 'Descripción de Material': null });
     expect(JSON.parse(sessionStorage.getItem('dataProject')!).data[0][0].Material).toBe('Agua de obra');
+  });
+
+  it('new-project page: Cancelar in the panel leaves the row as it was', async () => {
+    const row: any = { Material: 'Agua_Water_mortero_aplanado', Cantidad: 90.51, Sistema_constructivo: 'EPS wall' },
+      component: any = Object.create(MaterialsStageComponent.prototype);
+    component.materialsList = [{ id: 382, name_material: 'Agua_Water_mortero_aplanado' }];
+    component.explorerPicker = { pick: vi.fn() };
+
+    await component.onSelectedMaterial({ selected: [{ value: { value: row } }] });
+    component.closePanelEdit();
+
+    expect(component.panelEdit).toBeNull();
+    expect(row).toEqual({ Material: 'Agua_Water_mortero_aplanado', Cantidad: 90.51, Sistema_constructivo: 'EPS wall' });
+  });
+
+  it('new-project page: a row the catalogue doesn’t know still starts on the full-screen list', async () => {
+    const row: any = { Material: 'Mortero casero', Cantidad: 3, Sistema_constructivo: 'Muro A', Origen: 'Modelo de Revit' },
+      component: any = Object.create(MaterialsStageComponent.prototype);
+    component.materialsList = [];
+    component.vidaUtilSeleccionado = '50';
+    component.explorerPicker = { pick: vi.fn(async () => undefined) };
+
+    await component.onSelectedMaterial({ selected: [{ value: { value: row } }] });
+
+    expect(component.explorerPicker.pick).toHaveBeenCalledWith(expect.objectContaining({ mode: 'edit', materialId: null }));
+    expect(component.panelEdit ?? null).toBeNull();
   });
 
   it('existing-project page: saves the row in place, keeping its origin, and shows it again', async () => {
@@ -243,9 +273,13 @@ describe('Editing a material from the panel', () => {
 
     await component.onSelectedMaterial(null, { selected: [{ value: { value: row } }] });
 
-    expect(component.explorerPicker.pick).toHaveBeenCalledWith(expect.objectContaining({
+    expect(component.explorerPicker.pick).not.toHaveBeenCalled();
+    expect(component.panelEdit).toEqual(expect.objectContaining({
       mode: 'edit', materialId: 382, section: 'Muros interiores', initial: fromSchemeRow(row),
     }));
+    component.savePanelEdit(picked);
+
+    expect(component.panelEdit).toBeNull();
     const [id, changes] = component.projectsService.updateMaterialSchemeProject.mock.calls[0];
     expect(id).toBe(10636);
     expect(changes).toMatchObject({ origin_id: 2, section_id: 2, material_id: 2, state_id_origin: 5, city_id_origin: 9 });

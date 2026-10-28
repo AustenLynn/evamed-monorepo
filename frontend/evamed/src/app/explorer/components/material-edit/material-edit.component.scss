@@ -176,3 +176,35 @@ mat-form-field {
   padding-left: 0;
   color: var(--ev-green-text);
 }
+
+// In the stage page's Materiales panel: one column, the catalogue summary first.
+:host(.edit--panel) {
+  .edit,
+  .edit__legs,
+  .edit__footer,
+  .edit__row--material {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .edit {
+    gap: 12px;
+  }
+
+  .edit__summary {
+    order: -1;
+    padding: 12px 16px;
+  }
+
+  .edit__summary-gwp {
+    font-size: 20px;
+  }
+
+  .edit__summary-facts {
+    margin: 8px 0 4px;
+    gap: 2px 12px;
+  }
+
+  .edit__panel {
+    padding: 8px 12px 12px;
+  }
+}

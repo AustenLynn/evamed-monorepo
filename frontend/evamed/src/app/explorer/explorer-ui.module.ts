@@ -10,6 +10,7 @@ import { FilterPanelComponent } from './components/filter-panel/filter-panel.com
 import { ImpactBadgeComponent } from './components/impact-badge/impact-badge.component';
 import { MaterialDetailComponent } from './components/material-detail/material-detail.component';
 import { MaterialEditComponent } from './components/material-edit/material-edit.component';
+import { MaterialPanelEditComponent } from './components/material-panel-edit/material-panel-edit.component';
 import { ResultCardComponent } from './components/result-card/result-card.component';
 import { ResultsCardsComponent } from './components/results-cards/results-cards.component';
 import { RegionChipComponent } from './components/region-chip/region-chip.component';
@@ -24,6 +25,7 @@ const COMPONENTS = [
   ImpactBadgeComponent,
   MaterialDetailComponent,
   MaterialEditComponent,
+  MaterialPanelEditComponent,
   RegionChipComponent,
   ResultCardComponent,
   ResultsCardsComponent,

@@ -168,6 +168,27 @@ describe('ExplorerPickerService', () => {
     expect(overlay().querySelector('app-material-detail h1')?.textContent).toContain('AAC block');
   });
 
+  it('choose mode: opens on the given material’s Ficha and resolves with the material chosen', async () => {
+    const picker = (await import('../../explorer-picker.service')).ExplorerPickerService;
+    TestBed.configureTestingModule({
+      imports: [ExplorerUiModule],
+      providers: [provideHttpClient(), provideHttpClientTesting(), { provide: CatalogsService, useValue: { getTransports: () => of([]) } }],
+    });
+    http = TestBed.inject(HttpTestingController);
+    const result = TestBed.inject(picker).choose({ system: 'Muro de block', projectLife: 50, materialId: 12 });
+    for (let tries = 0; tries < 500 && !overlay()?.querySelector('app-material-detail'); tries++) {
+      await settle();
+    }
+    http.match(request => request.url.endsWith('/explorer/produccion/')).forEach(request => request.flush(list));
+    http.expectOne(request => request.url.endsWith('/explorer/produccion/12/')).flush(DETAIL);
+    await settle();
+
+    expect(overlay().querySelector('.picker__title')?.textContent).toContain('Elegir material');
+    await click('.detail__select');
+
+    expect((await result)?.id).toBe(12);
+  });
+
   it('edit mode: a row without a catalogue material starts on the list', async () => {
     await start({ mode: 'edit', materialId: null });
 

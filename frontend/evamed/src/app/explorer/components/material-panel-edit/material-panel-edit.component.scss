@@ -1,0 +1,35 @@
+// The stage pages' Materiales panel is a fixed 26rem row (its title bar takes about 2.5rem):
+// the form scrolls inside it instead of running under the page's buttons.
+:host {
+  display: block;
+  max-height: 23.5rem;
+  overflow-y: auto;
+}
+
+.panel-edit {
+  padding: 4px 8px 12px;
+}
+
+.panel-edit__header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--ev-surface);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.panel-edit__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ev-text);
+}
+
+.panel-edit__status {
+  margin: 8px 0;
+  font-size: 14px;
+  color: var(--ev-text-muted);
+}

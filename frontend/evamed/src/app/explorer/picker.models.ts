@@ -14,9 +14,15 @@ export interface PickerInitial {
 
 /** What the stage page knows when it opens the explorer (R-02, R-20). */
 export interface PickerContext {
-  /** 'add' a new material (default) or 'edit' a row already in the project. */
-  mode?: 'add' | 'edit';
-  /** Edit: the row's catalogue material, to open Edición directly; null when it has none. */
+  /**
+   * 'add' a new material (default), 'edit' a row already in the project, or
+   * 'choose' a catalogue material for the Materiales panel's edit form.
+   */
+  mode?: 'add' | 'edit' | 'choose';
+  /**
+   * Edit: the row's catalogue material, to open Edición directly; null when it has none.
+   * Choose: the material whose Ficha to open first; null starts on the list.
+   */
   materialId?: number | null;
   /** Edit: the row's values. */
   initial?: PickerInitial;

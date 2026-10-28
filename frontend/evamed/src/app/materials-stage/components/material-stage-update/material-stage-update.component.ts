@@ -13,7 +13,7 @@ import { firstValueFrom, forkJoin, Observable } from 'rxjs';
 import { map, startWith, take } from 'rxjs/operators';
 import { AnalisisService } from 'src/app/core/services/analisis/analisis.service';
 import { ExplorerPickerService } from '../../../explorer/explorer-picker.service';
-import { PickedMaterial } from '../../../explorer/picker.models';
+import { PickedMaterial, PickerContext } from '../../../explorer/picker.models';
 import { fromSchemeRow, toSchemeProject, USER_ORIGIN } from '../../picked-material';
 import { AddConstructiveSystemComponent } from '../add-constructive-system/add-constructive-system.component';
 import { byIndex, RECENT_MS, sortByName } from '../../material-list';
@@ -65,6 +65,9 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
   sectionRevit: boolean;
   sectionDynamo: boolean;
   selectedMaterial: boolean;
+  /** The row being edited in the panel, and its Edición's context (R-46). */
+  panelEdit: PickerContext | null = null;
+  private panelRow: Record<string, any> | null = null;
   dataMaterialSelected: any;
   showSearch: boolean;
   catalogoTransportesExtrangero: any;
@@ -195,6 +198,7 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
     );
 
     this.selectedMaterial = false;
+    this.closePanelEdit();
     this.showEPD = false;
     this.showMexican = false;
     this.selectedDb = null;
@@ -521,6 +525,7 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
     this.currentPanelItem = '';
     this.SCseleccionado = '';
     this.selectedMaterial = false;
+    this.closePanelEdit();
     this.showSearch = false;
     this.showMaterial = false;
     this.listMateriales = {};
@@ -722,6 +727,7 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
     this.currentPanelOrigin = origin;
     this.SCseleccionado = '/ ' + sc;
     this.selectedMaterial = false;
+    this.closePanelEdit();
     this.showSearch = false;
     this.showMaterial = false;
     // let originId = 1;
@@ -1064,25 +1070,49 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
     });
   }
 
-  /** A material in the panel opens the explorer's Edición screen (it replaced the inline form). */
+  /**
+   * A material in the panel opens its Edición in the panel (R-46). A row the
+   * catalogue doesn't know starts on the full-screen explorer's list instead.
+   */
   async onSelectedMaterial(_event, value): Promise<void> {
     const row = value.selected[0]?.value.value;
     if (!row?.material_scheme_project_id) {
       return;
     }
-    const system = row.construction_system,
-      picked = await this.explorerPicker.pick({
-        mode: 'edit',
-        system,
-        section: this.sheetNames[row.section_id - 1] ?? null,
-        projectLife: Number(this.vidaUtilSeleccionado) || 50,
-        materialId: row.material_id ?? null,
-        initial: fromSchemeRow(row),
-      });
-    if (!picked) {
+    const context: PickerContext = {
+      mode: 'edit',
+      system: row.construction_system,
+      section: this.sheetNames[row.section_id - 1] ?? null,
+      projectLife: Number(this.vidaUtilSeleccionado) || 50,
+      materialId: row.material_id ?? null,
+      initial: fromSchemeRow(row),
+    };
+    if (row.material_id) {
+      this.panelRow = row;
+      this.panelEdit = context;
       return;
     }
-    const changes = {
+    const picked = await this.explorerPicker.pick(context);
+    if (picked) {
+      this.applyEdit(row, picked);
+    }
+  }
+
+  savePanelEdit(picked: PickedMaterial): void {
+    if (this.panelRow) {
+      this.applyEdit(this.panelRow, picked);
+    }
+    this.closePanelEdit();
+  }
+
+  closePanelEdit(): void {
+    this.panelEdit = null;
+    this.panelRow = null;
+  }
+
+  private applyEdit(row, picked: PickedMaterial): void {
+    const system = row.construction_system,
+      changes = {
       ...toSchemeProject(picked, {
         projectId: row.project_id,
         sectionId: row.section_id,
@@ -1186,6 +1216,7 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
 
   onReturnListMaterials() {
     this.selectedMaterial = false;
+    this.closePanelEdit();
     this.showSearch = false;
     this.showMaterial = false;
   }
@@ -1210,6 +1241,7 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
   goToSearchInfo() {
     this.showSearch = true;
     this.selectedMaterial = false;
+    this.closePanelEdit();
     this.showMaterial = false;
     this.showEPD = false;
   }

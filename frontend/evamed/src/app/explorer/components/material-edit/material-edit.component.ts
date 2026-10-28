@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -11,6 +11,7 @@ import {
   lifeFor,
   PickedMaterial,
   PickerContext,
+  PickerInitial,
   replacesFor,
 } from '../../picker.models';
 
@@ -42,11 +43,17 @@ export class MaterialEditComponent implements OnInit {
   @Input() inSelection = false;
   /** The picker is saving: a second click would add the material twice. */
   @Input() saving = false;
-  /** "Ver ficha completa". */
-  @Output() readonly back = new EventEmitter<void>();
+  /** 'panel': one column, summary first, for the stage page's Materiales panel. */
+  @Input() layout: 'dialog' | 'panel' = 'dialog';
+  /** "Ver ficha completa", with the form's values so far. */
+  @Output() readonly back = new EventEmitter<PickerInitial>();
   @Output() readonly cancelled = new EventEmitter<void>();
-  /** Edit mode: pick another catalogue material for this row. */
-  @Output() readonly changeMaterial = new EventEmitter<void>();
+  /** Edit mode: pick another catalogue material for this row, with the form's values so far. */
+  @Output() readonly changeMaterial = new EventEmitter<PickerInitial>();
+
+  @HostBinding('class.edit--panel') get inPanel(): boolean {
+    return this.layout === 'panel';
+  }
   @Output() readonly save = new EventEmitter<PickedMaterial>();
 
   readonly transports$: Observable<TransportOption[]>;
@@ -174,6 +181,23 @@ export class MaterialEditComponent implements OnInit {
       lifeYears: Number(value.lifeYears),
       replaces: Number(value.replaces),
     });
+  }
+
+  /** The form's values as a starting point, to carry them over to another material. */
+  currentValues(): PickerInitial {
+    const value = this.form.getRawValue(),
+      number = (input: number | null) => (input === null || String(input) === '' ? null : Number(input));
+    return {
+      comercialName: value.comercialName,
+      quantity: number(value.quantity),
+      comments: value.comments,
+      transportOrigin: value.transportOrigin,
+      distanceOrigin: number(value.distanceOrigin),
+      transportEnd: value.transportEnd,
+      distanceEnd: number(value.distanceEnd),
+      replaces: number(value.replaces),
+      rowUnit: this.context.initial?.rowUnit ?? null,
+    };
   }
 
   error(name: string): boolean {

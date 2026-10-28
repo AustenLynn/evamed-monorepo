@@ -11,6 +11,7 @@ import { finalize, map, startWith } from 'rxjs/operators';
 import { AddConstructiveElementComponent } from '../add-constructive-element/add-constructive-element.component';
 import { AddConstructiveSystemComponent } from '../add-constructive-system/add-constructive-system.component';
 import { ExplorerPickerService } from '../../../explorer/explorer-picker.service';
+import { PickedMaterial, PickerContext } from '../../../explorer/picker.models';
 import { fromExcelRow, toExcelRow } from '../../picked-material';
 import { byIndex, RECENT_MS, sortByName } from '../../material-list';
 import { bySection } from 'src/app/shared/template-sheets';
@@ -70,6 +71,9 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
   sectionRevit: boolean;
   sectionDynamo: boolean;
   selectedMaterial: boolean;
+  /** The row being edited in the panel, and its Edición's context (R-46). */
+  panelEdit: PickerContext | null = null;
+  private panelRow: Record<string, any> | null = null;
   showSearch: boolean;
   showMaterial: boolean;
   shouldShowMaterials: boolean;
@@ -198,6 +202,7 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
     });
 
     this.selectedMaterial = false;
+    this.closePanelEdit();
     this.showSearch = false;
     this.showMaterial = false;
     this.shouldShowMaterials = true;
@@ -463,7 +468,10 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
       });
   }
 
-  /** A material in the panel opens the explorer's Edición screen (it replaced the inline form). */
+  /**
+   * A material in the panel opens its Edición in the panel (R-46). A row the
+   * catalogue doesn't know starts on the full-screen explorer's list instead.
+   */
   async onSelectedMaterial(value): Promise<void> {
     const row = value.selected[0]?.value.value;
     if (!row) {
@@ -471,17 +479,38 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
     }
     const name = row.materialSelectedDB ?? row.Material,
       material = (this.materialsList ?? []).find(candidate => candidate.name_material === name),
-      picked = await this.explorerPicker.pick({
+      context: PickerContext = {
         mode: 'edit',
         system: row.Sistema_constructivo,
         section: this.selectedSheet ?? null,
         projectLife: Number(this.vidaUtilSeleccionado) || 50,
         materialId: material?.id ?? null,
         initial: fromExcelRow(row),
-      });
-    if (!picked) {
+      };
+    if (material) {
+      this.panelRow = row;
+      this.panelEdit = context;
       return;
     }
+    const picked = await this.explorerPicker.pick(context);
+    if (picked) {
+      this.applyEdit(row, picked);
+    }
+  }
+
+  savePanelEdit(picked: PickedMaterial): void {
+    if (this.panelRow) {
+      this.applyEdit(this.panelRow, picked);
+    }
+    this.closePanelEdit();
+  }
+
+  closePanelEdit(): void {
+    this.panelEdit = null;
+    this.panelRow = null;
+  }
+
+  private applyEdit(row, picked: PickedMaterial): void {
     Object.assign(row, toExcelRow(picked, row.Sistema_constructivo, row.Origen));
     row.signal = true;
     this.storeSheet();
@@ -586,6 +615,7 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
     this.currentPanelItem = null;
     this.SCseleccionado = '';
     this.selectedMaterial = false;
+    this.closePanelEdit();
     this.showSearch = false;
     this.listMateriales = {};
 
@@ -974,6 +1004,7 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
     this.currentPanelOrigin = origin;
     this.SCseleccionado = '/ ' + sc;
     this.selectedMaterial = false;
+    this.closePanelEdit();
     this.showSearch = false;
     this.showMaterial = false;
     const materiales = [];
@@ -1147,6 +1178,7 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
 
   onReturnListMaterials() {
     this.selectedMaterial = false;
+    this.closePanelEdit();
     this.showSearch = false;
     this.showMaterial = false;
   }
@@ -1238,6 +1270,7 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
   goToSearchInfo() {
     this.showSearch = true;
     this.selectedMaterial = false;
+    this.closePanelEdit();
     this.showMaterial = false;
     this.showEPD = false;
   }

@@ -47,7 +47,7 @@ export class ExplorerPickerComponent {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) readonly context: PickerContext,
-    private dialogRef: MatDialogRef<ExplorerPickerComponent, PickedMaterial[]>,
+    private dialogRef: MatDialogRef<ExplorerPickerComponent, PickedMaterial[] | MaterialDetail>,
     private explorer: ExplorerService,
     private cdr: ChangeDetectorRef
   ) {
@@ -60,6 +60,8 @@ export class ExplorerPickerComponent {
         // The Ficha explains the failure and offers to retry.
         error: () => this.show({ kind: 'detail', id }),
       });
+    } else if (context.mode === 'choose' && id) {
+      this.step = { kind: 'detail', id };
     }
   }
 
@@ -67,12 +69,15 @@ export class ExplorerPickerComponent {
     if (this.context.mode === 'edit') {
       return 'Editar material';
     }
+    if (this.context.mode === 'choose') {
+      return 'Elegir material';
+    }
     return this.step.kind === 'edit' ? 'Agregar material al proyecto' : 'Explorador de materiales';
   }
 
   /** Several materials can be added at once, but a project row is edited alone. */
   get selectable(): boolean {
-    return this.context.mode !== 'edit';
+    return !this.context.mode || this.context.mode === 'add';
   }
 
   onQuery(query: ExplorerQuery): void {
@@ -91,7 +96,12 @@ export class ExplorerPickerComponent {
   }
 
   select(detail: MaterialDetail): void {
-    this.go({ kind: 'edit', detail });
+    if (this.context.mode === 'choose') {
+      // The Materiales panel's form edits the row; the explorer only picks the material.
+      this.dialogRef.close(detail);
+    } else {
+      this.go({ kind: 'edit', detail });
+    }
   }
 
   backToDetail(detail: MaterialDetail): void {

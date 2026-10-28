@@ -1,0 +1,29 @@
+<div class="panel-edit">
+  <div class="panel-edit__header">
+    <button mat-icon-button type="button" aria-label="Volver a la lista de materiales" (click)="cancelled.emit()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h2 class="panel-edit__title">Editar material</h2>
+  </div>
+
+  @if (failed) {
+    <p class="panel-edit__status" role="alert">
+      No se pudo cargar el material.
+      <button mat-button type="button" (click)="load()">Reintentar</button>
+    </p>
+  } @else if (!shown.length) {
+    <p class="panel-edit__status" role="status">Cargando material…</p>
+  }
+
+  @for (entry of shown; track entry) {
+    <app-material-edit
+      layout="panel"
+      [detail]="entry.detail"
+      [context]="entry.context"
+      (save)="save.emit($event)"
+      (cancelled)="cancelled.emit()"
+      (changeMaterial)="choose($event, false)"
+      (back)="choose($event, true)"
+    ></app-material-edit>
+  }
+</div>
