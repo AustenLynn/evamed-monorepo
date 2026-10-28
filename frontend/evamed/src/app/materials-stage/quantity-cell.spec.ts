@@ -106,10 +106,10 @@ describe('Quantity edited in the Materiales list', () => {
     expect(listKeys).not.toHaveBeenCalled();
   });
 
-  it('saves nothing for a blank, zero, negative, unreadable or unchanged value', async () => {
+  it('saves nothing for a blank, negative, unreadable or unchanged value', async () => {
     const { open, type, key, emitted } = await render();
 
-    for (const text of ['', '0', '-3', 'abc', '120.5']) {
+    for (const text of ['', '-3', 'abc', '120.5']) {
       const input = open();
       type(input, text);
       key(input, 'Enter');
@@ -118,10 +118,21 @@ describe('Quantity edited in the Materiales list', () => {
     expect(emitted).toEqual([]);
   });
 
-  it('accepts a decimal comma, and only positive finite numbers', () => {
+  it('accepts a decimal comma, 0 (R-47), and only finite numbers that aren’t negative', () => {
     expect(parseQuantity(' 3,5 ')).toBe(3.5);
-    expect(parseQuantity('0')).toBeNull();
+    expect(parseQuantity('0')).toBe(0);
+    expect(Object.is(parseQuantity('-0'), 0)).toBe(true);
+    expect(parseQuantity('-0.5')).toBeNull();
     expect(parseQuantity('1e400')).toBeNull();
+  });
+
+  it('saves 0', async () => {
+    const { open, type, key, emitted } = await render(),
+      input = open();
+    type(input, '0');
+    key(input, 'Enter');
+
+    expect(emitted).toEqual([0]);
   });
 
   it('new-project page: changes the row and stores the sheet for the autosave', () => {

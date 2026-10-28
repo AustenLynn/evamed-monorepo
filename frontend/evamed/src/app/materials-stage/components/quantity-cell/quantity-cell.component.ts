@@ -9,14 +9,15 @@ import {
   ViewChild,
 } from '@angular/core';
 
-/** A positive number, accepting a decimal comma; null for anything else. */
+/** A number of 0 or more (R-47), accepting a decimal comma; null for anything else. */
 export const parseQuantity = (text: string): number | null => {
   const trimmed = text.trim().replace(',', '.');
   if (trimmed === '') {
     return null;
   }
   const quantity = Number(trimmed);
-  return Number.isFinite(quantity) && quantity > 0 ? quantity : null;
+  // '-0' reads as -0; it is 0.
+  return Number.isFinite(quantity) && quantity >= 0 ? quantity + 0 : null;
 };
 
 /**
