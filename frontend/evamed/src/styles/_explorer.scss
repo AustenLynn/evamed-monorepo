@@ -9,8 +9,6 @@
   --ev-surface-muted: #efefef;
   --ev-border: #cbcbcb;
   --ev-divider: #ededed;
-  // Dims the page behind the material picker's sheet.
-  --ev-scrim: #0a0a0a59;
 
   --ev-text: #000000;
   // #767676 is the app's caption grey: 4.5:1 on white, but not on --ev-bg.
@@ -75,12 +73,6 @@
 
 .ev-picker-dialog .mat-mdc-dialog-surface {
   border-radius: 16px 16px 0 0;
-}
-
-// Its own backdrop: the app-wide dark one blurs the page away and lets clicks
-// through, so a click above the sheet would land on the page instead of closing it.
-.ev-picker-backdrop {
-  background: var(--ev-scrim);
 }
 
 @keyframes ev-sheet-up {

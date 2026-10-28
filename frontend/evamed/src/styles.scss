@@ -195,18 +195,18 @@ input::placeholder {
 
 /**<Header modal>**/
 
-/**<Blur open modal>**/
+/**<Dim behind open windows>**/
+// A light dim, so the page stays readable behind the window; it takes the
+// clicks, so a click outside closes the window instead of reaching the page (R-48).
 .cdk-overlay-dark-backdrop {
-  background: #0a0a0a67 0% 0% no-repeat padding-box !important;
-  backdrop-filter: blur(28px) !important;
-  pointer-events: none !important;
+  background: #0a0a0a59 !important;
 }
 
 .mdc-dialog__surface {
   overflow: hidden;
 }
 
-/**</Blur open modal>**/
+/**</Dim behind open windows>**/
 
 /**<Col Row genérico>**/
 .Row {

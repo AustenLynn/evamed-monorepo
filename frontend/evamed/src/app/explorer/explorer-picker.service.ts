@@ -36,7 +36,6 @@ export class ExplorerPickerService {
         height: '75dvh',
         position: { bottom: '0' },
         panelClass: 'ev-picker-dialog',
-        backdropClass: 'ev-picker-backdrop',
         enterAnimationDuration: 0,
         // The picker closes itself, so what was added still reaches the stage page.
         disableClose: true,

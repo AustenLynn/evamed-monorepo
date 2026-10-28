@@ -1285,6 +1285,10 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
     });
 
     dialogRef.afterClosed().subscribe(result => {
+      // Closed with Esc or a click outside: nothing to add.
+      if (!result?.newConstructiveElement) {
+        return;
+      }
       this.sheetNames.push(result.newConstructiveElement);
       this.contentData.push([
         {

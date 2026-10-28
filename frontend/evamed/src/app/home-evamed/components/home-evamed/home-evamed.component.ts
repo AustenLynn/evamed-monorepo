@@ -749,6 +749,10 @@ export class HomeEvamedComponent implements OnInit {
       },
     });
     dialogRef.afterClosed().subscribe(result => {
+      // Closed with Esc or a click outside: nothing to rename.
+      if (!result?.nameProject?.trim()) {
+        return;
+      }
       this.projectsService.getProjectById(id).subscribe((data: any) => {
         this.projectsService
           .updateProyect(id, {
