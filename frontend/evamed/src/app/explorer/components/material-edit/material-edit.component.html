@@ -91,7 +91,7 @@
       </fieldset>
 
       <div class="edit__actions">
-        <button mat-stroked-button type="button" (click)="back.emit()">Cancelar</button>
+        <button mat-stroked-button type="button" (click)="cancelled.emit()">Cancelar</button>
         <button mat-flat-button type="submit" class="edit__submit" [disabled]="saving">{{ submitLabel }}</button>
       </div>
     </div>

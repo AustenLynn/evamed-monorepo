@@ -156,6 +156,18 @@ describe('ExplorerPickerService', () => {
     expect(overlay().querySelector('app-explorer-picker')).toBeNull();
   });
 
+  it('edit mode: "Ver ficha completa" still opens the Ficha', async () => {
+    await start({ mode: 'edit', materialId: 12 });
+    http.expectOne(request => request.url.endsWith('/explorer/produccion/12/')).flush(DETAIL);
+    await settle();
+
+    await click('.edit__summary-link', 'Ver ficha completa');
+    http.expectOne(request => request.url.endsWith('/explorer/produccion/12/')).flush(DETAIL);
+    await settle();
+
+    expect(overlay().querySelector('app-material-detail h1')?.textContent).toContain('AAC block');
+  });
+
   it('edit mode: a row without a catalogue material starts on the list', async () => {
     await start({ mode: 'edit', materialId: null });
 

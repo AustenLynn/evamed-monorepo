@@ -55,7 +55,8 @@
     [context]="context"
     [inSelection]="selection.length > 0"
     [saving]="saving"
-    (back)="cancelEdit($any(step).detail)"
+    (back)="backToDetail($any(step).detail)"
+    (cancelled)="cancelEdit($any(step).detail)"
     (changeMaterial)="backToList()"
     (save)="add($event)"
   ></app-material-edit>

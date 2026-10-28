@@ -94,12 +94,16 @@ export class ExplorerPickerComponent {
     this.go({ kind: 'edit', detail });
   }
 
+  backToDetail(detail: MaterialDetail): void {
+    this.go({ kind: 'detail', id: detail.id });
+  }
+
   /** Edición's "Cancelar": editing a project row closes the picker; adding goes back to the Ficha. */
   cancelEdit(detail: MaterialDetail): void {
     if (this.context.mode === 'edit') {
       this.close();
     } else {
-      this.go({ kind: 'detail', id: detail.id });
+      this.backToDetail(detail);
     }
   }
 

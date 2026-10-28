@@ -42,7 +42,9 @@ export class MaterialEditComponent implements OnInit {
   @Input() inSelection = false;
   /** The picker is saving: a second click would add the material twice. */
   @Input() saving = false;
+  /** "Ver ficha completa". */
   @Output() readonly back = new EventEmitter<void>();
+  @Output() readonly cancelled = new EventEmitter<void>();
   /** Edit mode: pick another catalogue material for this row. */
   @Output() readonly changeMaterial = new EventEmitter<void>();
   @Output() readonly save = new EventEmitter<PickedMaterial>();
