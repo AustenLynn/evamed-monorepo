@@ -145,6 +145,17 @@ describe('ExplorerPickerService', () => {
     expect(await result).toMatchObject({ comercialName: 'Block del muro', quantity: 90, distanceEnd: 30, replaces: 1, lifeYears: 25 });
   });
 
+  it('edit mode: "Cancelar" closes the picker without changes', async () => {
+    const { result } = await start({ mode: 'edit', materialId: 12 });
+    http.expectOne(request => request.url.endsWith('/explorer/produccion/12/')).flush(DETAIL);
+    await settle();
+
+    await click('button', 'Cancelar');
+
+    expect(await result).toBeUndefined();
+    expect(overlay().querySelector('app-explorer-picker')).toBeNull();
+  });
+
   it('edit mode: a row without a catalogue material starts on the list', async () => {
     await start({ mode: 'edit', materialId: null });
 
