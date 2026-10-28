@@ -74,7 +74,8 @@ export class MaterialEditComponent implements OnInit {
     this.form = this.fb.nonNullable.group(
       {
         comercialName: ['', Validators.required],
-        quantity: [null as number | null, [Validators.required, Validators.min(Number.MIN_VALUE)]],
+        // 0 is allowed: the quantity can be filled in later, in the Materiales list (R-43, R-47).
+        quantity: [null as number | null, Validators.min(0)],
         comments: [''],
         transportOrigin: [DEFAULT_TRANSPORT_ORIGIN as number | null],
         distanceOrigin: [null as number | null, Validators.min(0)],
@@ -116,8 +117,6 @@ export class MaterialEditComponent implements OnInit {
     const life = this.context.projectLife,
       initial = this.context.initial;
     if (!this.editing) {
-      // A new material can wait for its quantity, as several added at once do (R-43): 0 until filled in.
-      this.form.controls.quantity.setValidators([Validators.min(0)]);
       this.form.patchValue({ quantity: 0 });
     }
     this.form.patchValue({

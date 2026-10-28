@@ -64,7 +64,7 @@ describe('MaterialEditComponent', () => {
     expect(el.textContent).toContain('La cantidad no puede ser negativa.');
   });
 
-  it('editing a project row still needs a quantity above zero', () => {
+  it('editing a project row also accepts 0, or an empty quantity as 0', () => {
     const { component, saved, submit, el } = render({
       mode: 'edit', system: 'Muro de block', projectLife: 50, materialId: 12,
       initial: {
@@ -74,12 +74,16 @@ describe('MaterialEditComponent', () => {
     });
 
     submit();
-    expect(saved).toEqual([]);
-    expect(el.textContent).toContain('La cantidad debe ser mayor que 0.');
+    expect(saved[0].quantity).toBe(0);
 
     component.form.patchValue({ quantity: 0 });
     submit();
-    expect(saved).toEqual([]);
+    expect(saved[1].quantity).toBe(0);
+
+    component.form.patchValue({ quantity: -2 });
+    submit();
+    expect(saved.length).toBe(2);
+    expect(el.textContent).toContain('La cantidad no puede ser negativa.');
   });
 
   it('needs a transport type for a distance', () => {
