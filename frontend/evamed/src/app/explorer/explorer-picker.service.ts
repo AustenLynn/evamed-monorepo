@@ -30,10 +30,16 @@ export class ExplorerPickerService {
     const { ExplorerPickerComponent } = await import('./components/explorer-picker/explorer-picker.component'),
       ref = this.dialog.open<unknown, PickerContext, PickedMaterial[] | MaterialDetail>(ExplorerPickerComponent, {
         data: context,
+        // A sheet up from the bottom, over three quarters of the screen (R-48).
         width: '100vw',
         maxWidth: '100vw',
-        height: '100dvh',
+        height: '75dvh',
+        position: { bottom: '0' },
         panelClass: 'ev-picker-dialog',
+        backdropClass: 'ev-picker-backdrop',
+        enterAnimationDuration: 0,
+        // The picker closes itself, so what was added still reaches the stage page.
+        disableClose: true,
         autoFocus: 'dialog',
         ariaLabel: 'Explorador de materiales',
       });

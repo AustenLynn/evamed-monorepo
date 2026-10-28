@@ -125,6 +125,34 @@ describe('ExplorerPickerService', () => {
     expect(await result).toBeUndefined();
   });
 
+  it('opens as a sheet from the bottom, over three quarters of the screen (R-48)', async () => {
+    await start();
+
+    const pane = overlay().querySelector<HTMLElement>('.ev-picker-dialog')!;
+    expect(pane.style.height).toBe('75dvh');
+    expect(pane.style.width).toBe('100vw');
+    expect((pane.parentElement as HTMLElement).style.alignItems).toBe('flex-end');
+  });
+
+  it('closes, like its close button, on a click above the sheet or Esc', async () => {
+    const { result } = await start();
+
+    overlay().querySelector<HTMLElement>('.cdk-overlay-backdrop')!.click();
+    await settle();
+
+    expect(await result).toBeUndefined();
+    expect(overlay().querySelector('app-explorer-picker')).toBeNull();
+  });
+
+  it('closes on Esc', async () => {
+    const { result } = await start();
+
+    overlay().querySelector('app-explorer-picker')!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await settle();
+
+    expect(await result).toBeUndefined();
+  });
+
   it('edit mode: opens Edición directly with the row’s values', async () => {
     const { result } = await start({
       mode: 'edit',

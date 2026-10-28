@@ -51,6 +51,14 @@ export class ExplorerPickerComponent {
     private explorer: ExplorerService,
     private cdr: ChangeDetectorRef
   ) {
+    // Clicking above the sheet or Esc closes it like its own close button.
+    dialogRef.backdropClick().subscribe(() => this.close());
+    dialogRef.keydownEvents().subscribe(event => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        this.close();
+      }
+    });
     // Editing a row with a catalogue material opens Edición at once.
     const id = context.materialId;
     if (context.mode === 'edit' && id) {
