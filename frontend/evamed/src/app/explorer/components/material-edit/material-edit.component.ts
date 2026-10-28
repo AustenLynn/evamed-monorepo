@@ -115,6 +115,11 @@ export class MaterialEditComponent implements OnInit {
   ngOnInit(): void {
     const life = this.context.projectLife,
       initial = this.context.initial;
+    if (!this.editing) {
+      // A new material can wait for its quantity, as several added at once do (R-43): 0 until filled in.
+      this.form.controls.quantity.setValidators([Validators.min(0)]);
+      this.form.patchValue({ quantity: 0 });
+    }
     this.form.patchValue({
       comercialName: this.detail.display_name,
       lifeYears: life,
@@ -172,7 +177,7 @@ export class MaterialEditComponent implements OnInit {
         source: this.detail.source,
       },
       comercialName: value.comercialName.trim(),
-      quantity: Number(value.quantity),
+      quantity: Number(value.quantity ?? 0),
       comments: value.comments.trim(),
       transportOrigin: value.transportOrigin,
       distanceOrigin: number(value.distanceOrigin),

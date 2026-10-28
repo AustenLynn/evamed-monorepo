@@ -10,8 +10,8 @@
         </mat-form-field>
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Cantidad</mat-label>
-          <input matInput type="number" min="0" step="any" formControlName="quantity" required />
-          <mat-error *ngIf="error('quantity')">La cantidad debe ser mayor que 0.</mat-error>
+          <input matInput type="number" min="0" step="any" formControlName="quantity" [required]="editing" />
+          <mat-error *ngIf="error('quantity')">{{ editing ? 'La cantidad debe ser mayor que 0.' : 'La cantidad no puede ser negativa.' }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Unidad declarada</mat-label>

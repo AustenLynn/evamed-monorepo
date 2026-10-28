@@ -12,7 +12,7 @@ describe('MaterialEditComponent', () => {
       { id: 1, name_transport: 'Transporte por oceano, Buque carguero (GLO)-Ecoinvent 3' },
       { id: 4, name_transport: 'Vehículo de carga, mayor a 32 Ton, tipo EURO 3 (RoW)-Ecoinvent 3' },
     ],
-    render = () => {
+    render = (context: object = { system: 'Muro de block', section: 'Muros exteriores', projectLife: 50 }) => {
       TestBed.configureTestingModule({
         imports: [ExplorerUiModule],
         providers: [{ provide: CatalogsService, useValue: { getTransports: () => of(transports) } }],
@@ -20,7 +20,7 @@ describe('MaterialEditComponent', () => {
       const fixture = TestBed.createComponent(MaterialEditComponent),
         saved: PickedMaterial[] = [];
       fixture.componentRef.setInput('detail', DETAIL);
-      fixture.componentRef.setInput('context', { system: 'Muro de block', section: 'Muros exteriores', projectLife: 50 });
+      fixture.componentRef.setInput('context', context);
       fixture.componentInstance.save.subscribe(value => saved.push(value));
       fixture.detectChanges();
       const component = fixture.componentInstance,
@@ -37,7 +37,7 @@ describe('MaterialEditComponent', () => {
 
     expect(component.form.getRawValue()).toEqual({
       comercialName: 'AAC block',
-      quantity: null,
+      quantity: 0,
       comments: '',
       transportOrigin: 1,
       distanceOrigin: null,
@@ -48,8 +48,30 @@ describe('MaterialEditComponent', () => {
     });
   });
 
-  it('needs a quantity above zero', () => {
+  it('adds a new material at quantity 0, to be filled in later, as several added at once are', () => {
     const { component, saved, submit, el } = render();
+
+    submit();
+    expect(saved[0].quantity).toBe(0);
+
+    component.form.patchValue({ quantity: null });
+    submit();
+    expect(saved[1].quantity).toBe(0);
+
+    component.form.patchValue({ quantity: -1 });
+    submit();
+    expect(saved.length).toBe(2);
+    expect(el.textContent).toContain('La cantidad no puede ser negativa.');
+  });
+
+  it('editing a project row still needs a quantity above zero', () => {
+    const { component, saved, submit, el } = render({
+      mode: 'edit', system: 'Muro de block', projectLife: 50, materialId: 12,
+      initial: {
+        comercialName: 'Block', quantity: null, comments: '', transportOrigin: null, distanceOrigin: null,
+        transportEnd: 4, distanceEnd: null, replaces: 0, rowUnit: null,
+      },
+    });
 
     submit();
     expect(saved).toEqual([]);
