@@ -1,8 +1,13 @@
 """Build the EVAMED Excel templates with the current catalogue in the hidden BD sheet.
 
 The .xlsm package is rewritten with zipfile: only the data rows of the BaseDatos table, its
-refs and the workbook's recalculation settings change. Every other part is copied byte for byte
-(macros, ActiveX controls, slicers and the other sheets must survive).
+refs, the saved results of the Registro sheet's formulas that copy BD, and the workbook's
+recalculation settings change. Every other part is copied byte for byte (macros, ActiveX
+controls, slicers and the other sheets must survive).
+
+Formula results are written too, as if the search boxes were empty: Excel doesn't recalculate a
+downloaded file until its editing is enabled, and until then the Registro list, its filters and
+the dropdowns show whatever results the file carries.
 """
 import io
 import re
@@ -18,8 +23,8 @@ from projects_api.explorer.derive import category, region
 
 TEMPLATE_DIR = Path(__file__).resolve().parent
 
-# kind -> (file, most materials the template's Registro sheet can mirror)
-TEMPLATES = {'windows': ('EVAMED_WINDOWS.xlsm', 992), 'mac': ('EVAMED_MAC.xlsm', 996)}
+# kind -> (file, most materials the template's Registro sheet can list: one per Seleccion row)
+TEMPLATES = {'windows': ('EVAMED_WINDOWS.xlsm', 991), 'mac': ('EVAMED_MAC.xlsm', 991)}
 
 FIRST_ROW = 6
 MARKER_NAME = 'EVAMED_CATALOGO'
@@ -38,7 +43,9 @@ FORMULAS = {
     'AG': 'IF(AF{r}=1,COUNTIF($AF$6:AF{r},1),"")',
     'AH': 'IFERROR(INDEX(BaseDatos[Material],MATCH(ROWS($AG$6:AG{r}),BaseDatos[Aux2],0)),"")',
 }
-STRING_FORMULAS = {'A', 'AH'}  # these return text, the others numbers or "" (no cached value anyway)
+STRING_FORMULAS = {'A', 'AH'}  # these return text, the others numbers or ""
+# Registro's cells copy BD rows: =IF(BD!E6="","",BD!E6)
+MIRROR = re.compile(r'<c (r="[A-Z]+\d+"[^>]*)><f>IF\(BD!([A-Z]+)(\d+)="","",BD!\2\3\)</f>(?:<v>.*?</v>|<v/>)?</c>')
 
 
 class CatalogueRow(NamedTuple):
@@ -87,6 +94,8 @@ def build_template(kind: str, rows: list, built_at: datetime) -> bytes:
     sheet_name = _bd_sheet_part(files)
     table_name = _table_part(files)
     files[sheet_name] = _rewrite_sheet(files[sheet_name].decode('utf-8'), rows, last_row).encode('utf-8')
+    registro = _sheet_with_table(files, 'Seleccion')
+    files[registro] = _rewrite_mirror(files[registro].decode('utf-8'), rows).encode('utf-8')
     table = files[table_name].decode('utf-8')
     table = re.sub(r'(<table [^>]*?\bref=")[^"]*"', r'\g<1>A5:AH%d"' % last_row, table, count=1)
     table = re.sub(r'(<autoFilter ref=")[^"]*"', r'\g<1>A5:AH%d"' % last_row, table, count=1)
@@ -122,11 +131,40 @@ def _bd_sheet_part(files):
     return 'xl/' + re.search(r'Target="([^"]+)"', target).group(1).lstrip('/').removeprefix('xl/')
 
 
-def _table_part(files):
+def _table_part(files, table='BaseDatos'):
     for name, data in files.items():
-        if name.startswith('xl/tables/') and b' name="BaseDatos"' in data:
+        if name.startswith('xl/tables/') and (' name="%s"' % table).encode() in data:
             return name
-    raise ValueError('BaseDatos table not found')
+    raise ValueError('%s table not found' % table)
+
+
+def _sheet_with_table(files, table):
+    target = '../tables/' + _table_part(files, table).rsplit('/', 1)[1]
+    for name, data in files.items():
+        if name.startswith('xl/worksheets/_rels/') and ('Target="%s"' % target).encode() in data:
+            return 'xl/worksheets/' + name.rsplit('/', 1)[1].removesuffix('.rels')
+    raise ValueError('sheet with the %s table not found' % table)
+
+
+def _rewrite_mirror(xml, rows):
+    """Point Registro's n-th row at BD's n-th row, with the value it will have once recalculated.
+
+    The templates' own formulas skip some BD rows (351 on Windows; 169-172 and 355 on Mac), so
+    the materials there never reached Registro.
+    """
+    first = min(int(m.group(1)) for m in re.finditer(r'<c r="[A-Z]+(\d+)"[^>]*><f>IF\(BD!', xml))
+    values = {}
+    for i, row in enumerate(rows):
+        for col, field in TEXT_COLUMNS.items():
+            values[col, FIRST_ROW + i] = _clean(getattr(row, field))
+
+    def cached(match):
+        attrs, col = match.group(1), match.group(2)
+        r = int(re.match(r'r="[A-Z]+(\d+)"', attrs).group(1)) - first + FIRST_ROW
+        attrs = re.sub(r' t="[^"]*"', '', attrs)
+        value = values.get((col, r), '')
+        return '<c %s t="str"><f>IF(BD!%s%s="","",BD!%s%s)</f><v>%s</v></c>' % (attrs, col, r, col, r, escape(value))
+    return MIRROR.sub(cached, xml)
 
 
 def _rewrite_sheet(xml, rows, last_row):
@@ -148,6 +186,8 @@ def _rewrite_sheet(xml, rows, last_row):
     xml = re.sub(r'<dimension ref="[^"]*"/>', '<dimension ref="A1:%s%d"/>' % (last_col, last_row), xml, count=1)
     for ref in ('AH2', 'AJ4'):
         xml = re.sub(r'<c r="%s"((?: s="\d+")?)[^>]*?(?:/>|>.*?</c>)' % ref, r'<c r="%s"\1/>' % ref, xml, count=1)
+    # Tope: how many materials match the (empty) search, i.e. all of them
+    xml = re.sub(r'(<c r="AH4"[^>]*>.*?)(?:<v>[^<]*</v>|<v/>)(</c>)', r'\g<1><v>%d</v>\2' % len(rows), xml, count=1)
     return xml
 
 
@@ -156,13 +196,23 @@ def _clean(text):
     return NOT_XML.sub('', text)[:MAX_CELL_CHARS]
 
 
+def _results(r, row):
+    """BD's formula results with empty search boxes: every material matches, in table order."""
+    if row is None:
+        return {}
+    material = escape(_clean(row.material))
+    return {'A': material, 'AF': '1', 'AG': str(r - FIRST_ROW + 1), 'AH': material}
+
+
 def _row_xml(r, head, styles, row, spill):
     cells = []
+    results = _results(r, row)
     for col, style in styles.items():
         ref = '%s%d' % (col, r)
         if col in FORMULAS:
             t = ' t="str"' if col in STRING_FORMULAS else ''
-            cells.append('<c r="%s"%s%s><f>%s</f></c>' % (ref, style, t, escape(FORMULAS[col].format(r=r))))
+            value = '<v>%s</v>' % results[col] if col in results else ''
+            cells.append('<c r="%s"%s%s><f>%s</f>%s</c>' % (ref, style, t, escape(FORMULAS[col].format(r=r)), value))
         elif col in TEXT_COLUMNS:
             value = _clean(getattr(row, TEXT_COLUMNS[col])) if row else ''
             if value:
@@ -175,7 +225,9 @@ def _row_xml(r, head, styles, row, spill):
         else:
             cells.append('<c r="%s"%s/>' % (ref, style))
     if r == FIRST_ROW and spill:
-        cells.append(spill)
+        cells.append(spill.replace('</f>', '</f><v>%s</v>' % results['A'], 1) if results else spill)
+    elif spill and results:
+        cells.append('<c r="AJ%d" t="str"><v>%s</v></c>' % (r, results['A']))  # the FILTER spills here
     return '<row r="%d"%s>%s</row>' % (r, head, ''.join(cells))
 
 

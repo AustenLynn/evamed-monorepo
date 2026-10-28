@@ -111,8 +111,10 @@ the search text in `BD!AH2`. AG numbers the matches. AH lists them in order. `BD
 **Consequence.** Rewriting the data rows of `BaseDatos` (columns B–M) updates the dropdowns, the
 search and Registro together.
 
-**Capacity.** Windows Registro (`Seleccion` A12:I1003) mirrors BD rows 6–997, which is 992
-materials. Mac Registro mirrors BD rows 6–1001, which is 996 materials. Dev has 436.
+**Capacity.** Each template's Registro table (`Seleccion`) has 991 rows: Windows A13:I1003, Mac
+A18:I1008. The templates' own formulas skip some BD rows (351 on Windows; 169–172 and 355 on Mac),
+so the builder points Registro's n-th row at BD's n-th row. That allows 991 materials in either
+template. Dev has 436. *(Corrected 2026-10-28.)*
 
 ## The design
 
@@ -157,7 +159,15 @@ This is the risky part.
       recalculated when the file is opened.
     - Delete `calcChain.xml`, its relationship and its content-type entry. This avoids
       repair prompts from stale calc chains.
-  - **Capacity.** If the catalogue has more than 992 materials on Windows, or 996 on Mac, the
+  - **Registro.** Rewrite the mirror formulas `=IF(BD!X{n}="","",BD!X{n})` so that row n of the
+    table copies BD row 5+n. Write each one's result as its cached value.
+  - **Formula results.** BD's A, AF, AG and AH cells, `AH4` (`Tope`) and the Mac spill also get
+    cached values, as if the search box were empty.
+    - Excel doesn't recalculate a downloaded file until editing is enabled.
+    - Until then, Registro, its filters and the dropdowns show the results the file carries.
+    - The first download from dev showed the old list in Registro's filters for this reason.
+    *(Added 2026-10-28.)*
+  - **Capacity.** If the catalogue has more than 991 materials, the
     endpoint fails with a clear server error instead of producing a file whose lists are cut
     short. *(My call: a limit for each template.)*
   - **Marker.** Add a workbook-level defined name, `EVAMED_CATALOGO`, to `workbook.xml`. Its value
@@ -235,7 +245,7 @@ keep Continuar disabled. Don't let the file through unchecked. *(My call.)*
   - The A and AF–AH formulas are present on every row.
   - `calcChain` has been removed and `fullCalcOnLoad` is set.
   - The `EVAMED_CATALOGO` defined name is present.
-  - Exceeding a template's limit (992 on Windows, 996 on Mac) raises an error.
+  - More than 991 materials raises an error.
 - **Frontend unit tests:**
   - The download buttons call the endpoint.
   - The upload check covers:

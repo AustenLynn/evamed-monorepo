@@ -45,6 +45,14 @@ def bd_name(kind):
     return {'windows': 'xl/worksheets/sheet15.xml', 'mac': 'xl/worksheets/sheet16.xml'}[kind]
 
 
+def registro_name(kind):
+    return {'windows': 'xl/worksheets/sheet13.xml', 'mac': 'xl/worksheets/sheet14.xml'}[kind]
+
+
+# Registro's first data row (its Seleccion table header is one row above)
+REGISTRO_FIRST = {'windows': 13, 'mac': 18}
+
+
 def cell(xml, ref):
     m = re.search(r'<c r="%s"(?: [^>]*?)?(?:/>|>.*?</c>)' % ref, xml)
     return m.group(0) if m else None
@@ -80,7 +88,7 @@ class BuildTemplateTests(SimpleTestCase):
                 out, _ = self.built(kind)
                 original = template_parts(kind)
                 for name, data in original.items():
-                    if name == bd_name(kind) or not (
+                    if name in (bd_name(kind), registro_name(kind)) or not (
                             name == 'xl/vbaProject.bin' or name == 'xl/styles.xml'
                             or name.startswith('xl/activeX/') or name.startswith('xl/worksheets/sheet')):
                         continue
@@ -101,7 +109,31 @@ class BuildTemplateTests(SimpleTestCase):
                 self.assertIn('<f>IF(AF8=1,COUNTIF($AF$6:AF8,1),"")</f>', cell(xml, 'AG8'))
                 self.assertIn('<f>IFERROR(INDEX(BaseDatos[Material],MATCH(ROWS($AG$6:AG8),BaseDatos[Aux2],0)),"")</f>',
                               cell(xml, 'AH8'))
-                self.assertNotIn('<v>', cell(xml, 'AH8'))
+
+    def test_formula_results_written(self):
+        # A downloaded file isn't recalculated until editing is enabled; until then Excel shows these.
+        for kind in KINDS:
+            with self.subTest(kind=kind):
+                _, xml = self.built(kind, rows(3))
+                self.assertIn('<v>Material 2</v>', cell(xml, 'A8'))
+                self.assertIn('<v>1</v>', cell(xml, 'AF8'))
+                self.assertIn('<v>3</v>', cell(xml, 'AG8'))
+                self.assertIn('<v>Material 2</v>', cell(xml, 'AH8'))
+                self.assertIn('<v>3</v>', cell(xml, 'AH4'))
+
+    def test_registro_shows_the_new_catalogue(self):
+        for kind in KINDS:
+            with self.subTest(kind=kind):
+                out, _ = self.built(kind, [row('Nuevo', base='ECOINVENT 3', unidad='m³')])
+                xml = out[registro_name(kind)].decode('utf-8')
+                first = REGISTRO_FIRST[kind]
+                self.assertIn('<v>ECOINVENT 3</v>', cell(xml, 'A%d' % first))
+                self.assertIn('<v>Nuevo</v>', cell(xml, 'D%d' % first))
+                self.assertIn('<v>m³</v>', cell(xml, 'G%d' % first))
+                self.assertIn('<f>IF(BD!E6="","",BD!E6)</f>', cell(xml, 'D%d' % first))
+                # the template's old rows are gone
+                self.assertIn('<v></v>', cell(xml, 'D%d' % (first + 1)))
+                self.assertNotIn('EPiC', xml)
 
     def test_escapes_text(self):
         name = 'Block 15×20×40 & mortero <"x">'
@@ -143,7 +175,9 @@ class BuildTemplateTests(SimpleTestCase):
         aj6 = cell(xml, 'AJ6')
         self.assertIn('ref="AJ6:AJ8"', aj6)
         self.assertIn('_xlfn._xlws.FILTER(BaseDatos[Material],ISNUMBER(SEARCH(AJ4,BaseDatos[Material])))', aj6)
-        self.assertIsNone(cell(xml, 'AJ7'))
+        self.assertIn('<v>Material 0</v>', aj6)
+        self.assertEqual(cell(xml, 'AJ7'), '<c r="AJ7" t="str"><v>Material 1</v></c>')
+        self.assertIsNone(cell(xml, 'AJ9'))
         self.assertIn('<dimension ref="A1:AJ8"/>', xml)
 
     def test_search_cells_cleared(self):
@@ -174,12 +208,24 @@ class BuildTemplateTests(SimpleTestCase):
                     out['xl/workbook.xml'].decode('utf-8'))
 
     def test_limit(self):
-        with self.assertRaises(TooManyMaterials):
-            build_template('windows', rows(993), BUILT_AT)
-        build_template('windows', rows(992), BUILT_AT)
-        build_template('mac', rows(996), BUILT_AT)
-        with self.assertRaises(TooManyMaterials):
-            build_template('mac', rows(997), BUILT_AT)
+        # Each template's Registro table has 991 rows, one per material.
+        for kind in KINDS:
+            with self.subTest(kind=kind):
+                build_template(kind, rows(991), BUILT_AT)
+                with self.assertRaises(TooManyMaterials):
+                    build_template(kind, rows(992), BUILT_AT)
+
+    def test_registro_lists_every_material_in_order(self):
+        # The templates' own formulas skipped BD rows 351 (Windows) and 169-172, 355 (Mac).
+        for kind in KINDS:
+            with self.subTest(kind=kind):
+                out, _ = self.built(kind, rows(991))
+                xml = out[registro_name(kind)].decode('utf-8')
+                first = REGISTRO_FIRST[kind]
+                for i in (0, 163, 166, 345, 349, 990):
+                    d = cell(xml, 'D%d' % (first + i))
+                    self.assertIn('<f>IF(BD!E{0}="","",BD!E{0})</f>'.format(6 + i), d)
+                    self.assertIn('<v>Material %d</v>' % i, d)
 
     def test_empty_catalogue_keeps_one_data_row(self):
         for kind in KINDS:
