@@ -4,7 +4,8 @@
     "",
     "One 'market for' dataset per product (it includes transport to the market),",
     "Rest-of-World where ecoinvent has one, else Global: there are no Mexican",
-    "datasets in 3.12-sandbox. Picked from a search on 2026-10-26.",
+    "datasets in 3.12-sandbox. Picked from a search on 2026-10-26; the second",
+    "batch (mortars, plasters, gypsum, aggregates, bricks, scrap steels) on 2026-11-06.",
     "The category becomes the name's prefix, which is how the explorer groups",
     "materials. Units are ecoinvent's reference units, so refreshes never skip",
     "them on a unit mismatch.",
@@ -404,6 +405,370 @@
       "description_from": {
         "dataset_id": 3569,
         "activity": "lightweight concrete block production, expanded vermiculite"
+      }
+    },
+    {
+      "category": "Cemento",
+      "dataset_id": 8183,
+      "product": "cement, CEM III/C",
+      "activity": "market for cement, CEM III/C",
+      "geography": "RoW",
+      "unit": "kg",
+      "description": "The dataset describes the production of cement (CEM III/C).",
+      "description_from": {
+        "dataset_id": 5783,
+        "activity": "cement production, CEM III/C"
+      }
+    },
+    {
+      "category": "Cemento",
+      "dataset_id": 6989,
+      "product": "cement, CEM IV/B",
+      "activity": "market for cement, CEM IV/B",
+      "geography": "RoW",
+      "unit": "kg",
+      "description": "The dataset describes the production of cement (CEM IV/B).",
+      "description_from": {
+        "dataset_id": 20870,
+        "activity": "cement production, CEM IV/B"
+      }
+    },
+    {
+      "category": "Cemento",
+      "dataset_id": 2445,
+      "product": "cement, CEM V/B",
+      "activity": "market for cement, CEM V/B",
+      "geography": "RoW",
+      "unit": "kg",
+      "description": "The dataset describes the production of cement (CEM V/B).",
+      "description_from": {
+        "dataset_id": 7564,
+        "activity": "cement production, CEM V/B"
+      }
+    },
+    {
+      "category": "Cemento",
+      "dataset_id": 14689,
+      "product": "clinker",
+      "activity": "market for clinker",
+      "geography": "RoW",
+      "unit": "kg",
+      "description": "This dataset was created as a weighted average (by production volumes) of the regional clinker production activities.\nThe dataset describes the production of portland cement clinker; in the production different types of alternative fuels and raw materials are used.\nClinker is the active component of Portland cement that, once mixed with water, contributes to the hardening of the cement itself. As a result, clinker plays a fundamental role in the production of various construction materials, including cements, concretes, and mortars. The manufacturing of clinker is highly energy-intensive and requires a significant amount of raw materials.\nLarge amounts of limestone, along with additional raw materials like sand, clay, iron ore, and other corrective materials—roughly 1.7 tons of these materials per ton of clinker—are thermochemically processed in order to produce clinker. Kiln ovens, as well as associated infrastructure and equipment, are needed for this process. The kiln oven must maintain high temperatures because alite, a crucial mineral in the composition of clinker that gives concrete most of its initial strength after hydration, must form at a temperature of roughly 1450°C. In order to maintain these high temperatures, a significant amount of secondary fuels (wastes) as well as conventional fuels are used to produce this energy.\nThe kiln technology and fuel mix are highly dependent on geographical factors.\n\nClinker manufacturing begins with the collection and transportation of raw materials to the production site. The raw materials are crushed, mixed, and milled into a raw meal, which is then processed in a kiln oven. Depending on available technologies, the kiln can be either a wet or a long dry type, with the latter requiring lower energy input. Current technologies may include preheaters and precalciners, further reducing energy requirements before the raw meal enters the dry kiln.\nThe principal chemical reactions during pyroprocessing for clinker production are:\nCaCO3 => CaO + CO2 (800°C–900°C)\n2CaO + SiO2 => (CaO)2⋅SiO2 (800°C–900°C)\n3CaO + Al2O3 => (CaO)3⋅Al2O3 (900°C–1300°C)\n4CaO + Al2O3 + Fe2O3 => (CaO)4⋅Al2O3⋅Fe2O3 (900°C–1300°C)\nCaO + (CaO)2.SiO2 => (CaO)3⋅SiO2 (>1300°C)\nFollowing pyroprocessing in the kiln, rapid cooling is necessary to preserve the high-temperature phase assemblage, which is thermodynamically unstable at intermediate temperatures but metastably preserved at lower temperatures due to energy and mixing barriers.",
+      "description_from": {
+        "dataset_id": 9508,
+        "activity": "clinker production"
+      }
+    },
+    {
+      "category": "Mortero",
+      "dataset_id": 15697,
+      "product": "cement mortar",
+      "activity": "market for cement mortar",
+      "geography": "RoW",
+      "unit": "kg",
+      "description": "This dataset represents the mixing of cement mortar in the GLO geography. The raw materials are mixed in a ratio defined by best construction practices and literature values. Subsequently, the mixture is transported and packaged. Mix ratios can vary. For example, 1 part cement to 2.5 parts sand is used for a rich mix suitable for structural brickwork such as manholes in roads. A mix of 1 part cement to 7 parts sand is suitable for applications requiring greater flexibility or movement. No direct process emissions are taken into account as they play a subordinate role compared to the emissions of the raw material production (e.g. drying of silica sand). For the infrastructure inventory, a yearly production amount of 150'000 tons of an Austrian producer is assumed. The lifespan of the machines is assumed to be 20 years.\n\nRelevant literature:\nZhang, H. (2011): Building Mortar. Chapter 6 in \"Building Materials in Civil Engineering\", Woodhead publishing series in Civil and Structural Engineering, Pages 150-169, 423. https://doi.org/10.1533/9781845699567.150.\nClaisse, P. A. (2016): Mortars and grouts. Civil Engineering Materials, 303–311. doi:10.1016/b978-0-08-100275-9.00028-0.“\n\n'Mortar' refers to a mixture of a binding agent with fine aggregates. Mortars are mixed with water prior to their application. Cement mortar is a mortar that uses cement as the binding agent, together with fine aggregates such as sand. The main difference between cement mortar and concrete is that there is no coarse aggregate in mortar. Therefore, 'cement mortar' can also be called 'fine aggregate concrete'. Cement mortar is typically produced through a mechanical mixing process, in which the raw materials required by the specified mix design are combined. This mixing process ensures uniform distribution of cement, aggregates and the possible use of admixtures (not included in this dataset) to achieve the desired consistency and properties. Once mixed, the cement mortar is transported via conveyor belts, bagged and stored, ready for delivery to the construction site.\nCement mortar is mostly used in structural engineering applications, including the binding of stones, bricks, blocks and for filling the gaps in walls. The manufacturing of cement mortar in this dataset is assumed to follow the current technology level.",
+      "description_from": {
+        "dataset_id": 361,
+        "activity": "cement mortar production"
+      }
+    },
+    {
+      "category": "Aplanado",
+      "dataset_id": 21268,
+      "product": "cement plaster",
+      "activity": "market for cement plaster",
+      "geography": "RoW",
+      "unit": "m3",
+      "description": "Plastering is done on the walls to remove surface imperfections, maintain line level and alignment. In addition to that it also acts as a protective surface for external walls. Cement plaster, Gypsum plaster and Lime plaster are the commonly used plastering materials for house constructions. Cement plaster is made by mixing cement and sand in the proportions required. Cement plaster is applied to both interior and exterior walls to give them a smooth surface.\nThe differences between mortar and plaster lie in the capacity of plasters to take better finish, which depend to a very large extent on the type of sand used in the mix. For plasters we use finer sand. However in mortar we use coarse particles of sand.\nMix ratio is the volumetric mixing ratio of cement and aggregates. Mix Ratio varies from 1:3 to 1:6 depending upon the application area. The mix ratio accounted for this dataset is 1:6. This dataset considered hand-mixed on site production and its application is for plastering larger area like big buildings.\n\nMixing of cement, water and aggregates done by hand mixing.",
+      "description_from": {
+        "dataset_id": 21524,
+        "activity": "cement plaster production, hand-mixed on site"
+      }
+    },
+    {
+      "category": "Concreto",
+      "dataset_id": 21354,
+      "product": "concrete, 45MPa",
+      "activity": "market for concrete, 45MPa",
+      "geography": "RoW",
+      "unit": "m3",
+      "description": "This dataset represents the production of 45MPa ready-mix concrete. Density: 2,260 kg/m³. The composition of concrete (for 1 m³) contains: Portland fly ash cement 464 kg, Water 147 kg, Gravel 1050kg, Sand 746 kg, Admixtures (air-entrainers and superplastisizers) 4.63kg. [The amount of ingredients indicated here do not include the production waste amount of 24.5kg per 1m3 of concrete adopted from \"concrete production, 50MPa, RNA only, GLO 2006\" dataset [accessed on 2017/12/14 ]. The production waste volume is proportionally shared between the inputs: cement, sand and gravel. The adjusted input values are indicated in the exchange section. In addition, the amount of water included here refers to the batch water. Non-process water is adopted from \"concrete production, 50MPa, RNA only, GLO 2006\" dataset [accessed on 2017/12/14 ]]. 45 MPa concrete is High-strength concrete should be used for suspended structural beams and slabs, and pre-cast items such as flagstones and heavy-duty floors such as workshop floors.\n\nTypical technology for South Africa production.",
+      "description_from": {
+        "dataset_id": 26647,
+        "activity": "concrete production, 45MPa, for building construction, with cement, CEM II/B"
+      }
+    },
+    {
+      "category": "Concreto",
+      "dataset_id": 19443,
+      "product": "concrete slab",
+      "activity": "market for concrete slab",
+      "geography": "RoW",
+      "unit": "m3",
+      "description": "This dataset has been extrapolated from the corresponding IN dataset. A concrete slab is a common structural element of modern buildings. Horizontal slabs of steel reinforced concrete, typically between 4 and 20 inches (100 and 500 millimeters) thick, are most often used to construct floors and ceilings, while thinner slabs are also used for exterior paving.\n\nIn many domestic and industrial buildings a thick concrete slab, supported on foundations or directly on the subsoil, is used to construct the ground floor of a building. These can either be \"ground-bearing\" or \"suspended\" slabs. For Double-storey or Multi-storey buildings, the use of a few common types of concrete suspended slabs are used. In high rise buildings and skyscrapers, thinner, pre-cast concrete slabs are slung between the steel frames to form the floors and ceilings on each level. Cast in-Situ slabs which used in high rise buildings and huge shopping complexes as well as houses. These in-situ slabs are cast on site using shutters and reinforced steel.\n\nOn the technical drawings, reinforced concrete slabs are often abbreviated to \"r.c.c.slab\" or simply \"r.c.\" Technical drawings are often created by structural Engineers who use software such as AutoCad or Revit structure\n\nTwo types of concrete used to cast slab: Ready mixed concrete and Hand/Machine mix concrete. Hand mix concrete are rearly used in slab casting.",
+      "description_from": {
+        "dataset_id": 21438,
+        "activity": "concrete slab production"
+      }
+    },
+    {
+      "category": "Ladrillo",
+      "dataset_id": 27920,
+      "product": "adobe brick",
+      "activity": "market for adobe brick",
+      "geography": "RoW",
+      "unit": "kg",
+      "description": "This dataset is a copy of the regional dataset which describes the production of adobe bricks in the area of San José de Balzay in Ecuador and represents the production of 1 kg of adobe brick. Uncertainty is adjusted accordingly to represent the global situation.\n\nCurrent production technology. This dataset is a copy of the EC geography, and considered representative of the global production of adobe bricks. The manufacturing process includes the reception of raw materials, dosing, mixing, forming, drying, and storage of adobe bricks. The overall process applied in Ecuador implies that a selection of 2 or 3 types of clay is prepared, and mixed with straw and rainwater. The mix is made with the help of the trampling of a horse, then placed in a wooden mold with the shape of a brick (forming process, done by hands). The material in excess on the surface is taken away and reused for the next brick. The mass in the mold is left to dry under the sun. No electricity powered machine nor heat are used during the whole process.",
+      "description_from": {
+        "dataset_id": 27985,
+        "activity": "adobe brick production"
+      }
+    },
+    {
+      "category": "Ladrillo",
+      "dataset_id": 21115,
+      "product": "fly ash brick",
+      "activity": "market for fly ash brick",
+      "geography": "RoW",
+      "unit": "kg",
+      "description": "Thi dataset is extrapolated from the IN corresponding dataset. Pulverized fuel ash-lime bricks are obtained from materials consisting of pulverized fuel ash in major quantity, lime and an accelerator acting as a catalyst. Pulverized fuel ash-lime bricks are generally manufactured by intergrading blending various raw materials are then moulded into bricks and subjected to curing cycles at different temperatures and pressures. These bricks are suitable for use in masonry construction just like common burnt clay bricks.\n\nFly ash, Lime, Gypsum and Sand are manually feed into a pan mixer where water is added to the required proportion for homogeneous mixing. The proportion of raw material may vary depending upon quality of raw materials. After mixing, the mixture are allowed to belt conveyor through feed in to automatic brick making machine were the bricks are pressed automatically. Then the bricks are placed on wooden pallets and kept as it is for two days thereafter transported to open area where they are water cured for 10 -15 days. The bricks are sorted and tested before dispatch.",
+      "description_from": {
+        "dataset_id": 19861,
+        "activity": "fly ash brick production"
+      }
+    },
+    {
+      "category": "Arena",
+      "dataset_id": 21677,
+      "product": "sand",
+      "activity": "market for sand",
+      "geography": "RoW",
+      "unit": "kg",
+      "description": "This dataset describes mining of natural sand from riverbed deposits and its processing. Pumps dredge the slurry, which consists of sand, water, clay, silt, and gravel, from the river bed. The sand is separated from the slurry and transported by a vessel to the loading ports, where the sand is washed to clean fines and transported to the storage piles and loaded in trucks for delivery (does not the delivery itself). The sand’s coproducts (clay, silt, and gravel) return to the river during the process not being recovered for economic purposes, furthermore they don’t receive any allocation. Sand is not sorted by grain size in this dataset.\nThe dataset includes the sand extraction and processing,  as well as equipment maintenance. Machinery is taken into account within the dataset \"diesel, burned in building machine\", as all machinery runs on diesel. Administration buildings and the quarry’s end of life are not taken into account. Data were collected from literature and some additional data were measured in one quarry located in the state of Rio Grande do Sul, Brazil, with current technology.\nThe representativeness of the dataset on a national scale is low ( >1%).\n\nTypical technology for sand dredging in Brazil.\nThe technology involves two steps: extraction and processing. Sand is the only product from this process, even though gravel can be extracted, it is not recovered. Suction Hopper Dredger (autonomous vessels that perform all stages of sand mining, i.e., extraction, loading, transport, and unloading) is considered. Extraction and loading stages are executed by centrifugal pumps powered by diesel engines. The pumps dredge the sand from the riverbed, along with water, clay, silt, and gravel, are extracted, forming the slurry. This fluid is pumped through the pipeline up to the vessel top where it is poured into steel sieves. Coarse materials (gravel, leaves, and sticks) are retained by the sieves and are returned to the river. The rest of the slurry (sand, water, and mud) falls into big chambers inside the vessel. Sand decants faster from the slurry, due its density and size, and deposits at the chamber’s bottom. Most of the water overflows from the vessel to the river, carrying a great amount of the mud (silt and clay). Auxiliary suction pumps drain water surplus of the sand to lower the cargo weight.\nAfter completing the extraction and loading stages, the same vessel transports the dredged sand until loading ports. The pulp is then pumped to the loading port by pipelines to semi-closed chambers at the loading port. Sand deposits at the bottom of the port’s chambers, water returns to the river carrying part of the fines. Some companies may sort the sand by grain size in this stage. In the end, Sand is washed to clean the fines and is transported by heavy equipment to storage piles.\nDredged sand from alluvial deposits can generate several local environmental issues. Problems related with changes in the natural sedimentation process, erosion of margins, changes in the stream bed conditions, changes in the suspended sediments of river water and even problems related with local and regional sand availability. “Continued and indiscriminate sand mining not only changes the physical characteristics of the river basin environments, but also disturbs its closely linked flora, fauna, and human life” (PADMALAL; MAYA, 2014)\nNone of these problems were assessed in this dataset due the lack of data, but they should be taken in consideration.\nFor further information, please refer to Padmalal, D. & Maya, K., 2014. Sand Mining, Dordrecht: Springer Netherlands. Available at: http://link.springer.com/10.1007/978-94-017-9144-1.",
+      "description_from": {
+        "dataset_id": 20537,
+        "activity": "sand quarry operation, extraction from river bed"
+      }
+    },
+    {
+      "category": "Grava",
+      "dataset_id": 14849,
+      "product": "gravel, crushed",
+      "activity": "market for gravel, crushed",
+      "geography": "RoW",
+      "unit": "kg",
+      "description": "This dataset represents the production of 1 kg of crushed gravel. From the total amount (100%) of mined gravel round, crushed and sand, about 15% is crushed gravel.\nParticulate matter has been calculated based on European Environment Agency documentation (\"Quarrying and mining of minerals other than coal\", Guidebook 2019). Calculation takes in account PM emissions from drilling, blasting, material processing, internal transportation, material handling operation, and stockpiling.\n\nThe typical technology for Swiss production was assumed.",
+      "description_from": {
+        "dataset_id": 830,
+        "activity": "gravel production, crushed"
+      }
+    },
+    {
+      "category": "Grava",
+      "dataset_id": 15220,
+      "product": "gravel, round",
+      "activity": "market for gravel, round",
+      "geography": "RoW",
+      "unit": "kg",
+      "description": "This dataset corresponds to the production of 1 kg of sand (30%) and gravel (70%). From the total sectoral production volume (100%) of mined gravel round, crushed and sand, about 85% is gravel round and sand.\n\nThe typical technology for Swiss gravel and sand mining was assumed.",
+      "description_from": {
+        "dataset_id": 5762,
+        "activity": "gravel and sand quarry operation"
+      }
+    },
+    {
+      "category": "Panel de yeso",
+      "dataset_id": 9723,
+      "product": "gypsum plasterboard",
+      "activity": "market for gypsum plasterboard",
+      "geography": "GLO",
+      "unit": "kg",
+      "description": "produced 100% from natural gypsum (no FGD). Energy consumption is extrapolated from production of solid gypsum board\n\nAverage technology for consumption in Switzerland",
+      "description_from": {
+        "dataset_id": 795,
+        "activity": "gypsum plasterboard production"
+      }
+    },
+    {
+      "category": "Panel de yeso",
+      "dataset_id": 5315,
+      "product": "gypsum fibreboard",
+      "activity": "market for gypsum fibreboard",
+      "geography": "GLO",
+      "unit": "kg",
+      "description": "produced 100% from natural gypsum (no FGD). Energy consumption is extrapolated from production of solid gypsum board\n\nAverage technology for consumption in Switzerland",
+      "description_from": {
+        "dataset_id": 6961,
+        "activity": "gypsum fibreboard production"
+      }
+    },
+    {
+      "category": "Yeso",
+      "dataset_id": 21513,
+      "product": "gypsum, mineral",
+      "activity": "market for gypsum, mineral",
+      "geography": "RoW",
+      "unit": "kg",
+      "description": "The multi-output-process 'mining, gypsum' delivers the co-products 'gypsum, mineral, at mine' and 'anhydrite rock, at mine'. Allocation is done by weight. In some mines anhydrite is not exploited but left in the mine. Since the electricity consumption has a relevant share on the total energy consumption, the choice of the energy mix is important. For gypsum mined in countries with high fossil share in the electricity mix this module has to be adopted accordingly.\n\nopen pit mining; composition of products: 65% gypsum, 34% anhydrite, 1% others.",
+      "description_from": {
+        "dataset_id": 5737,
+        "activity": "gypsum quarry operation"
+      }
+    },
+    {
+      "category": "Yeso",
+      "dataset_id": 7526,
+      "product": "stucco",
+      "activity": "market for stucco",
+      "geography": "GLO",
+      "unit": "kg",
+      "description": "used for plaster, moulds, and gypsum boards; the dust emission is included in the estimated emission inventoried in the \"mining Gypsum\" process\n\nAssumed average technology for Switzerland",
+      "description_from": {
+        "dataset_id": 173,
+        "activity": "stucco production"
+      }
+    },
+    {
+      "category": "Aplanado",
+      "dataset_id": 8517,
+      "product": "clay plaster",
+      "activity": "market for clay plaster",
+      "geography": "GLO",
+      "unit": "kg",
+      "description": "The raw materials per kg ready mix product are mixed in following ratio: sand: 0.55kg, clay: 0.25kg, water: 0.2kg. After mixing it is internally transported to the packing installation and packed. Can be used without adding water. No direct process emissions are taken into account as they play a subordinate role compared to the emissions of the raw material production (e.g. drying of silica sand) and because no data are available. For inventoring the infrastructure, a yearly production amount of 150'000 tons is assumed. The lifespan of the machines is assumed to be 20 years.\n\nAssumed average current technology. The raw materials are mixed in a certain ratio, transported to the packing installation and packed.",
+      "description_from": {
+        "dataset_id": 4394,
+        "activity": "clay plaster production"
+      }
+    },
+    {
+      "category": "Aplanado",
+      "dataset_id": 1149,
+      "product": "cover plaster, mineral",
+      "activity": "market for cover plaster, mineral",
+      "geography": "GLO",
+      "unit": "kg",
+      "description": "The raw materials per kg powder blend are mixed in following ratio: sand: 0.244kg, plaster of paris: 0.743kg, lime hydrated: 0.013kg, additives: 0.00008kg. After mixing it is internally transported to the packing installation and packed. For the use 0.138kg water has to be added (not included in this module). No direct process emissions are taken into account as they play a subordinate role compared to the emissions of the raw material production (e.g. drying of silica sand) and because no data are available. For inventoring the infrastructure, a yearly production amount of 150'000 tons is assumed. The lifespan of the machines is assumed to be 20 years.\n\nAssumed average current technology. The raw materials are mixed in a certain ratio, transported to the packing installation and packed.",
+      "description_from": {
+        "dataset_id": 7561,
+        "activity": "cover plaster production, mineral"
+      }
+    },
+    {
+      "category": "Aplanado",
+      "dataset_id": 4527,
+      "product": "cover plaster, organic",
+      "activity": "market for cover plaster, organic",
+      "geography": "GLO",
+      "unit": "kg",
+      "description": "The raw materials per kg ready mix product are mixed in following ratio: sand: 0.888kg, organic binder: 0.110kg, solvents: 0.001kg, additives: 0.001kg. After mixing it is internally transported to the packing installation and packed. No direct process emissions are taken into account as they play a subordinate role compared to the emissions of the raw material production (e.g. drying of silica sand) and because no data are available. For inventoring the infrastructure, a yearly production amount of 150'000 tons  is assumed. The lifespan of the machines is assumed to be 20 years.\n\nAssumed average current technology. The raw materials are mixed in a certain ratio, transported to the packing installation and packed.",
+      "description_from": {
+        "dataset_id": 5063,
+        "activity": "cover plaster production, organic"
+      }
+    },
+    {
+      "category": "Aplanado",
+      "dataset_id": 2712,
+      "product": "thermal plaster, outdoor",
+      "activity": "market for thermal plaster, outdoor",
+      "geography": "GLO",
+      "unit": "kg",
+      "description": "The raw materials per kg powder blend are mixed in following ratio: sand: 0.285kg, cement: 0.523kg lime hydraulic: 0.107kg, lime hydrated: 0.033kg, expanded polystyrene: 0.048kg, additives: 0.004kg. After mixing it is internally transported to the packing installation and packed. For the use 0.246 kg water has to be added (not included in this module). No direct process emissions are taken into account as they play a subordinate role compared to the emissions of the raw material production (e.g. drying of silica sand) and because no data are available. For inventoring the infrastructure, a yearly production amount of 150'000 tons is assumed. The lifespan of the machines is assumed to be 20 years.\n\nAssumed average current technology. The raw materials are mixed in a certain ratio, transported to the packing installation and packed.",
+      "description_from": {
+        "dataset_id": 5615,
+        "activity": "thermal plaster production, outdoor"
+      }
+    },
+    {
+      "category": "Acero",
+      "dataset_id": 275758,
+      "product": "steel, structural, 100% scrap",
+      "activity": "market for steel, structural, 100% scrap",
+      "geography": "GLO",
+      "unit": "kg",
+      "description": "The activity represents the production of 1 kg of steel, structural, 100% scrap in an Electric Arc Furnace (EAF), considering a metal feedstock (excluding alloying elements) composed of 100% ferrous scrap. The alloying elements added to meet the target composition are considered to be supplied by primary production. The steel modelled in this dataset follows the following standard:\nEN 10025 S355,\nASTM A572Gr50.\nThe composition of the modelled steel is: Fe: 98.01%, C: 0.23%, Si: 0.05%, Mn: 1.6%, P: 0.06%, S: 0.05%, %, V: Not Specified, Nb: Not Specified, Ti: Not Specified, Al: Not Specified, Cr: Not Specified, Ni: Not Specified, W: Not Specified, Cu: Not Specified, Mo: Not Specified.\nThe modelled steel has a yield strength of 355 MPa, a tensile strength of 470-630 MPa and a Young Modulus of 205GPa.The process comprises the following operations:\n-\tmixing and pretreatment (if required) of ferrous materials (including alloying additions), principally ferrous scrap;\n-\tfurnace charging and scrap melting;\n-\tsteel and scrap tapping;\n-\tsecondary metallurgical treatment in a ladle furnace;\n-\tcasting: the dataset is valid both for ingot or continuous casting, with the latter being the dominant product.\nStructural steel is a category of steel specifically manufactured for use in construction and infrastructure projects where the material must bear significant loads and stresses. The steel is typically used for:\n- construction: in buildings, structural steel is the backbone of many modern structures, from skyscrapers and stadiums to warehouses and residential homes. It is used for beams, columns, and frameworks that support the entire structure.  Another use in construction is for bridges: Steel is ideal for bridge construction due to its high strength-to-weight ratio and ability to withstand heavy loads and dynamic forces.\n- Industrial: in the mining industry steel is used for underground and surface mining equipment, as well as for the construction of mine shafts and support structures. For factories and warehouse, steel is used for the framework of industrial buildings, providing large open spaces and the ability to support heavy machinery and equipment.\n- Transportation: in railways is steel is used for train tracks, railway bridges, and rolling stock.  It is possible to build also bigger products like ships, Steel is the primary material used in shipbuilding due to its strength, weldability, and resistance to corrosion.  Modelling approach:\nThe alloy is built using as a base data taken from the IPPC Best Available Technology report from the European Commission (Remus et al., 2013); note that where only data ranges were provided, the geometric mean of reported values was used here. The proportion of each by-product that is recycled internally (i.e. returned as an input to the process after it has been produced) is based on measured data from plants worldwide reported by worldsteel (2010): EAF slag, 3%; secondary metallurgy slag, 14%; and dust, 10%. The recycling is not displayed in the dataset because, since it is internal, it never leaves the system boundaries.\nThe data taken from the IPCC BAT report were then expanded to build a model that calculates the amount of alloying element needed to satisfy the final alloy composition. To perform these calculations, the yield of the scrap was taken, together with the yield of the alloying elements. All the values used as yield for the oxidation processes are taken from literature value (specific literature reported in each exchange).\nReferences:\nRemus, R., Aguado-Monsonet, M. A., Roudier, S. & Samcho, L. D. (2013). JRC reference report - Best available techniques (BAT) reference document for iron and steel production. Joint Research Centre - European Commission, Luxemboug.\nWorldsteel (2010). Steel industry by-products. World Steel Association: Brussels, Belgium.\n\nRepresents average European technology; furnace with 4th hole and secondary metallurgy.\nThe dataset does not include the input of galvanized steel as feedstock, and the recovery of zinc in the EAF off-gas dusts.",
+      "description_from": {
+        "dataset_id": 276595,
+        "activity": "steel production, electric arc furnace, structural"
+      }
+    },
+    {
+      "category": "Acero",
+      "dataset_id": 276107,
+      "product": "steel, carbon, 100% scrap",
+      "activity": "market for steel, carbon, 100% scrap",
+      "geography": "GLO",
+      "unit": "kg",
+      "description": "The activity represents the production of 1 kg of steel, carbon, 100% scrap in an Electric Arc Furnace (EAF), considering a metal feedstock (excluding alloying elements) composed of 100% ferrous scrap. The alloying elements added to meet the target composition are considered to be supplied by primary production. The steel modelled in this dataset follows the following standard:\nASTM A36/A36M;\nEN 10025-2 Grade S235JR;\nSAE J403;\nAISI 1018.\nThe composition of the modelled steel is: Fe: 98.92%, C: 0.2%, Si: Not Specified, Mn: 0.8%, P: 0.04%, S: 0.04%, %, V: Not Specified, Nb: Not Specified, Ti: Not Specified, Al: Not Specified, Cr: Not Specified, Ni: Not Specified, W: Not Specified, Cu: Not Specified, Mo: Not Specified.\nThe modelled steel has a yield strength of 235MPa, a tensile strength of 440 MPa and a Young Modulus of 205GPa.The process comprises the following operations:\n-\tmixing and pretreatment (if required) of ferrous materials (including alloying additions), principally ferrous scrap;\n-\tfurnace charging and scrap melting;\n-\tsteel and scrap tapping;\n-\tsecondary metallurgical treatment in a ladle furnace;\n-\tcasting: the dataset is valid both for ingot or continuous casting, with the latter being the dominant product.\nCarbon steel is a steel alloy where carbon is the primary alloying element and no minimum content is specified for other elements such as chromium, cobalt, molybdenum, nickel, tungsten, or vanadium. The properties of carbon steel are primarily determined by the amount of carbon it contains. This steel is typically used for:\n- structural components: Due to its good strength and ease of fabrication, 1018 is used for various structural parts like beams, channels, and supports in buildings and machinery.\n- Fixtures and jigs: carbon steel is used to create work holding devices for machining and manufacturing processes.\n- Agricultural equipment: parts for farm machinery, such as plow components and cultivator parts.\nCarbon steel is cost-effective and versatile material suitable for a wide range of applications where moderate strength and good machinability are required.   Some of its properties are reported as follows:\n- good Machinability: 1018 machines easily, resulting in good surface finishes and reduced tool wear.\n- Formability: 1018 can be easily bent, formed, and drawn into different shapes.\n- Excellent Weldability: It can be readily welded using various methods.Modelling approach:\nThe alloy is built using as a base data taken from the IPPC Best Available Technology report from the European Commission (Remus et al., 2013); note that where only data ranges were provided, the geometric mean of reported values was used here. The proportion of each by-product that is recycled internally (i.e. returned as an input to the process after it has been produced) is based on measured data from plants worldwide reported by worldsteel (2010): EAF slag, 3%; secondary metallurgy slag, 14%; and dust, 10%. The recycling is not displayed in the dataset because, since it is internal, it never leaves the system boundaries.\nThe data taken from the IPCC BAT report were then expanded to build a model that calculates the amount of alloying element needed to satisfy the final alloy composition. To perform these calculations, the yield of the scrap was taken, together with the yield of the alloying elements. All the values used as yield for the oxidation processes are taken from literature value (specific literature reported in each exchange).\nReferences:\nRemus, R., Aguado-Monsonet, M. A., Roudier, S. & Samcho, L. D. (2013). JRC reference report - Best available techniques (BAT) reference document for iron and steel production. Joint Research Centre - European Commission, Luxemboug.\nWorldsteel (2010). Steel industry by-products. World Steel Association: Brussels, Belgium.\n\nRepresents average European technology; furnace with 4th hole and secondary metallurgy.\nThe dataset does not include the input of galvanized steel as feedstock, and the recovery of zinc in the EAF off-gas dusts.",
+      "description_from": {
+        "dataset_id": 276463,
+        "activity": "steel production, electric arc furnace, carbon"
+      }
+    },
+    {
+      "category": "Acero",
+      "dataset_id": 275570,
+      "product": "steel, high strength low alloy, 100% scrap",
+      "activity": "market for steel, high strength low alloy, 100% scrap",
+      "geography": "GLO",
+      "unit": "kg",
+      "description": "The activity represents the production of 1 kg of steel, high strength low alloy, 100% scrap in an Electric Arc Furnace (EAF), considering a metal feedstock (excluding alloying elements) composed of 100% ferrous scrap. The alloying elements added to meet the target composition are considered to be supplied by primary production. The steel modelled in this dataset follows the following standard:\nEN 10149-2 S500MC 1.0984;\nASTM A1018.\nThe composition of the modelled steel is: Fe: 97.724%, C: 0.1%, Si: 0.1%, Mn: 1.7%, P: 0.025%, S: 0.006%, %, V: 0.15%, Nb: 0.08%, Ti: 0.1%, Al: 0.015%, Cr: Not Specified, Ni: Not Specified, W: Not Specified, Cu: Not Specified, Mo: Not Specified.\nThe modelled steel has a yield strength of 500 MPa, a tensile strength of 550-700 MPa and a Young Modulus of 205GPa.The process comprises the following operations:\n-\tmixing and pretreatment (if required) of ferrous materials (including alloying additions), principally ferrous scrap;\n-\tfurnace charging and scrap melting;\n-\tsteel and scrap tapping;\n-\tsecondary metallurgical treatment in a ladle furnace;\n-\tcasting: the dataset is valid both for ingot or continuous casting, with the latter being the dominant product.\nHigh-Strength Low-Alloy (HSLA) steel is a specialized type of steel that offers an excellent balance of strength, formability, and corrosion resistance while using relatively small amounts of alloying elements. The steel is typically used for:\n-\ttransport Industry: HSLA steel is widely used in vehicles, railway, and shipbuilding for its superior strength and low cost when comparing to low-alloyed steels or aluminum alloys. This unique combination allows to reduce production costs and to reduce consumption during the use of the vehicles.\n-\tConstruction and Infrastructure: In construction, HSLA steel is utilized for building bridges, skyscrapers, stadiums, and other structures where high strength and durability are crucial.\n-\tHeavy Equipment Manufacturing: HSLA steel is employed in the fabrication of heavy machinery, such as agricultural equipment, mining machinery, and construction machinery. Its toughness and resistance to wear and abrasion make it suitable for withstanding harsh operating conditions in these industries.\nOverall, the versatility and superior mechanical properties of high-strength low-alloyed steel make it a preferred choice in various industries where lightweight, durable, and high-performance materials are needed.Modelling approach:\nThe alloy is built using as a base data taken from the IPPC Best Available Technology report from the European Commission (Remus et al., 2013); note that where only data ranges were provided, the geometric mean of reported values was used here. The proportion of each by-product that is recycled internally (i.e. returned as an input to the process after it has been produced) is based on measured data from plants worldwide reported by worldsteel (2010): EAF slag, 3%; secondary metallurgy slag, 14%; and dust, 10%. The recycling is not displayed in the dataset because, since it is internal, it never leaves the system boundaries.\nThe data taken from the IPCC BAT report were then expanded to build a model that calculates the amount of alloying element needed to satisfy the final alloy composition. To perform these calculations, the yield of the scrap was taken, together with the yield of the alloying elements. All the values used as yield for the oxidation processes are taken from literature value (specific literature reported in each exchange).\nReferences:\nRemus, R., Aguado-Monsonet, M. A., Roudier, S. & Samcho, L. D. (2013). JRC reference report - Best available techniques (BAT) reference document for iron and steel production. Joint Research Centre - European Commission, Luxemboug.\nWorldsteel (2010). Steel industry by-products. World Steel Association: Brussels, Belgium.\n\nRepresents average European technology; furnace with 4th hole and secondary metallurgy.\nThe dataset does not include the input of galvanized steel as feedstock, and the recovery of zinc in the EAF off-gas dusts.",
+      "description_from": {
+        "dataset_id": 275919,
+        "activity": "steel production, electric arc furnace, high strength low alloy"
+      }
+    },
+    {
+      "category": "Acero",
+      "dataset_id": 275551,
+      "product": "steel, weathering A, 100% scrap",
+      "activity": "market for steel, weathering A, 100% scrap",
+      "geography": "GLO",
+      "unit": "kg",
+      "description": "The activity represents the production of 1 kg of steel, weathering A, 100% scrap in an Electric Arc Furnace (EAF), considering a metal feedstock (excluding alloying elements) composed of 100% ferrous scrap. The alloying elements added to meet the target composition are considered to be supplied by primary production. The steel modelled in this dataset follows the following standard:\nEN 10025-5 S355J2W;\nASTM A588.\nThe composition of the modelled steel is: Fe: 98.884%, C: 0.15%, Si: 0.5%, Mn: 0.35%, P: 0.011%, S: 0.03%, %, V: Not Specified, Nb: Not Specified, Ti: Not Specified, Al: 0.075%, Cr: 0.875%, Ni: 0.65%, W: Not Specified, Cu: Not Specified, Mo: Not Specified.\nThe modelled steel has a yield strength of 345 MPa, a tensile strength of 485 MPa and a Young Modulus of 205GPa.The process comprises the following operations:\n-\tmixing and pretreatment (if required) of ferrous materials (including alloying additions), principally ferrous scrap;\n-\tfurnace charging and scrap melting;\n-\tsteel and scrap tapping;\n-\tsecondary metallurgical treatment in a ladle furnace;\n-\tcasting: the dataset is valid both for ingot or continuous casting, with the latter being the dominant product.\nWeathering steel, also known as A-type steel, is a group of steel alloys designed to form a stable, protective rust-like appearance that eliminates the need for painting. This phenomena is called passivation. The steel is typically used for:\n- architectural and Structural Applications: Weathering A's distinctive rust-like patina can add warmth and character to buildings and structures.\n-\t other Applications: Weathering A's high resistance to corrosion makes it suitable for use in gas flue systems. The resistance to weather makes it also perfect for fencing, gates, and in general architectural pieces that have to withstand the natural elements.\nOverall, Weathering A is a versatile and durable material that can be used in a variety of applications to create pleasant and long-lasting structures. Its unique aesthetic qualities and low-maintenance properties make it a popular choice for architects, designers, and builders.Modelling approach:\nThe alloy is built using as a base data taken from the IPPC Best Available Technology report from the European Commission (Remus et al., 2013); note that where only data ranges were provided, the geometric mean of reported values was used here. The proportion of each by-product that is recycled internally (i.e. returned as an input to the process after it has been produced) is based on measured data from plants worldwide reported by worldsteel (2010): EAF slag, 3%; secondary metallurgy slag, 14%; and dust, 10%. The recycling is not displayed in the dataset because, since it is internal, it never leaves the system boundaries.\nThe data taken from the IPCC BAT report were then expanded to build a model that calculates the amount of alloying element needed to satisfy the final alloy composition. To perform these calculations, the yield of the scrap was taken, together with the yield of the alloying elements. All the values used as yield for the oxidation processes are taken from literature value (specific literature reported in each exchange).\nReferences:\nRemus, R., Aguado-Monsonet, M. A., Roudier, S. & Samcho, L. D. (2013). JRC reference report - Best available techniques (BAT) reference document for iron and steel production. Joint Research Centre - European Commission, Luxemboug.\nWorldsteel (2010). Steel industry by-products. World Steel Association: Brussels, Belgium.\n\nRepresents average European technology; furnace with 4th hole and secondary metallurgy.\nThe dataset does not include the input of galvanized steel as feedstock, and the recovery of zinc in the EAF off-gas dusts.",
+      "description_from": {
+        "dataset_id": 275819,
+        "activity": "steel production, electric arc furnace, weathering A"
+      }
+    },
+    {
+      "category": "Acero",
+      "dataset_id": 275584,
+      "product": "steel, weathering B, 100% scrap",
+      "activity": "market for steel, weathering B, 100% scrap",
+      "geography": "GLO",
+      "unit": "kg",
+      "description": "The activity represents the production of 1 kg of steel, weathering B, 100% scrap in an Electric Arc Furnace (EAF), considering a metal feedstock (excluding alloying elements) composed of 100% ferrous scrap. The alloying elements added to meet the target composition are considered to be supplied by primary production. The steel modelled in this dataset follows the following standard:\nASTM A242\nUNI EN 10025-5:2019 S355XXW\nThe composition of the modelled steel is: Fe: 98.145%, C: 0.19%, Si: 0.475%, Mn: 1.025%, P: 0.035%, S: 0.03%, %, V: 0.06%, Nb: Not Specified, Ti: Not Specified, Al: 0.04%, Cr: 0.525%, Ni: 0.4%, W: Not Specified, Cu: 0.325%, Mo: Not Specified.\nThe modelled steel has a yield strength of 345 MPa, a tensile strength of 485 MPa and a Young Modulus of 205GPa.The process comprises the following operations:\n-\tmixing and pretreatment (if required) of ferrous materials (including alloying additions), principally ferrous scrap;\n-\tfurnace charging and scrap melting;\n-\tsteel and scrap tapping;\n-\tsecondary metallurgical treatment in a ladle furnace;\n-\tcasting: the dataset is valid both for ingot or continuous casting, with the latter being the dominant product.\nWeathering steel B, is primarily used for load-bearing applications due to its superior strength and high toughness. It is a type of steel alloy that develops a protective layer of rust on its surface when exposed to the elements. This layer acts as a barrier against further corrosion, making it extremely durable and low maintenance.\nThis steel is typically used for:\n- bridges: Its high strength and resistance to corrosion make it ideal for bridge construction, especially in harsh environments.\n- Buildings: It is used in the construction of buildings, particularly for facades and structural elements, adding a unique aesthetic appeal.\n- Heavy machinery and equipment: Its toughness and durability make it suitable for use in heavy machinery and equipment, such as cranes and excavators.\nOverall, Weathering steel B is a versatile material that offers a unique combination of strength, durability, and aesthetic appeal, making it a popular choice for various construction and industrial applications.\nModelling approach:\nThe alloy is built using as a base data taken from the IPPC Best Available Technology report from the European Commission (Remus et al., 2013); note that where only data ranges were provided, the geometric mean of reported values was used here. The proportion of each by-product that is recycled internally (i.e. returned as an input to the process after it has been produced) is based on measured data from plants worldwide reported by worldsteel (2010): EAF slag, 3%; secondary metallurgy slag, 14%; and dust, 10%. The recycling is not displayed in the dataset because, since it is internal, it never leaves the system boundaries.\nThe data taken from the IPCC BAT report were then expanded to build a model that calculates the amount of alloying element needed to satisfy the final alloy composition. To perform these calculations, the yield of the scrap was taken, together with the yield of the alloying elements. All the values used as yield for the oxidation processes are taken from literature value (specific literature reported in each exchange).\nReferences:\nRemus, R., Aguado-Monsonet, M. A., Roudier, S. & Samcho, L. D. (2013). JRC reference report - Best available techniques (BAT) reference document for iron and steel production. Joint Research Centre - European Commission, Luxemboug.\nWorldsteel (2010). Steel industry by-products. World Steel Association: Brussels, Belgium.\n\nRepresents average European technology; furnace with 4th hole and secondary metallurgy.\nThe dataset does not include the input of galvanized steel as feedstock, and the recovery of zinc in the EAF off-gas dusts.",
+      "description_from": {
+        "dataset_id": 276510,
+        "activity": "steel production, electric arc furnace, weathering B"
+      }
+    },
+    {
+      "category": "Acero",
+      "dataset_id": 276388,
+      "product": "steel, case hardening, 100% scrap",
+      "activity": "market for steel, case hardening, 100% scrap",
+      "geography": "GLO",
+      "unit": "kg",
+      "description": "The activity represents the production of 1 kg of steel, case hardening, 100% scrap in an Electric Arc Furnace (EAF), considering a metal feedstock (excluding alloying elements) composed of 100% ferrous scrap. The alloying elements added to meet the target composition are considered to be supplied by primary production. The steel modelled in this dataset follows the following standard:\nISO 683-11;\nEN 10084 20MoCr4.\nThe composition of the modelled steel is: Fe: 98.49%, C: 0.2%, Si: 0.4%, Mn: 0.85%, P: 0.025%, S: 0.035%, %, V: Not Specified, Nb: Not Specified, Ti: Not Specified, Al: Not Specified, Cr: 0.45%, Ni: Not Specified, W: Not Specified, Cu: Not Specified, Mo: 0.45%.\nThe modelled steel has a yield strength of 635 MPa, a tensile strength of 880-1180 MPa and a Young Modulus of 205GPa.The process comprises the following operations:\n-\tmixing and pretreatment (if required) of ferrous materials (including alloying additions), principally ferrous scrap;\n-\tfurnace charging and scrap melting;\n-\tsteel and scrap tapping;\n-\tsecondary metallurgical treatment in a ladle furnace;\n-\tcasting: the dataset is valid both for ingot or continuous casting, with the latter being the dominant product.\nCase hardening steels are specifically designed for applications where a component requires a hard, wear-resistant surface (case) while maintaining a tough, ductile core. The steel is typically used for:\n-\tgears: the teeth needs to be hrd and resistant to wear, while keeping the core tough to withstand impact loads.\n-\tBearings: The outer race needs to be hard to resist wear, but the inner race needs to be tough to withstand impact loads.\n-\tCam followers: The surface needs to be hard to resist wear, so to keep the component within tolerance.\nOverall, the main function of case hardning steel is for all the situation when wear resistance plays a role, but at the same time it's not possible to have a component with brittle behaviour. Consequently, the best option is to use a case hardnening steel, where the outside of the component can have a high hardness while keeping the core ductile.Modelling approach:\nThe alloy is built using as a base data taken from the IPPC Best Available Technology report from the European Commission (Remus et al., 2013); note that where only data ranges were provided, the geometric mean of reported values was used here. The proportion of each by-product that is recycled internally (i.e. returned as an input to the process after it has been produced) is based on measured data from plants worldwide reported by worldsteel (2010): EAF slag, 3%; secondary metallurgy slag, 14%; and dust, 10%. The recycling is not displayed in the dataset because, since it is internal, it never leaves the system boundaries.\nThe data taken from the IPCC BAT report were then expanded to build a model that calculates the amount of alloying element needed to satisfy the final alloy composition. To perform these calculations, the yield of the scrap was taken, together with the yield of the alloying elements. All the values used as yield for the oxidation processes are taken from literature value (specific literature reported in each exchange).\nReferences:\nRemus, R., Aguado-Monsonet, M. A., Roudier, S. & Samcho, L. D. (2013). JRC reference report - Best available techniques (BAT) reference document for iron and steel production. Joint Research Centre - European Commission, Luxemboug.\nWorldsteel (2010). Steel industry by-products. World Steel Association: Brussels, Belgium.\n\nRepresents average European technology; furnace with 4th hole and secondary metallurgy.\nThe dataset does not include the input of galvanized steel as feedstock, and the recovery of zinc in the EAF off-gas dusts.",
+      "description_from": {
+        "dataset_id": 276235,
+        "activity": "steel production, electric arc furnace, case hardening"
+      }
+    },
+    {
+      "category": "Acero",
+      "dataset_id": 276404,
+      "product": "steel, bearing, 100% scrap",
+      "activity": "market for steel, bearing, 100% scrap",
+      "geography": "GLO",
+      "unit": "kg",
+      "description": "The activity represents the production of 1 kg of steel, bearing, 100% scrap in an Electric Arc Furnace (EAF), considering a metal feedstock (excluding alloying elements) composed of 100% ferrous scrap. The alloying elements added to meet the target composition are considered to be supplied by primary production. The steel modelled in this dataset follows the following standard:\nASTM A295 52100\nEN ISO 683-17:2023 100Cr6\nThe composition of the modelled steel is: Fe: 98.31%, C: 1.05%, Si: 0.25%, Mn: 0.35%, P: 0.025%, S: 0.015%, %, V: Not Specified, Nb: Not Specified, Ti: Not Specified, Al: Not Specified, Cr: 1.5%, Ni: 0.25%, W: Not Specified, Cu: Not Specified, Mo: Not Specified.\nThe modelled steel has a yield strength of 500 MPa, a tensile strength of 550-700 MPa and a Young Modulus of 205GPa.The process comprises the following operations:\n-\tmixing and pretreatment (if required) of ferrous materials (including alloying additions), principally ferrous scrap;\n-\tfurnace charging and scrap melting;\n-\tsteel and scrap tapping;\n-\tsecondary metallurgical treatment in a ladle furnace;\n-\tcasting: the dataset is valid both for ingot or continuous casting, with the latter being the dominant product.\nBearing steel refers to a class of high-carbon chromium alloy steels specifically designed for manufacturing ball, roller, and other types of bearings. These steels are engineered to withstand high cyclic contact stresses, rolling contact fatigue, and wear while maintaining dimensional stability.This type of steel is typically used for:\n-\tbearing components: Its high fatigue strength and resistance to rolling contact make it ideal for ball bearings, roller bearings, and other bearing components, especially in demanding applications like aerospace and automotive industries.\n-\tHigh-stress components: Due to its high tensile strength, bearing steel is used in components subjected to significant loads, such as gears, shafts, and machine parts operating under high stress.\n-\tPrecision tools and dies: Its ability to hold a sharp edge and resist wear makes it suitable for cutting tools, punches, and dies used in manufacturing processes.\nOverall, bearing steel steel is a versatile material that finds applications in various industries where reliability, durability, and precision are critical factors.Modelling approach:\nThe alloy is built using as a base data taken from the IPPC Best Available Technology report from the European Commission (Remus et al., 2013); note that where only data ranges were provided, the geometric mean of reported values was used here. The proportion of each by-product that is recycled internally (i.e. returned as an input to the process after it has been produced) is based on measured data from plants worldwide reported by worldsteel (2010): EAF slag, 3%; secondary metallurgy slag, 14%; and dust, 10%. The recycling is not displayed in the dataset because, since it is internal, it never leaves the system boundaries.\nThe data taken from the IPCC BAT report were then expanded to build a model that calculates the amount of alloying element needed to satisfy the final alloy composition. To perform these calculations, the yield of the scrap was taken, together with the yield of the alloying elements. All the values used as yield for the oxidation processes are taken from literature value (specific literature reported in each exchange).\nReferences:\nRemus, R., Aguado-Monsonet, M. A., Roudier, S. & Samcho, L. D. (2013). JRC reference report - Best available techniques (BAT) reference document for iron and steel production. Joint Research Centre - European Commission, Luxemboug.\nWorldsteel (2010). Steel industry by-products. World Steel Association: Brussels, Belgium.\n\nRepresents average European technology; furnace with 4th hole and secondary metallurgy.\nThe dataset does not include the input of galvanized steel as feedstock, and the recovery of zinc in the EAF off-gas dusts.",
+      "description_from": {
+        "dataset_id": 276480,
+        "activity": "steel production, electric arc furnace, bearing"
       }
     }
   ]

@@ -307,7 +307,8 @@ class AddMaterialsTests(TestCase):
         self.assertEqual(len(ids), len(set(ids)))
         self.assertEqual(
             {entry['category'] for entry in data['materials']},
-            {'Cemento', 'Acero', 'Concreto', 'Block'})
+            {'Cemento', 'Acero', 'Concreto', 'Block', 'Mortero', 'Aplanado', 'Ladrillo',
+             'Arena', 'Grava', 'Panel de yeso', 'Yeso'})
         for entry in data['materials']:
             self.assertIn(entry['unit'], UNIT_NAMES)
             self.assertTrue(entry['activity'].startswith('market for '), entry)
@@ -364,12 +365,12 @@ class AddMaterialsTests(TestCase):
         models.Material.objects.update(description=None)
 
         output = self.run_command()
-        self.assertIn('30 description(s) to update', output)
+        self.assertIn('58 description(s) to update', output)
         self.assertFalse(models.Material.objects.exclude(description=None).exists())
 
         self.run_command('--apply')
         self.assertFalse(models.Material.objects.filter(description=None).exists())
-        self.assertEqual(models.Material.objects.count(), 30)
+        self.assertEqual(models.Material.objects.count(), 58)
 
     def test_missing_unit_rows_stop_before_writing(self):
         from django.core.management.base import CommandError

@@ -19,7 +19,8 @@ python manage.py ecoinvent_resolve --apply
 python manage.py ecoinvent_resolve --verify      # re-check pins still match
 
 # 1b. Add the construction materials in ecoinvent/data/construction_materials.json
-#     (cements, steels, concrete, blocks), already pinned. Costs no quota.
+#     (cements, steels, concrete, blocks, mortars, plasters, gypsum, aggregates,
+#     bricks), already pinned. Costs no quota.
 python manage.py ecoinvent_add_materials             # dry run
 python manage.py ecoinvent_add_materials --apply
 
