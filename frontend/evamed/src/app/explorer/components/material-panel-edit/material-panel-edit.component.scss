@@ -1,9 +1,7 @@
-// The stage pages' Materiales panel is a fixed 26rem row (its title bar takes about 2.5rem):
-// the form scrolls inside it instead of running under the page's buttons.
+// The stage page's conditional-section owns scrolling for both the list and
+// this form. A second scroll area here would put two scrollbars on Edición.
 :host {
   display: block;
-  max-height: 23.5rem;
-  overflow-y: auto;
 }
 
 .panel-edit {

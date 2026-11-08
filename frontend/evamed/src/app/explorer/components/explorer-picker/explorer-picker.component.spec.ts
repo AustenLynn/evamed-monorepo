@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogState } from '@angular/material/dialog';
 import { of } from 'rxjs';
 
 import { CatalogsService } from '../../../core/services/catalogs/catalogs.service';
@@ -67,6 +67,26 @@ describe('ExplorerPickerService', () => {
     expect(overlay().querySelector('.picker__title')?.textContent).toContain('Explorador de materiales');
     expect(overlay().querySelector('.picker__context')?.textContent?.trim()).toBe('Muros exteriores · Muro de block');
     expect(overlay().querySelectorAll('app-result-card').length).toBe(1);
+  });
+
+  it('opens only one picker when the add action is activated again, and allows reopening after close', async () => {
+    const { result } = await start({}, true),
+      repeated = TestBed.inject(ExplorerPickerService).pickMany({ system: 'Muro de block', projectLife: 50 });
+    await settle();
+
+    expect(overlay().querySelectorAll('app-explorer-picker').length).toBe(1);
+    await click('button[aria-label="Cerrar el explorador sin agregar"]');
+    expect(await result).toEqual([]);
+    expect(await repeated).toEqual([]);
+
+    const picker = TestBed.inject(ExplorerPickerService),
+      reopened = picker.pickMany({ system: 'Muro de block', projectLife: 50 }),
+      repeatedBeforeLoad = picker.pickMany({ system: 'Muro de block', projectLife: 50 });
+    await settle();
+    expect(overlay().querySelectorAll('app-explorer-picker').length).toBe(1);
+    await click('button[aria-label="Cerrar el explorador sin agregar"]');
+    expect(await reopened).toEqual([]);
+    expect(await repeatedBeforeLoad).toEqual([]);
   });
 
   it('goes list → Ficha → Edición and resolves with the material', async () => {
@@ -365,6 +385,26 @@ describe('ExplorerPickerService', () => {
       expect(picked()).toEqual(['Viga']);
       await click('button[aria-label="Cerrar el explorador sin agregar"]');
       expect(await result).toEqual([expect.objectContaining({ comercialName: 'AAC block', quantity: 0 })]);
+    });
+
+    it.each(['button', 'backdrop', 'Escape'])('waits for a pending save before closing through the %s', async closeFrom => {
+      let finish!: (saved: boolean[]) => void;
+      const save = () => new Promise<boolean[]>(resolve => (finish = resolve)),
+        { result } = await start({ save }, true);
+      await tick(1);
+      await click('.picker__add');
+      const dialog = TestBed.inject(MatDialog).openDialogs[0];
+      if (closeFrom === 'Escape') {
+        overlay().querySelector('app-explorer-picker')!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        await settle();
+      } else {
+        await click(closeFrom === 'button' ? 'button[aria-label="Cerrar el explorador sin agregar"]' : '.cdk-overlay-backdrop');
+      }
+      const stateWhileSaving = dialog.getState();
+      finish([true]);
+
+      expect(stateWhileSaving).toBe(MatDialogState.OPEN);
+      expect(await result).toMatchObject([{ material: { id: 12 }, quantity: 0 }]);
     });
 
     it('offers no checkboxes when editing a project row', async () => {

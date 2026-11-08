@@ -166,6 +166,11 @@ export class ExplorerPickerComponent {
   }
 
   close(): void {
+    // Closing cannot cancel an in-flight POST. Keep its result attached to
+    // this picker so the stage reloads it instead of inviting another add.
+    if (this.saving) {
+      return;
+    }
     this.dialogRef.close(this.added.length ? [...this.added] : undefined);
   }
 

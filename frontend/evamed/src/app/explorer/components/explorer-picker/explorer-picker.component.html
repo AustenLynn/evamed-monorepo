@@ -5,7 +5,7 @@
       <span *ngIf="context.section">{{ context.section }} · </span>{{ context.system }}
     </p>
   </div>
-  <button mat-icon-button type="button" aria-label="Cerrar el explorador sin agregar" (click)="close()">
+  <button mat-icon-button type="button" aria-label="Cerrar el explorador sin agregar" [disabled]="saving" (click)="close()">
     <mat-icon>close</mat-icon>
   </button>
 </header>

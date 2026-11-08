@@ -8,6 +8,8 @@ import { PickedMaterial, PickerContext } from './picker.models';
 /** Opens the explorer full-screen over a stage page (R-20). */
 @Injectable({ providedIn: 'root' })
 export class ExplorerPickerService {
+  private opening = false;
+
   constructor(private dialog: MatDialog) {}
 
   /** Edit: resolves with the row's new values, or undefined if closed. */
@@ -27,21 +29,31 @@ export class ExplorerPickerService {
 
   /** The explorer's code loads on first use. */
   private async open(context: PickerContext): Promise<PickedMaterial[] | MaterialDetail | undefined> {
-    const { ExplorerPickerComponent } = await import('./components/explorer-picker/explorer-picker.component'),
-      ref = this.dialog.open<unknown, PickerContext, PickedMaterial[] | MaterialDetail>(ExplorerPickerComponent, {
-        data: context,
-        // A sheet up from the bottom, over three quarters of the screen (R-48).
-        width: '100vw',
-        maxWidth: '100vw',
-        height: '75dvh',
-        position: { bottom: '0' },
-        panelClass: 'ev-picker-dialog',
-        enterAnimationDuration: 0,
-        // The picker closes itself, so what was added still reaches the stage page.
-        disableClose: true,
-        autoFocus: 'dialog',
-        ariaLabel: 'Explorador de materiales',
-      });
-    return firstValueFrom(ref.afterClosed());
+    // Hold the guard through lazy loading and closing. Stacked pickers can
+    // each save the same material, even though each guards its own save button.
+    if (this.opening) {
+      return undefined;
+    }
+    this.opening = true;
+    try {
+      const { ExplorerPickerComponent } = await import('./components/explorer-picker/explorer-picker.component'),
+        ref = this.dialog.open<unknown, PickerContext, PickedMaterial[] | MaterialDetail>(ExplorerPickerComponent, {
+          data: context,
+          // A sheet up from the bottom, over three quarters of the screen (R-48).
+          width: '100vw',
+          maxWidth: '100vw',
+          height: '75dvh',
+          position: { bottom: '0' },
+          panelClass: 'ev-picker-dialog',
+          enterAnimationDuration: 0,
+          // The picker closes itself, so what was added still reaches the stage page.
+          disableClose: true,
+          autoFocus: 'dialog',
+          ariaLabel: 'Explorador de materiales',
+        });
+      return await firstValueFrom(ref.afterClosed());
+    } finally {
+      this.opening = false;
+    }
   }
 }
