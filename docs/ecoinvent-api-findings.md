@@ -310,3 +310,32 @@ pg_restore -a -f dump.sql backend/evamed-api/backup
 ```
 
 Docs index: <https://docs.api.ecoinvent.org/llms.txt>
+
+---
+
+## 9. Progress log: construction materials added
+
+All picks are `market for` datasets from `3.12-sandbox` / cut-off, RoW where ecoinvent has one,
+else GLO (no Mexican datasets exist in the sandbox). They are listed in
+`backend/evamed-api/projects_api/ecoinvent/data/construction_materials.json`, loaded by
+`ecoinvent_add_materials` (no quota) and filled in by `ecoinvent_refresh --only material`
+(one unique dataset of quota each).
+
+| Date | Commit | Materials | Quota used | Running total |
+|---|---|---|---|---|
+| 2026-10-27 | 8737714, acfca4f | 30: cements (8), steels (6), concretes (9), blocks (7) | 30 | 30 |
+| 2026-11-07 | ded2e0c | 28 picked by the owner: CEM III/C, IV/B, V/B, clinker; cement mortar; cement, clay, mineral, organic and thermal plasters; 45 MPa concrete, concrete slab; adobe and fly ash bricks; sand, crushed and round gravel; gypsum plasterboard and fibreboard, mineral gypsum, stucco; seven 100%-scrap steels | 28 (pending refresh on dev) | 58 |
+
+Notes:
+
+- Descriptions come from each product's production dataset (free search), with ecoinvent's
+  standard notices removed. Three scrap steels (structural, carbon, bearing) have no GLO
+  production dataset, so theirs come from the RER one.
+- New categories reuse the catalogue's existing name prefixes where one exists
+  (Arena, Grava, Panel de yeso, Yeso); new ones are Mortero, Aplanado and Ladrillo.
+- Sandbox impact values are internally inconsistent (e.g. Portland 0.47 vs CEM II/B 0.98
+  kg CO2e/kg); they are not fit for real results until there is a production licence.
+- One usage report is still unsent: `ECOINVENT_ORGANIZATION_ID` is missing on the server.
+- Next: search (free) the families the owner asked for: wood and boards, glass and windows,
+  insulation, aluminium, PVC and pipes, paints and waterproofing, ceramics and tiles,
+  roofing sheets.
