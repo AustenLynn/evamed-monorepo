@@ -8,7 +8,7 @@ import { CatalogsService } from '../../../core/services/catalogs/catalogs.servic
 import { ExplorerUiModule } from '../../explorer-ui.module';
 import { ExplorerPage } from '../../explorer.models';
 import { ExplorerPickerService } from '../../explorer-picker.service';
-import { PickedMaterial } from '../../picker.models';
+import { PickedMaterial, PickerContext } from '../../picker.models';
 import { DETAIL } from '../../testing';
 
 describe('ExplorerPickerService', () => {
@@ -34,7 +34,7 @@ describe('ExplorerPickerService', () => {
       target!.click();
       await settle();
     },
-    start = async (extra: object = {}, many = false, body: ExplorerPage = list) => {
+    start = async (extra: Partial<PickerContext> = {}, many = false, body: ExplorerPage = list) => {
       TestBed.configureTestingModule({
         imports: [ExplorerUiModule],
         providers: [
@@ -46,7 +46,7 @@ describe('ExplorerPickerService', () => {
       http = TestBed.inject(HttpTestingController);
       const picker = TestBed.inject(ExplorerPickerService),
         context = { system: 'Muro de block', section: 'Muros exteriores', projectLife: 50, ...extra },
-        result = many ? picker.pickMany(context) : picker.pick(context);
+        result = context.mode === 'choose' ? picker.choose(context) : many ? picker.pickMany(context) : picker.pick(context);
       // The picker's code loads on first use; on a busy machine that takes a while.
       for (let tries = 0; tries < 500 && !overlay()?.querySelector('app-explorer-browser'); tries++) {
         await settle();
@@ -232,9 +232,25 @@ describe('ExplorerPickerService', () => {
     await settle();
 
     expect(overlay().querySelector('.picker__title')?.textContent).toContain('Elegir material');
+    expect(overlay().querySelector('.detail__toggle')).toBeNull();
     await click('.detail__select');
 
     expect((await result)?.id).toBe(12);
+  });
+
+  it.each(['tarjetas', 'tabla'])('choose mode: chooses directly from %s without opening the Ficha', async view => {
+    const { result } = await start({ mode: 'choose' });
+    if (view === 'tabla') {
+      await click('mat-button-toggle[value="tabla"] button');
+    }
+    expect(overlay().querySelector('app-result-card mat-checkbox, app-results-table mat-checkbox')).toBeNull();
+    await click(view === 'tabla' ? '.results-table__open' : '.result-card__open');
+    http.expectOne(request => request.url.endsWith('/explorer/produccion/12/')).flush(DETAIL);
+    await settle();
+
+    expect(overlay().querySelector('app-material-detail')).toBeNull();
+    expect(overlay().querySelector('.picker__tray')).toBeNull();
+    expect(await result).toMatchObject({ id: 12, display_name: 'AAC block' });
   });
 
   it('edit mode: a row without a catalogue material starts on the list', async () => {
@@ -242,6 +258,17 @@ describe('ExplorerPickerService', () => {
 
     expect(overlay().querySelector<HTMLElement>('app-explorer-browser')!.hidden).toBe(false);
     expect(overlay().querySelector('app-material-edit')).toBeNull();
+  });
+
+  it('choose mode: closing while a replacement loads cancels that choice', async () => {
+    const { result } = await start({ mode: 'choose' });
+    await click('.result-card__open');
+    const request = http.expectOne(candidate => candidate.url.endsWith('/explorer/produccion/12/'));
+
+    await click('button[aria-label="Cerrar el explorador sin agregar"]');
+
+    expect(request.cancelled).toBe(true);
+    expect(await result).toBeUndefined();
   });
 
   it('edit mode: "Cambiar material" brings in the new material’s name, keeping the row’s other values', async () => {
@@ -261,8 +288,9 @@ describe('ExplorerPickerService', () => {
     await click('.result-card__open');
     http.expectOne(request => request.url.endsWith('/explorer/produccion/12/')).flush(beam);
     await settle();
-    await click('.detail__select');
 
+    expect(overlay().querySelector('app-material-detail')).toBeNull();
+    expect(overlay().querySelector('.picker__tray')).toBeNull();
     expect(overlay().querySelector<HTMLInputElement>('input[formcontrolname=comercialName]')!.value).toBe('Viga');
     await click('button[type=submit]', 'Guardar cambios');
     expect(await result).toMatchObject({ material: { id: 13 }, comercialName: 'Viga', quantity: 90, distanceEnd: 30 });

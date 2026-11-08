@@ -35,7 +35,8 @@ export class MaterialDetailComponent implements OnChanges {
   /** Offers "Seleccionar recurso" (the stage page's picker); the browse-only page doesn't. */
   @Input() canSelect = false;
   @Output() readonly selected = new EventEmitter<MaterialDetail>();
-  /** With canSelect: whether the material is in the picker's selection, and the button that toggles it. */
+  /** Multi-add only: offers the button that toggles this material in the selection. */
+  @Input() selectable = false;
   @Input() inSelection = false;
   @Output() readonly selectToggle = new EventEmitter<MaterialDetail>();
 

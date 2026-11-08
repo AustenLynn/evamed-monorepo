@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { takeUntil } from 'rxjs/operators';
 
 import { ExplorerItem, ExplorerQuery, MaterialDetail } from '../../explorer.models';
 import { PickedMaterial, pickedFrom, PickerContext, SelectionRow, selectionRow } from '../../picker.models';
@@ -95,7 +96,20 @@ export class ExplorerPickerComponent {
 
   open(item: ExplorerItem): void {
     this.listScrollTop = this.body.nativeElement.scrollTop;
-    this.go({ kind: 'detail', id: item.id });
+    if (this.selectable) {
+      this.go({ kind: 'detail', id: item.id });
+      return;
+    }
+    // Replacing one row needs only a choice; load its summary without making
+    // the user open the Ficha and confirm the same material a second time.
+    this.go({ kind: 'loading' });
+    this.explorer.material(item.id).pipe(takeUntil(this.dialogRef.beforeClosed())).subscribe({
+      next: detail => {
+        this.select(detail);
+        this.cdr.markForCheck();
+      },
+      error: () => this.show({ kind: 'detail', id: item.id }),
+    });
   }
 
   backToList(): void {

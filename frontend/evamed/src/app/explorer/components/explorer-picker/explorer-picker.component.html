@@ -44,6 +44,7 @@
     *ngIf="step.kind === 'detail'"
     [materialId]="$any(step).id"
     [canSelect]="true"
+    [selectable]="selectable"
     [inSelection]="selectedIds.has($any(step).id)"
     (selected)="select($event)"
     (selectToggle)="toggle($event)"

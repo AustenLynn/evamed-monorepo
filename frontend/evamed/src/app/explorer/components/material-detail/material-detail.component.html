@@ -30,7 +30,7 @@
           Seleccionar recurso
         </button>
         <button
-          *ngIf="canSelect"
+          *ngIf="canSelect && selectable"
           mat-stroked-button
           type="button"
           class="detail__toggle"
