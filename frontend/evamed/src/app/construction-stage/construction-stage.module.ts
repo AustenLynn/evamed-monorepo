@@ -1,3 +1,4 @@
+import { EquipmentStageUiModule } from '../equipment-stage/equipment-stage-ui.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ConstructionStageRoutingModule } from './construction-stage-routing.module';
@@ -18,6 +19,7 @@ import { ConstructionStageUpdateComponent } from './components/construction-stag
         PassStepComponent
     ],
     imports: [
+        EquipmentStageUiModule,
         CommonModule,
         ConstructionStageRoutingModule,
         SharedModule,

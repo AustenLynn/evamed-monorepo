@@ -16,3 +16,6 @@ infra/**/.terraform/
 *.tfvars
 !*.tfvars.example
 *.tfplan
+
+# Temporary design drafts
+.superdesign/tmp/

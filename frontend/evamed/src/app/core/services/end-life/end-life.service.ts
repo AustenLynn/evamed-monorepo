@@ -7,6 +7,10 @@ import { environment } from './../../../../environments/environment';
   providedIn: 'root',
 })
 export class EndLifeService {
+  patchECDP(id: number, changes: object) {
+    return this.http.patch<any>(`${environment.api_electricity_consumption_deconstructive_process}${id}/`, changes);
+  }
+
   constructor(private http: HttpClient) {}
 
   addTOGW(togwData: object) {

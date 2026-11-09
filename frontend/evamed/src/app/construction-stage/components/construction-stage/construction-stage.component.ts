@@ -1,480 +1,125 @@
-import { Component, ViewChild, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ViewChild, OnInit, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatListOption } from '@angular/material/list';
-import { MatAccordion } from '@angular/material/expansion';
-import { CatalogsService } from './../../../core/services/catalogs/catalogs.service';
-import { ConstructionStageService } from 'src/app/core/services/construction-stage/construction-stage.service';
-import { MaterialsService } from './../../../core/services/materials/materials.service';
-import { EnergyTotalService } from 'src/app/core/services/energy-total/energy-total.service';
+import { MatListOption, MatSelectionList } from '@angular/material/list';
+import { MaterialsService } from '../../../core/services/materials/materials.service';
+import { ProjectsService } from '../../../core/services/projects/projects.service';
+import { SelectionService } from '../../../core/services/selection/selection.service';
+import { EnergyTotalService } from '../../../core/services/energy-total/energy-total.service';
 import { BUILDING_SECTIONS } from '../../../shared/building-sections';
+import { EquipmentStagePanelComponent } from '../../../equipment-stage/equipment-stage-panel.component';
 
 @Component({
-    selector: 'app-construction-stage',
-    templateUrl: './construction-stage.component.html',
-    styleUrls: ['./construction-stage.component.scss'],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    standalone: false
+  selector: 'app-construction-stage',
+  templateUrl: './construction-stage.component.html',
+  styleUrls: ['./construction-stage.component.scss'],
+  // Preserve the host shell’s existing asynchronous project/selection rendering.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
-export class ConstructionStageComponent implements OnInit, OnDestroy {
-  @ViewChild(MatAccordion) accordion: MatAccordion;
-
-  sheetNames: any;
-  contentData: any;
-  listData: any;
-  indexSheet: any;
-  SistemasConstructivos: any;
-  catalogoFuentes: any;
-  catalogoUnidadEnergia: any;
-  catalogoUnidadVolumen: [];
-  catalogoUnidadMasa: [];
-  nameProject: string;
+export class ConstructionStageComponent implements OnInit, AfterViewInit {
+  @ViewChild(EquipmentStagePanelComponent) equipmentPanel?: EquipmentStagePanelComponent;
+  @ViewChild('sheets') sheetsList?: MatSelectionList;
+  sheetNames: string[] = [];
+  indexSheet: number | undefined;
+  nameProject = '';
   projectId: number;
-  dataArrayEC = [];
-  dataArrayAC = [];
-  dataArrayDG = [];
-  EC: any[][] = [];
-  AC: any;
-  DG: any;
-  selectedSheet: any;
-  endSave = false;
+  selectedSheet: string;
   procesoSeleccionado = '';
-  private autosaveIntervalId: ReturnType<typeof setInterval> | null = null;
-  private lastAutosaveSignature: string | null = null;
-  private isSwitchingSheet = false;
+  endSave = false;
+  equipmentPending = false;
 
   constructor(
     private materialsService: MaterialsService,
-    private catalogsService: CatalogsService,
-    private constructionStageService: ConstructionStageService,
+    private projectsService: ProjectsService,
     private router: Router,
+    private selectionService: SelectionService,
     private energyTotalService: EnergyTotalService,
-  ) {
-    this.catalogsService.getSourceInformation().subscribe(data => {
-      // this.catalogoFuentes = data;
-      const fuentes = [];
-      data.map(fuente => {
-        if (fuente.name_source_information !== 'Mexicaniuh - CADIS') {
-          fuentes.push(fuente);
-        }
-      });
-      this.catalogoFuentes = fuentes;
-    });
-    this.catalogsService.getEnergyUnits().subscribe(data => {
-      /*const energia = [];
-      data.map(unidad => {
-        if (unidad.name_energy_unit === 'Hrs') {
-          energia.push(unidad);
-        }
-      });
-      this.catalogoUnidadEnergia = energia;*/
-      this.catalogoUnidadEnergia = data;
-      // TODO: get proper units for sources and dbs
-    });
-    this.catalogsService.getVolumeUnits().subscribe(data => {
-      this.catalogoUnidadVolumen = data;
-    });
-    this.catalogsService.getBulkUnits().subscribe(data => {
-      this.catalogoUnidadMasa = data;
-    });
+  ) {}
+
+  ngOnInit(): void {
+    const project = JSON.parse(sessionStorage.getItem('primaryDataProject') || '{}');
+    this.projectId = project.id;
+    this.energyTotalService.loadAll(this.projectId);
+    this.nameProject = project.name_project;
+    const imported = JSON.parse(sessionStorage.getItem('dataProject') || 'null'),
+     excluded = ['Muros InterioresBis', 'Inicio', 'Registro', 'ListaElementos', 'BD', 'Parametros'];
+    this.sheetNames = imported?.sheetNames
+      ? imported.sheetNames.filter((name: string) => !excluded.includes(name))
+      : [...BUILDING_SECTIONS];
   }
 
-  ngOnInit() {
-    const PDP = JSON.parse(sessionStorage.getItem('primaryDataProject')),
-     data = JSON.parse(sessionStorage.getItem('dataProject'));
+  ngAfterViewInit(): void {
 
-    this.nameProject = PDP.name_project;
-    this.projectId = PDP.id;
-
-    this.sheetNames = [];
-    // Only a project imported in this tab has its Excel here. An existing
-    // project opened from home has none; its elements are the fixed list.
-    if (data) {
-      data.sheetNames.map(sheetname => {
-        if (
-          sheetname !== 'Muros InterioresBis' &&
-          sheetname !== 'Inicio' &&
-          sheetname !== 'Registro' &&
-          sheetname !== 'ListaElementos' &&
-          sheetname !== 'BD' &&
-          sheetname !== 'Parametros'
-        ) {
-          this.sheetNames.push(sheetname);
-        }
-      });
-    } else {
-      this.sheetNames = [...BUILDING_SECTIONS];
-    }
-    this.contentData = data?.data;
-    this.indexSheet = undefined;
-
-    // Save on blur instead of polling.
   }
 
-  ngOnDestroy(): void {
-    if (this.autosaveIntervalId) {
-      clearInterval(this.autosaveIntervalId);
-      this.autosaveIntervalId = null;
+  selectSheetInUI(section: string | { name_section: string }): void {
+    const name = typeof section === 'string' ? section : section.name_section,
+     option = this.sheetsList?.options.find(item => item.value === name);
+    if (option) {
+      this.sheetsList.selectedOptions.select(option);
+      this.onGroupsChange([option]);
     }
   }
 
-  private startAutosave(): void {
-    if (this.autosaveIntervalId) {
-      return;
-    }
-
-    this.autosaveIntervalId = setInterval(() => {
-      if (!this.projectId || !this.EC) {
-        console.log('autosave: construction-stage skipped (missing projectId or EC)');
-        return;
-      }
-      const signature = this.buildAutosaveSignature();
-      if (signature === this.lastAutosaveSignature) {
-        return;
-      }
-
-      this.onSaveEC();
-      this.lastAutosaveSignature = signature;
-      console.log('autosave: construction-stage');
-      this.saveStepTwo();
-    }, 5000);
+  onGroupsChange(options: MatListOption[]): void {
+    const selected = options[0]?.value,
+     index = this.sheetNames.indexOf(selected);
+    if (index < 0) return;
+    this.selectedSheet = selected;
+    this.procesoSeleccionado = selected;
+    this.indexSheet = index;
   }
 
-  private buildAutosaveSignature(): string {
-    return JSON.stringify({
-      projectId: this.projectId,
-      indexSheet: this.indexSheet,
-      dataArrayEC: this.dataArrayEC,
-      dataArrayAC: this.dataArrayAC,
-      dataArrayDG: this.dataArrayDG,
+  onEquipmentTotalChange(total: number): void {
+    this.energyTotalService.setConstructionTotal(total);
+  }
+
+  private async navigateStage(path: string, records: any): Promise<void> {
+    // Capture the current project rather than rereading a previous route's storage.
+    const projectId = this.projectId;
+    await this.equipmentPanel?.whenIdle();
+    records.subscribe((items: any[]) => {
+      const exists = items.some(item => Number(item.project_id) === projectId);
+      localStorage.setItem('idProyectoConstrucción', String(projectId));
+      this.router.navigateByUrl(exists ? `${path}/update` : path);
     });
   }
 
-  onGroupsChange(options: MatListOption[]) {
-    this.isSwitchingSheet = true;
-    /*let selectedSheet;
-    // map these MatListOptions to their values
-    options.map(option => {
-      selectedSheet = option.value;
-    });
-    // take index of selection
-    this.indexSheet = this.sheetNames.indexOf(selectedSheet);
-    // take memory of saved data
-    let i;
-    for (i = 0; i <= this.sheetNames.length; i++) {
-      if (this.indexSheet === i && this.EC !== undefined) {
-        this.dataArrayEC = this.EC[i];
-      }
-      if (this.indexSheet === i && this.AC !== undefined) {
-        this.dataArrayAC = this.AC[i];
-      }
-      if (this.indexSheet === i && this.DG !== undefined) {
-        this.dataArrayDG = this.DG[i];
-      }
-    }
-
-    if (this.dataArrayEC.length === 0) {
-      this.addFormEC();
-    }
-    if (this.dataArrayAC.length === 0) {
-      this.addFormAC();
-    }
-    if (this.dataArrayDG.length === 0) {
-      this.addFormDG();
-    }*/
-
-    const selectedSheet = options[0]?.value;
-    this.procesoSeleccionado = selectedSheet;
-    if (!selectedSheet) {
-      console.warn('No hay grupo seleccionado');
-      return;
-    }
-
-    // Find the index of selected sheet
-    this.indexSheet = this.sheetNames.indexOf(selectedSheet);
-
-    // Defensive check
-    if (this.indexSheet < 0) {
-      console.warn('El grupo seleccionado no existe');
-      return;
-    }
-
-    // Assign data arrays if available
-    this.dataArrayEC = this.EC?.[this.indexSheet];
-
-    if (!this.dataArrayEC || this.dataArrayEC.length === 0) {
-      this.addFormEC();
-    }
-
-    setTimeout(() => {
-      this.isSwitchingSheet = false;
-    });
+  goToMaterialStage(): Promise<void> {
+    return this.navigateStage('materials-stage', this.materialsService.getMaterialSchemeProyects());
   }
 
-  addFormEC() {
-    if (this.dataArrayEC === undefined) {
-      this.dataArrayEC = [];
-    }
-    this.dataArrayEC.push([]);
+  goToConstructionStage(): Promise<void> {
+    return this.navigateStage('construction-stage', this.materialsService.getConstructionStage());
   }
 
-  removeFormEC(i) {
-    this.dataArrayEC.splice(i);
+  goToUsageStage(): Promise<void> {
+    return this.navigateStage('usage-stage', this.materialsService.getACR());
   }
 
-  onSaveEC() {
-    let i;
-    if (this.EC === undefined) {
-      this.EC = [];
-    }
-    for (i = 0; i <= this.sheetNames.length; i++) {
-      if (this.indexSheet === i) {
-        this.EC[i] = this.dataArrayEC;
-      }
-    }
+  goToEndLife(): Promise<void> {
+    return this.navigateStage('end-life-stage', this.materialsService.getEDCP());
   }
 
-  onFieldBlur(): void {
-    if (!this.projectId || this.indexSheet === undefined) {
-      return;
-    }
-    this.onSaveEC();
-    this.saveStepTwo();
-    this.computeAndPushTotal();
-  }
-
-  private computeAndPushTotal(): void {
-    const sum = [...(this.dataArrayEC || []), ...(this.dataArrayAC || []), ...(this.dataArrayDG || [])]
-      .reduce((acc, d) => acc + (parseFloat(d.cantidad) || 0), 0);
-    this.energyTotalService.setConstructionTotal(sum);
-  }
-
-  private saveBeforeNavigate(): void {
-    if (!this.projectId || this.indexSheet === undefined) {
-      return;
-    }
-    this.onSaveEC();
-    this.saveStepTwo();
-  }
-
-  onSelectChange(event: { isUserInput?: boolean }): void {
-    this.onFieldBlur();
-  }
-
-  addFormAC() {
-    if (this.dataArrayAC === undefined) {
-      this.dataArrayAC = [];
-    }
-    this.dataArrayAC.push([]);
-  }
-
-  removeFormAC(i) {
-    this.dataArrayAC.splice(i);
-  }
-
-  onSaveAC() {
-    let i;
-    if (this.AC === undefined) {
-      this.AC = [];
-    }
-    for (i = 0; i <= this.sheetNames.length; i++) {
-      if (this.indexSheet === i) {
-        this.AC[i] = this.dataArrayAC;
-      }
-    }
-  }
-
-  addFormDG() {
-    if (this.dataArrayDG === undefined) {
-      this.dataArrayDG = [];
-    }
-    this.dataArrayDG.push([]);
-  }
-
-  removeFormDG(i) {
-    this.dataArrayDG.splice(i);
-  }
-
-  onSaveDG() {
-    let i;
-    if (this.DG === undefined) {
-      this.DG = [];
-    }
-    for (i = 0; i <= this.sheetNames.length; i++) {
-      if (this.indexSheet === i) {
-        this.DG[i] = this.dataArrayDG;
-      }
-    }
-  }
-
-  onNgModelChange() {}
-
-  private parseQuantity(value: unknown): number | null {
-    if (value === null || value === undefined || value === '') {
-      return null;
-    }
-    const normalized = String(value).replace(',', '.');
-    const parsed = Number(normalized);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-
-  async saveStepTwo() {
-    try {
-      await Object.entries(this.EC).forEach(([key, ec]) => {
-        const ecAny: any = ec;
-        ecAny.map(data => {
-          const quantity = this.parseQuantity(data?.cantidad);
-          if (quantity === null || !data?.fuente || !data?.unidad) {
-            return;
-          }
-          this.constructionStageService
-            .addConstructiveSistemElement({
-              quantity,
-              project_id: this.projectId,
-              section_id: parseInt(key, 10) + 1,
-              constructive_process_id: 1,
-              volume_unit_id: null,
-              energy_unit_id: data.unidad,
-              bulk_unit_id: null,
-              source_information_id: data.fuente,
-            })
-            .subscribe(data => {
-              console.log('Success EC!!!!!!!');
-              console.log(data);
-            });
-        });
-      });
-    } catch (error) {
-      console.log(error);
-    }
-
-    /*try {
-      await Object.entries(this.AC).forEach(([key, ec]) => {
-        const ecAny: any = ec;
-        ecAny.map(data => {
-          this.constructionStageService
-            .addConstructiveSistemElement({
-              quantity: data.cantidad,
-              project_id: this.projectId,
-              section_id: parseInt(key, 10) + 1,
-              constructive_process_id: 2,
-              volume_unit_id: data.unidad,
-              energy_unit_id: null,
-              bulk_unit_id: null,
-              source_information_id: data.fuente,
-            })
-            .subscribe(data => {
-              console.log('Success AC!!!!!');
-              console.log(data);
-            });
-        });
-      });
-    } catch (error) {
-      console.log(error);
-    }
-
-    try {
-      await Object.entries(this.DG).forEach(([key, ec]) => {
-        const ecAny: any = ec;
-        ecAny.map(data => {
-          this.constructionStageService
-            .addConstructiveSistemElement({
-              quantity: data.cantidad,
-              project_id: this.projectId,
-              section_id: parseInt(key, 10) + 1,
-              constructive_process_id: 3,
-              volume_unit_id: null,
-              energy_unit_id: null,
-              bulk_unit_id: data.unidad,
-              source_information_id: data.fuente,
-            })
-            .subscribe(data => {
-              console.log('Success DG!!!!!');
-              console.log(data);
-            });
-        });
-      });
-    } catch (error) {
-      console.log(error);
-    }*/
-
-    //await this.showModal();
-    // this.router.navigateByUrl('usage-stage');
-  }
-
-  goToMaterialStage() {
-    this.saveBeforeNavigate();
-    this.materialsService.getMaterialSchemeProyects().subscribe(msp => {
-      const schemaFilter = msp.filter(
-        schema => schema.project_id === this.projectId
-      );
-
-      if (schemaFilter.length === 0) {
-        this.router.navigateByUrl('materials-stage');
-      } else {
-        localStorage.setItem(
-          'idProyectoConstrucción',
-          this.projectId.toString()
-        );
-        this.router.navigateByUrl('materials-stage/update');
-      }
-    });
-  }
-
-  goToConstructionStage() {
-    this.router.navigateByUrl('construction-stage');
-  }
-
-
-  goToUsageStage() {
-    this.saveBeforeNavigate();
-    this.materialsService.getACR().subscribe(acr => {
-      const schemaFilter = acr.filter(
-        schema => schema.project_id === this.projectId
-      );
-
-      if (schemaFilter.length === 0) {
-        this.router.navigateByUrl('usage-stage');
-      } else {
-        localStorage.setItem(
-          'idProyectoConstrucción',
-          this.projectId.toString()
-        );
-        this.router.navigateByUrl('usage-stage/update');
-      }
-    });
-  }
-
-  goToEndLife() {
-    this.saveBeforeNavigate();
-    this.materialsService.getEDCP().subscribe(edcp => {
-      const schemaFilter = edcp.filter(
-        schema => schema.project_id === this.projectId
-      );
-
-      if (schemaFilter.length === 0) {
-        this.router.navigateByUrl('end-life-stage');
-      } else {
-        localStorage.setItem(
-          'idProyectoConstrucción',
-          this.projectId.toString()
-        );
-        this.router.navigateByUrl('end-life-stage/update');
-      }
-    });
-  }
-
-  continue() {
-    this.goToUsageStage();
-  }
-
-  goToResultados() {
-    // idProyectoConstrucción can still name an earlier project here.
+  async goToResultados(): Promise<void> {
+    await this.equipmentPanel?.whenIdle();
     sessionStorage.setItem('projectID', String(this.projectId));
     this.router.navigateByUrl('resultados');
   }
 
-  getSelectedSourceName(value: any): string {
-    const selected = this.catalogoFuentes.find(option => option.id === value);
-    return selected ? selected.name_source_information : '';
+  async goToProjects(event?: Event): Promise<void> {
+    event?.preventDefault();
+    await this.equipmentPanel?.whenIdle();
+    this.router.navigateByUrl('/');
+  }
+
+  async continue(): Promise<void> {
+    await this.goToUsageStage();
+  }
+
+  continueStep(event: Event): Promise<void> {
+    event.preventDefault();
+    return this.continue();
   }
 }

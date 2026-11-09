@@ -1,6 +1,6 @@
 <nav class="nav-redirect">
   <h2 class="proyecto-title">{{nameProject}}</h2>
-  <a href="/" class="a-redirect"> < Regresar a proyectos </a>
+  <a href="/" class="a-redirect" (click)="goToProjects($event)"> < Regresar a proyectos </a>
 </nav>
 <!--Principal container-->
 <div class="principal-container container-total">
@@ -60,75 +60,12 @@
       </div>
     </section>
     <!--Formulario de energía consumida-->
-    <section class="container-systems" *ngIf="indexSheet!==undefined">
-      Energía consumida durante el proceso deconstructivo de&nbsp;<strong>{{ procesoSeleccionado | lowercase }}</strong>
-      <div class="container-ec">
-        <div *ngFor="let data of dataArrayEC; let i=index;">
-          <div class="Col col-xs-12">
-              <span class="label-small-input">
-                Fuente
-              </span>
-              <div [matTooltip]="getSelectedSourceName(data.fuente)"
-                  matTooltipPosition="above" *ngIf="data.fuente">
-                <mat-form-field appearance="outline">
-                  <mat-label>Seleccione una opción</mat-label>
-                  <mat-select [(ngModel)]="data.fuente" name="fuente{{i}}" hideSingleSelectionIndicator panelWidth="" (selectionChange)="onFieldBlur()">
-                    <mat-option *ngFor="let fuente of catalogoFuentes" [value]="fuente.id">
-                      {{fuente.name_source_information}}
-                    </mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
-              <!-- When there's no selection, omit the tooltip -->
-                <div *ngIf="!data.fuente">
-                  <mat-form-field appearance="outline" class="custom-input">
-                    <mat-label>Seleccione una opción</mat-label>
-                    <mat-select [(ngModel)]="data.fuente" name="fuente{{i}}" hideSingleSelectionIndicator
-                    (selectionChange)="onFieldBlur()"
-                    panelWidth="" placeholder="Fuente">
-                      <mat-option *ngFor="let fuente of catalogoFuentes" [value]="fuente.id">
-                        {{fuente.name_source_information}}
-                      </mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-            </div>
-            <div class="Row top-0">
-              <div class="Col col-small-space">
-                <span class="label-small-input">
-                  Cantidad
-                </span>
-                <mat-form-field appearance="fill">
-                  <input class="input-general" [(ngModel)]="data.cantidad" name="cantidad_{{i}}" matInput type="number" (blur)="onFieldBlur()">
-                </mat-form-field>
-              </div>
-              <div class="Col col-small-space">
-                <span class="label-small-input">
-                  Unidad funcional
-                </span>
-                <mat-form-field appearance="outline">
-                  <mat-label>Seleccione una opción</mat-label>
-                  <mat-select [(ngModel)]="data.unidad" name="unidad{{i}}" hideSingleSelectionIndicator (selectionChange)="onFieldBlur()">
-                    <mat-option *ngFor="let unidad of catalogoUnidadEnergia" [value]="unidad.id">
-                      {{unidad.name_energy_unit}}
-                    </mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
-              <div class="Col col-small-space">
-                <div *ngIf="i !== 0">
-                  <button mat-button class="button-remove" (click)="removeFormEC(i, data.id)">
-                    <mat-icon>remove_circle</mat-icon>
-                  </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!--Actions-->
-        <button mat-button (click)="addFormEC()">
-          <mat-icon>add_circle</mat-icon>
-        </button>
-      </div>
+    <section class="container-systems" *ngIf="indexSheet !== undefined">
+      <app-equipment-stage-panel
+        [stage]="'end-life'" [projectId]="projectId" [sectionId]="indexSheet + 1"
+        [sectionName]="selectedSheet" (totalChange)="onEquipmentTotalChange($event)"
+        (pendingChange)="equipmentPending = $event">
+      </app-equipment-stage-panel>
     </section>
   </section>
 </div>

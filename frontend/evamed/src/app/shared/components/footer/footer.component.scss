@@ -29,3 +29,26 @@ footer {
 .phone {
   text-align: right;
 }
+
+@media (max-width: 600px) {
+  footer {
+    position: static;
+    .logos-ibero {
+      width: 100%;
+      box-sizing: border-box;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 20px 16px;
+      .img-footer {
+        flex-direction: column;
+        gap: 12px;
+        min-width: 0;
+        max-width: 100%;
+        img { max-width: 100%; object-fit: contain; object-position: left; }
+        .middle-message { margin-left: 0; }
+      }
+    }
+  }
+  .phone { text-align: left; }
+}

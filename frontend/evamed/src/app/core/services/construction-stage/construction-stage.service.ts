@@ -7,6 +7,10 @@ import { environment } from './../../../../environments/environment';
   providedIn: 'root',
 })
 export class ConstructionStageService {
+  patchConstructiveSystemElement(id: number, changes: object) {
+    return this.http.patch<any>(`${environment.api_construction_stage}${id}/`, changes);
+  }
+
   constructor(private http: HttpClient) {}
 
   addConstructiveSistemElement(projectData: object) {

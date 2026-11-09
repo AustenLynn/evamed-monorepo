@@ -5,6 +5,8 @@ import './materials-stage/materials-stage.module';
 import './usage-stage/usage-stage.module';
 
 import { ConstructionStageComponent } from './construction-stage/components/construction-stage/construction-stage.component';
+import { ConstructionStageUpdateComponent } from './construction-stage/components/construction-stage-update/construction-stage-update.component';
+import { EndLifeUpdateComponent } from './end-life-stage/components/end-life-update/end-life-update.component';
 import { EndLifeStageComponent } from './end-life-stage/components/end-life-stage/end-life-stage.component';
 import { MaterialsStageComponent } from './materials-stage/components/materials-stage/materials-stage.component';
 import { UsageStageComponent } from './usage-stage/components/usage-stage/usage-stage.component';
@@ -15,8 +17,10 @@ import { UsageStageComponent } from './usage-stage/components/usage-stage/usage-
 describe.each([
   ['materials', MaterialsStageComponent],
   ['construction', ConstructionStageComponent],
+  ['construction reopened', ConstructionStageUpdateComponent],
   ['usage', UsageStageComponent],
   ['end of life', EndLifeStageComponent],
+  ['end of life reopened', EndLifeUpdateComponent],
 ])('%s stage "Ir a resultados"', (_name, stage: any) => {
   afterEach(() => {
     localStorage.clear();

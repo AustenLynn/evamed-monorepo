@@ -1,0 +1,26 @@
+// Keep the existing stage shell while fitting the shared equipment cards on phones.
+@media (max-width: 600px) {
+  app-construction-stage,
+  app-construction-stage-update,
+  app-end-life-stage,
+  app-end-life-update {
+    .principal-container.container-total {
+      grid-template-columns: minmax(0, 1fr);
+      min-width: 0;
+      .nav-steps { height: auto; padding: 12px 0; }
+      .mdl-stepper-horizontal-alternative { display: flex; width: 100%; margin: 0; }
+      .mdl-stepper-step { display: flex; flex: 1 1 0; min-width: 0; flex-direction: column; align-items: center; }
+      .mdl-stepper-tag { position: static; margin: 6px 0 0; width: auto; text-align: center; font-size: 12px; }
+      .container-actions { display: block; min-height: 0; min-width: 0; }
+      .container-sheets { width: 100%; box-sizing: border-box; min-width: 0; border-right: 0; border-bottom: 1px solid var(--ev-border); }
+      .container-image { display: none; }
+      .list-elements { width: 100%; max-width: 100%; max-height: none; overflow-x: auto; }
+      .list-elements mat-selection-list { display: flex; width: max-content; }
+      .list-elements mat-list-option { width: auto; max-width: 180px; }
+      .container-systems { width: 100%; box-sizing: border-box; min-width: 0; padding: 16px; overflow: visible; }
+    }
+    .section-continue { width: 100%; margin: 16px 0; padding: 0; flex-wrap: wrap; gap: 12px; }
+    .section-continue app-energy-bar { flex: 1 1 100%; min-width: 0; }
+    .section-continue .yellow-button { width: auto; white-space: nowrap; }
+  }
+}
