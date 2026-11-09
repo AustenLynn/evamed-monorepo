@@ -37,12 +37,12 @@
 
 .stage-tab__title {
   margin-top: 6px;
-  font-size: 14px;
+  font-size:var(--ev-font-body);
   font-weight: 500;
 }
 
 .stage-tab__subtitle {
-  font-size: 12px;
+  font-size:var(--ev-font-caption);
 }
 
 // The app marks the current stage in yellow; text stays dark to stay legible.

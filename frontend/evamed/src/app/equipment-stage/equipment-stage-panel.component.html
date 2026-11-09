@@ -1,30 +1,30 @@
 <header class="equipment-panel-header">
-  <div><h2>{{ stage === 'construction' ? 'Equipos de construcción' : 'Equipos de deconstrucción' }}</h2><p>Energía consumida · {{ sectionName }}</p></div>
-  <button mat-flat-button type="button" class="equipment-primary" [disabled]="loading || loadFailed || busy" (click)="add()"><mat-icon>add_circle</mat-icon> Agregar equipo</button>
+  <div><h2 evHeading="section">{{ stage === 'construction' ? 'Equipos de construcción' : 'Equipos de deconstrucción' }}</h2><p>Energía consumida · {{ sectionName }}</p></div>
+  <button evAction="primary" mat-flat-button type="button" class="equipment-primary" [disabled]="loading || loadFailed || busy" (click)="add()"><mat-icon>add_circle</mat-icon> Agregar equipo</button>
 </header>
 <p *ngIf="loading" role="status">Cargando equipos…</p>
 <div *ngIf="loadFailed" role="alert">No se pudo cargar los equipos. <button mat-button type="button" (click)="load()">Reintentar</button></div>
-<p *ngIf="error" class="equipment-error" role="alert">{{ error }}</p>
+<p evStatus="error" *ngIf="error" class="equipment-error" role="alert">{{ error }}</p>
 <ng-container *ngIf="!loading && !loadFailed">
   <div class="equipment-view"><span>{{ visibleRows.length }} equipos agregados</span><mat-button-toggle-group [value]="view" (change)="view = $event.value" aria-label="Vista de equipos"><mat-button-toggle value="cards">Tarjetas</mat-button-toggle><mat-button-toggle value="list">Lista</mat-button-toggle></mat-button-toggle-group></div>
   <div class="equipment-grid" [class.equipment-grid-list]="view === 'list'">
-    <article *ngFor="let row of visibleRows" class="equipment-card" [attr.data-row]="row.id" [class.equipment-card-expanded]="expanded === row.key">
+    <article evSurface *ngFor="let row of visibleRows" class="equipment-card" [attr.data-row]="row.id" [class.equipment-card-expanded]="expanded === row.key">
       <button class="equipment-summary" type="button" [attr.data-edit]="row.id" [disabled]="busy" [attr.aria-expanded]="expanded === row.key" [attr.aria-controls]="'equipment-editor-' + row.id" (click)="edit(row)">
-        <h3 [title]="sourceName(row.sourceId)">{{ sourceName(row.sourceId) }}</h3>
+        <h3 evHeading="section" [title]="sourceName(row.sourceId)">{{ sourceName(row.sourceId) }}</h3>
         <p class="equipment-quantity">{{ row.quantity ?? 0 }} <span>{{ unitName(row.unitId) }}</span></p>
         <span class="equipment-edit-label">{{ expanded === row.key ? 'Cerrar edición' : 'Editar equipo' }} <mat-icon>{{ expanded === row.key ? 'expand_less' : 'expand_more' }}</mat-icon></span>
       </button>
-      <form *ngIf="expanded === row.key" [id]="'equipment-editor-' + row.id" class="equipment-editor" (ngSubmit)="save(row)">
+      <form evForm *ngIf="expanded === row.key" [id]="'equipment-editor-' + row.id" class="equipment-editor" (ngSubmit)="save(row)">
         <ng-container *ngIf="draftFor(row) as draft">
           <p class="equipment-draft-name">{{ sourceName(draft.sourceId) }}</p>
-          <button mat-button type="button" class="equipment-replace" [disabled]="busy" (click)="replace(row)">Cambiar equipo</button>
+          <button evAction="tertiary" mat-button type="button" class="equipment-replace" [disabled]="busy" (click)="replace(row)">Cambiar equipo</button>
           <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Cantidad</mat-label><input matInput type="text" inputmode="decimal" name="quantity" [(ngModel)]="draft.quantity" [disabled]="busy"></mat-form-field>
           <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Unidad</mat-label><mat-select name="unit" [(ngModel)]="draft.unitId" [disabled]="busy"><mat-option [value]="null">Sin unidad</mat-option><mat-option *ngFor="let unit of catalogue.units" [value]="unit.id">{{ unit.name }}</mat-option><mat-option *ngIf="legacyUnit(row)" [value]="row.unitId">{{ unitName(row.unitId) }}</mat-option></mat-select></mat-form-field>
-          <div class="equipment-actions"><button mat-stroked-button type="button" class="equipment-cancel" [disabled]="busy" (click)="cancel(row)">Cancelar</button><button mat-flat-button type="submit" class="equipment-primary equipment-save" [disabled]="busy">{{ busy ? 'Guardando…' : 'Guardar cambios' }}</button></div>
+          <div evActions class="equipment-actions"><button evAction="secondary" mat-stroked-button type="button" class="equipment-cancel" [disabled]="busy" (click)="cancel(row)">Cancelar</button><button evAction="primary" mat-flat-button type="submit" class="equipment-primary equipment-save" [disabled]="busy">{{ busy ? 'Guardando…' : 'Guardar cambios' }}</button></div>
         </ng-container>
       </form>
       <div class="equipment-card-footer"><button mat-button type="button" [attr.data-delete]="row.id" [disabled]="busy" [attr.aria-label]="'Eliminar: ' + sourceName(row.sourceId)" (click)="remove(row)"><mat-icon>delete_outline</mat-icon> Eliminar</button></div>
     </article>
   </div>
-  <div *ngIf="!visibleRows.length" class="equipment-empty"><mat-icon>construction</mat-icon><h3>Aún no has agregado equipos</h3><p>Agrega los equipos utilizados en {{ sectionName }}.</p><button mat-flat-button type="button" class="equipment-primary" [disabled]="busy" (click)="add()">Agregar equipo</button></div>
+  <div *ngIf="!visibleRows.length" class="equipment-empty"><mat-icon>construction</mat-icon><h3>Aún no has agregado equipos</h3><p>Agrega los equipos utilizados en {{ sectionName }}.</p><button evAction="primary" mat-flat-button type="button" class="equipment-primary" [disabled]="busy" (click)="add()">Agregar equipo</button></div>
 </ng-container>

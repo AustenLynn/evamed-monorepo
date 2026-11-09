@@ -31,22 +31,22 @@
 .edit__panel {
   margin: 0 0 12px;
   padding: 8px 16px 12px;
-  background: var(--ev-surface);
-  border: 1px solid var(--ev-border);
-  border-radius: 12px;
+
+
+
   min-width: 0;
 }
 
 .edit__legend {
   padding: 0 4px;
-  font-size: 16px;
+  font-size:var(--ev-font-section);
   font-weight: 700;
   color: var(--ev-text);
 }
 
 .edit__subtitle {
   margin: 4px 0 8px;
-  font-size: 13px;
+  font-size:var(--ev-font-support);
   font-weight: 700;
   color: var(--ev-text);
 }
@@ -104,7 +104,7 @@ mat-form-field {
 
 .edit__error {
   margin: 4px 0 0;
-  font-size: 12px;
+  font-size:var(--ev-font-caption);
   color: var(--ev-impact-high-text);
 }
 
@@ -112,7 +112,7 @@ mat-form-field {
   margin: 0 0 12px;
   padding: 8px 12px;
   border-radius: 8px;
-  font-size: 13px;
+  font-size:var(--ev-font-support);
   background: var(--ev-impact-mid-bg);
   color: var(--ev-impact-mid-text);
 }
@@ -124,33 +124,29 @@ mat-form-field {
   padding-top: 12px;
 }
 
-.edit__submit {
-  background: var(--ev-green-light);
-  color: var(--ev-text);
-}
 
 .edit__summary {
   padding: 16px 20px;
-  background: var(--ev-surface);
-  border: 1px solid var(--ev-border);
-  border-radius: 12px;
+
+
+
 }
 
 .edit__summary-name {
   margin: 0 0 8px;
-  font-size: 16px;
+  font-size:var(--ev-font-section);
   font-weight: 700;
   overflow-wrap: anywhere;
 }
 
 .edit__summary-gwp {
   margin: 0 0 6px;
-  font-size: 24px;
+  font-size:var(--ev-font-detail);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 
   span {
-    font-size: 12px;
+    font-size:var(--ev-font-caption);
     font-weight: 400;
     color: var(--ev-text-muted);
   }
@@ -161,7 +157,7 @@ mat-form-field {
   grid-template-columns: auto 1fr;
   gap: 6px 12px;
   margin: 16px 0 8px;
-  font-size: 13px;
+  font-size:var(--ev-font-support);
 
   dt {
     color: var(--ev-text-muted);
@@ -196,7 +192,7 @@ mat-form-field {
   }
 
   .edit__summary-gwp {
-    font-size: 20px;
+    font-size:var(--ev-font-menu);
   }
 
   .edit__summary-facts {

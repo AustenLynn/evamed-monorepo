@@ -1,19 +1,19 @@
 :host { display:block; min-width:0; color:var(--ev-text); }
 :host, :host * { box-sizing: border-box; }
-.equipment-panel-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:20px; h2 { margin:0; font-size:22px; font-weight:600; line-height:1.3; } p { margin:8px 0 0; color:var(--ev-text-muted-on-bg); font-size:13px; } }
-.equipment-primary { background:var(--ev-green-light); color:var(--ev-text); }
-.equipment-view { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px; font-size:13px; }
+.equipment-panel-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:20px; h2 { margin:0; } p { margin:8px 0 0; color:var(--ev-text-muted-on-bg); font-size:var(--ev-font-support); } }
+.equipment-primary {  }
+.equipment-view { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px; font-size:var(--ev-font-support); }
 .equipment-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:16px; align-items:start; }
 .equipment-grid-list { grid-template-columns:1fr; }
-.equipment-card { background:var(--ev-surface); border:1px solid var(--ev-border); border-radius:12px; min-width:0; }
+.equipment-card { padding:0;    min-width:0; }
 .equipment-card-expanded { border-color:var(--ev-green); }
-.equipment-summary { display:block; width:100%; text-align:left; border:0; border-radius:12px; background:transparent; color:inherit; padding:20px 16px 12px; cursor:pointer; &:focus-visible { outline:2px solid var(--ev-green-text); outline-offset:3px; } h3 { margin:0 0 16px; font-size:16px; line-height:1.5; font-weight:700; overflow-wrap:anywhere; } }
-.equipment-quantity { margin:0 0 16px; font-size:26px; font-weight:600; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; span { font-weight:400; font-size:13px; color:var(--ev-text-muted-on-bg); } }
-.equipment-edit-label { display:flex; align-items:center; gap:4px; font-size:13px; color:var(--ev-green-text); }
+.equipment-summary { display:block; width:100%; text-align:left; border:0; border-radius:var(--ev-radius-card); background:transparent; color:inherit; padding:20px 16px 12px; cursor:pointer; &:focus-visible { outline:2px solid var(--ev-green-text); outline-offset:3px; } h3 { margin:0 0 16px; font-size:var(--ev-font-section); line-height:var(--ev-line-heading); font-weight:var(--ev-weight-heading); overflow-wrap:anywhere; } }
+.equipment-quantity { margin:0 0 16px; font-size:26px; font-weight:600; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; span { font-weight:400; font-size:var(--ev-font-support); color:var(--ev-text-muted-on-bg); } }
+.equipment-edit-label { display:flex; align-items:center; gap:4px; font-size:var(--ev-font-support); color:var(--ev-green-text); }
 .equipment-card-footer { display:flex; justify-content:flex-end; padding:0 8px 8px; button { color:var(--ev-text-muted-on-bg); } }
 .equipment-editor { display:flex; flex-direction:column; gap:16px; padding:16px; border-top:1px solid var(--ev-divider); mat-form-field { width:100%; min-width:0; } }
-.equipment-draft-name { font-size:14px; margin:0; overflow-wrap:anywhere; }
+.equipment-draft-name { font-size:var(--ev-font-body); margin:0; overflow-wrap:anywhere; }
 .equipment-actions { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:8px; }
-.equipment-error { color:var(--ev-impact-high-text); font-size:14px; }
-.equipment-empty { text-align:center; background:var(--ev-surface); border:1px dashed var(--ev-border); border-radius:12px; padding:32px 16px; color:var(--ev-text-muted-on-bg); h3 { color:var(--ev-text); font-size:16px; } }
+.equipment-error { color:var(--ev-impact-high-text); font-size:var(--ev-font-body); }
+.equipment-empty { text-align:center; background:var(--ev-surface); border:1px dashed var(--ev-border); border-radius:var(--ev-radius-card); padding:32px 16px; color:var(--ev-text-muted-on-bg); h3 { color:var(--ev-text); font-size:var(--ev-font-section); } }
 @media(max-width:600px) { .equipment-grid { grid-template-columns:1fr; } .equipment-panel-header { flex-direction:column; } }

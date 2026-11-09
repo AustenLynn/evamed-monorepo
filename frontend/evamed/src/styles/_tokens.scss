@@ -1,0 +1,54 @@
+/* EVAMED foundations. See docs/design-system/foundations.md. */
+:root {
+  --ev-bg: #f8f8f8;
+  --ev-surface: #ffffff;
+  --ev-surface-muted: #efefef;
+  --ev-border: #cbcbcb;
+  --ev-divider: #ededed;
+
+  --ev-text: #000000;
+  // #767676 is the app's caption grey: 4.5:1 on white, but not on --ev-bg.
+  --ev-text-muted: #767676;
+  --ev-text-muted-on-bg: #595959;
+
+  --ev-green: #7fa20b;
+  --ev-green-light: #a8d024;
+  --ev-green-text: #5b7408;
+  --ev-yellow: #edc903;
+  --ev-melon: #ed8484;
+
+  // Impact badges: tints of the app's green, yellow and melon, with text dark
+  // enough to read on them (5.8:1, 6.3:1, 6.0:1).
+  --ev-impact-low-bg: #eef5d6;
+  --ev-impact-low-text: #4f6607;
+  --ev-impact-mid-bg: #fcf4c6;
+  --ev-impact-mid-text: #6b5800;
+  --ev-impact-high-bg: #fbe1e1;
+  --ev-impact-high-text: #9e2a2a;
+
+  --ev-skeleton: #ededed;
+  --ev-font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ev-font-heading: Roboto, sans-serif;
+  --ev-font-menu: 20px;
+  --ev-font-detail: 24px;
+  --ev-font-section: 16px;
+  --ev-font-body: 14px;
+  --ev-font-support: 13px;
+  --ev-font-caption: 12px;
+  --ev-font-value: 30px;
+  --ev-weight-heading: 700;
+  --ev-line-heading: 1.3;
+  --ev-radius-card: 12px;
+  --ev-radius-alert: 8px;
+  --ev-radius-search: 10px;
+  --ev-space-1: 4px;
+  --ev-space-2: 6px;
+  --ev-space-3: 8px;
+  --ev-space-4: 12px;
+  --ev-space-5: 16px;
+  --ev-space-6: 20px;
+  --ev-space-7: 24px;
+  --ev-space-8: 32px;
+  --ev-field-height: 44px;
+  --ev-field-padding: 10px;
+}

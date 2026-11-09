@@ -1,0 +1,90 @@
+:host {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px 16px;
+  padding: 12px 24px;
+  background: var(--ev-surface);
+  border-top: 1px solid var(--ev-border);
+}
+
+@media (max-width: 600px) {
+  :host {
+    flex-direction: column;
+    align-items: stretch;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+.ev-selection__picked {
+  flex: 1;
+  min-width: 0;
+}
+
+.ev-selection__count {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 700;
+  color: var(--ev-text);
+}
+
+// A few rows of names at most; more scroll inside the tray.
+.ev-selection__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 96px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.ev-selection__chip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 2px 2px 2px 10px;
+  border: 1px solid var(--ev-border);
+  border-radius: 16px;
+  background: var(--ev-impact-low-bg);
+  font-size: 13px;
+  color: var(--ev-text);
+}
+
+.ev-selection__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ev-selection__remove {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-left: 2px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--ev-text-muted);
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--ev-surface-muted);
+    color: var(--ev-text);
+  }
+
+  mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+}
+
+
+.ev-selection__remove:disabled { cursor:default; opacity:0.5; }

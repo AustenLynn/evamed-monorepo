@@ -9,7 +9,7 @@
   margin: 8px 0 -4px;
   padding-bottom: 4px;
   border-bottom: 1px solid var(--ev-border);
-  font-size: 14px;
+  font-size:var(--ev-font-body);
   font-weight: 700;
   color: var(--ev-text-muted-on-bg);
 
@@ -22,7 +22,7 @@
   min-height: 190px;
   background: var(--ev-skeleton);
   border: 1px solid var(--ev-border);
-  border-radius: 12px;
+  border-radius:var(--ev-radius-card);
 }
 
 .results-cards__sentinel {
@@ -40,7 +40,7 @@
 .results-cards__message {
   margin: 0;
   min-height: 1.2em;
-  font-size: 13px;
+  font-size:var(--ev-font-support);
   color: var(--ev-text-muted-on-bg);
 }
 

@@ -1,0 +1,10 @@
+<div class="ev-selection__picked">
+  <span class="ev-selection__count" role="status">{{ label }}</span>
+  <ul class="ev-selection__chips" aria-label="Selección">
+    <li *ngFor="let item of items" class="ev-selection__chip">
+      <span class="ev-selection__name" [title]="item.name">{{ item.name }}</span>
+      <button type="button" class="ev-selection__remove" [disabled]="disabled" [attr.aria-label]="'Quitar de la selección: ' + item.name" (click)="remove.emit(item.id)"><mat-icon aria-hidden="true">close</mat-icon></button>
+    </li>
+  </ul>
+</div>
+<ng-content></ng-content>

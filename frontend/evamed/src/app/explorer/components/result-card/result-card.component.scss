@@ -9,9 +9,9 @@
   min-height: 190px;
   box-sizing: border-box;
   padding: 16px;
-  background: var(--ev-surface);
-  border: 1px solid var(--ev-border);
-  border-radius: 12px;
+
+
+
 
   &:focus-visible {
     outline: 2px solid var(--ev-green-text);
@@ -28,7 +28,7 @@
 
 .result-card__name {
   margin: 0;
-  font-size: 16px;
+  font-size:var(--ev-font-section);
   font-weight: 700;
   line-height: 1.3;
   color: var(--ev-text);
@@ -60,7 +60,7 @@
 
 .result-card__description {
   margin: 6px 0 12px;
-  font-size: 13px;
+  font-size:var(--ev-font-support);
   color: var(--ev-text-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -76,7 +76,7 @@
 }
 
 .result-card__gwp {
-  font-size: 30px;
+  font-size:var(--ev-font-value);
   font-weight: 700;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
@@ -88,7 +88,7 @@
 }
 
 .result-card__unit {
-  font-size: 12px;
+  font-size:var(--ev-font-caption);
   color: var(--ev-text-muted);
 }
 

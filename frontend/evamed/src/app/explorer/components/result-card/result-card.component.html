@@ -1,6 +1,6 @@
-<article class="result-card" tabindex="-1">
+<article evSurface class="result-card" tabindex="-1">
   <header class="result-card__header">
-    <h3 class="result-card__name">
+    <h3 evHeading="section" class="result-card__name">
       <a *ngIf="link; else openOrPlain" [routerLink]="link">{{ item.display_name }}</a>
       <ng-template #openOrPlain>
         <button *ngIf="openable; else plainName" type="button" class="result-card__open" (click)="itemOpen.emit()">

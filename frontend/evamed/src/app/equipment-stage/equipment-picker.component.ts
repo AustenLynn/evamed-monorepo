@@ -43,6 +43,10 @@ export class EquipmentPickerComponent implements OnDestroy {
   }
   get types(): string[] {return [...new Set(this.sources.map(source => source.type))];}
   get selection(): EquipmentSource[] {return [...this.selected].map(id => this.sources.find(source => source.id === id)!).filter(Boolean);}
+  removeSelection(id: number): void {
+    const source = this.sources.find(item => item.id === id);
+    if (source) this.pick(source);
+  }
   pick(source: EquipmentSource): void {
     if (this.saving || this.finishing) return;
     if (this.context.mode === 'replace') {this.finishing = true; this.ref.close(source); return;}

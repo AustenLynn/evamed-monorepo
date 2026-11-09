@@ -1,0 +1,68 @@
+// Opt-in primitives. Native controls and Angular Material own behaviour.
+[evSurface] {
+  min-width: 0;
+  background: var(--ev-surface);
+  border: 1px solid var(--ev-border);
+  border-radius: var(--ev-radius-card);
+  padding: var(--ev-space-5);
+}
+[evHeading] {
+  margin: 0;
+  font-family: var(--ev-font-heading);
+  font-size: var(--ev-font-section);
+  font-weight: var(--ev-weight-heading);
+  color: var(--ev-text);
+  overflow-wrap: anywhere;
+}
+[evHeading='menu'] { font-size: var(--ev-font-menu); color: var(--ev-green-text); }
+[evHeading='detail'] { font-size: var(--ev-font-detail); }
+[evAction='primary'] {
+  --mat-button-filled-container-color: var(--ev-green-light);
+  --mat-button-filled-label-text-color: var(--ev-text);
+}
+[evAction='tertiary'] { color: var(--ev-green-text); }
+[evAction='destructive'] { color: var(--ev-impact-high-text); }
+[evActions] { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: var(--ev-space-4); }
+[evForm] {
+  --mat-form-field-container-height: var(--ev-field-height);
+  --mat-form-field-container-vertical-padding: var(--ev-field-padding);
+}
+[evFieldGroup] {
+  min-width: 0;
+  background: var(--ev-surface);
+  border: 1px solid var(--ev-border);
+  border-radius: var(--ev-radius-card);
+  padding: var(--ev-space-3) var(--ev-space-5) var(--ev-space-4);
+  legend { font-size: var(--ev-font-section); font-weight: var(--ev-weight-heading); }
+}
+[evStatus='error'] { color: var(--ev-impact-high-text); }
+[evStatus='warning'], [evStatus='failure'] {
+  padding: var(--ev-space-3) var(--ev-space-4);
+  border-radius: var(--ev-radius-alert);
+  font-size: var(--ev-font-support);
+}
+[evStatus='warning'] { color: var(--ev-impact-mid-text); background: var(--ev-impact-mid-bg); }
+[evStatus='failure'] { color: var(--ev-impact-high-text); background: var(--ev-impact-high-bg); }
+[evStatus='loading'] { color: var(--ev-text-muted-on-bg); font-size: var(--ev-font-support); }
+[evSurface]:focus-visible, [evAction]:focus-visible {
+  outline: 2px solid var(--ev-green-text);
+  outline-offset: 2px;
+}
+[evMenuHeader] {
+  display:flex; align-items:center; justify-content:space-between;
+  flex:none; gap:var(--ev-space-4); padding:var(--ev-space-4) var(--ev-space-7);
+  background:var(--ev-surface); border-bottom:1px solid var(--ev-border);
+  h1 { padding:0; }
+  p { margin:2px 0 0; color:var(--ev-text-muted); font-size:var(--ev-font-support); }
+}
+@media(max-width:600px) { [evMenuHeader] { padding-left:var(--ev-space-5); padding-right:var(--ev-space-5); } }
+// Dialog title typography is themed by Material at higher specificity than a
+// plain attribute. Supply its supported tokens so embedded and dialog menus agree.
+[evMenuHeader] {
+  --mat-dialog-subhead-color: var(--ev-green-text);
+  --mat-dialog-subhead-font: var(--ev-font-heading);
+  --mat-dialog-subhead-size: var(--ev-font-menu);
+  --mat-dialog-subhead-weight: var(--ev-weight-heading);
+}
+[evMenuHeader] [evHeading='menu'] { margin:0; padding:0; }
+[evMenuHeader] [evHeading='menu']::before { display:none; }

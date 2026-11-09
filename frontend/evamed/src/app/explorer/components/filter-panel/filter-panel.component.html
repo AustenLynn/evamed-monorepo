@@ -1,7 +1,7 @@
-<section class="filter-panel" aria-labelledby="filter-panel-title">
+<section evSurface class="filter-panel" aria-labelledby="filter-panel-title">
   <header class="filter-panel__header">
-    <h2 id="filter-panel-title" class="filter-panel__title">Filtros</h2>
-    <button mat-button type="button" class="filter-panel__clear" [disabled]="!active" (click)="clear()">
+    <h2 evHeading="section" id="filter-panel-title" class="filter-panel__title">Filtros</h2>
+    <button evAction="tertiary" mat-button type="button" class="filter-panel__clear" [disabled]="!active" (click)="clear()">
       Limpiar filtros
     </button>
   </header>

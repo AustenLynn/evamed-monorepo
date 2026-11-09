@@ -1,3 +1,4 @@
+import { EvUiModule } from '../shared/ui/ui.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -37,7 +38,7 @@ const COMPONENTS = [
 /** The explorer's pieces without its routes: the routed pages and the stage pages' picker share them. */
 @NgModule({
   declarations: COMPONENTS,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, MaterialModule],
+  imports: [EvUiModule, CommonModule, ReactiveFormsModule, RouterModule, MaterialModule],
   exports: [...COMPONENTS, MaterialModule],
 })
 export class ExplorerUiModule {}

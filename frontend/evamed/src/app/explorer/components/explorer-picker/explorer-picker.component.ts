@@ -1,3 +1,4 @@
+import { MenuShellComponent } from '../../../shared/ui/menu-shell.component';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { takeUntil } from 'rxjs/operators';
@@ -41,7 +42,11 @@ export class ExplorerPickerComponent {
   /** Names of the materials the last save couldn't add. */
   failedNames: string[] = [];
 
-  @ViewChild('body', { static: true }) body!: ElementRef<HTMLElement>;
+  @ViewChild(MenuShellComponent, { static: true }) menu!: MenuShellComponent;
+  get body(): ElementRef<HTMLElement> { return this.menu.body; }
+  get selectionItems(): {id: number; name: string}[] {
+    return this.selection.map(row => ({id: row.material.id, name: row.displayName}));
+  }
   private listScrollTop = 0;
   /** What has been added so far: handed back when the picker closes. */
   private readonly added: PickedMaterial[] = [];

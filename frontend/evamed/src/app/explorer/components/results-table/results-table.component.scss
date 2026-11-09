@@ -2,7 +2,7 @@
   display: block;
   background: var(--ev-surface);
   border: 1px solid var(--ev-border);
-  border-radius: 12px;
+  border-radius:var(--ev-radius-card);
   overflow: hidden;
 }
 
@@ -53,7 +53,7 @@ a.results-table__name:focus-visible,
 .results-table__description {
   display: block;
   max-width: 360px;
-  font-size: 12px;
+  font-size:var(--ev-font-caption);
   color: var(--ev-text-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -68,7 +68,7 @@ a.results-table__name:focus-visible,
 
 .results-table__unit {
   display: block;
-  font-size: 12px;
+  font-size:var(--ev-font-caption);
   color: var(--ev-text-muted);
 }
 

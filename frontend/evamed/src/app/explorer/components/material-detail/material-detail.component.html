@@ -13,7 +13,7 @@
     <ng-container *ngIf="$any(load).detail as detail">
       <header class="detail__header">
         <div class="detail__heading">
-          <h1 id="detail-title" class="detail__title">{{ detail.display_name }}</h1>
+          <h1 evHeading="detail" id="detail-title" class="detail__title">{{ detail.display_name }}</h1>
         </div>
         <div class="detail__chips">
           <app-source-chip [source]="detail.source"></app-source-chip>
@@ -21,7 +21,7 @@
           <span *ngIf="detail.unit" class="detail__chip">Unidad: {{ detail.unit }}</span>
         </div>
         <button
-          *ngIf="canSelect"
+ evAction="primary"          *ngIf="canSelect"
           mat-flat-button
           type="button"
           class="detail__select"
@@ -43,8 +43,8 @@
       </header>
 
       <div class="detail__grid">
-        <section class="detail__panel" aria-labelledby="detail-description">
-          <h2 id="detail-description" class="detail__section">Descripción</h2>
+        <section evSurface class="detail__panel" aria-labelledby="detail-description">
+          <h2 evHeading="section" id="detail-description" class="detail__section">Descripción</h2>
           <p *ngIf="detail.description; else noDescription" class="detail__description" [class.detail__description--open]="descriptionOpen">
             {{ detail.description }}
           </p>
@@ -61,8 +61,8 @@
           </button>
         </section>
 
-        <section class="detail__panel" aria-labelledby="detail-general">
-          <h2 id="detail-general" class="detail__section">Información general</h2>
+        <section evSurface class="detail__panel" aria-labelledby="detail-general">
+          <h2 evHeading="section" id="detail-general" class="detail__section">Información general</h2>
           <dl class="detail__facts">
             <dt>Base de datos</dt>
             <dd>{{ detail.source || '—' }}</dd>
@@ -85,8 +85,8 @@
         </section>
       </div>
 
-      <section class="detail__panel" aria-labelledby="detail-indicators">
-        <h2 id="detail-indicators" class="detail__section">Indicadores ambientales</h2>
+      <section evSurface class="detail__panel" aria-labelledby="detail-indicators">
+        <h2 evHeading="section" id="detail-indicators" class="detail__section">Indicadores ambientales</h2>
         <div class="detail__table-scroll">
           <table class="detail__table">
             <thead>
@@ -114,8 +114,8 @@
         <p *ngIf="!detail.indicators.length" class="detail__muted">Este material no tiene indicadores en la base de datos.</p>
       </section>
 
-      <section *ngIf="detail.comparison as comparison" class="detail__panel" aria-labelledby="detail-comparison">
-        <h2 id="detail-comparison" class="detail__section">Comparación en su categoría</h2>
+      <section evSurface *ngIf="detail.comparison as comparison" class="detail__panel" aria-labelledby="detail-comparison">
+        <h2 evHeading="section" id="detail-comparison" class="detail__section">Comparación en su categoría</h2>
         <p class="detail__muted">
           GWP A1–A3 frente a los {{ comparison.n }} materiales de «{{ comparison.group }}» medidos en {{ comparison.unit }}.
         </p>

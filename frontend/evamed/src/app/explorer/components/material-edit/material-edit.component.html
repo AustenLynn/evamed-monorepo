@@ -1,7 +1,7 @@
-<form class="edit" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+<form evForm class="edit" [formGroup]="form" (ngSubmit)="submit()" novalidate>
   <div class="edit__main">
-    <fieldset class="edit__panel">
-      <legend class="edit__legend">Material</legend>
+    <fieldset evFieldGroup class="edit__panel">
+      <legend evHeading="section" class="edit__legend">Material</legend>
       <div class="edit__row edit__row--material">
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Nombre comercial</mat-label>
@@ -19,7 +19,7 @@
           <input matInput [value]="detail.unit || '—'" readonly />
         </mat-form-field>
       </div>
-      <p *ngIf="unitMismatch as rowUnit" class="edit__warning" role="note">
+      <p evStatus="warning" *ngIf="unitMismatch as rowUnit" class="edit__warning" role="note">
         Este renglón se capturó en «{{ rowUnit }}», pero el material se declara en «{{ detail.unit }}». Revisa que la cantidad esté en {{ detail.unit }}.
       </p>
       <mat-form-field appearance="outline" subscriptSizing="dynamic" class="edit__wide">
@@ -28,8 +28,8 @@
       </mat-form-field>
     </fieldset>
 
-    <fieldset class="edit__panel" *ngIf="transports$ | async as transports">
-      <legend class="edit__legend">Transporte</legend>
+    <fieldset evFieldGroup class="edit__panel" *ngIf="transports$ | async as transports">
+      <legend evHeading="section" class="edit__legend">Transporte</legend>
       <div class="edit__legs">
         <div class="edit__leg">
           <h3 class="edit__subtitle">Transporte 1 · Origen → frontera (internacional)</h3>
@@ -48,7 +48,7 @@
               <mat-error *ngIf="error('distanceOrigin')">La distancia no puede ser negativa.</mat-error>
             </mat-form-field>
           </div>
-          <p *ngIf="legError('transportOrigin')" class="edit__error" role="alert">Elige el tipo de transporte para esta distancia.</p>
+          <p evStatus="error" *ngIf="legError('transportOrigin')" class="edit__error" role="alert">Elige el tipo de transporte para esta distancia.</p>
         </div>
         <div class="edit__leg">
           <h3 class="edit__subtitle">Transporte 2 · Frontera → obra (nacional)</h3>
@@ -67,14 +67,14 @@
               <mat-error *ngIf="error('distanceEnd')">La distancia no puede ser negativa.</mat-error>
             </mat-form-field>
           </div>
-          <p *ngIf="legError('transportEnd')" class="edit__error" role="alert">Elige el tipo de transporte para esta distancia.</p>
+          <p evStatus="error" *ngIf="legError('transportEnd')" class="edit__error" role="alert">Elige el tipo de transporte para esta distancia.</p>
         </div>
       </div>
     </fieldset>
 
     <div class="edit__footer">
-      <fieldset class="edit__panel edit__panel--life">
-        <legend class="edit__legend">Tiempo de vida del material</legend>
+      <fieldset evFieldGroup class="edit__panel edit__panel--life">
+        <legend evHeading="section" class="edit__legend">Tiempo de vida del material</legend>
         <div class="edit__row">
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>Tiempo de vida (años)</mat-label>
@@ -90,15 +90,15 @@
         </div>
       </fieldset>
 
-      <div class="edit__actions">
+      <div evActions class="edit__actions">
         <button mat-stroked-button type="button" (click)="cancelled.emit()">Cancelar</button>
-        <button mat-flat-button type="submit" class="edit__submit" [disabled]="saving">{{ submitLabel }}</button>
+        <button evAction="primary" mat-flat-button type="submit" class="edit__submit" [disabled]="saving">{{ submitLabel }}</button>
       </div>
     </div>
   </div>
 
-  <aside class="edit__summary" aria-label="Material del catálogo">
-    <h3 class="edit__summary-name">{{ detail.display_name }}</h3>
+  <aside evSurface class="edit__summary" aria-label="Material del catálogo">
+    <h3 evHeading="section" class="edit__summary-name">{{ detail.display_name }}</h3>
     <p class="edit__summary-gwp">{{ detail.gwp | gwp }} <span>kg CO₂e{{ detail.unit ? ' / ' + detail.unit : '' }} (A1–A3)</span></p>
     <app-impact-badge [level]="detail.impact_level"></app-impact-badge>
     <dl class="edit__summary-facts">
@@ -109,10 +109,10 @@
       <dt>Unidad declarada</dt>
       <dd>{{ detail.unit || '—' }}</dd>
     </dl>
-    <button mat-button type="button" class="edit__summary-link" (click)="back.emit(currentValues())">
+    <button evAction="tertiary" mat-button type="button" class="edit__summary-link" (click)="back.emit(currentValues())">
       Ver ficha completa
     </button>
-    <button *ngIf="editing" mat-button type="button" class="edit__summary-link" (click)="changeMaterial.emit(currentValues())">
+    <button evAction="tertiary" *ngIf="editing" mat-button type="button" class="edit__summary-link" (click)="changeMaterial.emit(currentValues())">
       Cambiar material
     </button>
   </aside>

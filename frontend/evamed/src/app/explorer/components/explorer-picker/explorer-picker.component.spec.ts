@@ -324,14 +324,14 @@ describe('ExplorerPickerService', () => {
     const beam = { ...DETAIL, id: 13, name: 'Acero_Viga', display_name: 'Viga', unit: 'm', source: 'EPDs' },
       two: ExplorerPage = { ...list, count: 2, results: [DETAIL, beam] },
       tick = (index: number) => click(`app-result-card:nth-of-type(${index}) .result-card__check input`),
-      picked = () => Array.from(overlay().querySelectorAll('.picker__chip-name'), name => name.textContent?.trim());
+      picked = () => Array.from(overlay().querySelectorAll('.ev-selection__name'), name => name.textContent?.trim());
 
     it('lists the ticked materials, and adds them at once with quantity 0 and the defaults', async () => {
       const { result } = await start({}, true, two);
 
       await tick(1);
       await tick(2);
-      expect(overlay().querySelector('.picker__count')?.textContent?.trim()).toBe('2 materiales seleccionados');
+      expect(overlay().querySelector('.ev-selection__count')?.textContent?.trim()).toBe('2 materiales seleccionados');
       expect(picked()).toEqual(['AAC block', 'Viga']);
       expect(overlay().querySelector('.selection__quantity')).toBeNull();
       await click('.picker__add', 'Agregar 2 materiales');

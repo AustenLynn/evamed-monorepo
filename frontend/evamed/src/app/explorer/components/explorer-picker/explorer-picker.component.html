@@ -1,6 +1,7 @@
-<header class="picker__bar">
+<app-ev-menu-shell>
+<header evMenuHeader class="picker__bar">
   <div class="picker__heading">
-    <h1 class="picker__title" mat-dialog-title>{{ title }}</h1>
+    <h1 class="picker__title" evHeading="menu" mat-dialog-title>{{ title }}</h1>
     <p class="picker__context">
       <span *ngIf="context.section">{{ context.section }} · </span>{{ context.system }}
     </p>
@@ -10,7 +11,7 @@
   </button>
 </header>
 
-<div #body class="picker__body">
+<div class="picker__body">
   <p *ngIf="step.kind === 'loading'" role="status" class="picker__status">Cargando material…</p>
 
   <nav *ngIf="step.kind !== 'list' && step.kind !== 'loading'" class="picker__crumbs" aria-label="Ruta">
@@ -63,26 +64,12 @@
   ></app-material-edit>
 </div>
 
-<footer *ngIf="selection.length && step.kind !== 'loading'" class="picker__tray">
-  <div class="picker__picked">
-    <span class="picker__count" role="status">
-      {{ selection.length }} {{ selection.length === 1 ? 'material seleccionado' : 'materiales seleccionados' }}
-    </span>
-    <ul class="picker__chips" aria-label="Materiales seleccionados">
-      <li *ngFor="let row of selection; trackBy: trackRow" class="picker__chip">
-        <span class="picker__chip-name">{{ row.displayName }}</span>
-        <button
-          type="button"
-          class="picker__chip-remove"
-          [attr.aria-label]="'Quitar de la selección: ' + row.displayName"
-          (click)="remove(row.material.id)"
-        >
-          <mat-icon aria-hidden="true">close</mat-icon>
-        </button>
-      </li>
-    </ul>
-  </div>
-  <button mat-flat-button type="button" class="picker__add" [disabled]="saving" (click)="addSelection()">
+<app-ev-selection-tray evMenuFooter *ngIf="selection.length && step.kind !== 'loading'" class="picker__tray"
+  [items]="selectionItems" [disabled]="saving"
+  [label]="selection.length + (selection.length === 1 ? ' material seleccionado' : ' materiales seleccionados')"
+  (remove)="remove($event)">
+  <button mat-flat-button evAction="primary" type="button" class="picker__add" [disabled]="saving" (click)="addSelection()">
     {{ saving ? 'Agregando…' : 'Agregar ' + selection.length + (selection.length === 1 ? ' material' : ' materiales') }}
   </button>
-</footer>
+</app-ev-selection-tray>
+</app-ev-menu-shell>

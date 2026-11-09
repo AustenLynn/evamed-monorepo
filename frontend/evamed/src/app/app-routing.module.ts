@@ -1,3 +1,4 @@
+import { referenceRoutes } from './shared/ui/reference/reference.routes';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule, NoPreloading } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
@@ -162,6 +163,7 @@ export const routes: Routes = [
       },
     ],
   },
+  ...referenceRoutes,
   {
     path: 'auth',
     loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule),

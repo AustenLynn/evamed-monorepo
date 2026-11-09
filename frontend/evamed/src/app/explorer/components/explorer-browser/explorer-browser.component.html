@@ -9,7 +9,7 @@
 
   <section class="explorer-browser__results" aria-labelledby="results-title">
     <header class="explorer-browser__header">
-      <h2 id="results-title" class="explorer-browser__title">
+      <h2 evHeading="section" id="results-title" class="explorer-browser__title">
         Resultados<ng-container *ngIf="vm.state.count !== null"> ({{ vm.state.count }})</ng-container>
       </h2>
       <mat-form-field *ngIf="stage.sortable" appearance="outline" subscriptSizing="dynamic" class="explorer-browser__sort">
@@ -33,7 +33,7 @@
     </header>
 
     <!-- Nothing matches -->
-    <div *ngIf="vm.state.count === 0; else results" class="explorer-browser__empty">
+    <div evSurface *ngIf="vm.state.count === 0; else results" class="explorer-browser__empty">
       <p>No encontramos resultados{{ filtered ? ' con estos filtros' : '' }}.</p>
       <button *ngIf="filtered" mat-stroked-button type="button" (click)="clearFilters()">Limpiar filtros</button>
     </div>
@@ -73,7 +73,7 @@
           ></app-results-table>
         <ng-template #tableState>
           <p *ngIf="vm.state.failed === null" role="status" class="explorer-browser__status">Cargando resultados…</p>
-          <div *ngIf="vm.state.failed !== null" role="alert" class="explorer-browser__error">
+          <div evSurface *ngIf="vm.state.failed !== null" role="alert" class="explorer-browser__error">
             No se pudieron cargar los resultados.
             <button mat-stroked-button type="button" (click)="vm.feed.retry()">Reintentar</button>
           </div>

@@ -29,7 +29,7 @@
 
 .explorer-browser__title {
   margin: 0;
-  font-size: 16px;
+  font-size:var(--ev-font-section);
   font-weight: 700;
   color: var(--ev-text);
 }
@@ -43,7 +43,7 @@
   padding: 24px;
   background: var(--ev-surface);
   border: 1px solid var(--ev-border);
-  border-radius: 12px;
+  border-radius:var(--ev-radius-card);
   color: var(--ev-text);
 
   p {

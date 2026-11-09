@@ -392,3 +392,7 @@ Stop after each phase. Run `npm test`, `npm run lint`, `npm run build -- --confi
 - [ ] Tests added
 - [ ] CI green, including style budgets
 - [ ] PR lists the finding IDs addressed
+
+## Shared design system (2026-11-09)
+
+For frontend UI changes, start with [the maintained design-system folder](../../design-system/README.md). Explorar Material, Ficha and Edit Material are the approved references. Shared primitives live in `frontend/evamed/src/app/shared/ui`; migration scope and exceptions are recorded in the design-system docs.

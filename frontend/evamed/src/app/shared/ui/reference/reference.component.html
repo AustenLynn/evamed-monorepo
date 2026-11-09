@@ -1,0 +1,32 @@
+<main class="reference">
+  <h1 evHeading="detail">EVAMED · Referencia del sistema de diseño</h1>
+  <p>Solo desarrollo. Componentes reales con datos sintéticos; ninguna acción guarda datos de proyecto.</p>
+  <section evSurface>
+    <h2 evHeading="section">Acciones y estados</h2>
+    <div class="reference-actions">
+      <button mat-flat-button evAction="primary" (click)="message.set('Acción de ejemplo')">Acción principal</button>
+      <button mat-stroked-button evAction="secondary">Secundaria</button>
+      <button mat-button evAction="tertiary">Ver detalles</button>
+      <button mat-button evAction="destructive">Eliminar</button>
+      <button mat-flat-button evAction="primary" disabled>Deshabilitado</button>
+      <button mat-stroked-button (click)="pending.set(!pending())">Alternar guardado</button>
+    </div>
+    <p role="status">{{ message() }}</p>
+    <p evStatus="loading" role="status">Cargando recursos…</p>
+    <div evSurface><p>Aún no hay recursos.</p><button mat-stroked-button>Agregar recurso</button></div>
+    <p evStatus="warning" role="note">Revisa la unidad antes de guardar.</p>
+    <p evStatus="failure" role="alert">No se pudo guardar. Tus cambios se conservan.</p>
+    <app-ev-selection-tray [items]="items()" [label]="items().length + ' materiales seleccionados'" [disabled]="pending()" (remove)="remove($event)">
+      <button mat-flat-button evAction="primary" [disabled]="pending() || !items().length">{{ pending() ? 'Agregando…' : 'Agregar selección' }}</button>
+    </app-ev-selection-tray>
+  </section>
+  <section aria-labelledby="reference-menu-title">
+    <h2 id="reference-menu-title" evHeading="section">Explorar Material · menú real</h2>
+    <div class="reference-menu"><app-explorer-picker></app-explorer-picker></div>
+  </section>
+  <section aria-label="Ficha de referencia"><app-material-detail [materialId]="12"></app-material-detail></section>
+  <section aria-labelledby="reference-edit-title">
+    <h2 id="reference-edit-title" evHeading="section">Edit Material · formulario real</h2>
+    <app-material-edit [detail]="material" [context]="context" [saving]="pending()" (save)="message.set('Formulario válido; no se guardan datos')"></app-material-edit>
+  </section>
+</main>
