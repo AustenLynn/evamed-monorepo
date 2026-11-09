@@ -57,3 +57,7 @@ Catalogue cards and editable equipment cards share surfaces and heading roles bu
 ## Development reference
 
 Run the existing Angular development server and open `/design-system`. The page uses real explorer, Ficha and edit components with local synthetic providers, plus interactive shared action/tray states. It makes no project/catalogue API requests. Production and docker replace `reference.routes.ts` with an empty route list; the reference component is not imported by those builds.
+
+## Quantity display
+
+`QuantityDisplayPipe` (`quantityDisplay`), exported by `EvUiModule`, removes insignificant fractional zeros: `0.0000000000` → `0`, `12.000` → `12`, `12.500` → `12.5`. Equipment card quantities use this display role. It preserves decimal strings without numeric conversion or rounding; editing and persistence retain the original value. Other numeric roles, such as impact values, keep their existing formatting.

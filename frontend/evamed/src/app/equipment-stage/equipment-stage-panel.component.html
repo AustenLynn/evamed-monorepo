@@ -11,7 +11,7 @@
     <article evSurface *ngFor="let row of visibleRows" class="equipment-card" [attr.data-row]="row.id" [class.equipment-card-expanded]="expanded === row.key">
       <button class="equipment-summary" type="button" [attr.data-edit]="row.id" [disabled]="busy" [attr.aria-expanded]="expanded === row.key" [attr.aria-controls]="'equipment-editor-' + row.id" (click)="edit(row)">
         <h3 evHeading="section" [title]="sourceName(row.sourceId)">{{ sourceName(row.sourceId) }}</h3>
-        <p class="equipment-quantity">{{ row.quantity ?? 0 }} <span>{{ unitName(row.unitId) }}</span></p>
+        <p class="equipment-quantity">{{ row.quantity | quantityDisplay }} <span>{{ unitName(row.unitId) }}</span></p>
         <span class="equipment-edit-label">{{ expanded === row.key ? 'Cerrar edición' : 'Editar equipo' }} <mat-icon>{{ expanded === row.key ? 'expand_less' : 'expand_more' }}</mat-icon></span>
       </button>
       <form evForm *ngIf="expanded === row.key" [id]="'equipment-editor-' + row.id" class="equipment-editor" (ngSubmit)="save(row)">

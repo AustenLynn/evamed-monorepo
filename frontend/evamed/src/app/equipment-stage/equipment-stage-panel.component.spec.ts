@@ -7,8 +7,8 @@ import { EquipmentRowsService } from './equipment-rows.service';
 import { EquipmentPickerService } from './equipment-picker.service';
 
 describe('Equipment cards', () => {
-  const render = (stage = 'construction') => {
-    const rows = [{key: 'construction:73', id: 73, sectionId: 1, sourceId: 11, quantity: '12.3456789', unitId: null}, {key: 'construction:74', id: 74, sectionId: 1, sourceId: 11, quantity: 8, unitId: 2}, {key: 'construction:75', id: 75, sectionId: 2, sourceId: 11, quantity: 3, unitId: 2}];
+  const render = (stage = 'construction', initialQuantity = '12.3456789') => {
+    const rows = [{key: 'construction:73', id: 73, sectionId: 1, sourceId: 11, quantity: initialQuantity, unitId: null}, {key: 'construction:74', id: 74, sectionId: 1, sourceId: 11, quantity: 8, unitId: 2}, {key: 'construction:75', id: 75, sectionId: 2, sourceId: 11, quantity: 3, unitId: 2}];
     let nextId = 90;
     const picker = {pickMany: vi.fn(async (context: any) => {const sources = [{id: 11, name: 'Excavadora hidráulica', type: 'Otros'}], saved = await context.save(sources); return sources.filter((_s, i) => saved[i]);}), choose: vi.fn(async () => ({id: 2, name: 'Generador diésel', type: 'Generador'}))},
      api = {list: vi.fn(() => of({rows, rawTotal: 23.3456789})), update: vi.fn((_stage: unknown, row: any, value: any) => of({...row, ...value})), create: vi.fn((_stage: unknown, _project:unknown, sectionId:number, value:any) => of({key: 'construction:' + nextId, id: nextId++, sectionId, ...value})), remove: vi.fn(() => of(undefined))};
@@ -22,6 +22,17 @@ describe('Equipment cards', () => {
      quantity = (value:string)=>{const input = el.querySelector<HTMLInputElement>('input[name="quantity"]')!;input.value = value;input.dispatchEvent(new Event('input'));fixture.detectChanges();};
     return {fixture, el, api, click, quantity, rows, picker};
   };
+  it.each([
+    ['0.0000000000', '0'],
+    ['12.0000000000', '12'],
+    ['12.5000000000', '12.5'],
+    ['1234567890.1234567890', '1234567890.123456789'],
+  ])('displays quantity %s as %s without changing the stored value', (stored, displayed) => {
+    const {rows, el, api} = render('construction', stored);
+    expect(el.querySelector('[data-row="73"] .equipment-quantity')?.firstChild?.textContent?.trim()).toBe(displayed);
+    expect(rows[0].quantity).toBe(stored);
+    expect(api.update).not.toHaveBeenCalled();
+  });
   it('expands inside only the selected card and preserves distinct rows of the same source', async ()=>{
     const {el, api, click} = render();expect(el.querySelectorAll('.equipment-card')).toHaveLength(2);
     expect(el.textContent).toContain('Sin unidad');await click('[data-edit="73"]');
