@@ -26,6 +26,15 @@ export class CatalogsService {
   private _potentialTypes$: Observable<any>;
   private _sections$: Observable<any>;
 
+  private _constructiveProcesses$: Observable<any>;
+
+  getConstructiveProcesses() {
+    if (!this._constructiveProcesses$) {
+      this._constructiveProcesses$ = this.http.get<any>(environment.api_constructive_process).pipe(shareReplay(1));
+    }
+    return this._constructiveProcesses$;
+  }
+
   constructor(private http: HttpClient) {}
 
   getLocalDistances() {

@@ -1,400 +1,126 @@
-import { CatalogsService } from 'src/app/core/services/catalogs/catalogs.service';
-import { EndLifeService } from './../../../core/services/end-life/end-life.service';
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
-
+import { Component, ViewChild, OnInit, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatListOption } from '@angular/material/list';
-import { MaterialsService } from 'src/app/core/services/materials/materials.service';
-import { EnergyTotalService } from 'src/app/core/services/energy-total/energy-total.service';
-
-import { MatDialog } from '@angular/material/dialog';
-import { IntermedialComponent } from '../intermedial/intermedial.component';
+import { MatListOption, MatSelectionList } from '@angular/material/list';
+import { MaterialsService } from '../../../core/services/materials/materials.service';
+import { ProjectsService } from '../../../core/services/projects/projects.service';
+import { SelectionService } from '../../../core/services/selection/selection.service';
+import { EnergyTotalService } from '../../../core/services/energy-total/energy-total.service';
 import { BUILDING_SECTIONS } from '../../../shared/building-sections';
+import { EquipmentStagePanelComponent } from '../../../equipment-stage/equipment-stage-panel.component';
 
 @Component({
-    selector: 'app-end-life-stage',
-    templateUrl: './end-life-stage.component.html',
-    styleUrls: ['./end-life-stage.component.scss'],
-    changeDetection: ChangeDetectionStrategy.Eager,
-    standalone: false
+  selector: 'app-end-life-stage',
+  templateUrl: './end-life-stage.component.html',
+  styleUrls: ['./end-life-stage.component.scss'],
+  // Preserve the host shell’s existing asynchronous project/selection rendering.
+  // eslint-disable-next-line @angular-eslint/prefer-on-push-component-change-detection
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
-export class EndLifeStageComponent implements OnInit, OnDestroy {
-  sheetNames: any;
-  contentData: any;
-  listData: any;
-  indexSheet: any;
-  nameProject: string;
+export class EndLifeStageComponent implements OnInit, AfterViewInit {
+  @ViewChild(EquipmentStagePanelComponent) equipmentPanel?: EquipmentStagePanelComponent;
+  @ViewChild('sheets') sheetsList?: MatSelectionList;
+  sheetNames: string[] = [];
+  indexSheet: number | undefined;
+  nameProject = '';
   projectId: number;
-  SistemasConstructivos: any;
-  listMateriales: any;
-  selectedOptions: string[] = [];
-  panelOpenFirst = false;
-  panelOpenSecond = false;
-  panelOpenThird = false;
-  dataArrayEC = [];
-  dataArrayTD = [];
-  EC: any;
-  TD: any;
-  catalogoFuentes: any;
-  catalogoUnidadEnergia: [];
-  selectedSheet: any;
-  endSave = false;
+  selectedSheet: string;
   procesoSeleccionado = '';
-  private autosaveIntervalId: ReturnType<typeof setInterval> | null = null;
-  private lastAutosaveSignature: string | null = null;
+  endSave = false;
+  equipmentPending = false;
 
   constructor(
-    private router: Router,
-    private endLifeService: EndLifeService,
-    private catalogsService: CatalogsService,
     private materialsService: MaterialsService,
-    public dialog: MatDialog,
+    private projectsService: ProjectsService,
+    private router: Router,
+    private selectionService: SelectionService,
     private energyTotalService: EnergyTotalService,
-  ) {
-    this.catalogsService.getSourceInformation().subscribe(data => {
-      const fuentes = [];
-      data.map(fuente => {
-        if (fuente.name_source_information !== 'Mexicaniuh - CADIS') {
-          fuentes.push(fuente);
-        }
-      });
-      this.catalogoFuentes = fuentes;
-    });
-    this.catalogsService.getEnergyUnits().subscribe(data => {
-      // console.log('lógica de unidades!!!!');
-      // console.log(data);
-      const energia = [];
-      data.map(unidad => {
-        if (unidad.name_energy_unit === 'Hrs') {
-          energia.push(unidad);
-        }
-      });
-      this.catalogoUnidadEnergia = data;
-    });
+  ) {}
+
+  ngOnInit(): void {
+    const project = JSON.parse(sessionStorage.getItem('primaryDataProject') || '{}');
+    this.projectId = project.id;
+    this.energyTotalService.loadAll(this.projectId);
+    this.nameProject = project.name_project;
+    const imported = JSON.parse(sessionStorage.getItem('dataProject') || 'null'),
+     excluded = ['Muros InterioresBis', 'Inicio', 'Registro', 'ListaElementos', 'BD', 'Parametros'];
+    this.sheetNames = imported?.sheetNames
+      ? imported.sheetNames.filter((name: string) => !excluded.includes(name))
+      : [...BUILDING_SECTIONS];
   }
 
-  ngOnInit() {
-    const data = JSON.parse(sessionStorage.getItem('dataProject')),
-     PDP = JSON.parse(sessionStorage.getItem('primaryDataProject'));
+  ngAfterViewInit(): void {
 
-    this.sheetNames = [];
-    this.nameProject = PDP.name_project;
-    this.projectId = PDP.id;
-    // Only a project imported in this tab has its Excel here. An existing
-    // project opened from home has none; its elements are the fixed list.
-    if (data) {
-      data.sheetNames.map(sheetname => {
-        if (
-          sheetname !== 'Muros InterioresBis' &&
-          sheetname !== 'Inicio' &&
-          sheetname !== 'Registro' &&
-          sheetname !== 'ListaElementos' &&
-          sheetname !== 'BD' &&
-          sheetname !== 'Parametros'
-        ) {
-          this.sheetNames.push(sheetname);
-        }
-      });
-    } else {
-      this.sheetNames = [...BUILDING_SECTIONS];
-    }
-
-    this.contentData = data?.data;
-
-    this.initialChange();
-    this.indexSheet = undefined;
-    this.dataArrayTD.push([]);
-
-    // Save on blur instead of polling.
   }
 
-  ngOnDestroy(): void {
-    if (this.autosaveIntervalId) {
-      clearInterval(this.autosaveIntervalId);
-      this.autosaveIntervalId = null;
+  selectSheetInUI(section: string | { name_section: string }): void {
+    const name = typeof section === 'string' ? section : section.name_section,
+     option = this.sheetsList?.options.find(item => item.value === name);
+    if (option) {
+      this.sheetsList.selectedOptions.select(option);
+      this.onGroupsChange([option]);
     }
   }
 
-  private startAutosave(): void {
-    if (this.autosaveIntervalId) {
-      return;
-    }
-
-    this.autosaveIntervalId = setInterval(() => {
-      if (!this.projectId || !this.EC) {
-        console.log('autosave: end-life-stage skipped (missing projectId or EC)');
-        return;
-      }
-      const signature = this.buildAutosaveSignature();
-      if (signature === this.lastAutosaveSignature) {
-        return;
-      }
-
-      this.onSaveEC();
-      this.lastAutosaveSignature = signature;
-      console.log('autosave: end-life-stage');
-      this.saveStepFour();
-    }, 5000);
+  onGroupsChange(options: MatListOption[]): void {
+    const selected = options[0]?.value,
+     index = this.sheetNames.indexOf(selected);
+    if (index < 0) return;
+    this.selectedSheet = selected;
+    this.procesoSeleccionado = selected;
+    this.indexSheet = index;
   }
 
-  private buildAutosaveSignature(): string {
-    return JSON.stringify({
-      projectId: this.projectId,
-      indexSheet: this.indexSheet,
-      dataArrayEC: this.dataArrayEC,
-      dataArrayTD: this.dataArrayTD,
+  onEquipmentTotalChange(total: number): void {
+    this.energyTotalService.setEndLifeTotal(total);
+  }
+
+  private async navigateStage(path: string, records: any): Promise<void> {
+    // Capture the current project rather than rereading a previous route's storage.
+    const projectId = this.projectId;
+    await this.equipmentPanel?.whenIdle();
+    records.subscribe((items: any[]) => {
+      const exists = items.some(item => Number(item.project_id) === projectId);
+      localStorage.setItem('idProyectoConstrucción', String(projectId));
+      this.router.navigateByUrl(exists ? `${path}/update` : path);
     });
   }
 
-  initialChange() {
-    // take index of selection
-    this.indexSheet = this.sheetNames.indexOf('Cimentación');
-    let i;
-    for (i = 0; i <= this.sheetNames.length; i++) {
-      if (this.indexSheet === i && this.EC !== undefined) {
-        this.dataArrayEC = this.EC[i];
-        this.dataArrayTD = this.TD[i];
-      }
-    }
+  goToMaterialStage(): Promise<void> {
+    return this.navigateStage('materials-stage', this.materialsService.getMaterialSchemeProyects());
   }
 
-  onGroupsChange(options: MatListOption[]) {
-    let selectedSheet;
-    // map these MatListOptions to their values
-    options.map(option => {
-      selectedSheet = option.value;
-    });
-    // take index of selection
-    this.indexSheet = this.sheetNames.indexOf(selectedSheet);
-    let i;
-    for (i = 0; i <= this.sheetNames.length; i++) {
-      if (this.indexSheet === i && this.EC !== undefined) {
-        this.dataArrayEC = this.EC[i];
-        this.dataArrayTD = this.TD[i];
-      }
-    }
-
-    this.selectedSheet = selectedSheet;
-
-    this.dataArrayEC = this.dataArrayEC === undefined ? (this.dataArrayEC = []) : this.dataArrayEC;
-    this.dataArrayTD = this.dataArrayTD === undefined ? (this.dataArrayTD = []) : this.dataArrayTD;
-
-    if (this.dataArrayEC.length === 0) {
-      this.dataArrayEC.push([]);
-    }
-
-    if (this.dataArrayTD.length === 0) {
-      this.dataArrayTD.push([]);
-    }
-
-    this.procesoSeleccionado = selectedSheet;
+  goToConstructionStage(): Promise<void> {
+    return this.navigateStage('construction-stage', this.materialsService.getConstructionStage());
   }
 
-  onNgModelChange() {
-    // console.log('on ng model change', event);
+  goToUsageStage(): Promise<void> {
+    return this.navigateStage('usage-stage', this.materialsService.getACR());
   }
 
-  showMaterials(event, sc) {
-    const materiales = [];
-    this.listData.map(data => {
-      if (data.Sistema_constructivo === sc) {
-        materiales.push(data.Material);
-      }
-    });
-    this.listMateriales = materiales;
+  goToEndLife(): Promise<void> {
+    return this.navigateStage('end-life-stage', this.materialsService.getEDCP());
   }
 
-  addFormEC() {
-    if (this.dataArrayEC === undefined) {
-      this.dataArrayEC = [];
-    }
-    this.dataArrayEC.push([]);
-  }
-
-  removeFormEC(i) {
-    this.dataArrayEC.splice(i);
-  }
-
-  onSaveEC() {
-    let i;
-    if (this.EC === undefined) {
-      this.EC = [];
-    }
-    if (this.TD === undefined) {
-      this.TD = [];
-    }
-    for (i = 0; i <= this.sheetNames.length; i++) {
-      if (this.indexSheet === i) {
-        this.EC[i] = this.dataArrayEC;
-        this.TD[i] = this.dataArrayTD;
-      }
-    }
-  }
-
-  onFieldBlur(): void {
-    if (!this.projectId || this.indexSheet === undefined) {
-      return;
-    }
-    this.onSaveEC();
-    this.saveStepFour();
-    this.computeAndPushTotal();
-  }
-
-  private computeAndPushTotal(): void {
-    const sum = (this.dataArrayEC || [])
-      .reduce((acc, d) => acc + (parseFloat(d.cantidad) || 0), 0);
-    this.energyTotalService.setEndLifeTotal(sum);
-  }
-
-  private parseQuantity(value: unknown): number | null {
-    if (value === null || value === undefined || value === '') {
-      return null;
-    }
-    const normalized = String(value).replace(',', '.');
-    const parsed = Number(normalized);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-
-  async saveStepFour() {
-    console.log('confirm step 4');
-    if (!this.EC || this.EC.length === 0) {
-      return;
-    }
-    try {
-      await Object.entries(this.EC).forEach(([key, ec]) => {
-        const ecAny: any = ec;
-        ecAny.map(data => {
-          const quantity = this.parseQuantity(data?.cantidad);
-          if (quantity === null || !data?.unidad || !data?.fuente) {
-            return;
-          }
-          const signature = JSON.stringify({
-            quantity,
-            unidad: data.unidad,
-            fuente: data.fuente,
-            section: parseInt(key, 10) + 1
-          });
-          if (data._signature === signature) {
-            return;
-          }
-          if (data.id !== undefined) {
-            this.endLifeService.deleteECDP(data.id).subscribe(() => {
-              console.log(`Se eliminó ${data.id}`);
-            });
-          }
-          console.log('Fin de vida!!!');
-          console.log(data);
-          this.endLifeService
-            .addECDP({
-              quantity,
-              unit_id: data.unidad,
-              source_information_id: data.fuente,
-              section_id: parseInt(key, 10) + 1,
-              project_id: this.projectId,
-            })
-            .subscribe(result => {
-              data.id = result?.id ?? data.id;
-              data._signature = signature;
-              console.log(result);
-            });
-        });
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  showModal() {
-    console.log('enter show modal');
-    const dialogRef = this.dialog.open(IntermedialComponent, {
-      width: '680px',
-      data: {},
-    });
-
-    dialogRef.afterClosed().subscribe(() => {
-      // this.ngOnInit();
-
-      this.endSave = true;
-      console.log(this.endSave);
-    });
-  }
-
-  goToMaterialStage() {
-    this.materialsService.getMaterialSchemeProyects().subscribe(msp => {
-      const schemaFilter = msp.filter(
-        schema => schema.project_id === this.projectId
-      );
-
-      if (schemaFilter.length === 0) {
-        this.router.navigateByUrl('materials-stage');
-      } else {
-        localStorage.setItem(
-          'idProyectoConstrucción',
-          this.projectId.toString()
-        );
-        this.router.navigateByUrl('materials-stage/update');
-      }
-    });
-  }
-
-  goToConstructionStage() {
-    const projectId = this.projectId ?? parseInt(
-      localStorage.getItem('idProyectoConstrucción') ?? '',
-      10
-    );
-    if (!Number.isFinite(projectId)) {
-      this.router.navigateByUrl('construction-stage');
-      return;
-    }
-
-    this.materialsService.getConstructionStage().subscribe(cse => {
-      const schemaFilter = cse.filter(
-        schema => Number(schema.project_id) === projectId
-      );
-
-      if (schemaFilter.length === 0) {
-        this.router.navigateByUrl('construction-stage');
-      } else {
-        localStorage.setItem('idProyectoConstrucción', projectId.toString());
-        this.router.navigateByUrl('construction-stage/update');
-      }
-    });
-  }
-
-  goToUsageStage() {
-    this.materialsService.getACR().subscribe(acr => {
-      const schemaFilter = acr.filter(
-        schema => schema.project_id === this.projectId
-      );
-
-      if (schemaFilter.length === 0) {
-        this.router.navigateByUrl('usage-stage');
-      } else {
-        localStorage.setItem(
-          'idProyectoConstrucción',
-          this.projectId.toString()
-        );
-        this.router.navigateByUrl('usage-stage/update');
-      }
-    });
-  }
-
-  goToEndLife() {
-    this.router.navigateByUrl('end-life-stage');
-  }
-
-  continue() {
-    this.router.navigateByUrl('/home-evamed');
-  }
-
-  goToResultados() {
-    // idProyectoConstrucción can still name an earlier project here.
+  async goToResultados(): Promise<void> {
+    await this.equipmentPanel?.whenIdle();
     sessionStorage.setItem('projectID', String(this.projectId));
     this.router.navigateByUrl('resultados');
   }
 
-  getSelectedSourceName(value: any): string {
-    const selected = this.catalogoFuentes.find(option => option.id === value);
-    return selected ? selected.name_source_information : '';
+  async goToProjects(event?: Event): Promise<void> {
+    event?.preventDefault();
+    await this.equipmentPanel?.whenIdle();
+    this.router.navigateByUrl('/');
+  }
+
+  async continue(): Promise<void> {
+    await this.equipmentPanel?.whenIdle();
+    this.router.navigateByUrl('/home-evamed');
+  }
+
+  continueStep(event: Event): Promise<void> {
+    event.preventDefault();
+    return this.continue();
   }
 }

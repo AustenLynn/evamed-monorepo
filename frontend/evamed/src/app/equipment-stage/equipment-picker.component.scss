@@ -1,0 +1,16 @@
+:host { display:flex; flex-direction:column; height:100%; color:var(--ev-text); background:var(--ev-bg); }
+:host, :host * { box-sizing: border-box; }
+.equipment-picker-header { display:flex; justify-content:space-between; align-items:center; padding:16px 24px; border-bottom:1px solid var(--ev-divider); background:var(--ev-surface); h1 { margin:0; padding:0; font-family:inherit; font-weight:600; font-size:22px; line-height:1.3; } p { margin:4px 0 0; color:var(--ev-text-muted-on-bg); font-size:13px; } }
+.equipment-picker-body { flex:1; min-height:0; overflow:auto; padding:24px; }
+.equipment-filters { display:flex; gap:16px; align-items:center; flex-wrap:wrap; mat-form-field:first-child { flex:1; min-width:200px; } }
+.equipment-count { font-weight:600; margin:20px 0 16px; }
+.equipment-options { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px; }
+.equipment-options-list { grid-template-columns:1fr; }
+.equipment-option { display:grid; grid-template-columns:minmax(0,1fr) auto; align-content:start; gap:12px; background:var(--ev-surface); padding:16px; border:1px solid var(--ev-border); border-radius:12px; p { grid-column:1/-1; margin:0; font-size:12px; color:var(--ev-text-muted-on-bg); } }
+.equipment-option-selected { border-color:var(--ev-green); background:var(--ev-impact-low-bg); }
+.equipment-source { border:0; background:transparent; text-align:left; color:var(--ev-text); padding:0; cursor:pointer; font-family:inherit; font-weight:600; font-size:16px; line-height:1.5; overflow-wrap:anywhere; &:focus-visible { outline:2px solid var(--ev-green-text); outline-offset:4px; } }
+.equipment-tray { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 24px; background:var(--ev-surface); border-top:1px solid var(--ev-border); p { margin:0; font-size:14px; } }
+.equipment-selection-chip { display:inline-flex; align-items:center; max-width:220px; margin:6px 6px 0 0; padding-left:8px; background:var(--ev-surface-muted); border-radius:999px; font-size:12px; span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } }
+.equipment-add { background:var(--ev-green-light); color:var(--ev-text); flex-shrink:0; }
+.equipment-failed { color:var(--ev-impact-high-text); }
+@media(max-width:600px) { .equipment-picker-header,.equipment-picker-body,.equipment-tray { padding:16px; } .equipment-options { grid-template-columns:1fr; } .equipment-tray { align-items:flex-start; flex-direction:column; } .equipment-selection-chip { max-width:150px; } }

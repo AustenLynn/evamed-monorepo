@@ -1,0 +1,29 @@
+<header class="equipment-picker-header">
+  <div><h1 mat-dialog-title>{{ context.mode === 'add' ? 'Agregar equipos' : 'Cambiar equipo' }}</h1><p>{{ context.section }} · {{ context.stage === 'construction' ? 'Construcción' : 'Deconstrucción' }}</p></div>
+  <button mat-icon-button type="button" aria-label="Cerrar catálogo" [disabled]="saving" (click)="close()"><mat-icon>close</mat-icon></button>
+</header>
+<div class="equipment-picker-body">
+  <p *ngIf="loading" role="status">Cargando equipos…</p>
+  <div *ngIf="failed" role="alert">No se pudo cargar el catálogo. <button mat-button type="button" (click)="load()">Reintentar</button></div>
+  <ng-container *ngIf="!loading && !failed">
+    <div class="equipment-filters">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Buscar equipo</mat-label><input matInput type="search" [(ngModel)]="search" [disabled]="saving"></mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Tipo</mat-label><mat-select [(ngModel)]="type" [disabled]="saving"><mat-option value="">Todos</mat-option><mat-option *ngFor="let option of types" [value]="option">{{ option }}</mat-option></mat-select></mat-form-field>
+      <mat-button-toggle-group [value]="view" (change)="view = $event.value" aria-label="Vista del catálogo"><mat-button-toggle value="cards">Tarjetas</mat-button-toggle><mat-button-toggle value="list">Lista</mat-button-toggle></mat-button-toggle-group>
+    </div>
+    <p class="equipment-count">Resultados ({{ filtered.length }})</p>
+    <div class="equipment-options" [class.equipment-options-list]="view === 'list'">
+      <article *ngFor="let source of filtered" class="equipment-option" [class.equipment-option-selected]="selected.has(source.id)">
+        <button type="button" class="equipment-source" [attr.data-source]="source.id" [disabled]="saving" (click)="pick(source)">{{ source.name }}</button>
+        <mat-checkbox *ngIf="context.mode === 'add'" [checked]="selected.has(source.id)" [disabled]="saving" [aria-label]="'Seleccionar: ' + source.name" (change)="pick(source)"></mat-checkbox>
+        <p>{{ source.type }}</p>
+      </article>
+    </div>
+    <p *ngIf="!filtered.length">No encontramos equipos con estos filtros.</p>
+    <p *ngIf="failedNames.length" class="equipment-failed" role="alert">No se pudo agregar: {{ failedNames.join(', ') }}. Intenta de nuevo.</p>
+  </ng-container>
+</div>
+<footer *ngIf="context.mode === 'add'" class="equipment-tray">
+  <div><p role="status">{{ selected.size }} equipos seleccionados</p><span *ngFor="let source of selection" class="equipment-selection-chip"><span>{{ source.name }}</span><button mat-icon-button type="button" [disabled]="saving" [attr.aria-label]="'Quitar: ' + source.name" (click)="pick(source)"><mat-icon>close</mat-icon></button></span></div>
+  <button mat-flat-button type="button" class="equipment-add" [disabled]="!selected.size || saving" (click)="submit()">{{ saving ? 'Agregando…' : 'Agregar ' + selected.size + ' equipos' }}</button>
+</footer>

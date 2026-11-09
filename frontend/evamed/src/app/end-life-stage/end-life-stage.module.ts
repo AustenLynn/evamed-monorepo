@@ -1,3 +1,4 @@
+import { EquipmentStageUiModule } from '../equipment-stage/equipment-stage-ui.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EndLifeStageRoutingModule } from './end-life-stage-routing.module';
@@ -18,6 +19,7 @@ import { EndLifeUpdateComponent } from './components/end-life-update/end-life-up
         PassStepComponent
     ],
     imports: [
+        EquipmentStageUiModule,
         CommonModule,
         EndLifeStageRoutingModule,
         SharedModule,
