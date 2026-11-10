@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { ExplorerQuery } from '../../explorer.models';
 import { ExplorerUiModule } from '../../explorer-ui.module';
 import { STAGES } from '../../stage-config';
-import { FilterPanelComponent } from './filter-panel.component';
+import { FilterPanelComponent, SEARCH_DEBOUNCE_MS } from './filter-panel.component';
 
 describe('FilterPanelComponent', () => {
   afterEach(() => vi.useRealTimers());
@@ -26,6 +26,37 @@ describe('FilterPanelComponent', () => {
     return { fixture, el, emitted };
   };
 
+  it('locks filtering during saving, including a queued debounced search', () => {
+    const {el, fixture, emitted} = render({search: '', filters: {source: ['ECOINVENT 3']}}),
+     search = el.querySelector<HTMLInputElement>('input[type="search"]')!;
+    search.value = 'nuevo'; search.dispatchEvent(new Event('input'));
+    fixture.componentRef.setInput('disabled', true); fixture.detectChanges();
+    expect(search.disabled).toBe(true);
+    expect(Array.from(el.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')).every(input => input.disabled)).toBe(true);
+    el.querySelector<HTMLButtonElement>('.filter-panel__clear')!.click();
+    vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS);
+    expect(emitted).toEqual([]);
+  });
+  it('restores the applied search on save and allows the pending term after re-enable', () => {
+    const {el, fixture, emitted} = render(), search = el.querySelector<HTMLInputElement>('input[type="search"]')!;
+    search.value = 'excavadora'; search.dispatchEvent(new Event('input'));
+    fixture.componentRef.setInput('disabled', true); fixture.detectChanges();
+    expect(search.value).toBe('');
+    vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS);
+    fixture.componentRef.setInput('disabled', false); fixture.detectChanges();
+    search.value = 'excavadora'; search.dispatchEvent(new Event('input'));
+    vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS);
+    expect(emitted).toEqual([{search: 'excavadora', filters: {}}]);
+  });
+  it('does not apply a stale search after a save completes before the debounce', () => {
+    const {el, fixture, emitted} = render(), search = el.querySelector<HTMLInputElement>('input[type="search"]')!;
+    search.value = 'excavadora'; search.dispatchEvent(new Event('input'));
+    fixture.componentRef.setInput('disabled', true); fixture.detectChanges();
+    fixture.componentRef.setInput('disabled', false); fixture.detectChanges();
+    vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS);
+    expect(emitted).toEqual([]);
+    expect(search.value).toBe('');
+  });
   it('searches 300 ms after typing stops', () => {
     const { el, emitted } = render(),
       input = el.querySelector<HTMLInputElement>('#explorer-search')!;

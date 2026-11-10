@@ -10,7 +10,7 @@
   <div class="equipment-grid" [class.equipment-grid-list]="view === 'list'">
     <article evSurface *ngFor="let row of visibleRows" class="equipment-card" [attr.data-row]="row.id" [class.equipment-card-expanded]="expanded === row.key">
       <button class="equipment-summary" type="button" [attr.data-edit]="row.id" [disabled]="busy" [attr.aria-expanded]="expanded === row.key" [attr.aria-controls]="'equipment-editor-' + row.id" (click)="edit(row)">
-        <h3 evHeading="section" [title]="sourceName(row.sourceId)">{{ sourceName(row.sourceId) }}</h3>
+        <h3 evHeading="section" [title]="sourceInfo(row.sourceId)?.name || sourceName(row.sourceId)">{{ sourceName(row.sourceId) }}</h3>
         <p class="equipment-quantity">{{ row.quantity | quantityDisplay }} <span>{{ unitName(row.unitId) }}</span></p>
         <span class="equipment-edit-label">{{ expanded === row.key ? 'Cerrar edición' : 'Editar equipo' }} <mat-icon>{{ expanded === row.key ? 'expand_less' : 'expand_more' }}</mat-icon></span>
       </button>
@@ -23,7 +23,7 @@
           <div evActions class="equipment-actions"><button evAction="secondary" mat-stroked-button type="button" class="equipment-cancel" [disabled]="busy" (click)="cancel(row)">Cancelar</button><button evAction="primary" mat-flat-button type="submit" class="equipment-primary equipment-save" [disabled]="busy">{{ busy ? 'Guardando…' : 'Guardar cambios' }}</button></div>
         </ng-container>
       </form>
-      <div class="equipment-card-footer"><button mat-button type="button" [attr.data-delete]="row.id" [disabled]="busy" [attr.aria-label]="'Eliminar: ' + sourceName(row.sourceId)" (click)="remove(row)"><mat-icon>delete_outline</mat-icon> Eliminar</button></div>
+      <div class="equipment-card-footer"><div class="equipment-card-meta" *ngIf="sourceInfo(row.sourceId) as source"><app-source-chip [source]="source.database || 'Sin base de datos'"></app-source-chip><app-region-chip [region]="source.region || 'Sin región'"></app-region-chip></div><button mat-button type="button" [attr.data-delete]="row.id" [disabled]="busy" [attr.aria-label]="'Eliminar: ' + sourceName(row.sourceId)" (click)="remove(row)"><mat-icon>delete_outline</mat-icon> Eliminar</button></div>
     </article>
   </div>
   <div *ngIf="!visibleRows.length" class="equipment-empty"><mat-icon>construction</mat-icon><h3>Aún no has agregado equipos</h3><p>Agrega los equipos utilizados en {{ sectionName }}.</p><button evAction="primary" mat-flat-button type="button" class="equipment-primary" [disabled]="busy" (click)="add()">Agregar equipo</button></div>

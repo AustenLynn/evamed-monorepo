@@ -13,7 +13,7 @@ describe('Equipment cards', () => {
     const picker = {pickMany: vi.fn(async (context: any) => {const sources = [{id: 11, name: 'Excavadora hidráulica', type: 'Otros'}], saved = await context.save(sources); return sources.filter((_s, i) => saved[i]);}), choose: vi.fn(async () => ({id: 2, name: 'Generador diésel', type: 'Generador'}))},
      api = {list: vi.fn(() => of({rows, rawTotal: 23.3456789})), update: vi.fn((_stage: unknown, row: any, value: any) => of({...row, ...value})), create: vi.fn((_stage: unknown, _project:unknown, sectionId:number, value:any) => of({key: 'construction:' + nextId, id: nextId++, sectionId, ...value})), remove: vi.fn(() => of(undefined))};
     TestBed.configureTestingModule({imports: [EquipmentStageUiModule], providers: [
-      {provide: EquipmentCatalogueService, useValue: {load: ()=>of({sources: [{id: 11, name: 'Excavadora hidráulica', type: 'Otros'}, {id: 2, name: 'Generador diésel', type: 'Generador'}], units: [{id: 2, name: 'Hrs'}], unitLabels: [{id: 2, name: 'Hrs'}], constructionEnergyProcessId: 8})}},
+      {provide: EquipmentCatalogueService, useValue: {load: ()=>of({sources: [{id: 11, name: 'Excavadora hidráulica (GLO)-Ecoinvent 3', displayName: 'Excavadora hidráulica', database: 'ECOINVENT 3', region: 'Global', type: 'Otros'}, {id: 2, name: 'Generador diésel', type: 'Generador'}], units: [{id: 2, name: 'Hrs'}], unitLabels: [{id: 2, name: 'Hrs'}], constructionEnergyProcessId: 8})}},
       {provide: EquipmentRowsService, useValue: api}, {provide: EquipmentPickerService, useValue: picker}
     ]});
     const fixture = TestBed.createComponent(EquipmentStagePanelComponent); fixture.componentRef.setInput('stage', stage);fixture.componentRef.setInput('projectId', 42);fixture.componentRef.setInput('sectionId', 1);fixture.componentRef.setInput('sectionName', 'Cimentación');fixture.detectChanges();
@@ -22,6 +22,13 @@ describe('Equipment cards', () => {
      quantity = (value:string)=>{const input = el.querySelector<HTMLInputElement>('input[name="quantity"]')!;input.value = value;input.dispatchEvent(new Event('input'));fixture.detectChanges();};
     return {fixture, el, api, click, quantity, rows, picker};
   };
+  it('shows the readable name and database/region separately on the main card', () => {
+    const {el} = render(), card = el.querySelector('[data-row="73"]')!;
+    expect(card.querySelector('h3')?.textContent?.trim()).toBe('Excavadora hidráulica');
+    expect(card.querySelector('h3')?.getAttribute('title')).toBe('Excavadora hidráulica (GLO)-Ecoinvent 3');
+    expect(card.querySelector('app-source-chip')?.textContent).toContain('ECOINVENT 3');
+    expect(card.querySelector('app-region-chip')?.textContent).toContain('Global');
+  });
   it.each([
     ['0.0000000000', '0'],
     ['12.0000000000', '12'],

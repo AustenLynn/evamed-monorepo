@@ -1,5 +1,5 @@
 export type EquipmentStage = 'construction' | 'end-life';
-export interface EquipmentSource { id: number; name: string; type: string; }
+export interface EquipmentSource { id: number; name: string; type: string; displayName?: string; database?: string | null; region?: string | null; }
 export interface EquipmentUnit { id: number; name: string; }
 export interface EquipmentRow {
   key: string; id: number; sectionId: number;

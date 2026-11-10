@@ -7,25 +7,31 @@
   <p *ngIf="loading" role="status">Cargando equipos…</p>
   <div *ngIf="failed" role="alert">No se pudo cargar el catálogo. <button mat-button type="button" (click)="load()">Reintentar</button></div>
   <ng-container *ngIf="!loading && !failed">
-    <div class="equipment-filters">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Buscar equipo</mat-label><input matInput type="search" [(ngModel)]="search" [disabled]="saving"></mat-form-field>
-      <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Tipo</mat-label><mat-select [(ngModel)]="type" [disabled]="saving"><mat-option value="">Todos</mat-option><mat-option *ngFor="let option of types" [value]="option">{{ option }}</mat-option></mat-select></mat-form-field>
-      <mat-button-toggle-group [value]="view" (change)="view = $event.value" aria-label="Vista del catálogo"><mat-button-toggle value="cards">Tarjetas</mat-button-toggle><mat-button-toggle value="list">Lista</mat-button-toggle></mat-button-toggle-group>
-    </div>
-    <p evHeading="section" class="equipment-count">Resultados ({{ filtered.length }})</p>
+    <div class="equipment-browser">
+    <app-filter-panel [filters]="filters" [facets]="facets" [query]="query" [disabled]="saving" (queryChange)="query = $event"></app-filter-panel>
+    <section class="equipment-results" aria-label="Resultados del catálogo">
+    <header class="equipment-results-header">
+      <h2 evHeading="section" class="equipment-count">Resultados ({{ filtered.length }})</h2>
+      <mat-button-toggle-group [value]="view" (change)="view = $event.value" aria-label="Vista del catálogo"><mat-button-toggle value="cards"><mat-icon aria-hidden="true">grid_view</mat-icon> Tarjetas</mat-button-toggle><mat-button-toggle value="list"><mat-icon aria-hidden="true">table_rows</mat-icon> Lista</mat-button-toggle></mat-button-toggle-group>
+    </header>
     <div class="equipment-options" [class.equipment-options-list]="view === 'list'">
       <article evSurface *ngFor="let source of filtered" class="equipment-option" [class.equipment-option-selected]="selected.has(source.id)">
-        <button type="button" class="equipment-source" [attr.data-source]="source.id" [disabled]="saving" (click)="pick(source)">{{ source.name }}</button>
+        <header class="equipment-option-header">
+        <button type="button" class="equipment-source" [attr.data-source]="source.id" [title]="source.name" [disabled]="saving" (click)="pick(source)">{{ source.displayName || source.name }}</button>
         <mat-checkbox *ngIf="context.mode === 'add'" [checked]="selected.has(source.id)" [disabled]="saving" [aria-label]="'Seleccionar: ' + source.name" (change)="pick(source)"></mat-checkbox>
+        </header>
         <p>{{ source.type }}</p>
+        <footer class="equipment-option-meta"><app-source-chip [source]="source.database || 'Sin base de datos'"></app-source-chip><app-region-chip [region]="source.region || 'Sin región'"></app-region-chip></footer>
       </article>
     </div>
     <p *ngIf="!filtered.length">No encontramos equipos con estos filtros.</p>
+    </section>
+    </div>
     <p evStatus="failure" *ngIf="failedNames.length" class="equipment-failed" role="alert">No se pudo agregar: {{ failedNames.join(', ') }}. Intenta de nuevo.</p>
   </ng-container>
 </div>
 <app-ev-selection-tray evMenuFooter *ngIf="context.mode === 'add'" class="equipment-tray"
-  [items]="selection" [label]="selected.size + ' equipos seleccionados'" [disabled]="saving" (remove)="removeSelection($event)">
+  [items]="selectionItems" [label]="selected.size + ' equipos seleccionados'" [disabled]="saving" (remove)="removeSelection($event)">
   <button mat-flat-button evAction="primary" type="button" class="equipment-add" [disabled]="!selected.size || saving" (click)="submit()">{{ saving ? 'Agregando…' : 'Agregar ' + selected.size + ' equipos' }}</button>
 </app-ev-selection-tray>
 </app-ev-menu-shell>

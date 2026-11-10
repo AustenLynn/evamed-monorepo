@@ -61,3 +61,11 @@ Run the existing Angular development server and open `/design-system`. The page 
 ## Quantity display
 
 `QuantityDisplayPipe` (`quantityDisplay`), exported by `EvUiModule`, removes insignificant fractional zeros: `0.0000000000` → `0`, `12.000` → `12`, `12.500` → `12.5`. Equipment card quantities use this display role. It preserves decimal strings without numeric conversion or rounding; editing and persistence retain the original value. Other numeric roles, such as impact values, keep their existing formatting.
+
+## Equipment catalogue filters and names
+
+Construction and End of Life reuse `FilterPanelComponent`, `SourceChipComponent` and `RegionChipComponent` from `ExplorerUiModule`. Both stages consume the existing construction explorer metadata: raw `name`, readable `display_name`, `source`, `region`, and `type`. Full names remain in title text and search; no arbitrary name truncation is applied.
+
+The filter panel accepts optional `disabled` (default false) to lock inputs, checkboxes, clear and pending search while saving. Disabling restores the applied query text; queued typing cannot unexpectedly filter after saving, and the same term can be entered again after re-enable. Database/type/region groups support multiple values: OR within a group, AND across groups. Counts exclude their own group and preserve catalogue options at zero; clearing filters keeps selections. Missing values are shown as `Sin base de datos` / `Sin región`, not inferred from pins or names again in the frontend.
+
+Main equipment cards show the readable title and separate database/region chips, preserving quantity display and inline drafts. All metadata pages are loaded before local filtering; source IDs, units, persistence and calculation contracts remain unchanged.

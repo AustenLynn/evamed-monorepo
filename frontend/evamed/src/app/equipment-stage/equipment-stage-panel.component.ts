@@ -52,7 +52,8 @@ export class EquipmentStagePanelComponent implements OnChanges, OnDestroy {
       error: () => {if (identity === this.identity) {this.loading = false; this.loadFailed = true; this.mark();}}
     });
   }
-  sourceName(id: number | null): string {return this.catalogue.sources.find(source => source.id === id)?.name ?? 'Fuente no disponible';}
+  sourceInfo(id: number | null): EquipmentSource | undefined {return this.catalogue.sources.find(source => source.id === id);}
+  sourceName(id: number | null): string {const source = this.sourceInfo(id); return source?.displayName || source?.name || 'Fuente no disponible';}
   unitName(id: number | null): string {return id === null ? 'Sin unidad' : this.catalogue.unitLabels.find(unit => unit.id === id)?.name ?? 'Unidad no disponible';}
   legacyUnit(row: EquipmentRow): boolean {return row.unitId !== null && !this.catalogue.units.some(unit => unit.id === row.unitId);}
   draftFor(row: EquipmentRow): EquipmentDraft {

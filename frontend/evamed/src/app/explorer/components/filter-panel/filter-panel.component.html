@@ -1,7 +1,7 @@
 <section evSurface class="filter-panel" aria-labelledby="filter-panel-title">
   <header class="filter-panel__header">
     <h2 evHeading="section" id="filter-panel-title" class="filter-panel__title">Filtros</h2>
-    <button evAction="tertiary" mat-button type="button" class="filter-panel__clear" [disabled]="!active" (click)="clear()">
+    <button evAction="tertiary" mat-button type="button" class="filter-panel__clear" [disabled]="disabled || !active" (click)="clear()">
       Limpiar filtros
     </button>
   </header>
@@ -25,6 +25,7 @@
       *ngFor="let option of options(filter); trackBy: trackOption"
       class="filter-panel__option"
       [checked]="option.checked"
+      [disabled]="disabled"
       (change)="toggle(filter, option.value, $event.checked)"
     >
       {{ option.value }} <span class="filter-panel__count">({{ option.count }})</span>

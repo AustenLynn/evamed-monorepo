@@ -1,13 +1,21 @@
 :host { display:flex; flex-direction:column; height:100%; color:var(--ev-text); background:var(--ev-bg); }
 :host, :host * { box-sizing: border-box; }
-.equipment-filters { display:flex; gap:16px; align-items:center; flex-wrap:wrap; mat-form-field:first-child { flex:1; min-width:200px; } }
-.equipment-count { margin:20px 0 16px; }
-.equipment-options { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px; }
+.equipment-browser { display:grid; grid-template-columns:minmax(260px,300px) minmax(0,1fr); gap:24px; align-items:start; }
+.equipment-results { min-width:0; }
+.equipment-results-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px; }
+.equipment-count { margin:0; }
+.equipment-option-meta { grid-column:1/-1; display:flex; flex-wrap:wrap; gap:6px; margin-top:auto; padding-top:12px; }
+@media(max-width:900px) { .equipment-browser { grid-template-columns:minmax(0,1fr); } }
+.equipment-options { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr)); gap:16px; }
 .equipment-options-list { grid-template-columns:1fr; }
-.equipment-option { display:grid; grid-template-columns:minmax(0,1fr) auto; align-content:start; gap:12px;  padding:16px;   p { grid-column:1/-1; margin:0; font-size:var(--ev-font-caption); color:var(--ev-text-muted-on-bg); } }
+.equipment-option { display:flex; flex-direction:column; min-height:190px; gap:12px;   p { grid-column:1/-1; margin:0; font-size:var(--ev-font-caption); color:var(--ev-text-muted-on-bg); } }
 .equipment-option-selected { border-color:var(--ev-green); background:var(--ev-impact-low-bg); }
 .equipment-source { border:0; background:transparent; text-align:left; color:var(--ev-text); padding:0; cursor:pointer; font-family:var(--ev-font-heading); font-weight:var(--ev-weight-heading); font-size:var(--ev-font-section); line-height:var(--ev-line-heading); overflow-wrap:anywhere; &:focus-visible { outline:2px solid var(--ev-green-text); outline-offset:4px; } }
 .equipment-failed { color:var(--ev-impact-high-text); }
 .equipment-picker-body { min-width:0; }
 .equipment-add { flex-shrink:0; }
 @media(max-width:600px) { .equipment-options { grid-template-columns:minmax(0,1fr); } }
+
+.equipment-option-header { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
+.equipment-option-header mat-checkbox { flex:none; margin:-10px -10px 0 0; }
+.equipment-source { flex:1; min-width:0; }

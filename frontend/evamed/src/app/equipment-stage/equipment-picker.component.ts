@@ -1,3 +1,5 @@
+import { ExplorerQuery, Facets } from '../explorer/explorer.models';
+import { StageFilter } from '../explorer/stage-config';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
@@ -12,8 +14,12 @@ export class EquipmentPickerComponent implements OnDestroy {
   sources: EquipmentSource[] = [];
   selected = new Set<number>();
   added: EquipmentSource[] = [];
-  search = '';
-  type = '';
+  query: ExplorerQuery = {search: '', filters: {}};
+  readonly filters: StageFilter[] = [
+    {param: 'source', urlParam: 'base', facet: 'sources', label: 'Base de datos'},
+    {param: 'type', urlParam: 'tipo', facet: 'types', label: 'Tipo'},
+    {param: 'region', urlParam: 'region', facet: 'regions', label: 'Región'},
+  ];
   view = 'cards';
   loading = true;
   failed = false;
@@ -37,11 +43,26 @@ export class EquipmentPickerComponent implements OnDestroy {
       error: () => {this.failed = true; this.loading = false; this.cdr.markForCheck();}
     });
   }
-  get filtered(): EquipmentSource[] {
-    const words = fold(this.search).trim().split(/\s+/).filter(Boolean);
-    return this.sources.filter(source => (!this.type || source.type === this.type) && words.every(word => fold(source.name).includes(word)));
+  private matches(source: EquipmentSource, skip?: string): boolean {
+    const words = fold(this.query.search).trim().split(/\s+/).filter(Boolean),
+     values: Record<string, string> = {source: source.database || 'Sin base de datos', type: source.type, region: source.region || 'Sin región'};
+    return words.every(word => fold([source.name, source.displayName, source.database, source.region].filter(Boolean).join(' ')).includes(word)) &&
+      this.filters.every(filter => filter.param === skip || !this.query.filters[filter.param]?.length || this.query.filters[filter.param].includes(values[filter.param]));
   }
-  get types(): string[] {return [...new Set(this.sources.map(source => source.type))];}
+  get filtered(): EquipmentSource[] {return this.sources.filter(source => this.matches(source));}
+  get facets(): Facets {
+    const facets: Facets = {};
+    for (const filter of this.filters) {
+      const counts: Record<string, number> = {};
+      for (const source of this.sources) {
+        const value = filter.param === 'source' ? source.database || 'Sin base de datos' : filter.param === 'region' ? source.region || 'Sin región' : source.type;
+        counts[value] = (counts[value] || 0) + (this.matches(source, filter.param) ? 1 : 0);
+      }
+      facets[filter.facet] = counts;
+    }
+    return facets;
+  }
+  get selectionItems(): {id: number; name: string}[] {return this.selection.map(source => ({id: source.id, name: source.displayName || source.name}));}
   get selection(): EquipmentSource[] {return [...this.selected].map(id => this.sources.find(source => source.id === id)!).filter(Boolean);}
   removeSelection(id: number): void {
     const source = this.sources.find(item => item.id === id);

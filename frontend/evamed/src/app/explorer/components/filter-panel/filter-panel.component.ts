@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 
 import { ExplorerQuery, Facets } from '../../explorer.models';
 import { StageFilter } from '../../stage-config';
@@ -32,6 +32,7 @@ interface Option {
   standalone: false,
 })
 export class FilterPanelComponent implements OnChanges, OnDestroy {
+  @Input() disabled = false;
   @Input() filters: StageFilter[] = [];
   @Input() facets: Facets | null = null;
   @Input() query: ExplorerQuery = { search: '', filters: {} };
@@ -42,15 +43,21 @@ export class FilterPanelComponent implements OnChanges, OnDestroy {
 
   constructor() {
     this.typing = this.search.valueChanges
-      .pipe(debounceTime(SEARCH_DEBOUNCE_MS), distinctUntilChanged())
+      .pipe(debounceTime(SEARCH_DEBOUNCE_MS))
       .subscribe(search => {
-        if (search !== this.query.search) {
+        if (!this.disabled && search === this.search.value && search !== this.query.search) {
           this.queryChange.emit({ ...this.query, search });
         }
       });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['disabled']) {
+      if (this.disabled) {
+        this.search.setValue(this.query.search, {emitEvent: false});
+        this.search.disable({emitEvent: false});
+      } else this.search.enable({emitEvent: false});
+    }
     if (changes['query'] && this.search.value !== this.query.search) {
       this.search.setValue(this.query.search, { emitEvent: false });
     }
@@ -73,6 +80,7 @@ export class FilterPanelComponent implements OnChanges, OnDestroy {
   }
 
   toggle(filter: StageFilter, value: string, checked: boolean): void {
+    if (this.disabled) return;
     const chosen = (this.query.filters[filter.param] ?? []).filter(other => other !== value);
     this.queryChange.emit({
       ...this.query,
@@ -81,6 +89,7 @@ export class FilterPanelComponent implements OnChanges, OnDestroy {
   }
 
   clear(): void {
+    if (this.disabled) return;
     this.search.setValue('', { emitEvent: false });
     this.queryChange.emit({ ...this.query, search: '', filters: {} });
   }

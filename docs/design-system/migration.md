@@ -29,3 +29,7 @@ Intentional differences: Ficha 24px titles, menu 20px titles, compact inline for
 - Independent review found no critical/important issues. Minor documentation/API mismatch corrected. One resource-constrained combined check was interrupted; verification was repeated sequentially with normal timeouts.
 
 These checks exercise local fixtures and shared UI; they are not a live-backend or production deployment audit.
+
+## Equipment catalogue follow-up — 2026-11-09
+
+Database, type and region filtering now reuse the explorer filter panel in both equipment menus. Main cards and catalogue entries show readable titles with the same source/region chips as Materials. Unknown metadata stays explicit. The existing construction explorer API supplies metadata for both construction and C1 deconstruction; this does not introduce disposal scenarios or equipment reference-unit assumptions. See equipment-filters.md for the scoped implementation and verification.
