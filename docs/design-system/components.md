@@ -69,3 +69,7 @@ Construction and End of Life reuse `FilterPanelComponent`, `SourceChipComponent`
 The filter panel accepts optional `disabled` (default false) to lock inputs, checkboxes, clear and pending search while saving. Disabling restores the applied query text; queued typing cannot unexpectedly filter after saving, and the same term can be entered again after re-enable. Database/type/region groups support multiple values: OR within a group, AND across groups. Counts exclude their own group and preserve catalogue options at zero; clearing filters keeps selections. Missing values are shown as `Sin base de datos` / `Sin región`, not inferred from pins or names again in the frontend.
 
 Main equipment cards show the readable title and separate database/region chips, preserving quantity display and inline drafts. All metadata pages are loaded before local filtering; source IDs, units, persistence and calculation contracts remain unchanged.
+
+## Equipment card alignment
+
+Collapsed equipment cards share title, quantity, edit, metadata and delete tracks within each grid row, so long names remain readable without shifting neighbouring actions. The footer keeps metadata and Delete on separate rows. An expanded inline editor returns cards to independent heights, preventing blank stretched neighbours. Single-column/mobile cards retain natural title height. Browsers without CSS subgrid retain equal-height flex cards with consistent footer order.

@@ -33,3 +33,9 @@ These checks exercise local fixtures and shared UI; they are not a live-backend 
 ## Equipment catalogue follow-up — 2026-11-09
 
 Database, type and region filtering now reuse the explorer filter panel in both equipment menus. Main cards and catalogue entries show readable titles with the same source/region chips as Materials. Unknown metadata stays explicit. The existing construction explorer API supplies metadata for both construction and C1 deconstruction; this does not introduce disposal scenarios or equipment reference-unit assumptions. See equipment-filters.md for the scoped implementation and verification.
+
+## Equipment card alignment — 2026-11-10
+
+Collapsed cards now share title, quantity, edit, metadata and delete rows. Metadata and Delete remain on separate lines; long names wrap without clipping. Expanded editors retain independent card heights. Browser regression reproduced unequal card heights (219–282px) before the fix and confirms equal per-row heights and matching content positions at 1440/1100px, natural single-column cards at 390px, and no stretching of adjacent cards during editing. Production build and 17 equipment-panel tests pass. Existing build warnings remain unchanged.
+
+A legacy stage-navigation label still extends past the viewport at 1100px; inspection isolated it to `.mdl-stepper-tag`, outside the equipment cards. Navigation migration remains deferred. Card bounds fit at all checked widths; document bounds pass at 1440/390px.
