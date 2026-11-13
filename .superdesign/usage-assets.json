@@ -1,0 +1,98 @@
+{
+  "usage": {
+    "sourcePath": "frontend/evamed/src/assets/images/Etapas/Uso.png",
+    "response": {
+      "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/18d030f8-69ec-49b9-99c4-d0f99287b85e/brand-assets/evamed-usage-reference-usage/Uso.png",
+      "storagePath": "projects/18d030f8-69ec-49b9-99c4-d0f99287b85e/brand-assets/evamed-usage-reference-usage/Uso.png",
+      "filename": "Uso.png",
+      "mimeType": "image/png",
+      "size": 3457,
+      "purpose": "brand",
+      "contentHash": "05741497eeda98da41f5621cbae1f8e9eb8442f7fc0af6072e5d62bf4166e225",
+      "assetKey": "evamed-usage-reference-usage"
+    }
+  },
+  "production": {
+    "sourcePath": "frontend/evamed/src/assets/images/Etapas/Produccion_.png",
+    "response": {
+      "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/18d030f8-69ec-49b9-99c4-d0f99287b85e/brand-assets/evamed-usage-reference-production/Produccion_.png",
+      "storagePath": "projects/18d030f8-69ec-49b9-99c4-d0f99287b85e/brand-assets/evamed-usage-reference-production/Produccion_.png",
+      "filename": "Produccion_.png",
+      "mimeType": "image/png",
+      "size": 3595,
+      "purpose": "brand",
+      "contentHash": "908d8ac7685b53d27c5c2b4dd815301f6aeadee4c503f2b629424e78ebcb8f23",
+      "assetKey": "evamed-usage-reference-production"
+    }
+  },
+  "construction": {
+    "sourcePath": "frontend/evamed/src/assets/images/Etapas/Construcción_.png",
+    "response": {
+      "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/18d030f8-69ec-49b9-99c4-d0f99287b85e/brand-assets/evamed-usage-reference-construction/Construcci__n_.png",
+      "storagePath": "projects/18d030f8-69ec-49b9-99c4-d0f99287b85e/brand-assets/evamed-usage-reference-construction/Construcci__n_.png",
+      "filename": "Construcci__n_.png",
+      "mimeType": "image/png",
+      "size": 3904,
+      "purpose": "brand",
+      "contentHash": "d6a0c3bdf31ba6d3ded7019879940a53d4ba4d14e50f8b1e40b464f504bfeb0f",
+      "assetKey": "evamed-usage-reference-construction"
+    }
+  },
+  "end-life": {
+    "sourcePath": "frontend/evamed/src/assets/images/Etapas/fin.png",
+    "response": {
+      "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/18d030f8-69ec-49b9-99c4-d0f99287b85e/brand-assets/evamed-usage-reference-end-life/fin.png",
+      "storagePath": "projects/18d030f8-69ec-49b9-99c4-d0f99287b85e/brand-assets/evamed-usage-reference-end-life/fin.png",
+      "filename": "fin.png",
+      "mimeType": "image/png",
+      "size": 3534,
+      "purpose": "brand",
+      "contentHash": "a9b55a31c048d2048203548dcbdeb313fd6943e645befc970b8c8a126f8a5be2",
+      "assetKey": "evamed-usage-reference-end-life"
+    }
+  },
+  "footer": {
+    "sourcePath": "frontend/evamed/src/assets/relevants/DAUIC_Horizontal_Color.jpg",
+    "response": {
+      "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/18d030f8-69ec-49b9-99c4-d0f99287b85e/brand-assets/evamed-usage-reference-footer/DAUIC_Horizontal_Color.jpg",
+      "storagePath": "projects/18d030f8-69ec-49b9-99c4-d0f99287b85e/brand-assets/evamed-usage-reference-footer/DAUIC_Horizontal_Color.jpg",
+      "filename": "DAUIC_Horizontal_Color.jpg",
+      "mimeType": "image/jpeg",
+      "size": 139387,
+      "purpose": "brand",
+      "contentHash": "55e80fcabe0a8d427639d66020ddbf9c980655216e17b4c7ca1bbb90cbed7115",
+      "assetKey": "evamed-usage-reference-footer"
+    }
+  },
+  "logo": {
+    "assetKey": "frontend-evamed-src-assets-relevants-logo.png",
+    "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/18d030f8-69ec-49b9-99c4-d0f99287b85e/brand-assets/frontend-evamed-src-assets-relevants-logo.png/logo.png",
+    "sourcePath": "frontend/evamed/src/assets/relevants/logo.png"
+  },
+  "card-reference": {
+    "sourcePath": "/tmp/card-alignment-grid-1440.png",
+    "response": {
+      "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/18d030f8-69ec-49b9-99c4-d0f99287b85e/reference-assets/evamed-usage-card-reference/card-alignment-grid-1440.png",
+      "storagePath": "projects/18d030f8-69ec-49b9-99c4-d0f99287b85e/reference-assets/evamed-usage-card-reference/card-alignment-grid-1440.png",
+      "filename": "card-alignment-grid-1440.png",
+      "mimeType": "image/png",
+      "size": 26464,
+      "purpose": "reference",
+      "contentHash": "a72812f47db6d6b1758b4aa2f7f3bee6d8e4676947b981fb4f659cdfd3fda539",
+      "nodeId": "a9aa035d-e6d7-4a82-b24e-2895df12cc66"
+    }
+  },
+  "dialog-reference": {
+    "sourcePath": "/tmp/equipment-filters-1440.png",
+    "response": {
+      "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/18d030f8-69ec-49b9-99c4-d0f99287b85e/reference-assets/evamed-usage-dialog-reference/equipment-filters-1440.png",
+      "storagePath": "projects/18d030f8-69ec-49b9-99c4-d0f99287b85e/reference-assets/evamed-usage-dialog-reference/equipment-filters-1440.png",
+      "filename": "equipment-filters-1440.png",
+      "mimeType": "image/png",
+      "size": 55038,
+      "purpose": "reference",
+      "contentHash": "bc1d58503d20714e66a09e4d1ce609ca35770ba875148302189906daf9154664",
+      "nodeId": "ae754b6a-8c8e-4ae0-af74-ed2634d4cbd5"
+    }
+  }
+}

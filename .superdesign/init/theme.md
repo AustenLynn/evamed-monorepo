@@ -1,0 +1,830 @@
+# Theme
+Angular Material controls. Palette: --ev-bg #f8f8f8; surface #ffffff; muted surface #efefef; border #cbcbcb; text #000000; muted #767676 (on white), #595959 (on bg); green #7fa20b; green-light #a8d024; green-text #5b7408; yellow #edc903; melon #ed8484. Helvetica Neue / Arial sans body with IBM Plex Sans/Mono in explorer. Card radius12px, controls8px, gap16px, padding16–24px. Breakpoints:600,900,1100px. Existing page stage selectors and named building elements are retained. One content scroll area per panel. New elements should use explorer tokens.
+## `frontend/evamed/src/styles.scss`
+```scss
+/* You can add global styles to this file, and also import other style files */
+@use './styles/explorer';
+// body {
+//   margin: 0px;
+//   padding: 0px;
+// }
+
+html,
+body {
+  height: 100%;
+}
+body {
+  background-color: #f8f8f8;
+  margin: 0;
+  padding: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+}
+
+.container {
+  max-width: 65rem !important;
+}
+
+/**<Adecuaciones de Input>**/
+
+.label-small-input {
+  font-size: 12px;
+  font-weight: 500;
+  color: #cbcbcb;
+}
+
+.input-general {
+  height: 32px !important;
+  width: 100% !important;
+  font-size: 20px !important;
+  outline: none !important;
+  background-color: #ededed !important;
+}
+
+.label-general {
+  color: #aca8a8 !important;
+  font-size: 12px !important;
+  /*margin-top: 10px !important;
+  margin-bottom: -12px !important;*/
+  font-weight: 500;
+}
+
+/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+.mat-form-field-label-wrapper {
+  display: none !important;
+}
+
+/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+.mat-form-field-appearance-legacy .mat-form-field-underline {
+  background-color: transparent !important;
+}
+
+/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+.mat-mdc-form-field.mat-focused .mat-form-field-ripple {
+  background-color: transparent !important;
+}
+
+.mat-mdc-form-field {
+  display: inline !important;
+}
+/**</Adecuaciones de Input>**/
+
+.example-radio-button {
+  /* TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version. */
+  /* TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version. */
+  .mat-radio-label {
+    /* TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version. */
+    .mat-radio-container {
+      display: none !important;
+    }
+  }
+
+  .mdc-form-field {
+    .mdc-radio {
+      display: none;
+    }
+  }
+
+  .mdc-label {
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 22px;
+  }
+}
+
+/**<Side inicio>**/
+
+.Row.top-0 {
+  margin-top: 0px !important;
+}
+
+.side {
+  flex: 50%;
+  background: transparent url("./assets/images/edificio.png") 0% 0% no-repeat
+    padding-box;
+
+  .background-custom {
+    background: #A8D024 0% 0% no-repeat padding-box!important;
+    mix-blend-mode: multiply;
+    opacity: 1;
+    /**display: table;**/
+    display: contents;
+    width: 100%;
+    height: 100%;
+  }
+}
+/**</Side inicio>**/
+
+/**<Title landing>**/
+section.part-side {
+  background: rgba(168, 208, 36, 0.8);
+  height: 100%;
+}
+
+img.logo-header {
+  height: 48px;
+}
+
+.container-title-standard {
+  padding-top: 20%;
+  padding-left: 10%;
+  padding-right: 15%;
+  display: flex;
+  font-weight: 300;
+
+  .title-header-standard {
+    font-weight: bold;
+    font-size: 48px;
+    text-align: left;
+    letter-spacing: 0px;
+    color: #ffffff;
+    margin-top: 10px;
+  }
+
+  .subtitle-header-standard {
+    font-size: 22px;
+    text-align: left;
+    letter-spacing: 0px;
+    color: #ffffff;
+    line-height: 90%;
+    margin-left: 8px;
+    margin-top: 0;
+  }
+}
+
+.context-evamed {
+  margin-top: 60px;
+  margin-left: 20%;
+  margin-right: 15%;
+
+  .title-context-login {
+    color: #ffffff;
+    font-size: 40px;
+    border-bottom: 5px solid #ffffff !important;
+  }
+
+  .text-context {
+    margin-top: 20px;
+    color: #ffffff;
+  }
+}
+/**<Title landing>**/
+
+/**<Header modal>**/
+.header-modal {
+  display: flex;
+  justify-content: space-between;
+  background-color: #a8d024;
+  /*margin: -24px -24px 24px -24px;*/
+  /*padding: 24px 44px 0px 44px;*/
+}
+
+.close-modal {
+  font-size: 28px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 300;
+  margin-top: -6px;
+}
+
+.close-icon {
+  position: absolute !important;
+  top: 0;
+  right: 0;
+  margin-right: -8px;
+  /*transform: translate(50%, -50%);*/
+}
+input::placeholder {
+  font-size: 0.8em;
+}
+
+/**<Header modal>**/
+
+/**<Dim behind open windows>**/
+// A light dim, so the page stays readable behind the window; it takes the
+// clicks, so a click outside closes the window instead of reaching the page (R-48).
+.cdk-overlay-dark-backdrop {
+  background: #0a0a0a59 !important;
+}
+
+.mdc-dialog__surface {
+  overflow: hidden;
+}
+
+/**</Dim behind open windows>**/
+
+/**<Col Row genérico>**/
+.Row {
+  display: flex;
+  margin-top: -14px;
+}
+
+.row-space-top {
+  margin-top: 15px !important;
+}
+
+.row-space-bottom {
+  margin-bottom: 20px !important;
+}
+
+.Col {
+  margin-top: 0px;
+  width: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.col-small-space {
+  width: 23% !important;
+}
+
+/**</Col Row genérico>**/
+
+/****/
+
+.select-general {
+  /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+  /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+  .mat-mdc-text-field-wrapper {
+    margin-top: 10px;
+    /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+    /*.mat-mdc-form-field-flex {
+      height: 34px;
+      margin-top: 10px;
+    }*/
+  }
+}
+
+.mat-elevation-z8 {
+  margin-bottom: 15px;
+}
+
+.custom-card {
+  margin-bottom: 15px;
+}
+
+.card-title {
+  margin-bottom: 15px !important;
+}
+
+.radial-card-header, .pie-card-header {
+  padding: 10px 0 !important;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
+.mat-select-arrow {
+  margin-top: 10px !important;
+}
+
+/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+.mat-form-field-infix {
+  padding-top: 0px !important;
+}
+/****/
+.center {
+  display: flex;
+  justify-content: center !important;
+}
+
+.card-standard {
+  background-color: #ffffff;
+  box-shadow: 0px 3px 6px #00000029 !important;
+  border-radius: 20px !important;
+  margin-top: 14px;
+  padding-bottom: 40px !important;
+}
+
+.title-standard {
+  margin-top: 42px;
+  font-size: 26px;
+  color: #7fa20b;
+}
+
+.common-label {
+  color: #aca8a8;
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+.common-input {
+  border: 2px solid #cbcbcb;
+  border-radius: 10px;
+  height: 26px;
+  font-size: 14px;
+}
+
+.common-input:focus {
+  border: 2px solid #7fa20b;
+  border-radius: 10px;
+  outline: none;
+}
+
+.principal-container {
+  width: 100%;
+  display: flex;
+  margin-top: 20px;
+
+  .content-container {
+    width: 76%;
+  }
+
+  .description-container {
+    width: 24%;
+    margin-top: 60px;
+  }
+}
+
+.content-header-container {
+  margin-top: 30px;
+  width: 98%;
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  margin-bottom: -5px;
+}
+
+.title-standard-second {
+  font-size: 26px;
+  color: #7fa20b;
+  padding-bottom: 5px;
+  border-bottom: 4px solid #7fa20b;
+  display: inline-table;
+}
+
+.filter-options {
+  margin-top: -16px;
+  width: 250px;
+}
+
+.title-standard-second-light {
+  font-size: 30px !important;
+  font-weight: 300 !important;
+  color: #fff !important;
+  width: 90%;
+}
+
+.user-card {
+  text-align: center;
+
+  .image-container {
+    margin-top: -70px !important;
+    display: block;
+
+    .profile-image {
+      background-image: url("./assets/images/perfil.png");
+      background-size: cover;
+      width: 120px;
+      height: 120px;
+      margin: 0px auto;
+    }
+  }
+
+  .content-standard-card {
+    margin-top: 32px;
+  }
+}
+
+button.yellow-button {
+  background-color: #edc903;
+  font-size: 14px;
+  width: 180px;
+  color: #fff !important;
+  margin: auto;
+}
+
+button.yellow-button.alf.mat-mdc-button.mat-mdc-button-base {
+  width: 30% !important;
+}
+
+button.melon-button {
+  background-color: #ed8484;
+  font-size: 14px;
+  width: 180px;
+  color: #fff !important;
+  margin: auto;
+}
+
+.green-button {
+  background-color: #a8d024;
+  font-size: 14px;
+  width: 180px;
+  color: #fff !important;
+}
+
+.min-action {
+  width: 300px;
+}
+
+.mat-toolbar-row,
+.mat-toolbar-single-row {
+  padding: 0 !important;
+}
+
+.section-continue {
+  margin: 14px 10px;
+  text-align: end;
+}
+
+.custom-continue {
+  width: 150px;
+  margin-top: 10px !important;
+}
+
+.mat-expansion-panel-body {
+  padding: 0 !important;
+}
+
+/*.mat-pseudo-checkbox-checked,
+.mat-pseudo-checkbox-indeterminate,
+.mat-accent .mat-pseudo-checkbox-checked,
+.mat-accent .mat-pseudo-checkbox-indeterminate {
+  background: #a8d024;
+}*/
+
+/**Header redirect**/
+h2.proyecto-title {
+  font-size: 16px;
+  margin-bottom: 0px;
+}
+
+a.a-redirect {
+  text-decoration: none;
+  color: #92be00;
+}
+
+/**style tabs**/
+.tab-title-sections {
+  font-size: 12px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  padding-left: 16px;
+  border: 1px solid #00000029;
+
+  p {
+    margin: 0 !important;
+  }
+}
+
+mat-expansion-panel-header {
+  background-color: #efefef !important;
+  height: 32px !important;
+}
+
+mat-panel-title.mat-expansion-panel-header-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #767676;
+}
+
+/* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
+mat-list-option.item-list-option.mat-mdc-list-item.mat-list-option.mat-focus-indicator.mat-accent.ng-star-inserted {
+  border-bottom: 1px solid #efefef;
+  height: 34px !important;
+}
+
+mat-icon.mat-icon.notranslate.material-icons.mat-icon-no-color {
+  color: #767676;
+  overflow: unset;
+}
+
+/* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
+.item-yellow-extend.mat-list-single-selected-option,
+.item-yellow-extend.mat-list-single-selected-option:hover,
+.item-yellow-extend.mat-list-single-selected-option:focus,
+.item-yellow-extend.mdc-list-item--selected {
+  background-color: #edc903 !important;
+  border-radius: 0px 33px 33px 0px !important;
+  font-weight: 500 !important;
+  width: 180px !important;
+  height: 38px !important;
+}
+
+.item-yellow-extend.mdc-list-item--selected .mat-mdc-list-item-unscoped-content {
+  color: #000 !important;
+}
+
+.mat-mdc-list-item-unscoped-content {
+  color: #767676 !important;
+  font-size: 14px !important;
+}
+
+.mat-mdc-list-base .mat-mdc-list-item,
+.mat-list-base .mat-list-option {
+  height: 38px !important;
+}
+
+/**inputs**/
+/* TODO(mdc-migration): The following rule targets internal classes of option that may no longer apply for the MDC version. */
+mat-option {
+  height: 2em !important;
+  background-color: #ededed !important;
+  border-bottom: 1px solid #fff !important;
+}
+
+/* TODO(mdc-migration): The following rule targets internal classes of option that may no longer apply for the MDC version. */
+span.mat-option-text {
+  color: #aca8a8 !important;
+}
+
+/**css tabs**/
+.container-principal-tab {
+  .mat-mdc-tab-header {
+    /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+    /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+    /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+    .mat-tab-label-container {
+      /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+      /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+      .mat-tab-list {
+        /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+        .mat-tab-labels {
+          display: flex !important;
+          justify-content: flex-end !important;
+        }
+
+        .mat-ink-bar {
+          background-color: #e3c500;
+        }
+      }
+    }
+  }
+}
+
+.container-second-tab {
+  .mat-mdc-tab-header {
+    border-bottom: 0px;
+    /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+    /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+    /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+    /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+    .mat-tab-label-container {
+      /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+      /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+      /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+      .mat-tab-list {
+        background-color: #ededed;
+        padding-top: 20px;
+        /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+        /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+        .mat-tab-labels {
+          display: flex !important;
+          justify-content: center !important;
+          /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+          .mat-tab-label {
+            background-color: #ededed;
+          }
+          /* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version. */
+          .mat-tab-label.mat-tab-label-active {
+            background-color: #fff;
+          }
+        }
+
+        .mat-ink-bar {
+          background-color: #fff;
+        }
+      }
+    }
+  }
+}
+
+:root {
+  --mat-tab-divider-height: 1px;
+  --mat-tab-divider-color: #e0e2ec;
+}
+
+/*.mat-mdc-tab-body-content {
+  overflow: hidden !important;
+}*/
+
+/* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
+/* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
+/* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
+.mat-list-single-selected-option {
+  /* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
+  /* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
+  .mat-list-item-content {
+    /* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
+    .mat-list-text {
+      color: #000 !important;
+      font-size: 14px !important;
+    }
+  }
+}
+
+/* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
+/* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
+.mat-list-item-content {
+  /* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
+  .mat-list-text {
+    color: #767676 !important;
+    font-size: 14px !important;
+  }
+}
+
+/* TODO(mdc-migration): The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
+span.mat-checkbox-label {
+  font-size: 12px !important;
+  color: #767676 !important;
+}
+
+.margin-checkbox {
+  .mdc-label {
+    font-size: 12px;;
+  }
+}
+
+.mat-toolbar-multiple-rows {
+  min-height: 78px !important;
+  align-items: center !important;
+}
+
+.input-general-renuew {
+  /*min-height: 32px !important;*/
+  width: 100% !important;
+  font-size: 14px !important;
+  /*outline: none !important;
+  padding-left: 16px !important;
+  background-color: #ededed !important;
+  border-radius: 5px;
+  border: 2px solid #97969c !important;*/
+}
+
+.width-90 {
+  width: 136px !important;
+}
+
+/* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version. */
+.mat-form-field-appearance-legacy .mat-form-field-wrapper,
+.mat-form-field-wrapper {
+  padding-bottom: 0.25em !important;
+}
+
+.mat-mdc-select-panel {
+  max-width: 100% !important;
+}
+
+.mat-mdc-form-field-error {
+  display: block;
+  /*margin-top: 14px;*/
+}
+
+.mat-mdc-tab-group {
+  --mat-tab-disabled-ripple-color: rgba(0, 0, 0, 0.38);
+  --mat-tab-pagination-icon-color: black;
+  --mat-tab-inactive-label-text-color: rgba(0, 0, 0, 0.6);
+  --mat-tab-active-label-text-color: rgba(0, 0, 0, 0.6);
+  --mat-tab-active-ripple-color: #7fa20b;
+  --mat-tab-inactive-ripple-color: #7fa20b;
+  --mat-tab-active-indicator-color: #7fa20b;
+  --mat-tab-inactive-focus-label-text-color: rgba(0, 0, 0, 0.6);
+  --mat-tab-inactive-hover-label-text-color: rgba(0, 0, 0, 0.6);
+  --mat-tab-active-focus-label-text-color: rgba(0, 0, 0, 0.6);
+  --mat-tab-active-hover-label-text-color: rgba(0, 0, 0, 0.6);
+  --mat-tab-active-focus-indicator-color: #7fa20b;
+  --mat-tab-active-hover-indicator-color: #7fa20b;
+  --mat-tab-active-indicator-color: #7fa20b;
+}
+
+.mdc-notched-outline  {
+  --mat-form-field-outlined-focus-outline-color: #7fa20b;
+  --mat-form-field-outlined-focus-label-text-color: #7fa20b;
+}
+
+.mat-mdc-form-field.mat-focused .mat-mdc-select-arrow {
+  --mat-select-focused-arrow-color: #7fa20b;
+  color: var(--mat-select-focused-arrow-color, var(--mat-sys-primary));
+}
+
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled):not(.mat-mdc-option-multiple) .mdc-list-item__primary-text {
+  --mat-option-selected-state-label-text-color: #7fa20b;
+  color: var(--mat-option-selected-state-label-text-color, var(--mat-sys-on-secondary-container));
+}
+
+.mat-pseudo-checkbox-full.mat-pseudo-checkbox-checked, .mat-pseudo-checkbox-full.mat-pseudo-checkbox-indeterminate {
+  --mat-pseudo-checkbox-full-selected-icon-color: #a8d024;
+  background-color: var(--mat-pseudo-checkbox-full-selected-icon-color, var(--mat-sys-primary));
+  border-color: rgba(0,0,0,0);
+}
+
+.mat-mdc-list-option.mat-accent, .mdc-checkbox{
+  --mat-checkbox-selected-icon-color: #a8d024;
+}
+
+.mdc-checkbox /*__native-control:enabled:checked ~ .mdc-checkbox__background, .mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background*/ {
+  --mat-checkbox-selected-icon-color: #a8d024;
+  --mat-checkbox-selected-focus-icon-color: #a8d024;
+  --mat-checkbox-selected-hover-icon-color: #a8d024;
+  --mat-checkbox-selected-pressed-icon-color: #a8d024;
+  --mat-checkbox-selected-focus-state-layer-color: #a8d024;
+  --mat-checkbox-selected-hover-state-layer-color: #a8d024;
+  --mat-checkbox-selected-pressed-state-layer-color: #a8d024;
+
+  border-color: var(--mat-checkbox-selected-icon-color, var(--mat-sys-primary));
+}
+
+:root{
+  --mat-form-field-filled-focus-active-indicator-color: #a8d024;
+}
+```
+
+## `frontend/evamed/src/styles/_explorer.scss`
+```scss
+// Explorador de recursos: the app's own colours (R-18), defined once so the
+// explorer's component styles never hold raw hex.
+//
+// Where an app colour is too light for text (R-19), the -text variant is a
+// darker shade of the same hue; the original stays for fills and borders.
+:root {
+  --ev-bg: #f8f8f8;
+  --ev-surface: #ffffff;
+  --ev-surface-muted: #efefef;
+  --ev-border: #cbcbcb;
+  --ev-divider: #ededed;
+
+  --ev-text: #000000;
+  // #767676 is the app's caption grey: 4.5:1 on white, but not on --ev-bg.
+  --ev-text-muted: #767676;
+  --ev-text-muted-on-bg: #595959;
+
+  --ev-green: #7fa20b;
+  --ev-green-light: #a8d024;
+  --ev-green-text: #5b7408;
+  --ev-yellow: #edc903;
+  --ev-melon: #ed8484;
+
+  // Impact badges: tints of the app's green, yellow and melon, with text dark
+  // enough to read on them (5.8:1, 6.3:1, 6.0:1).
+  --ev-impact-low-bg: #eef5d6;
+  --ev-impact-low-text: #4f6607;
+  --ev-impact-mid-bg: #fcf4c6;
+  --ev-impact-mid-text: #6b5800;
+  --ev-impact-high-bg: #fbe1e1;
+  --ev-impact-high-text: #9e2a2a;
+
+  --ev-skeleton: #ededed;
+}
+
+.container.container--wide {
+  max-width: 1440px !important;
+}
+
+// The app's section title (.title-standard-second), with text dark enough to read.
+.ev-page-title {
+  display: inline-block;
+  margin: 0;
+  padding-bottom: 5px;
+  border-bottom: 4px solid var(--ev-green);
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--ev-green-text);
+}
+
+.ev-page-subtitle {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: var(--ev-text-muted-on-bg);
+}
+
+.ev-visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// The stage pages' material picker (R-20): a sheet that pulls up from the bottom (R-48).
+.ev-picker-dialog {
+  animation: ev-sheet-up 250ms ease-out;
+}
+
+.ev-picker-dialog .mat-mdc-dialog-surface {
+  border-radius: 16px 16px 0 0;
+}
+
+@keyframes ev-sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ev-picker-dialog {
+    animation: none;
+  }
+}
+
+```

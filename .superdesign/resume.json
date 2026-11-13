@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "targets": {
+    "stage-equipment-cards": {
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        ".superdesign/catalogue-context.md",
+        "frontend/evamed/src/styles/_explorer.scss",
+        "frontend/evamed/src/app/explorer/components/result-card/result-card.component.html",
+        "frontend/evamed/src/app/explorer/components/result-card/result-card.component.scss",
+        "frontend/evamed/src/app/explorer/components/explorer-picker/explorer-picker.component.scss",
+        "frontend/evamed/src/app/construction-stage/components/construction-stage-update/construction-stage-update.component.html",
+        "frontend/evamed/src/app/end-life-stage/components/end-life-update/end-life-update.component.html"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "cd3486fcc96d0d7c8d876f29bf1e0041235758c481974a74e86146a5f71a853b",
+        ".superdesign/catalogue-context.md": "fb9717c3b76f0c78554a23820ff069e4ed8ed9f2aacc1d68540d293584f45a41",
+        "frontend/evamed/src/styles/_explorer.scss": "878095c904b6ce4b0c094858155619f626059bf1aa7d8c0809b66fc883208f4b",
+        "frontend/evamed/src/app/explorer/components/result-card/result-card.component.html": "8ea0e8185dc04476ffd1a339c245d819f70d21e017f1c5c9c544513d39401bfc",
+        "frontend/evamed/src/app/explorer/components/result-card/result-card.component.scss": "a99234dbdb2ffd7e0cdc3093fe4da00478347a85261c233222cf642120595b31",
+        "frontend/evamed/src/app/explorer/components/explorer-picker/explorer-picker.component.scss": "bd1639883fabe4aaaaf674d57f252cae1f8eaab58933fe8e9b5056544f8ad1dc",
+        "frontend/evamed/src/app/construction-stage/components/construction-stage-update/construction-stage-update.component.html": "f10e0d532d96a5d79dd2794b2239a69e839ddda89ce4147ae28c9a2be986b7f6",
+        "frontend/evamed/src/app/end-life-stage/components/end-life-update/end-life-update.component.html": "7fe223cb766c19e339d46476221ba67252403a261c904629a816675cd8632432"
+      },
+      "brandAssets": {
+        "logo": {
+          "assetKey": "frontend-evamed-src-assets-relevants-logo.png",
+          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/18d030f8-69ec-49b9-99c4-d0f99287b85e/brand-assets/frontend-evamed-src-assets-relevants-logo.png/logo.png",
+          "sourcePath": "frontend/evamed/src/assets/relevants/logo.png"
+        }
+      },
+      "components": [
+        {
+          "name": "EvamedHeader",
+          "id": "4bbc03c4-4918-4391-9e8f-b9024baf6d6c",
+          "sourcePath": "frontend/evamed/src/app/shared/components/header/header.component.html",
+          "logoAssetKey": "frontend-evamed-src-assets-relevants-logo.png"
+        }
+      ],
+      "targetKind": "new-target",
+      "projectId": "18d030f8-69ec-49b9-99c4-d0f99287b85e",
+      "activeDraftId": "12509189-92d5-46a2-8668-7236fa1c79e5",
+      "designSystemPath": ".superdesign/design-system.md",
+      "referenceIds": [
+        "frontend-evamed-src-assets-relevants-logo.png"
+      ],
+      "drafts": {
+        "12509189-92d5-46a2-8668-7236fa1c79e5": {
+          "title": "Equipos · Tarjetas y catálogo",
+          "visualDirection": "Existing EVAMED palette; project equipment grid, bottom-sheet catalogue and single-row editing",
+          "currentVersion": 2
+        }
+      },
+      "updatedAt": "2026-11-08T21:34:24.512287+00:00"
+    },
+    "usage-stage-cards": {
+      "targetKind": "new-target",
+      "projectId": "18d030f8-69ec-49b9-99c4-d0f99287b85e",
+      "activeDraftId": "6cb2a85b-ad3c-423d-8a8f-9e2e4ea0a26f",
+      "designSystemPath": ".superdesign/design-system.md",
+      "brandAssets": {
+        "logo": {
+          "assetKey": "frontend-evamed-src-assets-relevants-logo.png",
+          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/18d030f8-69ec-49b9-99c4-d0f99287b85e/brand-assets/frontend-evamed-src-assets-relevants-logo.png/logo.png",
+          "sourcePath": "frontend/evamed/src/assets/relevants/logo.png"
+        }
+      },
+      "referenceIds": [
+        "evamed-usage-reference-usage",
+        "evamed-usage-reference-production",
+        "evamed-usage-reference-construction",
+        "evamed-usage-reference-end-life",
+        "evamed-usage-reference-footer",
+        "frontend-evamed-src-assets-relevants-logo.png",
+        "a9aa035d-e6d7-4a82-b24e-2895df12cc66",
+        "ae754b6a-8c8e-4ae0-af74-ed2634d4cbd5"
+      ],
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        ".superdesign/usage-context.md",
+        "frontend/evamed/src/styles/_tokens.scss",
+        "frontend/evamed/src/styles/_ui.scss",
+        "frontend/evamed/src/app/equipment-stage/equipment-stage-panel.component.html",
+        "frontend/evamed/src/app/equipment-stage/equipment-stage-panel.component.scss",
+        "frontend/evamed/src/app/equipment-stage/equipment-picker.component.html",
+        "frontend/evamed/src/app/equipment-stage/equipment-picker.component.scss",
+        "frontend/evamed/src/app/explorer/components/filter-panel/filter-panel.component.html",
+        "frontend/evamed/src/app/explorer/components/filter-panel/filter-panel.component.scss",
+        "frontend/evamed/src/app/explorer/components/stage-tabs/stage-tabs.component.html",
+        "frontend/evamed/src/app/explorer/components/stage-tabs/stage-tabs.component.scss",
+        "frontend/evamed/src/app/shared/components/header/header.component.html",
+        "frontend/evamed/src/app/shared/components/header/header.component.scss",
+        "frontend/evamed/src/app/shared/ui/menu-shell.component.scss",
+        "frontend/evamed/src/app/shared/ui/selection-tray.component.scss"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "0fb632275360dc2d4c1b277a7eeb6bd5bb584edf041113a6dc77dc4b418db3ef",
+        ".superdesign/usage-context.md": "1855adc5a922e3bcc4b86a39975044e1378b3aea9b3bda0d346f9ca577ff84d3",
+        "frontend/evamed/src/styles/_tokens.scss": "db8ac315a69fb7a8c11de4265eaadee668d4c6910bdf01d4b95cce9387a6eed7",
+        "frontend/evamed/src/styles/_ui.scss": "d93efc21fe30c9a1fbe64dbb15e73fab519439f5daa2f8e7f10397131479c8e5",
+        "frontend/evamed/src/app/equipment-stage/equipment-stage-panel.component.html": "2f0906418e1f18c663b50b57afc4e02809ae50eb8cc71ea1b2d5b9e8e473f146",
+        "frontend/evamed/src/app/equipment-stage/equipment-stage-panel.component.scss": "6ce0d279a47b988888a2dfc6b57fec2ef09cab5877b0b67f6946c0832607fe0c",
+        "frontend/evamed/src/app/equipment-stage/equipment-picker.component.html": "c89e0bde5f5e8c830ab528f359d03221794fcb1324e636dcf406a6267f512b93",
+        "frontend/evamed/src/app/equipment-stage/equipment-picker.component.scss": "005459c2c51719e27fba9300dfc8718ba48363fa88bbec2ab0895ce00b57a502",
+        "frontend/evamed/src/app/explorer/components/filter-panel/filter-panel.component.html": "ce05725c88c0c17b419ca9a5067aa523971d436d3a18fe80ba468e7afd891fd0",
+        "frontend/evamed/src/app/explorer/components/filter-panel/filter-panel.component.scss": "e281cdaf9600d64c281ccfc315b568727632b2be8747f89026d50b8a9a248117",
+        "frontend/evamed/src/app/explorer/components/stage-tabs/stage-tabs.component.html": "8fe9230b2d78c0238b59d1f85c29f5e21a1a2414ed264d4d37eacd9203c56459",
+        "frontend/evamed/src/app/explorer/components/stage-tabs/stage-tabs.component.scss": "43aef307c79fcc4f5b76d67abf27412ca8c35a5564f0f3da8c1b35da5b29e1e7",
+        "frontend/evamed/src/app/shared/components/header/header.component.html": "9863d9b9384b0c904743e23241f6eb90c71f49e58f8e642ee28fb24a7f5c9868",
+        "frontend/evamed/src/app/shared/components/header/header.component.scss": "a1875858aeebcc6cd057120cf107d2cea32819ac13370bb420874c702269d10c",
+        "frontend/evamed/src/app/shared/ui/menu-shell.component.scss": "39380dd8f3d03c5b89eb52aa6d34c00bfe0a64f4323dd77c228f5cb26431b89c",
+        "frontend/evamed/src/app/shared/ui/selection-tray.component.scss": "a9113b5c1a660034f31454c0e87d4e037436933daf382c65a5ee6a4f4d67398a"
+      },
+      "components": [
+        {
+          "name": "EvamedHeader",
+          "id": "4bbc03c4-4918-4391-9e8f-b9024baf6d6c",
+          "sourcePath": "frontend/evamed/src/app/shared/components/header/header.component.html",
+          "logoAssetKey": "frontend-evamed-src-assets-relevants-logo.png"
+        }
+      ],
+      "drafts": {
+        "6cb2a85b-ad3c-423d-8a8f-9e2e4ea0a26f": {
+          "title": "EVAMED - Gestión de Fuentes de Energía (Uso)",
+          "visualDirection": "Existing EVAMED Material-style cards, annual consumption summary and source allocation, inline percentage editor and catalogue bottom-sheet",
+          "currentVersion": 2
+        }
+      },
+      "canvasUrl": "https://superdesign.dev/teams/f83286a9-4785-46e1-932a-d0e94f28ca55/projects/18d030f8-69ec-49b9-99c4-d0f99287b85e?node=draft-variant-6cb2a85b-ad3c-423d-8a8f-9e2e4ea0a26f",
+      "previewUrl": "https://p.superdesign.dev/draft/6cb2a85b-ad3c-423d-8a8f-9e2e4ea0a26f",
+      "updatedAt": "2026-11-11T00:09:02.371374+00:00"
+    }
+  }
+}
