@@ -3,7 +3,6 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from projects_api import views
-from projects_api.usage import UsageView
 from projects_api.excel_templates import views as template_views
 from projects_api.explorer import views as explorer_views
 
@@ -49,7 +48,6 @@ router.register('conversions', views.ConversionsViewSet)
 router.register('database-material', views.DataBaseMaterialViewSet)
 
 urlpatterns = [
-    path('projects/<int:project_id>/usage/', UsageView.as_view()),
     path('me/', views.MeView.as_view()),
     path('materials-stage/', views.MaterialStageView.as_view()),
     path('materials-stage/update/', views.MaterialStageUpdateView.as_view()),

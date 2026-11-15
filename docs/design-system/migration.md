@@ -39,18 +39,3 @@ Database, type and region filtering now reuse the explorer filter panel in both 
 Collapsed cards now share title, quantity, edit, metadata and delete rows. Metadata and Delete remain on separate lines; long names wrap without clipping. Expanded editors retain independent card heights. Browser regression reproduced unequal card heights (219–282px) before the fix and confirms equal per-row heights and matching content positions at 1440/1100px, natural single-column cards at 390px, and no stretching of adjacent cards during editing. Production build and 17 equipment-panel tests pass. Existing build warnings remain unchanged.
 
 A legacy stage-navigation label still extends past the viewport at 1100px; inspection isolated it to `.mdl-stepper-tag`, outside the equipment cards. Navigation migration remains deferred. Card bounds fit at all checked widths; document bounds pass at 1440/390px.
-
-
-## Usage source cards — 2026-11-13
-
-Both new and reopened-project Usage routes now use the same whole-building editor. Annual consumption and source shares have explicit Save/Cancel actions, stable row identity, inline source cards, a separate photovoltaic action and catalogue-based source replacement. Source percentages stay fixed when the annual total changes.
-
-The catalogue reuses MenuShell, SelectionTray, FilterPanel, database/region chips and the existing 75%-height sheet. It has one main scroll area and retains selection across filters and failed saves. No source impact badge or reference factor is invented. The existing EVAMED header, stage identity assets, energy bar and footer remain in use.
-
-Legacy unit/family/percentage/quantity inconsistencies remain visible. A Unit reference is never read as an EnergyUnit reference. Repair requires an explicit old/new unit confirmation; absent or ambiguous canonical kWh units block creation. Multiple annual rows block writes. A project-scoped atomic save uses optimistic revisions and durable request receipts, with reload/review after conflicts or uncertain responses. Historical records and B6 formulas are unchanged.
-
-Deployment prerequisites: apply migration 0085 (request-receipt table), verify the live Unit catalogue has one intended kWh entry, and review legacy inconsistencies explicitly. This implementation does not insert a Unit or migrate saved values.
-
-Negative legacy annual totals support a coordinated, explicitly confirmed repair that retains source IDs. Metadata can be repaired first without changing raw quantities. A lost-response catalogue save freezes its submitted selection until the user closes the sheet and reloads/reviews the outcome. Initial load failures retain a working return-to-projects action.
-
-Verification: 230 backend tests, 455 frontend tests, production build, touched-file lint, migration consistency and whitespace checks pass. Rendered checks at 1440px/390px cover both routes and loading/empty/error/legacy states without horizontal overflow or browser exceptions. The empty EnergyBar track now includes its border in the declared width, fixing a reproduced 2px mobile overflow.

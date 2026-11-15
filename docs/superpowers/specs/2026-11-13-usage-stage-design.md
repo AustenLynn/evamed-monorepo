@@ -1,6 +1,6 @@
 # Usage stage implementation design
 
-Reviewed and implemented locally during continuation, 2026-11-13. Visual concept approved; implementation decisions and verification are recorded in the [plan](../plans/2026-11-13-usage-stage.md).
+Proposed 2026-11-13. Visual concept approved; technical design pending review.
 
 Implement docs/design-system/usage-concept.md using the existing Angular/Django stack and shared EVAMED UI. Both new and reopened project routes share one editor. Usage belongs to the whole building.
 
@@ -47,7 +47,3 @@ Run relevant backend/frontend suites, touched-file lint, production build and wh
 ## Builder decisions
 
 Component decomposition, route names, serializer layout and test fixtures are implementation choices. Specify idempotency persistence and catalogue classification explicitly in the plan. Fractional shares, decimal annual totals, broad unit migration and formula changes are outside scope.
-
-## Legacy negative annual recovery
-
-A negative saved annual can be repaired with coordinated explicit source edits. The editor first permits metadata/share/unit repair while preserving each saved quantity; once only quantity inconsistencies remain, annual repair asks the user to confirm recalculation of every displayed source against the corrected total. The aggregate retains all source IDs. Ordinary annual changes still reject unresolved source inconsistencies.

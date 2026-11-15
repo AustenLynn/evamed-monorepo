@@ -51,8 +51,8 @@ export class EnergyTotalService {
         .filter(item => item.project_id === projectId)
         .reduce((acc, item) => acc + (parseFloat(item.quantity) || 0), 0),
 
-       acrRows = (acrAll as any[]).filter(item => item.project_id === projectId),
-       usageSum = acrRows.length === 1 ? parseFloat(acrRows[0]?.quantity ?? '') || 0 : 0,
+       acrRow = (acrAll as any[]).find(item => item.project_id === projectId),
+       usageSum = parseFloat(acrRow?.quantity ?? '') || 0,
 
        endLifeSum = (ecdpAll as any[])
         .filter(item => item.project_id === projectId)

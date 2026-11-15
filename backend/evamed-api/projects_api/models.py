@@ -508,14 +508,3 @@ class EcoinventUsageReport(models.Model):
     def __str__(self):
         """Return string representation"""
         return 'ecoinvent usage report {} ({})'.format(self.id, self.reason)
-
-
-class UsageSaveReceipt(models.Model):
-    """Durable idempotency for an aggregate Usage request, including deletions."""
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    operation_id = models.UUIDField()
-    request_hash = models.CharField(max_length=64)
-
-    class Meta:
-        constraints = [models.UniqueConstraint(
-            fields=['project', 'operation_id'], name='usage_project_operation_unique')]
