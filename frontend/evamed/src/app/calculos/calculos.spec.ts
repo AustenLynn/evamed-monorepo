@@ -99,3 +99,20 @@ describe('Resultados calculations', () => {
     expect(impacto['Uso']['B4'][3]).toBeCloseTo(8.2);
   });
 });
+
+
+describe('Usage B6 source rows', () => {
+  it('counts repeated typed sources and leaves photovoltaic factor treatment unchanged', () => {
+    const data: any = info();
+    data.ACRList = [{id: 11, project_id: 1, quantity: 100}];
+    data.ECDList = [
+      {id: 21, annual_consumption_required_id: 11, type: 2, source: 'electric', quantity: '60.0000000000'},
+      {id: 22, annual_consumption_required_id: 11, type: 2, source: 'electric', quantity: '20.0000000000'},
+      {id: 23, annual_consumption_required_id: 11, type: null, source: 'panels', quantity: '20.0000000000'},
+    ];
+    data.TEDList = [{type_energy_id: 2, potential_type_id: 3, value: '0.5'}];
+    const [results] = new Calculos().OperacionesDeFase(1, data, BD) as any;
+    // (60 + 20) × 0.5 × 50 years = 2000. Photovoltaics have no typed factor.
+    expect((Object.values(results)[0] as any).Uso.B6).toBe(2000);
+  });
+});

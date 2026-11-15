@@ -1,3 +1,7 @@
+import { UsageEditorComponent } from './editor/usage-editor.component';
+import { UsagePickerComponent } from './editor/usage-picker.component';
+import { EvUiModule } from '../shared/ui/ui.module';
+import { ExplorerUiModule } from '../explorer/explorer-ui.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UsageStageRoutingModule } from './usage-stage-routing.module';
@@ -13,12 +17,16 @@ import { UsageStageUpdateComponent } from './components/usage-stage-update/usage
 @NgModule({
     declarations: [
         UsageStageComponent,
+        UsageEditorComponent,
+        UsagePickerComponent,
         UsageStageUpdateComponent,
         IntermedialComponent,
         PassStepComponent
     ],
     imports: [
         CommonModule,
+        EvUiModule,
+        ExplorerUiModule,
         UsageStageRoutingModule,
         SharedModule,
         FormsModule,

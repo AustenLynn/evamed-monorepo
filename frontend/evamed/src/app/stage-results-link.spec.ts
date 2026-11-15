@@ -9,7 +9,6 @@ import { ConstructionStageUpdateComponent } from './construction-stage/component
 import { EndLifeUpdateComponent } from './end-life-stage/components/end-life-update/end-life-update.component';
 import { EndLifeStageComponent } from './end-life-stage/components/end-life-stage/end-life-stage.component';
 import { MaterialsStageComponent } from './materials-stage/components/materials-stage/materials-stage.component';
-import { UsageStageComponent } from './usage-stage/components/usage-stage/usage-stage.component';
 
 // While a new project is filled in, the stage pages know it as this.projectId
 // (from primaryDataProject). "Ir a resultados" must open that project, not
@@ -18,7 +17,6 @@ describe.each([
   ['materials', MaterialsStageComponent],
   ['construction', ConstructionStageComponent],
   ['construction reopened', ConstructionStageUpdateComponent],
-  ['usage', UsageStageComponent],
   ['end of life', EndLifeStageComponent],
   ['end of life reopened', EndLifeUpdateComponent],
 ])('%s stage "Ir a resultados"', (_name, stage: any) => {

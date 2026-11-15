@@ -1,0 +1,66 @@
+<section class="usage-editor" aria-label="Uso del edificio">
+  <p *ngIf="loading" role="status" evStatus="loading">Cargando consumo y fuentes…</p>
+  <div *ngIf="error" role="alert" evStatus="error">{{ error }}</div>
+  <button *ngIf="!state && !loading" mat-stroked-button evAction="secondary" (click)="ngOnChanges()">Reintentar</button>
+  <div *ngIf="reviewRequired" evActions><button mat-stroked-button evAction="secondary" [disabled]="pending || pickerOpen" (click)="review()">Recargar y revisar</button></div>
+  <p *ngIf="notice" role="status">{{ notice }}</p>
+  <ng-container *ngIf="state && !loading">
+    <p *ngIf="state.issues.includes('multiple_annuals')" role="alert" evStatus="error">Hay varios consumos anuales guardados ({{ state.annuals.length }}). Solicita revisión de los registros. No se guardarán cambios.</p>
+    <p *ngIf="state.canonical_unit_id === null" role="alert" evStatus="warning">El catálogo Unit no contiene una única unidad kWh. Solicita su revisión antes de crear o reparar consumos. No se cambiarán unidades automáticamente.</p>
+    <section *ngIf="orphanDraft" evSurface data-orphan-draft>
+      <h2 evHeading="section">Borrador de una fuente eliminada</h2><p>{{ name(rowDraft) }} · {{ rowDraft.percentage }} %. La fuente ya no existe en los datos recargados. Puedes copiar estos valores antes de cancelar.</p>
+      <button mat-button evAction="tertiary" [disabled]="locked" (click)="cancelDraft()">Cancelar borrador</button>
+    </section>
+    <section evSurface class="usage-annual">
+      <header><div><h1 evHeading="menu">Consumo anual del edificio</h1><p>Uso · suministro energético de todo el inmueble</p></div>
+        <button mat-stroked-button evAction="secondary" data-edit-annual [disabled]="locked || annualBlocked" (click)="editAnnual()">{{ annualNegative ? 'Reparar consumo' : state.annual ? 'Editar consumo' : 'Definir consumo' }}</button></header>
+      <p class="usage-total" *ngIf="state.annual">{{ state.annual.quantity }} <span>{{ unitName(state.annual.unit_id) }} / año</span></p>
+      <p *ngIf="!state.annual && !blocked">Aún no hay consumo anual. Define el total antes de agregar fuentes.</p>
+      <p *ngIf="state.sources.length && annualBlocked && !blocked" evStatus="warning">Repara o elimina las fuentes inconsistentes antes de cambiar el consumo anual.</p>
+      <p *ngIf="state.issues.includes('annual_unit')" evStatus="warning">Unidad guardada: {{ unitName(state.annual.unit_id) }} (#{{ state.annual.unit_id }}). Requiere revisión explícita; no se supone una conversión.</p>
+      <p *ngIf="annualNegative" role="alert" evStatus="warning">El consumo anual guardado es negativo. Revisa las fuentes y confirma su recálculo al reparar el total. Puedes corregir primero su unidad, tipo y porcentaje sin cambiar sus cantidades guardadas.</p>
+      <form *ngIf="annualDraft !== null" evForm (ngSubmit)="saveAnnual()" class="usage-form">
+        <mat-form-field appearance="outline"><mat-label>Consumo anual (kWh)</mat-label><input matInput name="annual" [(ngModel)]="annualDraft" inputmode="numeric" [disabled]="locked" [attr.aria-invalid]="fieldError ? true : null" [attr.aria-describedby]="fieldError ? 'usage-annual-error' : 'usage-share-help'"></mat-form-field>
+        <p id="usage-share-help">Los porcentajes se mantienen fijos. Las cantidades se recalculan al guardar.</p>
+        <mat-checkbox *ngIf="state.issues.includes('annual_unit')" name="annualRepair" [(ngModel)]="annualRepair" [disabled]="locked">Confirmo cambiar {{ unitName(state.annual.unit_id) }} (#{{ state.annual.unit_id }}) a {{ unitName(state.canonical_unit_id) }} (#{{ state.canonical_unit_id }}) tras revisar el dato. Esto no convierte la cantidad.</mat-checkbox>
+        <div *ngIf="annualNegative && state.sources.length">
+          <p *ngFor="let row of state.sources">{{ name(row) }} · cantidad guardada {{ row.quantity === null ? 'sin cantidad' : row.quantity }} {{ unitName(row.unit_id) }} · asignación {{ row.percentage }} %.</p>
+          <mat-checkbox name="annualRepairQuantities" [(ngModel)]="annualRepairQuantities" [disabled]="locked">He revisado estas fuentes y confirmo recalcular sus cantidades con el nuevo total y los porcentajes guardados. Se conservarán sus identificadores.</mat-checkbox>
+        </div>
+        <p *ngIf="fieldError" id="usage-annual-error" role="alert" evStatus="error">{{ fieldError }}</p>
+        <div evActions><button type="button" mat-button evAction="tertiary" (click)="cancelDraft()" [disabled]="locked">Cancelar</button><button type="submit" mat-flat-button evAction="primary" [disabled]="locked">{{ pending ? 'Guardando…' : 'Guardar consumo' }}</button></div>
+      </form>
+    </section>
+    <section class="usage-allocation" aria-label="Asignación de consumo" evSurface>
+      <div><strong>{{ assigned }} %</strong><span>Asignado</span></div><div><strong>{{ remaining }} %</strong><span>Por asignar</span></div>
+      <p *ngIf="remaining > 0" evStatus="warning">La asignación está incompleta. Puedes guardar y continuar; queda {{ remaining }} % por asignar.</p>
+      <p *ngIf="remaining < 0" role="alert" evStatus="error">La asignación supera 100 %. Revisa los porcentajes.</p>
+    </section>
+    <section>
+      <header class="usage-sources-header"><div><h2 evHeading="section">Fuentes de suministro ({{ state.sources.length }})</h2><p>Agrega fuentes y asigna un porcentaje del consumo anual.</p></div>
+        <div evActions><button mat-stroked-button evAction="secondary" [disabled]="locked || !canAdd || hasPanels" (click)="addPanels()">Agregar fotovoltaicos</button><button mat-flat-button evAction="primary" [disabled]="locked || !canAdd" (click)="addSources()">Agregar fuente</button></div>
+      </header>
+      <p *ngIf="additionDraft.length" role="status">Selección pendiente: {{ additionDraft.length }} fuentes. Abre Agregar fuente para revisarla. <button mat-button evAction="tertiary" [disabled]="locked" (click)="cancelDraft()">Descartar selección</button></p>
+      <div class="usage-empty" *ngIf="!state.sources.length" evSurface><h3 evHeading="section">Sin fuentes agregadas</h3><p>Las nuevas fuentes empiezan en 0 %. Edita su asignación aquí.</p></div>
+      <div class="usage-cards">
+        <article evSurface class="usage-card" *ngFor="let row of state.sources" [attr.data-source-row]="row.id" [class.usage-card-expanded]="rowDraft?.id === row.id">
+          <button type="button" class="usage-card-summary" [disabled]="locked || blocked" [attr.aria-expanded]="rowDraft?.id === row.id" (click)="editRow(row)">
+            <h3>{{ name(row) }}</h3><strong>{{ row.percentage === null ? 'Sin porcentaje' : row.percentage + ' %' }}</strong><span>{{ row.quantity === null ? 'Sin cantidad' : (row.quantity | quantityDisplay) }} {{ unitName(row.unit_id) }} / año</span><span class="usage-edit-label">Editar asignación</span>
+          </button>
+          <div class="usage-card-meta" *ngIf="type(row) as source"><app-source-chip *ngIf="source.database" [source]="source.database"></app-source-chip><app-region-chip *ngIf="source.region" [region]="source.region"></app-region-chip></div>
+          <p *ngIf="row.issues.length" evStatus="warning" class="usage-card-notice">Revisión necesaria: {{ issues(row) }}. Referencia guardada #{{ row.id }} · tipo #{{ row.type }} · familia {{ row.source || 'sin familia' }}.</p>
+          <button type="button" mat-button evAction="destructive" class="usage-remove" [disabled]="locked || blocked" (click)="remove(row)" [attr.aria-label]="'Eliminar: ' + name(row)">Eliminar</button>
+          <form *ngIf="rowDraft?.id === row.id" class="usage-form usage-row-form" evForm (ngSubmit)="saveRow()">
+            <h4 evHeading="section">{{ name(rowDraft) }}</h4>
+            <button type="button" mat-stroked-button evAction="secondary" [disabled]="locked" (click)="replace()">Cambiar fuente</button>
+            <mat-form-field appearance="outline"><mat-label>Porcentaje del consumo anual</mat-label><input matInput name="percentage" [(ngModel)]="rowDraft.percentage" inputmode="numeric" [disabled]="locked" [attr.aria-invalid]="fieldError ? true : null" [attr.aria-describedby]="fieldError ? 'usage-row-error-' + row.id : null"><span matTextSuffix>%</span></mat-form-field>
+            <p>La cantidad se calcula al guardar: consumo anual × porcentaje / 100.</p><output *ngIf="draftQuantity !== null" data-draft-quantity aria-live="polite">Cantidad calculada: {{ draftQuantity }} kWh / año</output>
+            <mat-checkbox *ngIf="row.issues.includes('unit') && state.canonical_unit_id !== null" name="rowRepair" [(ngModel)]="rowDraft.repair_unit" [disabled]="locked">Confirmo cambiar {{ unitName(row.unit_id) }} (#{{ row.unit_id }}) a {{ unitName(state.canonical_unit_id) }} (#{{ state.canonical_unit_id }}) tras revisar el dato. Esto no convierte la cantidad.</mat-checkbox>
+            <p *ngIf="fieldError" [id]="'usage-row-error-' + row.id" role="alert" evStatus="error">{{ fieldError }}</p>
+            <div evActions><button type="button" mat-button evAction="tertiary" [disabled]="locked" (click)="cancelDraft()">Cancelar</button><button type="submit" mat-flat-button evAction="primary" [disabled]="locked">{{ pending ? 'Guardando…' : 'Guardar cambios' }}</button></div>
+          </form>
+        </article>
+      </div>
+    </section>
+  </ng-container>
+</section>

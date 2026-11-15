@@ -1,6 +1,6 @@
 # Usage stage concept
 
-Status: visual concept approved by owner, 2026-11-13. No application implementation or production data changes. Proposed technical design: [Usage stage implementation design](../superpowers/specs/2026-11-13-usage-stage-design.md).
+Status: visual concept approved by owner, 2026-11-13. Shared editor implemented locally; no production data changes. Proposed technical design: [Usage stage implementation design](../superpowers/specs/2026-11-13-usage-stage-design.md).
 
 ## Owner direction
 
@@ -26,7 +26,7 @@ These are findings, not authorization for a migration:
 - The current B6 loop sums typed source quantities and their matching factors. Photovoltaic rows have `source=panels,type=null`; do not fabricate a catalogue product, factor, zero-impact claim or database/region for them.
 - Changing the annual total and all dependent quantities needs coherent persistence and partial-failure recovery; replacing delete/recreate or unawaited legacy saves belongs in the implementation plan. No calculation formula changes are implied by the mockup.
 
-The owner approved the visual flow on 2026-11-13 and asked to continue. The technical design is drafted; the implementation plan and application changes remain pending.
+The owner approved the visual flow on 2026-11-13 and asked to continue. The implementation follows the [reviewed technical decisions and plan](../superpowers/plans/2026-11-13-usage-stage.md); application changes remain local for review.
 
 ## Review links and checks
 

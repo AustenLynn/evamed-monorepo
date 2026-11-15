@@ -1,0 +1,18 @@
+:host {display:block; min-width:0; color:var(--ev-text);}
+:host, :host * {box-sizing:border-box;}
+.usage-editor {display:grid; gap:var(--ev-space-6);}
+.usage-annual header, .usage-sources-header {display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:var(--ev-space-5); h1,h2 {margin:0;} p {margin:var(--ev-space-3) 0; color:var(--ev-text-muted-on-bg);}}
+.usage-total {font-size:var(--ev-font-value); font-variant-numeric:tabular-nums; overflow-wrap:anywhere; span {font-size:var(--ev-font-body);}}
+.usage-allocation {display:flex; gap:var(--ev-space-7); flex-wrap:wrap; div {display:grid; gap:var(--ev-space-2);} strong {font-size:var(--ev-font-detail);} p {flex-basis:100%; margin:0;}}
+.usage-cards {display:grid; grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr)); gap:var(--ev-space-5); align-items:start;}
+.usage-card {min-width:0; display:flex; flex-direction:column; padding:0; overflow-wrap:anywhere;}
+.usage-card-expanded {border-color:var(--ev-green);}
+.usage-card-summary {display:flex; flex-direction:column; gap:var(--ev-space-4); text-align:left; border:0; background:transparent; padding:var(--ev-space-5); color:inherit; cursor:pointer; h3 {font-size:var(--ev-font-section); font-family:var(--ev-font-heading); line-height:var(--ev-line-heading); margin:0;} strong {font-size:var(--ev-font-detail); font-variant-numeric:tabular-nums;} &:focus-visible {outline:2px solid var(--ev-green-text); outline-offset:2px;}}
+.usage-edit-label {color:var(--ev-green-text); font-size:var(--ev-font-support);}
+.usage-card-meta {display:flex; flex-wrap:wrap; gap:var(--ev-space-2); padding:0 var(--ev-space-5);}
+.usage-remove {align-self:flex-start; margin:var(--ev-space-3);}
+.usage-card-notice {margin:var(--ev-space-4) var(--ev-space-5) 0;}
+.usage-form {display:grid; gap:var(--ev-space-4); margin-top:var(--ev-space-5); min-width:0; mat-form-field {width:100%; min-width:0;} p,h4 {margin:0;} button {justify-self:start;}}
+.usage-row-form {border-top:1px solid var(--ev-divider); padding:var(--ev-space-5); margin-top:0;}
+.usage-empty {text-align:center; color:var(--ev-text-muted-on-bg);}
+@media(max-width:600px) {.usage-cards {grid-template-columns:minmax(0,1fr);} .usage-sources-header>div {width:100%;}}

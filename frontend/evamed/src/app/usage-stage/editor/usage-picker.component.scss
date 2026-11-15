@@ -1,0 +1,12 @@
+:host {display:flex; flex-direction:column; height:100%; color:var(--ev-text); background:var(--ev-bg);}
+:host, :host * {box-sizing:border-box;}
+.usage-browser {display:grid; grid-template-columns:minmax(260px,300px) minmax(0,1fr); gap:var(--ev-space-7); align-items:start;}
+.usage-results {min-width:0;}
+.usage-results-header {display:flex; justify-content:space-between; flex-wrap:wrap; gap:var(--ev-space-4); align-items:center; margin-bottom:var(--ev-space-5); h2 {margin:0;}}
+.usage-options {display:grid; grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr)); gap:var(--ev-space-5);}
+.usage-options-list {grid-template-columns:1fr;}
+.usage-option {display:flex; flex-direction:column; gap:var(--ev-space-4); header {display:flex; align-items:flex-start; gap:var(--ev-space-3);} p {margin:0; color:var(--ev-text-muted-on-bg);} footer {display:flex; flex-wrap:wrap; gap:var(--ev-space-2); margin-top:auto;} mat-checkbox {flex:none; margin:-10px -10px 0 0;}}
+.usage-option-selected {border-color:var(--ev-green); background:var(--ev-impact-low-bg);}
+.usage-source {flex:1; min-width:0; padding:0; border:0; background:transparent; color:inherit; text-align:left; font:700 var(--ev-font-section)/var(--ev-line-heading) var(--ev-font-heading); overflow-wrap:anywhere; cursor:pointer; &:focus-visible {outline:2px solid var(--ev-green-text); outline-offset:4px;}}
+@media(max-width:900px) {.usage-browser {grid-template-columns:minmax(0,1fr);}}
+@media(max-width:600px) {.usage-options {grid-template-columns:minmax(0,1fr);}}

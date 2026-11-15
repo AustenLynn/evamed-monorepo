@@ -33,6 +33,17 @@ describe('Energy totals project context', () => {
     let result: unknown; service.breakdown$.subscribe(value => result = value);
     expect(result).toEqual({construction: 9, usage: 3, endLife: 4, total: 16});
   });
+  it('does not choose one annual total when legacy records are ambiguous', () => {
+    TestBed.configureTestingModule({providers: [
+      {provide: ConstructionStageService, useValue: {getConstructiveSystemElement: () => of([])}},
+      {provide: ElectricitConsumptionService, useValue: {getACR: () => of([{project_id: 42, quantity: 3}, {project_id: 42, quantity: 4}])}},
+      {provide: EndLifeService, useValue: {getECDP: () => of([])}}
+    ]});
+    const service = TestBed.inject(EnergyTotalService);
+    service.loadAll(42);
+    let result: any; service.breakdown$.subscribe(value => result = value);
+    expect(result.usage).toBe(0);
+  });
   it('ignores an old project response when a different project is loaded', () => {
     const pending = new Subject<any[]>(), current = new Subject<any[]>(); let calls = 0;
     TestBed.configureTestingModule({providers: [

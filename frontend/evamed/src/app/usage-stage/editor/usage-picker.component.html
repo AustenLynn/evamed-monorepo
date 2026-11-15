@@ -1,0 +1,21 @@
+<app-ev-menu-shell>
+  <header evMenuHeader><div><h1 mat-dialog-title evHeading="menu">{{ context.mode === 'add' ? 'Agregar fuentes' : 'Cambiar fuente' }}</h1><p>Uso · suministro energético del edificio</p></div><button mat-icon-button type="button" aria-label="Cerrar catálogo" [disabled]="saving" (click)="close()"><mat-icon>close</mat-icon></button></header>
+  <div class="usage-browser">
+    <app-filter-panel [filters]="filters" [facets]="facets" [query]="query" [disabled]="saving || recovering" (queryChange)="query = $event"></app-filter-panel>
+    <section class="usage-results" aria-label="Fuentes disponibles">
+      <header class="usage-results-header"><h2 evHeading="section">Resultados ({{ filtered.length }})</h2><mat-button-toggle-group [disabled]="saving || recovering" [value]="view" (change)="view = $event.value" aria-label="Vista del catálogo"><mat-button-toggle value="cards">Tarjetas</mat-button-toggle><mat-button-toggle value="list">Lista</mat-button-toggle></mat-button-toggle-group></header>
+      <p *ngIf="unclassified" evStatus="warning">{{ unclassified }} tipos sin clasificación verificada no están disponibles para agregar.</p>
+      <div class="usage-options" [class.usage-options-list]="view === 'list'">
+        <article evSurface *ngFor="let source of filtered" class="usage-option" [class.usage-option-selected]="selected.has(source.id)">
+          <header><button type="button" class="usage-source" [title]="source.name" [disabled]="saving || recovering" (click)="pick(source)">{{ source.display_name }}</button><mat-checkbox *ngIf="context.mode === 'add'" [checked]="selected.has(source.id)" [disabled]="saving || recovering" [aria-label]="'Seleccionar: ' + source.display_name" (change)="pick(source)"></mat-checkbox></header>
+          <p>{{ family(source) }}</p><footer><app-source-chip *ngIf="source.database" [source]="source.database"></app-source-chip><app-region-chip *ngIf="source.region" [region]="source.region"></app-region-chip></footer>
+        </article>
+      </div>
+      <p *ngIf="!filtered.length">No hay fuentes disponibles con estos filtros.</p>
+      <p *ngIf="failed" role="alert" evStatus="error">No se confirmó el guardado. La selección se conserva. Cierra el catálogo para revisar el mensaje y recargar si es necesario.</p>
+    </section>
+  </div>
+  <app-ev-selection-tray *ngIf="context.mode === 'add'" evMenuFooter [items]="selectionItems" [label]="selected.size + ' fuentes seleccionadas'" [disabled]="saving || recovering" (remove)="remove($event)">
+    <button mat-flat-button evAction="primary" type="button" [disabled]="!selected.size || saving || recovering" (click)="submit()">{{ saving ? 'Guardando…' : 'Agregar ' + selected.size + ' fuentes' }}</button>
+  </app-ev-selection-tray>
+</app-ev-menu-shell>
