@@ -1,0 +1,29 @@
+<header class="usage-panel-header">
+  <div><h2 evHeading="section">Fuentes de suministro</h2><p>Energía consumida · todo el edificio</p></div>
+  <button evAction="primary" mat-flat-button type="button" class="usage-primary" [disabled]="pending || blocked || !canAdd" (click)="addSources.emit()"><mat-icon>add_circle</mat-icon> Agregar fuente</button>
+</header>
+<div class="usage-view"><span>{{ rows.length }} fuentes agregadas</span><mat-button-toggle-group [value]="view" (change)="view = $event.value" aria-label="Vista de fuentes"><mat-button-toggle value="cards">Tarjetas</mat-button-toggle><mat-button-toggle value="list">Lista</mat-button-toggle></mat-button-toggle-group></div>
+<div class="usage-grid" [class.usage-grid-list]="view === 'list'">
+  <article evSurface *ngFor="let row of rows; trackBy: trackRow" class="usage-card" [attr.data-row]="row.id" [class.usage-card-expanded]="expanded === row.id">
+    <button class="usage-summary" type="button" [disabled]="pending || blocked" [attr.aria-expanded]="expanded === row.id" [attr.aria-controls]="'usage-editor-' + row.id" (click)="editSource.emit(row.id)">
+      <h3 evHeading="section" [title]="option(row)?.rawName || name(row)">{{ name(row) }}</h3>
+      <p class="usage-quantity">{{ row.quantity === null ? '—' : (row.quantity | quantityDisplay) }} <span>{{ unitName(row.unit_id) }} / año</span></p>
+      <span class="usage-edit-label">{{ row.percentage === null ? 'Revisar porcentaje' : row.percentage + ' %' }} · {{ expanded === row.id ? 'Cerrar edición' : 'Editar fuente' }} <mat-icon>{{ expanded === row.id ? 'expand_less' : 'expand_more' }}</mat-icon></span>
+    </button>
+    <form evForm *ngIf="expanded === row.id" [id]="'usage-editor-' + row.id" class="usage-editor" (ngSubmit)="saveSource.emit(row.id)">
+      <ng-container *ngIf="drafts.get(row.id) as draft">
+        <p class="usage-draft-name">{{ name(draft) }}</p>
+        <button evAction="tertiary" mat-button type="button" class="usage-replace" [disabled]="pending || blocked" (click)="replaceSource.emit(row.id)">Cambiar fuente</button>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Porcentaje del consumo anual</mat-label><input matInput type="text" inputmode="numeric" name="percentage" [ngModel]="draft.percentage" (ngModelChange)="change(row.id, {percentage: $event})" [disabled]="pending || blocked" [attr.aria-invalid]="errors.has(row.id) ? true : null" [attr.aria-describedby]="errors.has(row.id) ? 'usage-error-' + row.id : null"><span matTextSuffix>%</span></mat-form-field>
+        <p class="usage-derived" aria-live="polite">Cantidad calculada: {{ quantityPreviews.has(row.id) ? (quantityPreviews.get(row.id) === null ? '—' : quantityPreviews.get(row.id)) : (row.quantity | quantityDisplay) }} kWh / año</p>
+        <p class="usage-saved-total" *ngIf="annualDraftDirty">Calculado con el consumo anual guardado: {{ annualQuantity }} kWh.</p>
+        <mat-checkbox *ngIf="canonicalUnit && row.unit_id !== canonicalUnit.id" [ngModel]="draft.repairUnit" name="repairUnit" (ngModelChange)="change(row.id, {repairUnit: $event})" [disabled]="pending || blocked">He revisado la unidad guardada «{{ unitName(row.unit_id) }}» y confirmo corregirla a «{{ canonicalUnit.name_unit }}». No se convierte la cantidad.</mat-checkbox>
+        <p evStatus="error" *ngIf="errors.get(row.id) as error" [id]="'usage-error-' + row.id" role="alert">{{ error }}</p>
+        <div evActions class="usage-actions"><button evAction="secondary" mat-stroked-button type="button" class="usage-cancel" [disabled]="pending" (click)="cancelSource.emit(row.id)">Cancelar</button><button evAction="primary" mat-flat-button type="submit" class="usage-primary usage-save" [disabled]="pending || blocked">{{ pending ? 'Guardando…' : 'Guardar cambios' }}</button></div>
+      </ng-container>
+    </form>
+    <p evStatus="warning" class="usage-legacy" *ngIf="row.issues.length">Revisión necesaria: {{ description(row) }}.</p>
+    <div class="usage-card-footer"><div class="usage-card-meta" *ngIf="option(row) as source"><ng-container *ngIf="source.source !== 'panels'"><app-source-chip *ngIf="source.database" [source]="source.database"></app-source-chip><app-region-chip *ngIf="source.region" [region]="source.region"></app-region-chip></ng-container></div><button mat-button type="button" [disabled]="pending || blocked" [attr.aria-label]="'Eliminar: ' + name(row)" (click)="removeSource.emit(row.id)"><mat-icon>delete_outline</mat-icon> Eliminar</button></div>
+  </article>
+</div>
+<div *ngIf="!rows.length" class="usage-empty"><mat-icon>bolt</mat-icon><h3>Aún no has agregado fuentes</h3><p>Agrega las fuentes de suministro energético del edificio.</p><button evAction="primary" mat-flat-button type="button" [disabled]="pending || blocked || !canAdd" (click)="addSources.emit()">Agregar fuente</button></div>

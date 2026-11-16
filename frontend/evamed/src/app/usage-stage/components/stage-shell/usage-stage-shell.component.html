@@ -1,0 +1,33 @@
+<nav class="nav-redirect">
+  <h2 class="proyecto-title">{{ projectName }}</h2>
+  <a href="/" class="a-redirect" [attr.aria-disabled]="pending" (click)="go($event, 'projects')">&lt; Regresar a proyectos</a>
+</nav>
+<div class="principal-container container-total">
+  <nav class="nav-steps" aria-label="Etapas del proyecto">
+    <div class="mdl-stepper-horizontal-alternative">
+      <div class="mdl-stepper-step step-one-selected">
+        <button type="button" class="mdl-stepper-circle" aria-label="Producción" [disabled]="pending || navigationDisabled" (click)="go($event, 'materials-stage')"></button>
+        <div class="mdl-stepper-tag">Producción</div><div class="mdl-stepper-bar-left"></div><div class="mdl-stepper-bar-right"></div>
+      </div>
+      <div class="mdl-stepper-step step-two">
+        <button type="button" class="mdl-stepper-circle" aria-label="Construcción" [disabled]="pending || navigationDisabled" (click)="go($event, 'construction-stage')"></button>
+        <div class="mdl-stepper-tag">Construcción</div><div class="mdl-stepper-bar-left"></div><div class="mdl-stepper-bar-right"></div>
+      </div>
+      <div class="mdl-stepper-step step-three">
+        <div class="mdl-stepper-circle" aria-current="step"></div>
+        <div class="mdl-stepper-tag aux-yellow">Uso</div><div class="mdl-stepper-bar-left"></div><div class="mdl-stepper-bar-right"></div>
+      </div>
+      <div class="mdl-stepper-step step-four">
+        <button type="button" class="mdl-stepper-circle" aria-label="Fin de vida" [disabled]="pending || navigationDisabled" (click)="go($event, 'end-life-stage')"></button>
+        <div class="mdl-stepper-tag">Fin de vida</div><div class="mdl-stepper-bar-left"></div><div class="mdl-stepper-bar-right"></div>
+      </div>
+    </div>
+  </nav>
+  <section class="container-actions"><ng-content></ng-content></section>
+</div>
+<div class="section-continue">
+  <app-energy-bar></app-energy-bar>
+  <button mat-button class="yellow-button" [disabled]="pending || navigationDisabled" (click)="go($event, 'construction-stage')">Atrás</button>
+  <button mat-button class="yellow-button custom-continue" [disabled]="pending || navigationDisabled" (click)="go($event, 'end-life-stage')">Continuar</button>
+  <button mat-button class="yellow-button" [disabled]="pending || navigationDisabled" (click)="go($event, 'resultados')">Ir a resultados</button>
+</div>

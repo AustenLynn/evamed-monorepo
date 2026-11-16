@@ -1,0 +1,5 @@
+@use '../../../../styles/stage-cards' as stageCards;
+@include stageCards.cards('usage');
+.usage-derived, .usage-saved-total { margin:0; font-size:var(--ev-font-support); }
+.usage-saved-total { color:var(--ev-text-muted-on-bg); }
+.usage-legacy { margin:0 16px 12px; }

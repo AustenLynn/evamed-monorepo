@@ -1,0 +1,4 @@
+:host { display:block; min-width:0; }
+.annual-form { display:flex; flex-direction:column; gap:16px; padding:20px 16px; min-width:0; box-sizing:border-box; h3,p { margin:0; } mat-form-field { width:100%; min-width:0; } }
+.annual-context { color:var(--ev-text-muted-on-bg); font-size:var(--ev-font-support); }
+@media(max-width:600px) { .annual-form { padding:16px; } }
