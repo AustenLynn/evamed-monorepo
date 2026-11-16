@@ -29,6 +29,10 @@ export class CatalogueCacheService {
     return entry;
   }
 
+  clear(): void {
+    this.entries.clear();
+  }
+
   invalidate(url: string): void {
     this.entries.delete(url);
   }

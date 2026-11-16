@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { EMPTY, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
+import { clearProjectContext } from '../session-access.service';
 import { ProjectsService } from '../projects/projects.service';
 
 // The stage pages identify the project they work on from
@@ -25,6 +26,10 @@ export class ActiveProjectService {
     return this.projects.getProjectById(String(id)).pipe(
       tap(project => sessionStorage.setItem('primaryDataProject', JSON.stringify(project))),
       catchError(error => {
+        if (error.status === 404) {
+          clearProjectContext();
+          return EMPTY;
+        }
         console.error('No se pudo cargar el proyecto', error);
         return of(null);
       }),

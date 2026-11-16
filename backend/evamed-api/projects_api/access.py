@@ -1,11 +1,12 @@
 """Who may read and change what through the projects API.
 
-* Catalogue tables (materials, units, transports, ...) are public to read;
+* Catalogue tables are public to read except ECO materials and their factors;
   only admins may change them. An admin is a Django UserProfile with is_staff,
   which FirebaseAuthentication only returns for a verified email.
 * Project data belongs to the UserPlatform whose email matches the caller's
   Firebase token.
 """
+from django.db.models import Exists, OuterRef, Q
 from rest_framework import permissions
 from rest_framework.exceptions import PermissionDenied
 
@@ -36,6 +37,45 @@ def caller_email(user):
     return claimed_email(user)
 
 
+def can_access_ecoplatform(user):
+    """Eligibility follows the verified identity accepted by authentication."""
+    email = caller_email(user)
+    return bool(
+        getattr(user, 'is_authenticated', False)
+        and getattr(user, 'email_verified', True)
+        and email.count('@') == 1
+        and email.partition('@')[2] == 'correo.uia.mx'
+    )
+
+
+def visible_materials(user):
+    queryset = models.Material.objects.all()
+    if not can_access_ecoplatform(user):
+        queryset = queryset.exclude(provider_code='eco_platform')
+    return queryset
+
+
+def visible_databases(user, queryset):
+    if can_access_ecoplatform(user):
+        return queryset
+    restricted_names = models.Material.objects.filter(provider_code='eco_platform').values('database_from')
+    public_names = visible_materials(user).values('database_from')
+    return queryset.exclude(Q(name__in=restricted_names) & ~Q(name__in=public_names))
+
+
+def require_visible_references(user, data):
+    """Validate supplied model references before any mutation, including bulk rows."""
+    for value in data.values():
+        project = value if isinstance(value, models.Project) else None
+        if isinstance(value, models.AnnualConsumptionRequired):
+            project = value.project_id
+        if project is not None and not visible_projects(user).filter(pk=project.pk).exists():
+            raise PermissionDenied('That project is not available to your account.')
+        if isinstance(value, models.Material):
+            if not visible_materials(user).filter(pk=value.pk).exists():
+                raise PermissionDenied('This material is not available to your account.')
+
+
 def owned_projects(user):
     email = caller_email(user)
     if not email:
@@ -43,12 +83,23 @@ def owned_projects(user):
     return models.Project.objects.filter(user_platform_id__email__iexact=email)
 
 
+def visible_projects(user):
+    queryset = owned_projects(user)
+    if can_access_ecoplatform(user):
+        return queryset
+    current = models.MaterialSchemeProject.objects.filter(
+        project_id=OuterRef('pk'), material_id__provider_code='eco_platform')
+    original = models.MaterialSchemeProjectOrigianal.objects.filter(
+        project_id=OuterRef('pk'), material_id__provider_code='eco_platform')
+    return queryset.filter(~Exists(current), ~Exists(original))
+
+
 def owns_project(user, project_id):
     try:
         project_id = int(project_id)
     except (TypeError, ValueError):
         return False
-    return owned_projects(user).filter(id=project_id).exists()
+    return visible_projects(user).filter(id=project_id).exists()
 
 
 class IsAdminOrReadOnly(permissions.BasePermission):
@@ -81,14 +132,23 @@ class OwnedByCallerMixin:
         queryset = super().get_queryset()
         if not email:
             return queryset.none()
-        return queryset.filter(**{self.owner_email_path + '__iexact': email})
+        queryset = queryset.filter(**{self.owner_email_path + '__iexact': email})
+        if queryset.model is models.Project:
+            return queryset.filter(pk__in=visible_projects(self.request.user).values('pk'))
+        suffix = '__user_platform_id__email'
+        if self.owner_email_path.endswith(suffix):
+            project_path = self.owner_email_path[:-len(suffix)]
+            return queryset.filter(**{project_path + '__in': visible_projects(self.request.user)})
+        return queryset
 
     def perform_create(self, serializer):
         self._require_ownership(serializer.validated_data, required=True)
+        require_visible_references(self.request.user, serializer.validated_data)
         serializer.save()
 
     def perform_update(self, serializer):
         self._require_ownership(serializer.validated_data, required=False)
+        require_visible_references(self.request.user, serializer.validated_data)
         serializer.save()
 
     def _require_ownership(self, validated_data, required):

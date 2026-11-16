@@ -1,9 +1,10 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Injector, inject } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Auth } from 'firebase/auth';
-import { from, Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { from, Observable, throwError } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import { environment } from './../../../environments/environment';
+import { SessionAccessService } from '../services/session-access.service';
 import { FIREBASE_AUTH } from './../firebase';
 
 // Our API's origin and path prefix, e.g. http://localhost:8000 + /api-projects/.
@@ -16,6 +17,7 @@ const apiPath = apiBase.pathname.replace(/projects\/$/, '');
 export class AuthInterceptor implements HttpInterceptor {
 
   private auth = inject(FIREBASE_AUTH);
+  private injector = inject(Injector);
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Only our API gets the Firebase ID token; other requests (assets,
@@ -43,6 +45,13 @@ export class AuthInterceptor implements HttpInterceptor {
             next.handle(req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }))
           )
         );
+      }),
+      catchError(error => {
+        const path = target.pathname.slice(apiPath.length);
+        if (error.status === 404 && (/^(projects\/\d+\/|materials-stage\/)/.test(path))) {
+          this.injector.get(SessionAccessService).denyProject();
+        }
+        return throwError(() => error);
       })
     );
   }

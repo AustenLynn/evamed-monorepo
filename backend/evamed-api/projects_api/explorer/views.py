@@ -72,7 +72,7 @@ class ExplorerListView(APIView):
         if sort not in queries.SORTS:
             raise ValidationError({'sort': 'Usa uno de: %s.' % ', '.join(queries.SORTS)})
         load, filters, facets = STAGES[stage]
-        items = load()
+        items = load(access.visible_materials(request.user)) if stage == 'produccion' else load()
         paginator = ExplorerPagination()
         page = paginator.paginate_queryset(
             queries.ordered(_filtered(items, request, filters), sort, population=items), request, view=self)
@@ -86,7 +86,7 @@ class ExplorerMaterialDetailView(APIView):
     permission_classes = (access.IsAdminOrReadOnly,)
 
     def get(self, request, pk):
-        detail = queries.material_detail(pk)
+        detail = queries.material_detail(pk, access.visible_materials(request.user))
         if detail is None:
             raise NotFound('Material no encontrado.')
         return Response(detail)

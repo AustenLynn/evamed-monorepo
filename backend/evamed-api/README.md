@@ -49,3 +49,26 @@ Notes:
   `ECOINVENT_ALLOW_PRODUCTION=True`.
 - The `geography` filter needs the full display name (`Mexico (MX)`); a bare
   code returns HTTP 200 with zero results. The client guards against this.
+
+## ECO Platform access
+
+ECO records must set `Material.provider_code = 'eco_platform'` explicitly. Existing
+records default to `legacy`; existing EPD records are not automatically ECO imports.
+Deploy migration `0086_material_provider_identity` and backend filtering before any ECO
+imports. Audit and classify any records imported outside the forthcoming importer.
+
+`GET /api-projects/me/` returns `can_access_ecoplatform`. Only authenticated identities
+with a verified email at exactly `correo.uia.mx` are eligible, including administrators.
+ECO materials, factors, conversions, explorer data, and Excel catalogs are filtered.
+Projects with ECO material references in either current or original rows are hidden
+from ineligible owners, including their children and calculation endpoints. Stored data
+is retained and becomes accessible when the same ownership identity is eligible again.
+Removing the last ECO reference from both representations removes the restriction.
+
+Eligibility follows the Firebase token accepted by the backend. Issued tokens can
+retain prior claims until refresh/expiry; this feature does not implement immediate
+session revocation or transfer projects between email addresses. The frontend refreshes
+capabilities on token changes and window focus, clearing caches and project context on
+identity/access changes. Already downloaded files cannot be recalled.
+
+No ECO API ingestion or EN15804 model changes are part of this segmentation feature.

@@ -21,8 +21,8 @@ class UsageReceiptSchemaTests(TestCase):
         project = models.Project.objects.create(name_project='Retained', user_platform_id=owner)
         receipt = models.UsageSaveReceipt.objects.create(project=project, operation_id=uuid4(), request_hash='a' * 64)
         executor = MigrationExecutor(connection)
-        target = [('projects_api', '0085_usagesavereceipt')]
-        self.assertIn(target[0], executor.loader.applied_migrations)
+        target = executor.loader.graph.leaf_nodes()
+        self.assertIn(('projects_api', '0085_usagesavereceipt'), executor.loader.applied_migrations)
         self.assertEqual(executor.migration_plan(target), [])
         with CaptureQueriesContext(connection) as queries:
             executor.migrate(target)

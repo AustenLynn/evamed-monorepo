@@ -51,4 +51,13 @@ describe('ActiveProjectService.open', () => {
     expect(sessionStorage.getItem('primaryDataProject')).toBeNull();
     expect(sessionStorage.getItem('dataProject')).toBeNull();
   });
+  it('does not navigate into a hidden project after a 404', () => {
+    getProjectById.mockReturnValue(throwError(() => ({ status: 404 })));
+    let opened = false;
+    service.open(7).subscribe(() => (opened = true));
+    expect(opened).toBe(false);
+    expect(localStorage.getItem('idProyectoConstrucción')).toBeNull();
+    expect(sessionStorage.getItem('primaryDataProject')).toBeNull();
+  });
+
 });

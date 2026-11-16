@@ -6,7 +6,7 @@ filters, facets and pages the list in memory.
 """
 from collections import Counter, defaultdict
 
-from projects_api import models
+from projects_api import access, models
 from projects_api.explorer import derive
 
 GWP = 'PCG 100'
@@ -72,12 +72,13 @@ def _add_impact_levels(items):
         item['impact_level'] = levels.get(item['id'])
 
 
-def production_items():
+def production_items(materials=None):
     """Every material, with A1-A3 GWP and impact level (HANDOFF §5.2, §5.4)."""
     gwp_id = _gwp_type_id()
     values, standards = _impact_data()
     items = []
-    for material in models.Material.objects.select_related('unit_id').order_by('id'):
+    materials = access.visible_materials(None) if materials is None else materials
+    for material in materials.select_related('unit_id').order_by('id'):
         aggregate = _is_aggregate(standards.get(material.id, set()))
         items.append({
             'id': material.id,
@@ -163,9 +164,9 @@ def ordered(items, sort='nombre', population=None):
         item['category'] is None, derive.sort_key(item['category'] or ''), *impact(item)))
 
 
-def material_detail(material_id):
+def material_detail(material_id, materials=None):
     """One material with its indicators and category comparison, or None."""
-    items = production_items()
+    items = production_items(materials)
     item = next((candidate for candidate in items if candidate['id'] == material_id), None)
     if item is None:
         return None

@@ -23,11 +23,13 @@ class TemplateDownloadView(APIView):
         if kind not in build.TEMPLATES:
             raise NotFound()
         try:
-            data = build.build_template(kind, build.catalogue_rows(), timezone.now())
+            data = build.build_template(kind, build.catalogue_rows(access.visible_materials(request.user)), timezone.now())
         except build.TooManyMaterials as error:
             logger.error('Excel template %s cannot hold the catalogue: %s', kind, error)
             return Response(
                 {'detail': 'El catálogo tiene más materiales de los que caben en la plantilla.'}, status=500)
         response = HttpResponse(data, content_type=CONTENT_TYPE)
+        response['Cache-Control'] = 'private, no-store'
+        response['Vary'] = 'Authorization, Cookie'
         response['Content-Disposition'] = 'attachment; filename="%s"' % FILENAMES[kind]
         return response

@@ -6,6 +6,7 @@ from rest_framework import filters
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from django.db import transaction
+from django.db.models import Q
 
 from projects_api import models
 from projects_api import serializers
@@ -15,6 +16,30 @@ from projects_api import access
 class CatalogueViewSet(viewsets.ModelViewSet):
     """Reference data: anyone may read it, only admins may change it."""
     permission_classes = (access.IsAdminOrReadOnly,)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if queryset.model is models.Material:
+            return queryset.filter(pk__in=access.visible_materials(self.request.user).values('pk'))
+        if any(field.name == 'material_id' for field in queryset.model._meta.fields):
+            return queryset.filter(Q(material_id__isnull=True) | Q(material_id__in=access.visible_materials(self.request.user)))
+        if queryset.model is models.DataBaseMaterial:
+            return access.visible_databases(self.request.user, queryset)
+        return queryset
+
+    def _check_provider(self, serializer):
+        access.require_visible_references(self.request.user, serializer.validated_data)
+        if serializer.Meta.model is models.Material and not access.can_access_ecoplatform(self.request.user):
+            if serializer.validated_data.get('provider_code') == 'eco_platform':
+                raise PermissionDenied('ECO Platform requires a verified institutional email.')
+
+    def perform_create(self, serializer):
+        self._check_provider(serializer)
+        serializer.save()
+
+    def perform_update(self, serializer):
+        self._check_provider(serializer)
+        serializer.save()
 
 class UserPlatformViewSet(access.OwnedByCallerMixin, viewsets.ModelViewSet):
     """A user's own profile. Admins can read everyone's.
@@ -55,6 +80,7 @@ class MeView(APIView):
         return Response({
             'email': access.claimed_email(request.user),
             'is_admin': access.is_admin(request.user),
+            'can_access_ecoplatform': access.can_access_ecoplatform(request.user),
             # Django (admin) users are only ever bridged for verified emails.
             'email_verified': getattr(request.user, 'email_verified', True),
         })
@@ -287,7 +313,7 @@ class ProjectResultsView(APIView):
         databases_param = request.query_params.get('databases', None)
 
         try:
-            project = access.owned_projects(request.user).select_related('useful_life_id').get(id=project_id)
+            project = access.visible_projects(request.user).select_related('useful_life_id').get(id=project_id)
         except models.Project.DoesNotExist:
             return Response({'detail': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -507,7 +533,7 @@ class ProjectMaterialSchemeView(APIView):
     @transaction.atomic
     def put(self, request, project_id):
         # Lock the project so two overlapping saves can't both delete-then-insert.
-        project = access.owned_projects(request.user).select_for_update().filter(id=project_id).first()
+        project = access.visible_projects(request.user).select_for_update().filter(id=project_id).first()
         if project is None:
             return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -522,6 +548,7 @@ class ProjectMaterialSchemeView(APIView):
             if not row.is_valid():
                 skipped.append({'index': index, 'errors': row.errors})
                 continue
+            access.require_visible_references(request.user, row.validated_data)
             origin, section = row.validated_data.get('origin_id'), row.validated_data.get('section_id')
             if origin is None or origin.id not in origins or section is None or section.id not in sections:
                 return Response(

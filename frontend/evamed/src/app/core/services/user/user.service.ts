@@ -43,7 +43,7 @@ export class UserService {
   }
 
   getMe() {
-    return this.http.get<{ email: string; is_admin: boolean; email_verified: boolean }>(
+    return this.http.get<{ email: string; is_admin: boolean; email_verified: boolean; can_access_ecoplatform: boolean }>(
       environment.api_me
     );
   }

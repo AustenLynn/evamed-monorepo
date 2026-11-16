@@ -183,6 +183,10 @@ class PotentialType(models.Model):
 
 class Material(EcoinventPinnedModel):
     """Construction material model"""
+    provider_code = models.CharField(
+        max_length=32, default='legacy', db_index=True,
+        choices=[('legacy', 'Legacy'), ('eco_platform', 'ECO Platform')],
+    )
     name_material = models.CharField(max_length=255, null=True)
     unit_id = models.ForeignKey(Unit, on_delete=models.CASCADE, null=True)
     database_from = models.CharField(max_length=255, null=True)

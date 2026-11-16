@@ -102,9 +102,9 @@ class MeTests(APITestCase):
     def test_regular_user(self):
         self.client.force_authenticate(user=firebase_user('Alice@example.com', verified=False))
         self.assertEqual(self.client.get('/api-projects/me/').data,
-                         {'email': 'alice@example.com', 'is_admin': False, 'email_verified': False})
+                         {'email': 'alice@example.com', 'is_admin': False, 'email_verified': False, 'can_access_ecoplatform': False})
 
     def test_admin(self):
         self.client.force_authenticate(user=admin_user('boss@example.com'))
         self.assertEqual(self.client.get('/api-projects/me/').data,
-                         {'email': 'boss@example.com', 'is_admin': True, 'email_verified': True})
+                         {'email': 'boss@example.com', 'is_admin': True, 'email_verified': True, 'can_access_ecoplatform': False})

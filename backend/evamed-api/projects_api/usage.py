@@ -16,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from projects_api import models
-from projects_api.access import owned_projects
+from projects_api.access import visible_projects
 from projects_api.explorer import derive
 
 # Verified names in fixtures/initial_data.json. Never infer an unknown family.
@@ -285,7 +285,7 @@ class UsageView(APIView):
 
     def get(self, request, project_id):
         with transaction.atomic():
-            project = get_object_or_404(owned_projects(request.user).select_for_update(), pk=project_id)
+            project = get_object_or_404(visible_projects(request.user).select_for_update(), pk=project_id)
             state = read_state(project, lock=True)
             operation_id = request.query_params.get('operation_id')
             if operation_id:
@@ -301,7 +301,7 @@ class UsageView(APIView):
         change = serializer.validated_data
         request_hash = digest(request.data)
         with transaction.atomic():
-            project = get_object_or_404(owned_projects(request.user).select_for_update(), pk=project_id)
+            project = get_object_or_404(visible_projects(request.user).select_for_update(), pk=project_id)
             receipt = models.UsageSaveReceipt.objects.filter(
                 project=project, operation_id=change['operation_id']).first()
             state = read_state(project, lock=True)

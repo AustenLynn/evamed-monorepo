@@ -361,7 +361,8 @@ class MaterialsSerializer(serializers.ModelSerializer):
             name_material=validated_data['name_material'],
             unit_id=validated_data['unit_id'],
             database_from=validated_data['database_from'],
-            description=validated_data['description']
+            description=validated_data['description'],
+            provider_code=validated_data.get('provider_code', 'legacy'),
         )
 
         material.save()
