@@ -1,6 +1,6 @@
 # Usage stage implementation — 2026-11-16
 
-The owner approved the design and authorized planning plus unattended implementation. Work is implemented locally on `feat/usage-stage-aligned` in `/tmp/evamed-usage-aligned`, based on rollback `9e9b331`. The original checkout remains on main with its earlier planning changes preserved. Nothing has been merged, pushed or deployed; live records were not changed.
+The owner approved the design and authorized planning plus unattended implementation. Work is implemented locally on `feat/usage-stage-aligned` in `/tmp/evamed-usage-aligned`, based on rollback `9e9b331`. After reviewing the screenshots, the owner authorized committing and pushing to main on2026-11-16. Main was fast-forwarded to the verified implementation; the older uncommitted planning snapshot is preserved in a named Git stash. Live records were not changed and no deployment was performed.
 
 Approved [design](../superpowers/specs/2026-11-15-usage-stage-design.md) · completed [plan](../superpowers/plans/2026-11-15-usage-stage-aligned.md) · maintained [design-system inventory](../design-system/migration.md).
 
@@ -43,4 +43,4 @@ Deferred minor: choosing catalogue options without submitting them does not mark
 
 ## Next boundary
 
-Review the local implementation visually, then choose integration/deployment separately. Keep retained migration0085/table and existing unit/record identities intact. No automatic historical conversion, schema recreation, live cleanup, push or deployment belongs to this handoff.
+Visual review and integration to main are approved. Deployment remains a separate step. Keep retained migration0085/table and existing unit/record identities intact. No automatic historical conversion, schema recreation, live cleanup or deployment belongs to this handoff.
