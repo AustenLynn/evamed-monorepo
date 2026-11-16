@@ -160,6 +160,12 @@ def ensure_family(row, types):
         raise ValidationError('Selecciona una fuente de una familia reconocida.')
 
 
+def option_key(row):
+    # A known catalogue type identifies an option even if its legacy family
+    # label is wrong. Correcting that label must not create a new identity.
+    return ('type', row['type']) if row['type'] is not None else ('source', row['source'])
+
+
 def apply_change(project, state, change):
     if 'multiple_annuals' in state['issues']:
         raise ValidationError('Hay varios consumos anuales. Se requiere revisión de los registros antes de guardar.')
@@ -223,21 +229,21 @@ def apply_change(project, state, change):
     # introduce a duplicate among the final surviving rows.
     for key in edit_ids:
         row = rows[key]
-        option = (row['source'], row['type'])
+        option = option_key(row)
         old = original[key]
-        if option != (old['source'], old['type']) and any(
-                other_id != key and (other['source'], other['type']) == option
+        if option != option_key(old) and any(
+                other_id != key and option_key(other) == option
                 for other_id, other in rows.items()):
             raise ValidationError('Esta fuente ya está agregada.')
-    existing_types = {(row['source'], row['type']) for row in rows.values()}
+    existing_types = {option_key(row) for row in rows.values()}
     new_rows = []
     for addition in additions:
         if canonical is None or not annual or annual['unit_id'] != canonical or annual['quantity'] < 0:
             raise ValidationError('Revisa el consumo anual y la unidad kWh antes de agregar fuentes.')
         ensure_family(addition, types)
-        if (addition['source'], addition['type']) in existing_types:
+        if option_key(addition) in existing_types:
             raise ValidationError('Esta fuente ya está agregada.')
-        existing_types.add((addition['source'], addition['type']))
+        existing_types.add(option_key(addition))
         new_rows.append(dict(type=addition['type'], source=addition['source'],
                              percentage=0, quantity=Decimal(0), unit_id=canonical))
     if sum(max(0, row['percentage'] or 0) for row in rows.values()) > 100:

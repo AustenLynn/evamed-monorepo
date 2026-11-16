@@ -105,6 +105,16 @@ class UsageTests(APITestCase):
         first.refresh_from_db(); second.refresh_from_db()
         self.assertEqual((first.percentage, second.percentage), (20, 30))
 
+    def test_repairing_historic_duplicate_family_preserves_both_rows(self):
+        annual = self.annual()
+        first = self.row(annual, 20)
+        second = self.row(annual, 20, source='fuel')
+        response = self.put(edits=[{'id': second.id, 'source': 'electric'}])
+        self.assertEqual(response.status_code, 200, response.data)
+        second.refresh_from_db()
+        self.assertEqual(second.source, 'electric')
+        self.assertEqual({row['id'] for row in response.data['sources']}, {first.id, second.id})
+
     def test_overallocation_rolls_back_annual_and_every_source(self):
         annual = self.annual(); row = self.row(annual, 80)
         response = self.put(annual={'quantity': 12000}, edits=[{'id': row.id, 'percentage': 101}])
