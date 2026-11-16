@@ -30,8 +30,8 @@ describe('Usage source picker', () => {
     expect(picker.selection.map(row => row.key)).toEqual(['type:2']);
   });
   it('retains option DOM identity when the parent refreshes equivalent catalogue objects', () => {
-    const {fixture, el} = render();
-    const before = el.querySelector('[data-option="type:2"]');
+    const {fixture, el} = render(),
+     before = el.querySelector('[data-option="type:2"]');
     fixture.componentRef.setInput('options', options.map(option => ({...option}))); fixture.detectChanges();
     expect(el.querySelector('[data-option="type:2"]')).toBe(before);
   });

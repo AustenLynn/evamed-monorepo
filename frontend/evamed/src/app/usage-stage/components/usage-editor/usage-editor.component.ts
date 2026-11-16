@@ -147,7 +147,7 @@ export class UsageEditorComponent implements OnInit, OnDestroy {
   async navigate(destination: string): Promise<void> {
     if (!this.canLeave()) return;
     if (destination === 'resultados') {sessionStorage.setItem('projectID', String(this.projectId)); await this.router.navigateByUrl('resultados'); return;}
-    if (destination === 'projects') {await this.router.navigateByUrl('projects'); return;}
+    if (destination === 'projects') {await this.router.navigateByUrl('/home-evamed'); return;}
     localStorage.setItem('idProyectoConstrucción', String(this.projectId));
     const lookup = destination === 'materials-stage' ? this.materials.getMaterialSchemeProyects() : destination === 'construction-stage' ? this.materials.getConstructionStage() : destination === 'end-life-stage' ? this.materials.getEDCP() : null;
     if (!lookup) {await this.router.navigateByUrl(destination); return;}

@@ -52,6 +52,20 @@ describe('usage independent draft state', () => {
     expect(()=>editor.annualIntent()).toThrow(); editor.patchAnnual({repairUnit: true}); expect(editor.annualIntent().annual!.repair_unit).toBe(true);
     editor.patchSource(21, {percentage: '90'}); expect(()=>editor.sourceIntent(21)).toThrow();
   });
+  it('allows only decreasing repairs of saved over-allocation and blocks additions until repaired', () => {
+    const state = usageFixture(); state.sources.forEach(row => {row.percentage = 120; row.issues = ['percentage', 'quantity'];});
+    const editor = new UsageEditorState(); editor.load(state);
+    expect(editor.canAdd).toBe(false);
+    editor.patchSource(21, {percentage: '0'});
+    expect(editor.sourceIntent(21)).toEqual({edits: [{id: 21, percentage: 0}]});
+    state.sources[0].percentage = 0; state.sources[0].issues = []; editor.accept(state, {kind: 'source', id: 21});
+    editor.patchSource(22, {percentage: '100'});
+    expect(editor.sourceIntent(22)).toEqual({edits: [{id: 22, percentage: 100}]});
+    const many = usageFixture(); many.sources = [21, 22, 23, 24].map(id => ({...many.sources[0], id, percentage: 60}));
+    editor.load(many); editor.patchSource(21, {percentage: '60'}); expect(() => editor.sourceIntent(21)).toThrow();
+    editor.patchSource(21, {percentage: '61'}); expect(() => editor.sourceIntent(21)).toThrow();
+    editor.patchSource(21, {percentage: '0'}); expect(editor.sourceIntent(21).edits?.[0].percentage).toBe(0);
+  });
   it('accepts annual alone and refreshes saved previews without discarding cards', () => {
     const editor = new UsageEditorState(); editor.load(usageFixture());
     editor.patchAnnual({quantity: '12000'}); editor.patchSource(21, {percentage: '30'}); editor.patchSource(22, {percentage: '40'});

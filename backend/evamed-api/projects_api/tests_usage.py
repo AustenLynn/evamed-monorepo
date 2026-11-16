@@ -115,6 +115,36 @@ class UsageTests(APITestCase):
         self.assertEqual(second.source, 'electric')
         self.assertEqual({row['id'] for row in response.data['sources']}, {first.id, second.id})
 
+    def test_legacy_overallocation_can_be_reduced_without_deleting_ids(self):
+        annual = self.annual(-100)
+        first = self.row(annual, 120)
+        second = self.row(annual, 120)
+        response = self.put(edits=[{'id': first.id, 'percentage': 0}])
+        self.assertEqual(response.status_code, 200, response.data)
+        self.assertEqual({row['id'] for row in response.data['sources']}, {first.id, second.id})
+        second.refresh_from_db(); self.assertEqual(second.percentage, 120)
+        self.assertEqual(self.put(annual={'quantity': 100}).status_code, 400)
+        response = self.put(edits=[{'id': second.id, 'percentage': 0}])
+        self.assertEqual(response.status_code, 200, response.data)
+        response = self.put(annual={'quantity': 100}, edits=[
+            {'id': first.id, 'percentage': 0}, {'id': second.id, 'percentage': 0}])
+        self.assertEqual(response.status_code, 200, response.data)
+        self.assertEqual({row['id'] for row in response.data['sources']}, {first.id, second.id})
+        self.assertTrue(all(row['quantity'] == '0.0000000000' for row in response.data['sources']))
+
+    def test_legacy_overallocation_requires_strict_decrease_and_blocks_new_rows(self):
+        annual = self.annual()
+        rows = [self.row(annual, 60) for _ in range(4)]
+        self.assertEqual(self.put(edits=[{'id': rows[0].id, 'percentage': 60}]).status_code, 400)
+        self.assertEqual(self.put(edits=[{'id': rows[0].id, 'percentage': 61}]).status_code, 400)
+        self.assertEqual(self.put(edits=[{'id': rows[0].id, 'percentage': 0}], additions=[
+            {'client_id': str(uuid4()), 'type': None, 'source': 'panels'}]).status_code, 400)
+        response = self.put(edits=[{'id': rows[0].id, 'percentage': 0}])
+        self.assertEqual(response.status_code, 200, response.data)
+        self.assertEqual(sum(row['percentage'] for row in response.data['sources']), 180)
+        self.assertEqual(self.put(removals=[rows[1].id]).status_code, 200)
+        self.assertEqual(models.ElectricityConsumptionData.objects.count(), 3)
+
     def test_overallocation_rolls_back_annual_and_every_source(self):
         annual = self.annual(); row = self.row(annual, 80)
         response = self.put(annual={'quantity': 12000}, edits=[{'id': row.id, 'percentage': 101}])

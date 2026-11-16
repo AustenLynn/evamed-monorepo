@@ -57,7 +57,7 @@ describe('Usage editor coordination', () => {
     editor.ngOnInit(); await settle(); editor.patchAnnual({quantity: '12000'}); vi.mocked(confirm).mockReturnValue(false);
     expect(editor.canLeave()).toBe(false); await editor.navigate('resultados'); expect(router.navigateByUrl).not.toHaveBeenCalled();
     editor = new UsageEditorComponent(api, energy, router, materials); editor.projectId = 5; api.load.mockReturnValue(throwError(() => ({status: 404}))); editor.ngOnInit(); await settle();
-    await editor.navigate('projects'); expect(router.navigateByUrl).toHaveBeenCalledWith('projects');
+    await editor.navigate('projects'); expect(router.navigateByUrl).toHaveBeenCalledWith('/home-evamed');
   });
   it('does not pick an arbitrary annual total and repairs replacement as a draft only', async () => {
     const state = usageFixture(); state.annual = null; state.annuals.push({id: 12, quantity: 5, unit_id: 22}); api.load.mockReturnValue(of(state)); editor.ngOnInit(); await settle();

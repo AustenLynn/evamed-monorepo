@@ -246,7 +246,14 @@ def apply_change(project, state, change):
         existing_types.add(option_key(addition))
         new_rows.append(dict(type=addition['type'], source=addition['source'],
                              percentage=0, quantity=Decimal(0), unit_id=canonical))
-    if sum(max(0, row['percentage'] or 0) for row in rows.values()) > 100:
+    allocated = sum(max(0, row['percentage'] or 0) for row in rows.values())
+    previous_allocated = sum(max(0, row['percentage'] or 0) for row in original.values())
+    # Retained legacy rows may already exceed 100%. Independent repairs must
+    # be able to make progress without deleting IDs or committing other drafts.
+    # Only a source-only strict reduction can temporarily remain overallocated.
+    reducing_legacy = (previous_allocated > 100 and allocated < previous_allocated
+                       and not annual_changed and not additions)
+    if allocated > 100 and not reducing_legacy:
         raise ValidationError('La asignación total no puede superar 100 %.')
     # Everything above is validation; write only after the whole request is valid.
     acr = None

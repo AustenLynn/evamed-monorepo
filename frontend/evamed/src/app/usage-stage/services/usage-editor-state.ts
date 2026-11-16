@@ -42,7 +42,7 @@ export class UsageEditorState {
   get remaining(): number { return Math.max(0, 100 - this.assigned); }
   get annualDirty(): boolean { return this.annual.quantity !== this.savedAnnual().quantity || this.annual.repairUnit || this.annual.confirmRecalculate; }
   get dirty(): boolean { return this.annualDirty || this.additionKeys.length > 0 || [...this.drafts].some(([id, draft]) => this.sourceDirty(id, draft)); }
-  get canAdd(): boolean { return !!this.saved?.annual && this.saved.annuals.length === 1 && this.saved.annual.quantity >= 0 && this.saved.annual.unit_id === this.canonicalUnit?.id && !!this.canonicalUnit && !this.unresolved; }
+  get canAdd(): boolean { return !!this.saved?.annual && this.saved.annuals.length === 1 && this.saved.annual.quantity >= 0 && this.saved.annual.unit_id === this.canonicalUnit?.id && !!this.canonicalUnit && this.assigned <= 100 && !this.unresolved; }
   get annualBlockedReason(): string | null {
     if (!this.saved || !this.canonicalUnit) return 'No se encontró una unidad kWh única. Revisa las unidades del proyecto.';
     if (this.saved.annuals.length > 1) return 'Hay varios consumos anuales. Resuelve los registros antes de guardar.';
@@ -84,7 +84,9 @@ export class UsageEditorState {
     const key = optionKey(draft), original = optionKey(row), option = this.options.find(item=>item.key === key);
     if(!option?.supported || option.source !== draft.source) throw new Error('Selecciona una fuente compatible.');
     if(key !== original && this.saved.sources.some(item=>item.id !== id && optionKey(item) === key)) throw new Error('Esta fuente ya está asignada.');
-    if(this.saved.sources.reduce((sum, item)=>sum + (item.id === id ? percentage : Math.max(0, item.percentage ?? 0)), 0) > 100) throw new Error('La asignación supera el 100 %.');
+    const allocated = this.saved.sources.reduce((sum, item)=>sum + (item.id === id ? percentage : Math.max(0, item.percentage ?? 0)), 0),
+     reducingLegacy = this.assigned > 100 && allocated < this.assigned;
+    if(allocated > 100 && !reducingLegacy) throw new Error('La asignación supera el 100 %.');
     if(row.unit_id !== this.canonicalUnit.id && !draft.repairUnit) throw new Error('Confirma la corrección de la unidad a kWh.');
     return {edits: [{id, percentage, ...(draft.type !== row.type || draft.source !== row.source ? {type: draft.type, source: draft.source} : {}), ...(draft.repairUnit ? {repair_unit: true} : {})}]};
   }
