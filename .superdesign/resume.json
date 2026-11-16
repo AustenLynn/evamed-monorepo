@@ -129,6 +129,87 @@
       "canvasUrl": "https://superdesign.dev/teams/f83286a9-4785-46e1-932a-d0e94f28ca55/projects/18d030f8-69ec-49b9-99c4-d0f99287b85e?node=draft-variant-6cb2a85b-ad3c-423d-8a8f-9e2e4ea0a26f",
       "previewUrl": "https://p.superdesign.dev/draft/6cb2a85b-ad3c-423d-8a8f-9e2e4ea0a26f",
       "updatedAt": "2026-11-11T00:09:02.371374+00:00"
+    },
+    "usage-design-system-comparison": {
+      "schemaVersion": 1,
+      "targetKind": "new-target",
+      "projectId": "18d030f8-69ec-49b9-99c4-d0f99287b85e",
+      "activeDraftId": "9ef6dbde-8815-4fde-bea4-4a8a7b6b3408",
+      "reviewOnly": true,
+      "designSystemPath": ".superdesign/design-system.md",
+      "brandAssets": {
+        "logo": {
+          "assetKey": "frontend-evamed-src-assets-relevants-logo.png",
+          "url": "https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/projects/18d030f8-69ec-49b9-99c4-d0f99287b85e/brand-assets/frontend-evamed-src-assets-relevants-logo.png/logo.png",
+          "sourcePath": "frontend/evamed/src/assets/relevants/logo.png"
+        }
+      },
+      "referenceIds": [
+        "frontend-evamed-src-assets-relevants-logo.png",
+        "abcf71ba-3b8b-4987-b084-152d38e8c6d6"
+      ],
+      "contextFiles": [
+        ".superdesign/design-system.md",
+        ".superdesign/usage-context.md",
+        "frontend/evamed/src/styles/_tokens.scss",
+        "frontend/evamed/src/styles/_ui.scss",
+        "frontend/evamed/src/app/equipment-stage/equipment-stage-panel.component.html",
+        "frontend/evamed/src/app/equipment-stage/equipment-stage-panel.component.scss",
+        "frontend/evamed/src/app/equipment-stage/equipment-picker.component.html",
+        "frontend/evamed/src/app/equipment-stage/equipment-picker.component.scss",
+        "frontend/evamed/src/app/explorer/components/filter-panel/filter-panel.component.html",
+        "frontend/evamed/src/app/explorer/components/filter-panel/filter-panel.component.scss",
+        "frontend/evamed/src/app/explorer/components/stage-tabs/stage-tabs.component.html",
+        "frontend/evamed/src/app/explorer/components/stage-tabs/stage-tabs.component.scss",
+        "frontend/evamed/src/app/shared/components/header/header.component.html",
+        "frontend/evamed/src/app/shared/components/header/header.component.scss",
+        "frontend/evamed/src/app/shared/ui/menu-shell.component.scss",
+        "frontend/evamed/src/app/shared/ui/selection-tray.component.scss",
+        "frontend/evamed/src/app/construction-stage/components/construction-stage-update/construction-stage-update.component.html",
+        "frontend/evamed/src/app/construction-stage/components/construction-stage-update/construction-stage-update.component.scss",
+        "frontend/evamed/src/styles.scss"
+      ],
+      "fingerprints": {
+        ".superdesign/design-system.md": "0fb632275360dc2d4c1b277a7eeb6bd5bb584edf041113a6dc77dc4b418db3ef",
+        ".superdesign/usage-context.md": "1855adc5a922e3bcc4b86a39975044e1378b3aea9b3bda0d346f9ca577ff84d3",
+        "frontend/evamed/src/styles/_tokens.scss": "db8ac315a69fb7a8c11de4265eaadee668d4c6910bdf01d4b95cce9387a6eed7",
+        "frontend/evamed/src/styles/_ui.scss": "d93efc21fe30c9a1fbe64dbb15e73fab519439f5daa2f8e7f10397131479c8e5",
+        "frontend/evamed/src/app/equipment-stage/equipment-stage-panel.component.html": "2f0906418e1f18c663b50b57afc4e02809ae50eb8cc71ea1b2d5b9e8e473f146",
+        "frontend/evamed/src/app/equipment-stage/equipment-stage-panel.component.scss": "6ce0d279a47b988888a2dfc6b57fec2ef09cab5877b0b67f6946c0832607fe0c",
+        "frontend/evamed/src/app/equipment-stage/equipment-picker.component.html": "c89e0bde5f5e8c830ab528f359d03221794fcb1324e636dcf406a6267f512b93",
+        "frontend/evamed/src/app/equipment-stage/equipment-picker.component.scss": "005459c2c51719e27fba9300dfc8718ba48363fa88bbec2ab0895ce00b57a502",
+        "frontend/evamed/src/app/explorer/components/filter-panel/filter-panel.component.html": "ce05725c88c0c17b419ca9a5067aa523971d436d3a18fe80ba468e7afd891fd0",
+        "frontend/evamed/src/app/explorer/components/filter-panel/filter-panel.component.scss": "e281cdaf9600d64c281ccfc315b568727632b2be8747f89026d50b8a9a248117",
+        "frontend/evamed/src/app/explorer/components/stage-tabs/stage-tabs.component.html": "8fe9230b2d78c0238b59d1f85c29f5e21a1a2414ed264d4d37eacd9203c56459",
+        "frontend/evamed/src/app/explorer/components/stage-tabs/stage-tabs.component.scss": "43aef307c79fcc4f5b76d67abf27412ca8c35a5564f0f3da8c1b35da5b29e1e7",
+        "frontend/evamed/src/app/shared/components/header/header.component.html": "9863d9b9384b0c904743e23241f6eb90c71f49e58f8e642ee28fb24a7f5c9868",
+        "frontend/evamed/src/app/shared/components/header/header.component.scss": "a1875858aeebcc6cd057120cf107d2cea32819ac13370bb420874c702269d10c",
+        "frontend/evamed/src/app/shared/ui/menu-shell.component.scss": "39380dd8f3d03c5b89eb52aa6d34c00bfe0a64f4323dd77c228f5cb26431b89c",
+        "frontend/evamed/src/app/shared/ui/selection-tray.component.scss": "a9113b5c1a660034f31454c0e87d4e037436933daf382c65a5ee6a4f4d67398a",
+        "frontend/evamed/src/app/construction-stage/components/construction-stage-update/construction-stage-update.component.html": "3fd21c84935b00a2af5b076ceab50f8a24e4c82d434b2694a6740416e63830a0",
+        "frontend/evamed/src/app/construction-stage/components/construction-stage-update/construction-stage-update.component.scss": "b49e2c5aee774218f8f40e9f2135a71bb4e5919d73a7c7651d784fa5b0a46e84",
+        "frontend/evamed/src/styles.scss": "5ca5253055a60ca85d04df30c363d19b97ca8598fb6dd15ec54b6f3025314bd8"
+      },
+      "components": [
+        {
+          "name": "EvamedHeader",
+          "id": "4bbc03c4-4918-4391-9e8f-b9024baf6d6c",
+          "sourcePath": "frontend/evamed/src/app/shared/components/header/header.component.html",
+          "logoAssetKey": "frontend-evamed-src-assets-relevants-logo.png"
+        }
+      ],
+      "drafts": {
+        "9ef6dbde-8815-4fde-bea4-4a8a7b6b3408": {
+          "title": "EVAMED Usage — Construction component alignment review",
+          "currentVersion": 2,
+          "visualDirection": "Actual Construction shell, connected stage navigation, existing equipment-card HTML/CSS and Material controls; annual consumption replaces element column; review-only prototype.",
+          "notes": "Separate Fotovoltaicos button removed at owner request; photovoltaics are selected through Agregar fuente."
+        }
+      },
+      "canvasUrl": "https://superdesign.dev/teams/f83286a9-4785-46e1-932a-d0e94f28ca55/projects/18d030f8-69ec-49b9-99c4-d0f99287b85e?node=draft-variant-9ef6dbde-8815-4fde-bea4-4a8a7b6b3408",
+      "previewUrl": "https://p.superdesign.dev/draft/9ef6dbde-8815-4fde-bea4-4a8a7b6b3408",
+      "localComparison": ".superpowers/brainstorm/195431-1794786148/content/usage-system-comparison-v2.html",
+      "updatedAt": "2026-11-16T00:04:43.281884+00:00"
     }
   }
 }

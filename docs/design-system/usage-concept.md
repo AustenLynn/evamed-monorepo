@@ -1,5 +1,21 @@
 # Usage stage concept
 
+## Current planning restart — 2026-11-15
+
+The Usage implementation was reverted at the owner's request because its layout departed from the established design system. The current direction uses the actual Construction shell, connected navigation, equipment-card markup/styles, inline editors and shared catalogue components. This supersedes the older visual references below.
+
+Current [preview, version 2](https://p.superdesign.dev/draft/9ef6dbde-8815-4fde-bea4-4a8a7b6b3408) · [design proposed for approval](../superpowers/specs/2026-11-15-usage-stage-design.md).
+
+- Annual consumption occupies the former building-element column; Usage remains whole-building.
+- Cards retain the equipment pattern: prominent calculated quantity with a small unit label; share/edit link, metadata and delete rows follow the same hierarchy.
+- There is one primary Agregar fuente action. Photovoltaics are available inside that menu; the standalone Fotovoltaicos button was removed at the owner's request.
+- The owner selected independent Save/Cancel for annual consumption and each source card, matching Construction, rather than one page-wide save.
+- Live `Unit 22=kWh` was added with explicit owner approval and verified. Runtime code must still resolve the actual Unit catalogue rather than hardcode that ID or copy EnergyUnit IDs.
+
+The current phase is design/implementation planning only. The new design document received a builder check with no important unanswered questions; owner review of that document remains pending. No Usage application code has been changed during this restart.
+
+## Earlier concept — historical reference
+
 Status: visual concept approved by owner, 2026-11-13. No application implementation or production data changes. Proposed technical design: [Usage stage implementation design](../superpowers/specs/2026-11-13-usage-stage-design.md).
 
 ## Owner direction
