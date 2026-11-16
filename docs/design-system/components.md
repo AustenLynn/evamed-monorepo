@@ -81,3 +81,9 @@ Collapsed equipment cards share title, quantity, edit, metadata and delete track
 `styles/_project-stage.scss` exposes `shell($active)` for the existing Construction/Usage frame and `columns` for the 20% annual sidebar / 80% sources layout. At 390px, columns stack at full width. Usage uses native keyboard-accessible buttons with the existing navigation images; its active stage remains noninteractive.
 
 The Usage catalogue composes MenuShell, FilterPanel, SelectionTray and database/region chips, with the equipment menu's 75% height. Add mode retains selection across filters; replacement has no tray and only patches a source draft. Pending or uncertain operations lock the submitted selection until confirmed state is read.
+
+## Compact main-stage lists
+
+Construction, Usage and End of Life share a list-only variant in `stage-cards.cards($prefix)`. List rows use the Materials name/quantity/action hierarchy: 13px readable names, 14px tabular quantities, small unit labels and 40px edit/delete targets. Usage retains its saved percentage in the collapsed row. Rows share one outlined container and dividers, rather than repeating full card spacing. Long names wrap naturally; at600px and below the name sits above quantity/share and controls.
+
+Database and region badges appear only in the expanded list row, as approved by the owner. Card mode retains its existing metadata and styling. The same inline form expands below its row; changing views does not reset drafts or save. Card subgrid alignment is scoped to card mode. Empty lists do not render an outlined empty strip. This variant applies to the main stages; catalogue menus retain their own list presentation.

@@ -29,6 +29,20 @@ describe('Equipment cards', () => {
     expect(card.querySelector('app-source-chip')?.textContent).toContain('ECOINVENT 3');
     expect(card.querySelector('app-region-chip')?.textContent).toContain('Global');
   });
+  it.each(['construction', 'end-life'])('keeps %s list metadata local to the expanded row and retains exact-ID actions', async stage => {
+    const {el, click, quantity, api} = render(stage);
+    await click('.equipment-view mat-button-toggle:last-child button');
+    expect(el.querySelectorAll('app-source-chip, app-region-chip')).toHaveLength(0);
+    await click('[data-edit="73"]'); quantity('17');
+    expect(el.querySelector('[data-row="73"] app-source-chip')).toBeTruthy();
+    expect(el.querySelector('[data-row="74"] app-source-chip')).toBeNull();
+    await click('.equipment-view mat-button-toggle:first-child button');
+    await click('.equipment-view mat-button-toggle:last-child button');
+    expect(el.querySelector<HTMLInputElement>('input[name="quantity"]')!.value).toBe('17');
+    await click('.equipment-cancel'); expect(el.querySelectorAll('app-source-chip')).toHaveLength(0);
+    await click('[data-delete="74"]'); expect(api.remove).toHaveBeenCalledWith(stage, 74);
+    expect(el.querySelector('[data-row="73"]')).toBeTruthy();
+  });
   it.each([
     ['0.0000000000', '0'],
     ['12.0000000000', '12'],
