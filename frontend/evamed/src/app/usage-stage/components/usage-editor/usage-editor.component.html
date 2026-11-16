@@ -1,0 +1,15 @@
+<app-usage-stage-shell [projectName]="projectName" [pending]="locked" [navigationDisabled]="loading || !!loadError" (navigate)="navigate($event)">
+  <div class="usage-message" *ngIf="loading" role="status">Cargando consumo y fuentes…</div>
+  <div class="usage-message" *ngIf="loadError" role="alert"><p>{{ loadError }}</p><button mat-stroked-button type="button" (click)="load()">Volver a intentar</button></div>
+  <ng-container *ngIf="!loading && !loadError && store.saved as state">
+    <aside class="container-sheets">
+      <app-annual-consumption [annual]="state.annual" [draft]="store.annual" [units]="state.units" [canonicalUnit]="store.canonicalUnit" [assigned]="store.assigned" [pending]="locked" [blockedReason]="store.annualBlockedReason || ''" [repairSummary]="repairSummary" [error]="annualError" (draftChange)="patchAnnual($event)" (saveAnnual)="saveAnnual()" (cancelAnnual)="cancelAnnual()"></app-annual-consumption>
+    </aside>
+    <main class="container-systems">
+      <div *ngIf="operationError" class="usage-notice" role="alert"><p>{{ operationError }}</p><button *ngIf="store.unresolved" mat-stroked-button type="button" [disabled]="pending" (click)="recover()">Revisar estado</button></div>
+      <app-usage-source-panel [rows]="state.sources" [options]="store.options" [units]="state.units" [canonicalUnit]="store.canonicalUnit" [drafts]="drafts" [quantityPreviews]="quantityPreviews" [errors]="sourceErrors" [expanded]="store.expanded" [pending]="locked" [blocked]="locked" [canAdd]="store.canAdd" [annualQuantity]="state.annual?.quantity ?? null" [annualDraftDirty]="store.annualDirty" (addSources)="openPicker()" (editSource)="openSource($event)" (cancelSource)="cancelSource($event)" (saveSource)="saveSource($event)" (replaceSource)="openPicker($event)" (removeSource)="removeSource($event)" (draftChange)="patchSource($event)"></app-usage-source-panel>
+      <section class="usage-notice" *ngFor="let orphan of orphanDrafts"><p role="status">La fuente #{{ orphan.id }} ya no está en el proyecto. Conservamos tu borrador: {{ orphan.draft.percentage || 'sin porcentaje' }} %. Revisa los cambios antes de descartarlo.</p><button mat-stroked-button type="button" [disabled]="locked" (click)="cancelSource(orphan.id)">Descartar este borrador</button></section>
+    </main>
+  </ng-container>
+</app-usage-stage-shell>
+<app-usage-source-picker *ngIf="pickerOpen" [options]="pickerOptions" [selectedKeys]="pickerSelectedKeys" [mode]="replacementId === null ? 'add' : 'replace'" [pending]="locked" [error]="operationError" [recoveryEnabled]="recoveryEnabled" (recover)="recover()" (close)="closePicker()" (confirm)="confirmPicker($event)"></app-usage-source-picker>

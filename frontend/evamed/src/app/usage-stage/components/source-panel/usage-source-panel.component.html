@@ -22,8 +22,9 @@
         <div evActions class="usage-actions"><button evAction="secondary" mat-stroked-button type="button" class="usage-cancel" [disabled]="pending" (click)="cancelSource.emit(row.id)">Cancelar</button><button evAction="primary" mat-flat-button type="submit" class="usage-primary usage-save" [disabled]="pending || blocked">{{ pending ? 'Guardando…' : 'Guardar cambios' }}</button></div>
       </ng-container>
     </form>
+    <ng-container *ngIf="expanded !== row.id"><p evStatus="error" class="usage-legacy" *ngIf="errors.get(row.id) as error" [id]="'usage-error-' + row.id" role="alert">{{ error }}</p></ng-container>
     <p evStatus="warning" class="usage-legacy" *ngIf="row.issues.length">Revisión necesaria: {{ description(row) }}.</p>
     <div class="usage-card-footer"><div class="usage-card-meta" *ngIf="option(row) as source"><ng-container *ngIf="source.source !== 'panels'"><app-source-chip *ngIf="source.database" [source]="source.database"></app-source-chip><app-region-chip *ngIf="source.region" [region]="source.region"></app-region-chip></ng-container></div><button mat-button type="button" [disabled]="pending || blocked" [attr.aria-label]="'Eliminar: ' + name(row)" (click)="removeSource.emit(row.id)"><mat-icon>delete_outline</mat-icon> Eliminar</button></div>
   </article>
 </div>
-<div *ngIf="!rows.length" class="usage-empty"><mat-icon>bolt</mat-icon><h3>Aún no has agregado fuentes</h3><p>Agrega las fuentes de suministro energético del edificio.</p><button evAction="primary" mat-flat-button type="button" [disabled]="pending || blocked || !canAdd" (click)="addSources.emit()">Agregar fuente</button></div>
+<div *ngIf="!rows.length" class="usage-empty"><mat-icon>bolt</mat-icon><h3>Aún no has agregado fuentes</h3><p>Agrega las fuentes de suministro energético del edificio.</p></div>

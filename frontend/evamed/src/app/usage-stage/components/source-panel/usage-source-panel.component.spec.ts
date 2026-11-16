@@ -38,6 +38,17 @@ describe('Usage source presentation', () => {
     expect(fixture.nativeElement.textContent).toContain('Paneles fotovoltaicos');
     expect(fixture.nativeElement.querySelector('app-source-chip,app-region-chip')).toBeNull();
   });
+  it('keeps one Add Source action in the empty state', () => {
+    const {fixture} = render(null);
+    fixture.componentRef.setInput('rows', []); fixture.detectChanges();
+    const buttons = [...fixture.nativeElement.querySelectorAll('button')].filter((button: HTMLButtonElement) => button.textContent.includes('Agregar fuente'));
+    expect(buttons).toHaveLength(1);
+  });
+  it('shows a failed delete message even when the row editor is closed', () => {
+    const {fixture} = render(null);
+    fixture.componentRef.setInput('errors', new Map([[21, 'No se pudo eliminar la fuente.']])); fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-row="21"] [role=alert]')?.textContent).toContain('No se pudo eliminar');
+  });
   it('emits only the changed field instead of mutating an input draft', async () => {
     const {fixture, component, drafts} = render(), changes: unknown[] = [];
     component.draftChange.subscribe(change => changes.push(change));

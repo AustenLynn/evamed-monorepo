@@ -272,6 +272,7 @@ div.step-four .mdl-stepper-circle {
 
   button.mdl-stepper-circle { display:block; border:0; padding:0; }
   button.mdl-stepper-circle:focus-visible { outline:2px solid var(--ev-green-text); outline-offset:3px; }
+  @if $active == 'usage' {
   @media(max-width:600px) {
     .principal-container.container-total { grid-template-columns:minmax(0,1fr); min-width:0; }
     .nav-steps { height:auto; padding:12px 0; }
@@ -282,6 +283,7 @@ div.step-four .mdl-stepper-circle {
     .section-continue { width:100%; margin:16px 0; padding:0; flex-wrap:wrap; gap:12px; }
     .section-continue app-energy-bar { flex:1 1 100%; min-width:0; }
     .section-continue .yellow-button { width:auto; white-space:nowrap; }
+  }
   }
 }
 

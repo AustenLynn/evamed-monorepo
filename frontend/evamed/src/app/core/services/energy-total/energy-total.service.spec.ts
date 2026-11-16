@@ -48,4 +48,15 @@ describe('Energy totals project context', () => {
     expect(result).toEqual({construction: 5, usage: 0, endLife: 0, total: 5});
   });
 
+  it('does not select the first of multiple annual rows', () => {
+    TestBed.configureTestingModule({providers: [
+      {provide: ConstructionStageService, useValue: {getConstructiveSystemElement: () => of([])}},
+      {provide: ElectricitConsumptionService, useValue: {getACR: () => of([{project_id: 42, quantity: 30}, {project_id: 42, quantity: 70}])}},
+      {provide: EndLifeService, useValue: {getECDP: () => of([])}}
+    ]});
+    const service = TestBed.inject(EnergyTotalService); service.loadAll(42);
+    let usage: number; service.breakdown$.subscribe(value => usage = value.usage);
+    expect(usage).toBe(0);
+  });
+
 });

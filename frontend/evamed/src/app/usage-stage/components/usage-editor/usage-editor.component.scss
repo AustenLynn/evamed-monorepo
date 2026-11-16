@@ -1,0 +1,5 @@
+@use '../../../../styles/project-stage' as projectStage;
+@include projectStage.columns;
+:host { display:block; min-width:0; }
+.usage-message { width:100%; padding:24px; }
+.usage-notice { margin:0 0 16px; padding:12px; background:var(--ev-surface); border:1px solid var(--ev-border); border-radius:8px; }

@@ -1,0 +1,40 @@
+<div class="usage-picker-backdrop" (click)="requestClose()" aria-hidden="true"></div>
+<section #dialog class="usage-picker-dialog" role="dialog" aria-modal="true" aria-labelledby="usage-picker-title" tabindex="-1">
+<app-ev-menu-shell>
+<header evMenuHeader class="usage-picker-header">
+  <div><h1 evHeading="menu" mat-dialog-title id="usage-picker-title">{{ mode === 'add' ? 'Agregar fuentes' : 'Cambiar fuente' }}</h1><p>Uso · Edificio completo</p></div>
+  <button mat-icon-button type="button" aria-label="Cerrar catálogo" [disabled]="locked" (click)="requestClose()"><mat-icon>close</mat-icon></button>
+</header>
+<div class="usage-picker-body">
+    <div *ngIf="error" class="usage-picker-recovery" role="alert">
+      <p evStatus="failure">{{ error }}</p>
+      <button *ngIf="locked" mat-stroked-button type="button" class="usage-recover"
+        [disabled]="!recoveryEnabled" (click)="requestRecovery()">Revisar estado</button>
+    </div>
+    <div class="usage-browser">
+    <app-filter-panel [filters]="browser.filters" [facets]="facets" [query]="query" [disabled]="locked" (queryChange)="updateQuery($event)"></app-filter-panel>
+    <section class="usage-results" aria-label="Resultados del catálogo">
+    <header class="usage-results-header">
+      <h2 evHeading="section" class="usage-count">Resultados ({{ filtered.length }})</h2>
+      <mat-button-toggle-group [disabled]="locked" [value]="view" (change)="view = $event.value" aria-label="Vista del catálogo"><mat-button-toggle value="cards"><mat-icon aria-hidden="true">grid_view</mat-icon> Tarjetas</mat-button-toggle><mat-button-toggle value="list"><mat-icon aria-hidden="true">table_rows</mat-icon> Lista</mat-button-toggle></mat-button-toggle-group>
+    </header>
+    <div class="usage-options" [class.usage-options-list]="view === 'list'">
+      <article evSurface *ngFor="let source of filtered; trackBy: trackOption" class="usage-option" [class.usage-option-selected]="selected.has(source.key)">
+        <header class="usage-option-header">
+        <button type="button" class="usage-source" [attr.data-option]="source.key" [title]="source.name" [disabled]="locked" (click)="pick(source)">{{ source.name }}</button>
+        <mat-checkbox *ngIf="mode === 'add'" [checked]="selected.has(source.key)" [disabled]="locked" [aria-label]="'Seleccionar: ' + source.name" (change)="pick(source)"></mat-checkbox>
+        </header>
+        <p>{{ source.source === 'panels' ? 'Generación fotovoltaica' : source.source === 'fuel' ? 'Combustible' : 'Electricidad' }}</p>
+        <footer *ngIf="source.source !== 'panels'" class="usage-option-meta"><app-source-chip [source]="source.database || 'Sin base de datos'"></app-source-chip><app-region-chip [region]="source.region || 'Sin región'"></app-region-chip></footer>
+      </article>
+    </div>
+    <p *ngIf="!filtered.length">No encontramos fuentes con estos filtros.</p>
+    </section>
+    </div>
+</div>
+<app-ev-selection-tray evMenuFooter *ngIf="mode === 'add'" class="usage-tray"
+  [items]="selectionItems" [label]="selected.size + ' fuentes seleccionadas'" [disabled]="locked" (remove)="removeSelection($event)">
+  <button mat-flat-button evAction="primary" type="button" class="usage-add" [disabled]="!selected.size || locked" (click)="submit()">{{ locked ? 'Guardando…' : 'Agregar ' + selected.size + ' fuentes' }}</button>
+</app-ev-selection-tray>
+</app-ev-menu-shell>
+</section>

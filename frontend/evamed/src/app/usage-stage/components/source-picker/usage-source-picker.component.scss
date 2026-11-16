@@ -1,0 +1,28 @@
+:host { position:fixed; inset:0; z-index:1000; color:var(--ev-text); }
+.usage-picker-backdrop { position:absolute; inset:0; background:rgba(0,0,0,.32); }
+.usage-picker-dialog { position:absolute; bottom:0; left:0; width:100%; height:75dvh; display:flex; flex-direction:column; background:var(--ev-bg); outline:none; }
+app-ev-menu-shell { flex:1; min-height:0; }
+:host, :host * { box-sizing: border-box; }
+.usage-browser { display:grid; grid-template-columns:minmax(260px,300px) minmax(0,1fr); gap:24px; align-items:start; }
+.usage-results { min-width:0; }
+.usage-results-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px; }
+.usage-count { margin:0; }
+.usage-option-meta { grid-column:1/-1; display:flex; flex-wrap:wrap; gap:6px; margin-top:auto; padding-top:12px; }
+@media(max-width:900px) { .usage-browser { grid-template-columns:minmax(0,1fr); } }
+.usage-options { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr)); gap:16px; }
+.usage-options-list { grid-template-columns:1fr; }
+.usage-option { display:flex; flex-direction:column; min-height:190px; gap:12px;   p { grid-column:1/-1; margin:0; font-size:var(--ev-font-caption); color:var(--ev-text-muted-on-bg); } }
+.usage-option-selected { border-color:var(--ev-green); background:var(--ev-impact-low-bg); }
+.usage-source { border:0; background:transparent; text-align:left; color:var(--ev-text); padding:0; cursor:pointer; font-family:var(--ev-font-heading); font-weight:var(--ev-weight-heading); font-size:var(--ev-font-section); line-height:var(--ev-line-heading); overflow-wrap:anywhere; &:focus-visible { outline:2px solid var(--ev-green-text); outline-offset:4px; } }
+.usage-failed { color:var(--ev-impact-high-text); }
+.usage-picker-body { min-width:0; }
+.usage-add { flex-shrink:0; }
+@media(max-width:600px) { .usage-options { grid-template-columns:minmax(0,1fr); } }
+
+.usage-option-header { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
+.usage-option-header mat-checkbox { flex:none; margin:-10px -10px 0 0; }
+.usage-source { flex:1; min-width:0; }
+
+// Material's dialog typography is scoped to its container. This sheet reuses
+// the same supported design tokens with no MatDialog container.
+.usage-picker-header h1[evHeading='menu'] { font-family:var(--ev-font-heading); font-size:var(--ev-font-menu); font-weight:var(--ev-weight-heading); line-height:var(--ev-line-heading); color:var(--ev-green-text); }

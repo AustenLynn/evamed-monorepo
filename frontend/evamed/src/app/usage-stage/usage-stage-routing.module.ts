@@ -4,13 +4,17 @@ import { UsageStageComponent } from './components/usage-stage/usage-stage.compon
 import { UsageStageUpdateComponent } from './components/usage-stage-update/usage-stage-update.component';
 
 
+import { UsageDirtyGuard } from './services/usage-dirty.guard';
+
 const routes: Routes = [
   {
     path: '',
+    canDeactivate: [UsageDirtyGuard],
     component: UsageStageComponent
   },
   {
     path: 'update',
+    canDeactivate: [UsageDirtyGuard],
     component: UsageStageUpdateComponent
   }
 ];

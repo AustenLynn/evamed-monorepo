@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { UsageEditorComponent } from './components/usage-editor/usage-editor.component';
+import { UsageStageUiModule } from './usage-stage-ui.module';
 import { UsageStageRoutingModule } from './usage-stage-routing.module';
 import { UsageStageComponent } from './components/usage-stage/usage-stage.component';
 import { SharedModule } from '../shared/shared.module';
@@ -13,12 +15,14 @@ import { UsageStageUpdateComponent } from './components/usage-stage-update/usage
 @NgModule({
     declarations: [
         UsageStageComponent,
+        UsageEditorComponent,
         UsageStageUpdateComponent,
         IntermedialComponent,
         PassStepComponent
     ],
     imports: [
         CommonModule,
+        UsageStageUiModule,
         UsageStageRoutingModule,
         SharedModule,
         FormsModule,
