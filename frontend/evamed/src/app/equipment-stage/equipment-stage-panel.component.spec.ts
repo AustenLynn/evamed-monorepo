@@ -32,6 +32,7 @@ describe('Equipment cards', () => {
   it.each(['construction', 'end-life'])('keeps %s list metadata local to the expanded row and retains exact-ID actions', async stage => {
     const {el, click, quantity, api} = render(stage);
     await click('.equipment-view mat-button-toggle:last-child button');
+    expect(el.querySelector('[data-edit="73"]')?.getAttribute('aria-label')).toContain('12.3456789');
     expect(el.querySelectorAll('app-source-chip, app-region-chip')).toHaveLength(0);
     await click('[data-edit="73"]'); quantity('17');
     expect(el.querySelector('[data-row="73"] app-source-chip')).toBeTruthy();

@@ -37,6 +37,8 @@ describe('Usage source presentation', () => {
     fixture.nativeElement.querySelector('.usage-view mat-button-toggle:last-child button').click(); fixture.detectChanges();
     expect(fixture.nativeElement.querySelectorAll('app-source-chip, app-region-chip')).toHaveLength(0);
     expect(fixture.nativeElement.querySelector('[data-row="21"] .usage-list-share')?.textContent).toContain('60 %');
+    expect(fixture.nativeElement.querySelector('[data-row="21"] .usage-summary').getAttribute('aria-label')).toContain('6000 kWh');
+    expect(fixture.nativeElement.querySelector('[data-row="21"] .usage-summary').getAttribute('aria-label')).toContain('60 %');
     component.editSource.subscribe(id => edits.push(id)); component.removeSource.subscribe(id => removals.push(id));
     fixture.nativeElement.querySelector('[data-row="21"] .usage-summary').click(); expect(edits).toEqual([21]);
     fixture.componentRef.setInput('expanded', 21); fixture.detectChanges();

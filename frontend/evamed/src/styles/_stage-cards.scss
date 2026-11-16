@@ -65,7 +65,6 @@
   gap:0;
   border:1px solid var(--ev-border);
   border-radius:var(--ev-radius-card);
-  background:var(--ev-surface);
 
   .#{$prefix}-card {
     display:grid;
@@ -82,14 +81,12 @@
   .#{$prefix}-card-expanded { box-shadow:inset 3px 0 var(--ev-green); }
   .#{$prefix}-summary {
     grid-column:1;
-    grid-row:1;
     display:grid;
     grid-template-columns:minmax(0,1fr) minmax(80px,160px) auto;
     gap:var(--ev-space-4);
     align-items:center;
     min-height:40px;
     padding:0;
-    border-radius:0;
     h3 { margin:0; font-size:var(--ev-font-support); font-weight:500; }
   }
   .#{$prefix}-quantity {
@@ -99,13 +96,12 @@
     text-align:right;
     span { font-size:var(--ev-font-caption); }
   }
-  .#{$prefix}-edit-label { margin:0; justify-content:flex-end; white-space:nowrap; }
+  .#{$prefix}-edit-label { margin:0; white-space:nowrap; }
   .#{$prefix}-edit-copy, .#{$prefix}-delete-copy { display:none; }
   .#{$prefix}-card-footer { display:contents; }
   .#{$prefix}-card-footer > button {
     grid-column:2;
     grid-row:1;
-    justify-self:end;
     min-width:40px;
     width:40px;
     height:40px;
