@@ -73,3 +73,11 @@ Main equipment cards show the readable title and separate database/region chips,
 ## Equipment card alignment
 
 Collapsed equipment cards share title, quantity, edit, metadata and delete tracks within each grid row, so long names remain readable without shifting neighbouring actions. The footer keeps metadata and Delete on separate rows. An expanded inline editor returns cards to independent heights, preventing blank stretched neighbours. Single-column/mobile cards retain natural title height. Browsers without CSS subgrid retain equal-height flex cards with consistent footer order.
+
+## Shared stage presentation and Usage
+
+`styles/_stage-cards.scss` exposes `cards($prefix)`, consumed by the equipment panel and Usage source panel. It shares the existing 12px card radius, 20px/16px/12px summary padding, 16px/700 title, 26px quantity and 13px unit, aligned collapsed tracks and independent expanded editor heights. It contains no persistence or equipment/source domain logic.
+
+`styles/_project-stage.scss` exposes `shell($active)` for the existing Construction/Usage frame and `columns` for the 20% annual sidebar / 80% sources layout. At 390px, columns stack at full width. Usage uses native keyboard-accessible buttons with the existing navigation images; its active stage remains noninteractive.
+
+The Usage catalogue composes MenuShell, FilterPanel, SelectionTray and database/region chips, with the equipment menu's 75% height. Add mode retains selection across filters; replacement has no tray and only patches a source draft. Pending or uncertain operations lock the submitted selection until confirmed state is read.

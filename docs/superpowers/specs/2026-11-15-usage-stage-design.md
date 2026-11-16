@@ -45,7 +45,7 @@ Cancel affects only its own annual/card draft. Switching cards preserves unsaved
 
 **Proposed calculation rule for independent drafts:** only saved values feed persistence, calculated quantities and the energy bar. A source Save uses the last saved annual total, not text in an unsaved annual form. Annual Save uses the saved source percentages, not drafts in other cards. Other drafts survive either save and their previews refresh against the newly confirmed saved total. If necessary, helper text identifies that a preview uses the saved annual total.
 
-Saving annual consumption keeps shares fixed and recalculates all dependent quantities in one transaction. Example: 10000 with 60% and 20% becomes 12000 with 7200 and 2400; 20% remains unassigned. Allocation below 100% is allowed with an existing-style warning; allocation above 100% is rejected without partial changes. Retain current nonnegative whole annual totals and whole shares from 0 to 100; preserve Decimal source quantity precision and return decimal strings. Fractional shares or annual totals require a separate contract decision.
+Saving annual consumption keeps shares fixed and recalculates all dependent quantities in one transaction. Example: 10000 with 60% and 20% becomes 12000 with 7200 and 2400; 20% remains unassigned. Allocation below 100% is allowed with an existing-style warning; allocation above 100% is rejected without partial changes. A narrowly scoped legacy-repair exception permits source-only saves/removals that strictly reduce an already over-allocated saved total; annual changes and additions remain blocked while the resulting allocation exceeds 100%. This allows independent repairs without deleting historical IDs. Retain current nonnegative whole annual totals and whole shares from 0 to 100; preserve Decimal source quantity precision and return decimal strings. Fractional shares or annual totals require a separate contract decision.
 
 Saving disables duplicate submissions and affected mutation/navigation controls until the outcome is known. Failed saves preserve their drafts. Navigation away from dirty drafts offers explicit discard confirmation; cancelling navigation keeps them. Switching editors is not a navigation-away action and does not silently discard another draft. The energy bar changes only after confirmed persistence or confirmed saved-state loading.
 
@@ -71,7 +71,7 @@ Persistence checks must cover both routes, repeated source rows, zero/incomplete
 
 Run relevant backend/frontend suites, touched-file lint, production build and whitespace checks. Update maintained design-system documentation for any justified new shared visual role. Keep visual acceptance distinct from backend correctness; passing tests does not establish design-system consistency.
 
-This phase produces a reviewed design and then an implementation plan. It does not restore the reverted refactor, modify live records, commit/push application changes or deploy. Implementation and deployment require subsequent owner direction.
+The owner subsequently approved this design and authorized writing the plan and implementing it unattended on 2026-11-15. This authorization covers local application commits; it does not cover live-record changes, push, merge or deployment. The implementation must remain reviewable on its feature branch.
 
 ## Calls proposed for the builder
 

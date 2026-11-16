@@ -12,7 +12,8 @@ Initial migration: implemented and locally verified, 2026-11-09.
 | Equipment picker | Migrated | Same menu shell/header, tray/chips, actions, card surfaces and heading weight/line height |
 | Construction/End of Life equipment panel | Migrated | Surfaces, headings, form density, actions; all four hosts consume shared panel |
 | Header/footer/stage navigation | Deferred | Preserve existing layout and behaviour |
-| Usage, project/admin/auth/results pages | Deferred | Scope a separate migration before changing |
+| Usage | Implemented locally, 2026-11-15 | Construction frame, shared card styling, independent annual/source editors and shared catalogue composition |
+| Project/admin/auth/results pages | Deferred | Scope a separate migration before changing |
 | Legacy global Material overrides | Deferred | Audit consumers before retirement; no blanket reset |
 
 Intentional differences: Ficha 24px titles, menu 20px titles, compact inline form summary; equipment has no material impact data or mandatory unit at add time. Equipment editor remains inside selected card. Selection tray visibility follows each feature's existing add/replacement behaviour.
@@ -39,3 +40,11 @@ Database, type and region filtering now reuse the explorer filter panel in both 
 Collapsed cards now share title, quantity, edit, metadata and delete rows. Metadata and Delete remain on separate lines; long names wrap without clipping. Expanded editors retain independent card heights. Browser regression reproduced unequal card heights (219–282px) before the fix and confirms equal per-row heights and matching content positions at 1440/1100px, natural single-column cards at 390px, and no stretching of adjacent cards during editing. Production build and 17 equipment-panel tests pass. Existing build warnings remain unchanged.
 
 A legacy stage-navigation label still extends past the viewport at 1100px; inspection isolated it to `.mdl-stepper-tag`, outside the equipment cards. Navigation migration remains deferred. Card bounds fit at all checked widths; document bounds pass at 1440/390px.
+
+## Usage stage — 2026-11-15
+
+Usage reuses the actual Construction frame and equipment card styles through presentation-only SCSS mixins. Construction keeps its original markup, and its desktop collapsed/editor/catalogue screenshots remain pixel-identical after extraction. Usage activates the existing Uso image and places annual consumption in the former element sidebar; on mobile this form stacks above sources. No new theme or navigation pattern is introduced.
+
+The annual form and each source card have independent Save/Cancel. Source previews use the saved annual total; changing the annual total recalculates quantities with saved shares. Catalogue additions start at 0%; photovoltaic generation is available inside the same menu and has no fabricated source/region metadata. Legacy records stay visible and require explicit repair consent where their units differ from the unique Unit entry labelled kWh.
+
+Verification after independent review fixes: 64 frontend files / 477 tests; 236 Django tests; migration consistency; 32 touched frontend files linted; production build; whitespace check. Build retains the existing home/material-stage style-budget and file-saver CommonJS warnings. Real Usage browser checks at 1440/390 validate exact card typography/padding/radius, independent saves, replacement cancellation, filter selection, PV and uncertain-operation recovery. Construction collapsed/editor/catalogue screenshots are pixel-identical at both widths after extraction. End of Life was also rendered at both widths without JavaScript exceptions. Evidence and the remaining minor are linked in the [handoff](../handoff/2026-11-16-usage-stage-aligned.md).

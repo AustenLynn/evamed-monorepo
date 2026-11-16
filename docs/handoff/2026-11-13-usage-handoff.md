@@ -1,3 +1,5 @@
+> Current implementation: [2026-11-16 aligned Usage handoff](2026-11-16-usage-stage-aligned.md). The notes below preserve earlier history.
+
 # Usage stage continuation
 
 ## Current state — 2026-11-15
