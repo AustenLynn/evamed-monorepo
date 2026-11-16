@@ -2,7 +2,7 @@
 
 Owner request: make Construction, Usage and End of Life lists compact like the Materials stage. Owner approved database/region badges only when expanded.
 
-Implemented on local branch `feat/compact-stage-lists`, worktree `/tmp/evamed-compact-lists`, base `2e87e53`. No merge, push, deployment, API or database changes are included in this task.
+Implemented on local branch `feat/compact-stage-lists`, worktree `/tmp/evamed-compact-lists`, base `2e87e53`. After screenshot review, the owner authorized committing and pushing on2026-11-16. Main was fast-forwarded to the verified compact-list commits. No manual deployment, API or database changes are included in this task.
 
 ## Result
 
@@ -28,7 +28,7 @@ Suggested screenshots:
 - `browser/construction-list-390.png`
 - `browser/usage-expanded-390.png`
 
-Review/integration remains separate. A frontend development server runs at localhost4313, but screenshots use synthetic browser fixtures; the server alone is not a connected local-backend preview.
+Integration to main is owner-approved. The existing main workflow runs CI and deploys to dev when checks pass. A frontend development server runs at localhost4313, but screenshots use synthetic browser fixtures; the server alone is not a connected local-backend preview.
 
 ## Independent review
 
