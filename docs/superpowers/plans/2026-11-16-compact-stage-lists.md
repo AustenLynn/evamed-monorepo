@@ -17,4 +17,10 @@ Desktop rows place the readable name, saved quantity/unit and edit/delete contro
 - [x] Add failing presentation regressions for both equipment stages and Usage: list hides collapsed metadata, reveals it for the expanded row, preserves exact-ID actions, saved percentages and drafts through view changes.
 - [x] Add list-only shared styles and small markup hooks for accessible compact controls; exclude lists from card subgrid tracks. Keep editing/data logic untouched.
 - [x] Run focused/full frontend tests, touched-file lint and production build. Render all three stages at1440/390; assert compact row bounds, no overflow, metadata visibility and card before/after equality. Inspect screenshots, long names, legacy notices and expanded editors.
-- [ ] Run fresh read-only review, address important findings, document shared list variant and handoff; keep work local for review.
+- [x] Run fresh read-only review, address important findings, document shared list variant and handoff; keep work local for review.
+
+## Completion evidence
+
+480 frontend tests pass; four touched templates/specs lint clean; production build passes with existing warnings only. Real Chromium checks cover Construction/Usage/End of Life at1440/390:56–57px desktop and63–64px mobile healthy rows; metadata expanded only; drafts retained across view changes; keyboard activation; no horizontal overflow/errors. All six card comparisons are pixel-identical. Long names, high-precision decimals and Usage warnings pass; independent reviewer also verified empty/single rows, rounded corners and visible focus.
+
+Fresh read-only review: no Critical/Important/Minor findings. Validation boundaries: backend/API code was unchanged, so no new backend run was needed; native screen-reader output and non-Chromium rendering were not exercised. Review handoff: `docs/handoff/2026-11-16-compact-stage-lists.md`. Local branch only; no push/deployment.
