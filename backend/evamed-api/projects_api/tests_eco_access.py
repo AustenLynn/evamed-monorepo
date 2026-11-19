@@ -15,6 +15,12 @@ class EcoEligibilityTests(SimpleTestCase):
             ('ana@uia.mx', True, False),
             ('ana@sub.correo.uia.mx', True, False),
             ('ana@correo.uia.mx.example.org', True, False),
+            ('ana@ibero.mx', True, True),
+            ('ANA@IBERO.MX', True, True),
+            ('ana@ibero.mx', False, False),
+            ('ana@sub.ibero.mx', True, False),
+            ('ana@ibero.mx.example.org', True, False),
+            ('ana@notibero.mx', True, False),
         ]:
             with self.subTest(email=email, verified=verified):
                 self.assertEqual(access.can_access_ecoplatform(firebase_user(email, verified)), allowed)

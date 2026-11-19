@@ -14,6 +14,9 @@ from projects_api import models
 
 PROJECT_OWNER = 'project_id__user_platform_id__email'
 
+# Exact email domains (no subdomains) whose verified users may see ECO Platform data.
+ECO_PLATFORM_DOMAINS = frozenset({'correo.uia.mx', 'ibero.mx'})
+
 
 def is_admin(user):
     return bool(getattr(user, 'is_authenticated', False) and getattr(user, 'is_staff', False))
@@ -44,7 +47,7 @@ def can_access_ecoplatform(user):
         getattr(user, 'is_authenticated', False)
         and getattr(user, 'email_verified', True)
         and email.count('@') == 1
-        and email.partition('@')[2] == 'correo.uia.mx'
+        and email.partition('@')[2] in ECO_PLATFORM_DOMAINS
     )
 
 

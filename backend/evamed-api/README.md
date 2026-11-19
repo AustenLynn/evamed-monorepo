@@ -58,7 +58,7 @@ Deploy migration `0086_material_provider_identity` and backend filtering before 
 imports. Audit and classify any records imported outside the forthcoming importer.
 
 `GET /api-projects/me/` returns `can_access_ecoplatform`. Only authenticated identities
-with a verified email at exactly `correo.uia.mx` are eligible, including administrators.
+with a verified email at exactly `correo.uia.mx` or `ibero.mx` are eligible, including administrators.
 ECO materials, factors, conversions, explorer data, and Excel catalogs are filtered.
 Projects with ECO material references in either current or original rows are hidden
 from ineligible owners, including their children and calculation endpoints. Stored data
