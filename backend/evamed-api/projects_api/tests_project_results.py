@@ -368,3 +368,13 @@ class A2ResultsTests(APITestCase):
         material.save()
         self._use(material, quantity=2)
         self.assertEqual(self._results()['excluded']['no_mass'], [])
+
+    def test_biogenic_release_covers_replacements(self):
+        # Review finding 4: B4 brings back the uptake once per replacement, so each must be released.
+        material = self._a2_material(values={'GWP-biogenic': -10}, mass=1)
+        models.MaterialSchemeProject.objects.create(
+            material_id=material, project_id=self.project, quantity=2, replaces=1)
+        bio = self._results()['datos'][GWP_BIOGENIC_NAME]
+        self.assertEqual(bio['FinDeVida']['C3'], 40)
+        total = sum(bio['Producción'].values()) + bio['Uso']['B4'] + bio['FinDeVida']['C3']
+        self.assertEqual(total, 0)

@@ -343,7 +343,9 @@ def _apply_a2_exclusions(scheme_project, conv_lookup, msd_lookup, aggregate_mate
                     excluded['no_mass'].append(
                         {'row_id': ps.id, 'material_id': ps.material_id_id, 'name': mat.name_material})
         if biogenic is not None and (mat.database_from or '') in active_databases:
-            uptake = _material_value(msd_lookup, aggregate_materials, ps.material_id_id, biogenic) * float(ps.quantity or 0)
+            # The original and every replacement (B4) are released at end of life (-1/+1 balance).
+            uptake = (_material_value(msd_lookup, aggregate_materials, ps.material_id_id, biogenic)
+                      * float(ps.quantity or 0) * (1 + (ps.replaces or 0)))
             if uptake < 0:
                 release -= uptake
     return kept, no_mass, release
