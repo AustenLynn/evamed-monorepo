@@ -36,6 +36,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 //import { formatNumber } from '@angular/common';
 
+import { isClimateChangeTotal } from '../../climate';
+import { ExcludedNoticeComponent } from '../excluded-notice/excluded-notice.component';
+
 @Component({
     selector: 'app-home-evamed',
     templateUrl: './home-evamed.component.html',
@@ -43,7 +46,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [BaseChartDirective, MatCardModule, MatSelectModule, FormsModule, MatFormFieldModule,
         MatIconModule, MatButtonModule, MatButtonToggleModule, MatTabsModule, MatMenuModule,
-        CommonModule, MatTooltipModule, MatProgressSpinnerModule]
+        CommonModule, MatTooltipModule, MatProgressSpinnerModule, ExcludedNoticeComponent]
 })
 export class HomeEvamedComponent implements OnInit {
   nombre: string;
@@ -435,6 +438,7 @@ export class HomeEvamedComponent implements OnInit {
       ...this.auxDataProjectList[i],
       resultsLoaded: true,
       resultsLoading: false,
+      excluded: result.excluded,
       datos: calculosOperacionesDeFase,
       impactoCompleteSelect: firstImpacto['name_complete_potential_type'],
       impactoSelect: firstImpactoKey,
@@ -939,7 +943,7 @@ export class HomeEvamedComponent implements OnInit {
   selectImpactoAmbiental(impacto, indexRecivido) {
     this.auxDataProjectList[indexRecivido].impactoSelect =
       this.calculos.ajustarNombre(impacto);
-    if (impacto === 'Calentamiento Global') {
+    if (isClimateChangeTotal(impacto)) {
       this.auxDataProjectList[indexRecivido].mostrarOpcionCarbono = true;
       this.auxDataProjectList[indexRecivido].iconoCarbono = 'switch_left';
     } else {
@@ -1261,6 +1265,7 @@ export class HomeEvamedComponent implements OnInit {
     });
 
     this.auxDataProjectList[project]['datos'] = calculosOperacionesDeFase;
+    this.auxDataProjectList[project]['excluded'] = result.excluded;
     this.auxDataProjectList[project]['basesDatos'] = this.auxDataProjectList[project]['DBList']
       .reduce((acc: Record<string, boolean>, db: string) => { acc[db] = seleccion.includes(db); return acc; }, {});
 

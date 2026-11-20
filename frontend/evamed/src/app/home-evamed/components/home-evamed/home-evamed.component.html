@@ -192,6 +192,7 @@
               <mat-spinner diameter="48"></mat-spinner>
             </div>
             <div *ngIf="auxDataProjectList[i].resultsLoaded">
+            <app-excluded-notice [excluded]="auxDataProjectList[i].excluded"></app-excluded-notice>
             <div class="mat-tab-resultados" *ngIf="auxDataProjectList[i]['graficasCarbonoOResultados']['resultados']">
               <div>
                 <div class="seccionUno">

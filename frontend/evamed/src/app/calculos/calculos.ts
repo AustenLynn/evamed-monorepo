@@ -591,7 +591,9 @@ export class Calculos {
   }
 
   determinaValorCarbono(data, projectL, idP, UFL) {
-    const impacto = this.ajustarNombre("Calentamiento Global");
+    // EN 15804+A2 climate change total when served, else the CML indicator (owner-approved, 2026-11-20).
+    const a2Total = this.ajustarNombre("Calentamiento global, total");
+    const impacto = data[a2Total] ? a2Total : this.ajustarNombre("Calentamiento Global");
     let res = 0;
     Object.keys(data[impacto]["Uso"]).forEach(subetapa =>{
       res += data[impacto]["Uso"][subetapa]

@@ -1,0 +1,36 @@
+@if (view(); as v) {
+  <section class="excluded-notice" role="status">
+    @if (v.materials.length) {
+      <p class="excluded-notice__lead">
+        Este proyecto usa {{ v.materials.length }} materiales del método anterior; no se incluyen en los resultados.
+      </p>
+      <ul class="excluded-notice__list">
+        @for (item of v.materials; track item.row_id) {
+          <li>
+            <strong>{{ item.name }}</strong>
+            <span class="excluded-notice__meta">
+              {{ item.database }}@if (item.section) { · {{ item.section }} }
+              @if (missing(item.reason); as names) { · le faltan: {{ names }} }
+            </span>
+          </li>
+        }
+      </ul>
+    }
+    @if (v.no_mass.length) {
+      <p class="excluded-notice__lead">Materiales sin masa: transporte no incluido.</p>
+      <ul class="excluded-notice__list">
+        @for (item of v.no_mass; track item.row_id) {
+          <li><strong>{{ item.name }}</strong> <span class="excluded-notice__meta">sin masa: transporte no incluido</span></li>
+        }
+      </ul>
+    }
+    @if (v.factors.length) {
+      <p class="excluded-notice__lead">Transporte, energía o procesos sin valores del método actual; no se incluyen:</p>
+      <ul class="excluded-notice__list">
+        @for (item of v.factors; track $index) {
+          <li>{{ item.name }}</li>
+        }
+      </ul>
+    }
+  </section>
+}
