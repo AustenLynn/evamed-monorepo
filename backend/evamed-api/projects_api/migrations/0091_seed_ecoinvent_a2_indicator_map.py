@@ -37,7 +37,8 @@ def seed(apps, schema_editor):
             potential_type_id=potential_type,
             defaults={
                 'indicator_id': indicator_id, 'method_name': 'EF v3.1', 'indicator_name': category,
-                'expected_unit': eco_unit, 'unit_id': Unit.objects.filter(name_unit=evamed_unit).first(),
+                'expected_unit': eco_unit,
+                'unit_id': Unit.objects.filter(name_unit=evamed_unit).order_by('-pk').first(),
                 'is_active': True,
             })
 

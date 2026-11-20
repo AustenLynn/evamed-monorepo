@@ -1,4 +1,8 @@
 """The active impact method (EN 15804+A2 design, 2026-11-20)."""
+import json
+import tempfile
+
+from django.core.management import call_command
 from django.test import TestCase, override_settings
 from rest_framework.test import APITestCase
 
@@ -329,3 +333,30 @@ class ExplorerDetailMethodTests(APITestCase):
     @override_settings(EVAMED_IMPACT_METHOD='EN15804+A2')
     def test_a2_detail_shows_a2_indicators(self):
         self.assertEqual(self._codes(), set(A2_SHORT))
+
+
+class FixtureLoadTests(TestCase):
+    """Review finding 2: entrypoint.sh runs `loaddata fixtures/initial_data.json` after migrate; its explicit
+    low pks must not overwrite the seeded A2 indicators, units, map rows or the ECO Platform database."""
+
+    def test_seeded_rows_survive_a_fixture_with_low_pks(self):
+        import os
+        fixture = [{'model': 'projects_api.potentialtype', 'pk': pk,
+                    'fields': {'name_potential_type': 'legacy %d' % pk}} for pk in range(1, 15)]
+        fixture += [{'model': 'projects_api.unit', 'pk': pk, 'fields': {'name_unit': 'u%d' % pk}} for pk in range(1, 20)]
+        fixture += [{'model': 'projects_api.databasematerial', 'pk': pk, 'fields': {'name': 'db%d' % pk}}
+                    for pk in (1, 2, 3, 5)]
+        path = os.path.join(tempfile.mkdtemp(), 'low_pks.json')
+        with open(path, 'w') as handle:
+            json.dump(fixture, handle)
+        call_command('loaddata', path, verbosity=0)
+
+        a2 = models.PotentialType.objects.filter(method='EN15804+A2')
+        self.assertEqual(sorted(a2.values_list('name_potential_type', flat=True)), sorted(A2_SHORT))
+        self.assertTrue(models.DataBaseMaterial.objects.filter(name='ECO Platform').exists())
+        self.assertTrue(models.Unit.objects.filter(name_unit='mol H+ eq').exists())
+        ef31 = models.EcoinventIndicatorMap.objects.filter(method_name='EF v3.1')
+        self.assertEqual({m.potential_type_id.method for m in ef31}, {'EN15804+A2'})
+        self.assertEqual(ef31.count(), 13)
+        # New rows after the load get fresh ids, not a seeded row's.
+        self.assertNotIn(models.PotentialType.objects.create(name_potential_type='new').pk, set(a2.values_list('pk', flat=True)))
