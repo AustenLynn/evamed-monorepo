@@ -59,3 +59,82 @@ class PotentialTypesEndpointTests(APITestCase):
         names = {row['name_potential_type'] for row in self.client.get('/api-projects/potential-types/').json()}
         self.assertIn('PCG 100', names)
         self.assertTrue(set(A2_SHORT) <= names)
+
+
+def _std(pk, name):
+    return models.Standard.objects.get_or_create(id=pk, defaults={'name_standard': name})[0]
+
+
+@override_settings(EVAMED_IMPACT_METHOD='EN15804+A2')
+class CurrentRuleTests(TestCase):
+    def setUp(self):
+        self.a1a3, self.a1, self.a2, self.a3 = _std(1, 'A1-A3'), _std(2, 'A1'), _std(3, 'A2'), _std(4, 'A3')
+        self.a2_types = list(models.PotentialType.objects.filter(method='EN15804+A2'))
+        self.cml = models.PotentialType.objects.create(name_potential_type='PCG 100')
+
+    def _material(self, standards, skip=(), value=1):
+        material = models.Material.objects.create(name_material='m')
+        for standard in standards:
+            for ptype in self.a2_types:
+                if ptype.name_potential_type in skip:
+                    continue
+                models.MaterialSchemeData.objects.create(
+                    material_id=material, standard_id=standard, potential_type_id=ptype, value=value)
+        return material
+
+    def test_all_thirteen_aggregate_is_current(self):
+        material = self._material([self.a1a3])
+        self.assertIn(material.id, methods.current_material_ids())
+
+    def test_split_a1_a2_a3_is_current(self):
+        material = self._material([self.a1, self.a2, self.a3])
+        self.assertIn(material.id, methods.current_material_ids())
+
+    def test_missing_one_indicator_is_not_current(self):
+        material = self._material([self.a1a3], skip=('WDP',))
+        self.assertNotIn(material.id, methods.current_material_ids())
+        self.assertEqual(methods.missing_indicators(material.id), ['WDP'])
+
+    def test_split_missing_one_module_is_not_current(self):
+        material = self._material([self.a1, self.a2])
+        self.assertNotIn(material.id, methods.current_material_ids())
+
+    def test_null_value_counts_as_missing(self):
+        material = self._material([self.a1a3], value=None)
+        self.assertNotIn(material.id, methods.current_material_ids())
+
+    def test_cml_values_do_not_make_a2_current(self):
+        material = models.Material.objects.create(name_material='old')
+        models.MaterialSchemeData.objects.create(
+            material_id=material, standard_id=self.a1a3, potential_type_id=self.cml, value=1)
+        self.assertNotIn(material.id, methods.current_material_ids())
+        self.assertEqual(len(methods.missing_indicators(material.id)), 13)
+
+    def test_current_ids_restricted_to_queryset(self):
+        kept, other = self._material([self.a1a3]), self._material([self.a1a3])
+        self.assertEqual(methods.current_material_ids(models.Material.objects.filter(id=kept.id)), {kept.id})
+        self.assertIn(other.id, methods.current_material_ids())
+
+    def test_current_ids_query_count(self):
+        for _ in range(50):
+            self._material([self.a1a3])
+        with self.assertNumQueries(2):
+            methods.current_material_ids()
+
+    def test_transport_energy_source_rules(self):
+        cases = [
+            (models.Transport, 'name_transport', models.PotentialTransport, 'transport_id', methods.current_transport_ids),
+            (models.TypeEnergy, 'name_type_energy', models.TypeEnergyData, 'type_energy_id', methods.current_energy_ids),
+            (models.SourceInformation, 'name_source_information', models.SourceInformationData,
+             'sourceInformarion_id', methods.current_source_ids),
+        ]
+        for model, name_field, data_model, fk, current in cases:
+            with self.subTest(model=model.__name__):
+                full, partial = model.objects.create(**{name_field: 'full'}), model.objects.create(**{name_field: 'part'})
+                for ptype in self.a2_types:
+                    data_model.objects.create(**{fk: full, 'potential_type_id': ptype, 'value': 1})
+                    if ptype.name_potential_type != 'AP':
+                        data_model.objects.create(**{fk: partial, 'potential_type_id': ptype, 'value': 1})
+                ids = current()
+                self.assertIn(full.id, ids)
+                self.assertNotIn(partial.id, ids)
