@@ -66,8 +66,9 @@ class TooManyMaterials(Exception):
 def catalogue_rows(materials=None) -> list:
     """Every material with a name, A to Z, as the template's catalogue rows."""
     from projects_api import access
+    from projects_api import methods
     materials = access.visible_materials(None) if materials is None else materials
-    materials = materials.select_related('unit_id').exclude(name_material__isnull=True)
+    materials = methods.offerable_materials(materials).select_related('unit_id').exclude(name_material__isnull=True)
     named = [m for m in materials if m.name_material.strip()]
     named.sort(key=lambda m: _sort_key(m.name_material))
     return [CatalogueRow(

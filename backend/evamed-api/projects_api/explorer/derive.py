@@ -7,8 +7,10 @@ import math
 import re
 import unicodedata
 
-# A trailing '_MX' marks Mexican EPDs ('… marca DEACERO_MX'), not a category.
-_MX_MARKER = re.compile(r'_MX$')
+# A trailing '_MX' marks Mexican EPDs ('… marca DEACERO_MX'), not a category; ECO Platform
+# EPDs use the same marker for other Latin American countries ('… marca Gerdau_BR').
+_COUNTRY_CODES = 'MX|BR|CL|AR|CO|PE|CR|EC|GT|UY'
+_MX_MARKER = re.compile(r'_(?:%s)$' % _COUNTRY_CODES)
 _SOURCE_SUFFIX = re.compile(r'\s*-\s*(Ecoinvent 3|ECOINVENT3|MEXICANIUH)$')
 _SOURCES = {'Ecoinvent 3': 'ECOINVENT 3', 'ECOINVENT3': 'ECOINVENT 3', 'MEXICANIUH': 'mexicaniuh'}
 # The Unit table spells the same unit twice (K-11).
@@ -18,8 +20,12 @@ _UNIT_SPELLINGS = {'Kg': 'kg', 'Pza': 'Pz'}
 # tail, a '(GLO)' ending, or '_MX' as a name part ('Grava_Gravel_MX', 'Arena_Sand_MX_concreto').
 _ECOINVENT_TAIL = re.compile(r'\s*\{(?P<code>[^}]+)\}\s*\|.*$')
 _REGION_SUFFIX = re.compile(r'\s*\((?P<code>GLO|RoW|MX|CH)\)$')
-_MX_PART = re.compile(r'_MX(?=_|$)')
-_REGIONS = {'GLO': 'Global', 'RoW': 'Resto del mundo', 'CH': 'Suiza', 'MX': 'México'}
+_MX_PART = re.compile(r'_(?P<code>%s)(?=_|$)' % _COUNTRY_CODES)
+_REGIONS = {
+    'GLO': 'Global', 'RoW': 'Resto del mundo', 'CH': 'Suiza', 'MX': 'México',
+    'BR': 'Brasil', 'CL': 'Chile', 'AR': 'Argentina', 'CO': 'Colombia', 'PE': 'Perú',
+    'CR': 'Costa Rica', 'EC': 'Ecuador', 'GT': 'Guatemala', 'UY': 'Uruguay',
+}
 # The filter option for items whose name doesn't say (all of EPiC).
 NO_REGION = 'Sin región'
 
@@ -50,7 +56,8 @@ def region(name):
     match = _ECOINVENT_TAIL.search(rest) or _REGION_SUFFIX.search(rest)
     if match:
         return _REGIONS.get(match.group('code'), match.group('code'))
-    return _REGIONS['MX'] if _MX_PART.search(rest) else None
+    country = _MX_PART.search(rest)
+    return _REGIONS[country.group('code')] if country else None
 
 
 def source_from_name(name):

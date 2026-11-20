@@ -138,3 +138,78 @@ class CurrentRuleTests(TestCase):
                 ids = current()
                 self.assertIn(full.id, ids)
                 self.assertNotIn(partial.id, ids)
+
+
+@override_settings(EVAMED_IMPACT_METHOD='EN15804+A2')
+class OfferableCatalogueTests(APITestCase):
+    """Task 3: pickers, explorer and templates offer only current entities under A2."""
+
+    def setUp(self):
+        self.a1a3 = _std(1, 'A1-A3')
+        self.a2_types = list(models.PotentialType.objects.filter(method='EN15804+A2'))
+        self.cml_gwp = models.PotentialType.objects.create(name_potential_type='PCG 100')
+        self.unit = models.Unit.objects.create(name_unit='Kg')
+        self.current = self._material('Cemento_Nuevo', a2_value=2)
+        self.old = models.Material.objects.create(name_material='Cemento_Viejo', unit_id=self.unit)
+        models.MaterialSchemeData.objects.create(
+            material_id=self.old, standard_id=self.a1a3, potential_type_id=self.cml_gwp, value=9)
+
+    def _material(self, name, a2_value):
+        material = models.Material.objects.create(name_material=name, unit_id=self.unit)
+        for ptype in self.a2_types:
+            models.MaterialSchemeData.objects.create(
+                material_id=material, standard_id=self.a1a3, potential_type_id=ptype, value=a2_value)
+        return material
+
+    def _ids(self, stage):
+        body = self.client.get('/api-projects/explorer/%s/' % stage).json()
+        return {item['id'] for item in body['results']}
+
+    def test_explorer_offers_only_current_materials(self):
+        self.assertEqual(self._ids('produccion'), {self.current.id})
+
+    def test_explorer_gwp_uses_active_gwp_total(self):
+        body = self.client.get('/api-projects/explorer/produccion/').json()
+        self.assertEqual(body['results'][0]['gwp'], 2.0)
+
+    def test_old_material_detail_still_opens(self):
+        response = self.client.get('/api-projects/explorer/produccion/%d/' % self.old.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.json()['gwp'])
+
+    def test_use_and_construction_items_only_current(self):
+        full = models.TypeEnergy.objects.create(name_type_energy='Electricidad nueva')
+        models.TypeEnergy.objects.create(name_type_energy='Electricidad vieja')
+        source = models.SourceInformation.objects.create(name_source_information='Generador nuevo')
+        models.SourceInformation.objects.create(name_source_information='Generador viejo')
+        for ptype in self.a2_types:
+            models.TypeEnergyData.objects.create(type_energy_id=full, potential_type_id=ptype, value=1)
+            models.SourceInformationData.objects.create(sourceInformarion_id=source, potential_type_id=ptype, value=1)
+        self.assertEqual(self._ids('uso'), {full.id})
+        self.assertEqual(self._ids('construccion'), {source.id})
+
+    def test_template_rows_only_current(self):
+        from projects_api.excel_templates import build
+        self.assertEqual([row.material for row in build.catalogue_rows()], ['Cemento_Nuevo'])
+
+    def test_materials_endpoint_stays_unfiltered(self):
+        ids = {row['id'] for row in self.client.get('/api-projects/materials/').json()}
+        self.assertTrue({self.current.id, self.old.id} <= ids)
+
+    @override_settings(EVAMED_IMPACT_METHOD='CML')
+    def test_cml_explorer_unchanged(self):
+        self.assertEqual(self._ids('produccion'), {self.current.id, self.old.id})
+
+    def test_eco_platform_database_row_exists(self):
+        self.assertTrue(models.DataBaseMaterial.objects.filter(name='ECO Platform').exists())
+
+
+class LatinAmericanRegionTests(TestCase):
+    def test_region_codes(self):
+        from projects_api.explorer import derive
+        name = 'Acero_Reinforcing Steel Bar marca Gerdau_BR'
+        self.assertEqual(derive.region(name), 'Brasil')
+        self.assertEqual(derive.category(name), 'Acero')
+        self.assertEqual(derive.display_name(name), 'Reinforcing Steel Bar marca Gerdau')
+        self.assertEqual(derive.region('Cemento_CPC 40 Cement marca Cruz Azul_MX'), 'México')
+        self.assertEqual(derive.region('Concreto_H21 marca X_AR'), 'Argentina')

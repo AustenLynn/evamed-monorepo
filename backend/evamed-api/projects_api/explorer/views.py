@@ -6,7 +6,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from projects_api import access
+from projects_api import access, methods
 from projects_api.explorer import derive, queries
 
 # stage → (items loader, {query param: item field}, {facet name: query param}).
@@ -72,7 +72,8 @@ class ExplorerListView(APIView):
         if sort not in queries.SORTS:
             raise ValidationError({'sort': 'Usa uno de: %s.' % ', '.join(queries.SORTS)})
         load, filters, facets = STAGES[stage]
-        items = load(access.visible_materials(request.user)) if stage == 'produccion' else load()
+        items = load(methods.offerable_materials(access.visible_materials(request.user))) \
+            if stage == 'produccion' else load()
         paginator = ExplorerPagination()
         page = paginator.paginate_queryset(
             queries.ordered(_filtered(items, request, filters), sort, population=items), request, view=self)

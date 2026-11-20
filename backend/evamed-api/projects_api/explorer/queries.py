@@ -6,10 +6,9 @@ filters, facets and pages the list in memory.
 """
 from collections import Counter, defaultdict
 
-from projects_api import access, models
+from projects_api import access, methods, models
 from projects_api.explorer import derive
 
-GWP = 'PCG 100'
 A1_A3 = 'A1-A3'
 SPLIT = ('A1', 'A2', 'A3')
 # A category narrows the comparison group only when it has this many items.
@@ -50,7 +49,9 @@ def stage_total(by_standard, aggregate):
 
 
 def _gwp_type_id():
-    return models.PotentialType.objects.filter(name_potential_type=GWP).values_list('id', flat=True).first()
+    """The active method's climate-change total (PCG 100 under CML, GWP-total under A2)."""
+    gwp = methods.gwp_total_type()
+    return gwp.id if gwp else None
 
 
 def _add_impact_levels(items):
@@ -116,7 +117,7 @@ def _named_items(stage, rows, name_field, kind):
 
 def _first_gwp(queryset, owner_field):
     gwp = {}
-    for owner_id, value in queryset.filter(potential_type_id__name_potential_type=GWP) \
+    for owner_id, value in queryset.filter(potential_type_id=_gwp_type_id()) \
             .order_by('id').values_list(owner_field, 'value'):
         gwp.setdefault(owner_id, _number(value))
     return gwp
@@ -124,13 +125,15 @@ def _first_gwp(queryset, owner_field):
 
 def construction_items():
     gwp = _first_gwp(models.SourceInformationData.objects, 'sourceInformarion_id_id')
-    rows = [(row, gwp.get(row.id)) for row in models.SourceInformation.objects.order_by('id')]
+    rows = [(row, gwp.get(row.id)) for row in methods.offerable(
+        models.SourceInformation.objects.order_by('id'), methods.current_source_ids)]
     return _named_items('construccion', rows, 'name_source_information', derive.machinery_type)
 
 
 def use_items():
     gwp = _first_gwp(models.TypeEnergyData.objects, 'type_energy_id_id')
-    rows = [(row, gwp.get(row.id)) for row in models.TypeEnergy.objects.order_by('id')]
+    rows = [(row, gwp.get(row.id)) for row in methods.offerable(
+        models.TypeEnergy.objects.order_by('id'), methods.current_energy_ids)]
     return _named_items('uso', rows, 'name_type_energy', derive.energy_type)
 
 

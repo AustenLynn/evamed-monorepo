@@ -129,3 +129,20 @@ def current_energy_ids():
 
 def current_source_ids():
     return _current_owner_ids(models.SourceInformationData, 'sourceInformarion_id_id')
+
+
+# ------------------------------------------------------------ offerable catalogue
+# Under A2 the pickers, explorer and templates offer only current entities. Under CML
+# nothing is filtered, so legacy behaviour (EPiC with GWP only, etc.) is unchanged.
+
+def offerable_materials(materials):
+    if active_method() == CML:
+        return materials
+    return materials.filter(pk__in=current_material_ids(materials))
+
+
+def offerable(queryset, current_ids):
+    """Filter a transport / energy / source queryset by its current ids under A2."""
+    if active_method() == CML:
+        return queryset
+    return queryset.filter(pk__in=current_ids())
