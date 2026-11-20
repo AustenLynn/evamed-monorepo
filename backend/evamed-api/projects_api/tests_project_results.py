@@ -378,3 +378,18 @@ class A2ResultsTests(APITestCase):
         self.assertEqual(bio['FinDeVida']['C3'], 40)
         total = sum(bio['Producción'].values()) + bio['Uso']['B4'] + bio['FinDeVida']['C3']
         self.assertEqual(total, 0)
+
+    def test_old_project_query_count_does_not_grow_with_materials(self):
+        # Review finding 6: no per-material queries for the exclusion list.
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+
+        def count(n):
+            models.MaterialSchemeProject.objects.filter(project_id=self.project).delete()
+            for _ in range(n):
+                self._use(self._old_material())
+            with CaptureQueriesContext(connection) as queries:
+                self._results()
+            return len(queries)
+
+        self.assertEqual(count(3), count(30))

@@ -108,6 +108,17 @@ def missing_indicators(material_id):
                 .values_list('name_potential_type', flat=True))
 
 
+def missing_by_material(material_ids):
+    """{material_id: [short names of missing active indicators]} for many materials, in three queries."""
+    material_ids = set(material_ids)
+    coverage, active = _material_coverage(models.Material.objects.filter(pk__in=material_ids))
+    names = dict(models.PotentialType.objects.filter(id__in=active).values_list('id', 'name_potential_type'))
+    return {
+        mid: [names[type_id] for type_id in sorted(_missing_type_ids(coverage.get(mid, {}), active))]
+        for mid in material_ids
+    }
+
+
 def _current_owner_ids(data_model, owner_field):
     active = _active_type_ids()
     if not active:

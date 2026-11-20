@@ -314,16 +314,13 @@ def _apply_a2_exclusions(scheme_project, conv_lookup, msd_lookup, aggregate_mate
                          active_databases):
     """Under EN 15804+A2: drop rows whose material lacks any A2 indicator, flag rows with no mass
     (their transport is left out instead of assuming 1 t), and total the biogenic release."""
-    material_ids = {ps.material_id_id for ps in scheme_project}
-    current = methods.current_material_ids(models.Material.objects.filter(id__in=material_ids))
+    missing_by_material = methods.missing_by_material({ps.material_id_id for ps in scheme_project})
     biogenic = next((p.id for p in potential_types if p.name_potential_type == 'GWP-biogenic'), None)
-    missing_cache, kept, no_mass, release = {}, [], set(), 0.0
+    kept, no_mass, release = [], set(), 0.0
     for ps in scheme_project:
         mat = ps.material_id
-        if ps.material_id_id not in current:
-            if ps.material_id_id not in missing_cache:
-                missing_cache[ps.material_id_id] = methods.missing_indicators(ps.material_id_id)
-            missing = missing_cache[ps.material_id_id]
+        missing = missing_by_material.get(ps.material_id_id, [])
+        if missing:
             excluded['materials'].append({
                 'row_id': ps.id, 'material_id': ps.material_id_id,
                 'name': mat.name_material if mat else None,
