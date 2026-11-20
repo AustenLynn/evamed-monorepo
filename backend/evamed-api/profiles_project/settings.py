@@ -25,6 +25,9 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', '25&!(c13l4!5kwt_9(#uh1bd&^@je)im*iw
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 
+# Impact method served to users: 'CML' (legacy) or 'EN15804+A2'. See projects_api/methods.py.
+EVAMED_IMPACT_METHOD = os.getenv('EVAMED_IMPACT_METHOD', 'CML')
+
 ALLOWED_HOSTS = env_list('DJANGO_ALLOWED_HOSTS', '*')
 
 # Comma-separated, scheme included, e.g. https://api.example.com

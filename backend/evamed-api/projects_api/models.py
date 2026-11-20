@@ -173,6 +173,12 @@ class Standard(models.Model):
 
 class PotentialType(models.Model):
     """Construction potential type model"""
+    METHOD_CML = 'CML'
+    METHOD_A2 = 'EN15804+A2'
+    method = models.CharField(
+        max_length=16, default=METHOD_CML, db_index=True,
+        choices=[(METHOD_CML, 'CML (EN 15804+A1)'), (METHOD_A2, 'EN 15804+A2')],
+    )
     name_potential_type = models.CharField(max_length=255, null=True)
     name_complete_potential_type = models.CharField(max_length=255, null=True)
     unit_potential_type = models.CharField(max_length=255, null=True)

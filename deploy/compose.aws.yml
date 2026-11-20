@@ -45,6 +45,8 @@ services:
       ECOINVENT_CLIENT_SECRET: ${ECOINVENT_CLIENT_SECRET:-}
       ECOINVENT_VERSION: ${ECOINVENT_VERSION:-3.12-sandbox}
       ECOINVENT_ALLOW_PRODUCTION: "False"
+      # Impact method served to users: CML (legacy) or EN15804+A2.
+      EVAMED_IMPACT_METHOD: ${EVAMED_IMPACT_METHOD:-CML}
     volumes:
       - ${FIREBASE_KEY_FILE:?FIREBASE_KEY_FILE must be set}:/run/secrets/firebase.json:ro
     # Loopback only: reachable through `ssh -L`, never from the internet.

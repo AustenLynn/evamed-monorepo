@@ -8,7 +8,7 @@ from rest_framework.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Q
 
-from projects_api import models
+from projects_api import methods, models
 from projects_api import serializers
 from projects_api import access
 
@@ -186,6 +186,12 @@ class PotentialTypesViewSet(CatalogueViewSet):
     queryset = models.PotentialType.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name_potential_type', )
+
+    def get_queryset(self):
+        # Users get the active method's indicators; admins manage every method's.
+        if access.is_admin(self.request.user):
+            return super().get_queryset()
+        return super().get_queryset().filter(pk__in=methods.active_potential_types().values('pk'))
 
 class VolumeUnitsViewSet(CatalogueViewSet):
     """Handle creating and updating volume units"""
