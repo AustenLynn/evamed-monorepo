@@ -213,3 +213,78 @@ class LatinAmericanRegionTests(TestCase):
         self.assertEqual(derive.display_name(name), 'Reinforcing Steel Bar marca Gerdau')
         self.assertEqual(derive.region('Cemento_CPC 40 Cement marca Cruz Azul_MX'), 'México')
         self.assertEqual(derive.region('Concreto_H21 marca X_AR'), 'Argentina')
+
+
+class FakeEcoinventClient:
+    """Stands in for EcoinventClient in ecoinvent_refresh: no network, records what was asked."""
+    requests = []
+
+    def __init__(self, *args, **kwargs):
+        from types import SimpleNamespace
+        self.config = SimpleNamespace(version='3.12-sandbox', system_model='cutoff')
+        self.accessed_dataset_ids = set()
+
+    def batch_datasets(self, dataset_ids, indicator_ids):
+        FakeEcoinventClient.requests.append((list(dataset_ids), list(indicator_ids)))
+        units = {i.indicator_id: i.expected_unit for i in models.EcoinventIndicatorMap.objects.all()}
+        self.accessed_dataset_ids |= set(dataset_ids)
+        return [{'id': d, 'unit': 'kg', 'impact_scores': [
+            {'id': i, 'score': 2.0, 'unit': units[i]} for i in indicator_ids]} for d in dataset_ids]
+
+
+class EcoinventA2Tests(TestCase):
+    EF31 = {'GWP-total': 1183, 'GWP-fossil': 1315, 'GWP-biogenic': 1222, 'GWP-luluc': 1187, 'ODP': 1140,
+            'AP': 1080, 'EP-freshwater': 1292, 'EP-marine': 1450, 'EP-terrestrial': 1358, 'POCP': 1427,
+            'ADPE': 1147, 'ADPF': 1406, 'WDP': 1230}
+
+    def setUp(self):
+        from unittest import mock
+        from projects_api.management.commands import ecoinvent_refresh
+        FakeEcoinventClient.requests = []
+        patcher = mock.patch.object(ecoinvent_refresh, 'EcoinventClient', FakeEcoinventClient)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        _std(1, 'A1-A3')
+        self.kg = models.Unit.objects.create(name_unit='Kg')
+        self.cml_gwp = models.PotentialType.objects.create(name_potential_type='PCG 100')
+        models.EcoinventIndicatorMap.objects.create(
+            potential_type_id=self.cml_gwp, indicator_id=882, method_name='CML v4.8 2016',
+            indicator_name='GWP100', expected_unit='kg CO2-Eq')
+        self.material = models.Material.objects.create(
+            name_material='Cemento_Cement', unit_id=self.kg, ecoinvent_dataset_id=4242,
+            ecoinvent_version='3.12-sandbox', ecoinvent_system_model='cutoff')
+        models.MaterialSchemeData.objects.create(
+            material_id=self.material, standard_id_id=1, potential_type_id=self.cml_gwp, value=9)
+
+    def _refresh(self, *args):
+        from io import StringIO
+        from django.core.management import call_command
+        out = StringIO()
+        call_command('ecoinvent_refresh', '--only', 'material', *args, stdout=out, stderr=out)
+        return out.getvalue()
+
+    def test_a2_map_seeded_13(self):
+        rows = models.EcoinventIndicatorMap.objects.filter(potential_type_id__method='EN15804+A2')
+        self.assertEqual({r.potential_type_id.name_potential_type: r.indicator_id for r in rows}, self.EF31)
+        self.assertEqual({r.method_name for r in rows}, {'EF v3.1'})
+
+    def test_refresh_method_selects_a2_indicators(self):
+        self._refresh('--method', 'EN15804+A2', '--apply')
+        (_datasets, indicators), = FakeEcoinventClient.requests
+        self.assertEqual(sorted(indicators), sorted(self.EF31.values()))
+
+    def test_refresh_writes_a2_next_to_cml(self):
+        self._refresh('--method', 'EN15804+A2', '--apply')
+        self.assertIn(self.material.id, methods.current_material_ids())
+        cml = models.MaterialSchemeData.objects.get(material_id=self.material, potential_type_id=self.cml_gwp)
+        self.assertEqual(float(cml.value), 9.0)
+
+    def test_count_only_reports_before_fetch(self):
+        output = self._refresh('--method', 'EN15804+A2', '--count-only')
+        self.assertIn('1 distinct datasets', output)
+        self.assertIn('1 never fetched before', output)
+        self.assertEqual(FakeEcoinventClient.requests, [])
+
+    def test_max_datasets_aborts_before_fetch(self):
+        self._refresh('--method', 'EN15804+A2', '--max-datasets', '0', '--apply')
+        self.assertEqual(FakeEcoinventClient.requests, [])

@@ -21,7 +21,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
 
-from projects_api import models
+from projects_api import methods, models
 from projects_api.ecoinvent.client import EcoinventClient
 from projects_api.ecoinvent.matching import units_compatible
 
@@ -63,6 +63,13 @@ class Command(BaseCommand):
                  "ecoinvent's reference unit. Off by default: a per-kg score "
                  'written against a per-piece quantity is a silent 1000x error.')
         parser.add_argument(
+            '--method', choices=[methods.CML, methods.A2], default=None,
+            help='Impact method whose indicators to fetch (default: the active method).')
+        parser.add_argument(
+            '--count-only', action='store_true',
+            help='Report how many datasets would be fetched, and how many never were, then stop. '
+                 'Fetches nothing, so it spends no quota.')
+        parser.add_argument(
             '--max-datasets', type=int, default=None,
             help='Abort before fetching if more than N distinct datasets would be '
                  'requested. Guards the licence quota.')
@@ -77,8 +84,9 @@ class Command(BaseCommand):
             return
 
         client = EcoinventClient()
+        method = options.get('method') or methods.active_method()
         indicators = list(models.EcoinventIndicatorMap.objects.filter(
-            is_active=True).select_related('potential_type_id', 'unit_id'))
+            is_active=True, potential_type_id__method=method).select_related('potential_type_id', 'unit_id'))
         if not indicators:
             self.stderr.write(
                 'No active EcoinventIndicatorMap rows. Run migrations first.')
@@ -100,7 +108,16 @@ class Command(BaseCommand):
             '{} pinned entities across {} distinct datasets x {} indicators'.format(
                 len(pinned), len(dataset_ids), len(indicator_ids)))
 
-        if options['max_datasets'] and len(dataset_ids) > options['max_datasets']:
+        previously = set()
+        for report in models.EcoinventUsageReport.objects.values_list('dataset_ids', flat=True):
+            previously |= {int(d) for d in json.loads(report or '[]')}
+        self.stdout.write('{} method: {} distinct datasets, {} never fetched before'.format(
+            method, len(dataset_ids), len(set(dataset_ids) - previously)))
+        if options.get('count_only'):
+            self.stdout.write('Count only: nothing fetched.')
+            return
+
+        if options['max_datasets'] is not None and len(dataset_ids) > options['max_datasets']:
             self.stderr.write(self.style.ERROR(
                 'Would request {} datasets, over the --max-datasets limit of {}. '
                 'Aborting before spending quota.'.format(
