@@ -339,3 +339,14 @@ Notes:
 - Next: search (free) the families the owner asked for: wood and boards, glass and windows,
   insulation, aluminium, PVC and pipes, paints and waterproofing, ceramics and tiles,
   roofing sheets.
+
+### EN 15804+A2 (EF v3.1), 2026-11-20
+
+EVAmed is moving to EN 15804+A2 (design: `docs/superpowers/specs/2026-11-20-en15804-a2-method-design.md`).
+The 13 core indicators map to ecoinvent's `EF v3.1` method (ids from the free
+`GET /v3/api1/indicators`, 3.12-sandbox, cutoff): GWP-total 1183, GWP-fossil 1315,
+GWP-biogenic 1222, GWP-luluc 1187, ODP 1140, AP 1080, EP-freshwater 1292, EP-marine 1450,
+EP-terrestrial 1358, POCP 1427, ADPE 1147, ADPF 1406, WDP 1230 (migration 0091).
+`ecoinvent_refresh --method EN15804+A2 --count-only` reports the dataset count before any
+fetch; the refresh writes A2 values next to the CML ones. Not yet run on dev.
+

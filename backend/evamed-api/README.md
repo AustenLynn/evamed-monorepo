@@ -28,6 +28,10 @@ python manage.py ecoinvent_add_materials --apply
 python manage.py ecoinvent_refresh --dry-run
 python manage.py ecoinvent_refresh --apply
 python manage.py ecoinvent_refresh --only type_energy --apply   # one slice
+# EN 15804+A2 (EF v3.1) values next to the CML ones. Count first; fetch only
+# after the owner approves the number.
+python manage.py ecoinvent_refresh --method EN15804+A2 --count-only
+python manage.py ecoinvent_refresh --method EN15804+A2 --max-datasets N --apply
 
 # 3. Submit licence usage reports (needs ECOINVENT_ORGANIZATION_ID).
 python manage.py ecoinvent_report_usage --dry-run
@@ -49,6 +53,22 @@ Notes:
   `ECOINVENT_ALLOW_PRODUCTION=True`.
 - The `geography` filter needs the full display name (`Mexico (MX)`); a bare
   code returns HTTP 200 with zero results. The client guards against this.
+
+## Impact method (EN 15804+A2)
+
+`EVAMED_IMPACT_METHOD` (`CML`, the default, or `EN15804+A2`) picks the indicators
+users see. Under A2 the pickers, explorer and Excel templates offer only
+materials, transport, energy and construction entries that have a value for all
+13 A2 indicators; `/materials/` stays complete so old projects keep their rows.
+Results list what they left out (`excluded`). Nothing old-method is deleted.
+See `docs/superpowers/specs/2026-11-20-en15804-a2-method-design.md`.
+
+```bash
+# ECO Portal EPDs (files outside the repo; licensed). Dry run lists families,
+# inferred units and materials without mass for review.
+python manage.py ecoplatform_import --dir /opt/evamed/data/ecoplatform
+python manage.py ecoplatform_import --dir /opt/evamed/data/ecoplatform --apply
+```
 
 ## ECO Platform access
 
