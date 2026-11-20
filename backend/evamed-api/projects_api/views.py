@@ -272,12 +272,6 @@ class ConstructiveSystemElementViewSet(access.OwnedByCallerMixin, viewsets.Model
     search_fields = ('=project_id', )
 
 
-_IMPACTOS_IGNORAR = frozenset([
-    'PARNR', 'POT', 'Human toxicity',
-    'Fresh water aquatic ecotox.', 'Marine aquatic ecotoxicity',
-    'Terrestrial ecotoxicity',
-])
-
 _PRODUCTION_STAGES = [2, 3, 4]  # standard_id: A1, A2, A3
 _AGGREGATE_STANDARD = 1         # standard_id: A1-A3 (cradle-to-gate, not decomposable)
 
@@ -300,6 +294,66 @@ def _aggregate_material_ids(msd_rows):
         for material_id, stages in stages_by_material.items()
         if _AGGREGATE_STANDARD in stages and not stages.intersection(_PRODUCTION_STAGES)
     }
+
+
+_BIOGENIC_RELEASE_TYPES = frozenset(['GWP-biogenic', 'GWP-total'])
+
+
+def _material_value(msd_lookup, aggregate_materials, material_id, type_id):
+    """A1-A3 for one material and indicator, read as the production stage reads it."""
+    if material_id in aggregate_materials:
+        return msd_lookup.get((material_id, _AGGREGATE_STANDARD, type_id), 0)
+    return sum(msd_lookup.get((material_id, stage, type_id), 0) for stage in _PRODUCTION_STAGES)
+
+
+def _apply_a2_exclusions(scheme_project, conv_lookup, msd_lookup, aggregate_materials, potential_types, excluded,
+                         active_databases):
+    """Under EN 15804+A2: drop rows whose material lacks any A2 indicator, flag rows with no mass
+    (their transport is left out instead of assuming 1 t), and total the biogenic release."""
+    material_ids = {ps.material_id_id for ps in scheme_project}
+    current = methods.current_material_ids(models.Material.objects.filter(id__in=material_ids))
+    biogenic = next((p.id for p in potential_types if p.name_potential_type == 'GWP-biogenic'), None)
+    missing_cache, kept, no_mass, release = {}, [], set(), 0.0
+    for ps in scheme_project:
+        mat = ps.material_id
+        if ps.material_id_id not in current:
+            if ps.material_id_id not in missing_cache:
+                missing_cache[ps.material_id_id] = methods.missing_indicators(ps.material_id_id)
+            missing = missing_cache[ps.material_id_id]
+            excluded['materials'].append({
+                'row_id': ps.id, 'material_id': ps.material_id_id,
+                'name': mat.name_material if mat else None,
+                'database': mat.database_from if mat else None,
+                'section': ps.section_id.name_section if ps.section_id else None,
+                'reason': 'old_method' if len(missing) >= len(potential_types) else 'missing:' + ','.join(missing),
+            })
+            continue
+        kept.append(ps)
+        if ps.material_id_id not in conv_lookup:
+            no_mass.add(ps.id)
+            excluded['no_mass'].append({'row_id': ps.id, 'material_id': ps.material_id_id, 'name': mat.name_material})
+        if biogenic is not None and (mat.database_from or '') in active_databases:
+            uptake = _material_value(msd_lookup, aggregate_materials, ps.material_id_id, biogenic) * float(ps.quantity or 0)
+            if uptake < 0:
+                release -= uptake
+    return kept, no_mass, release
+
+
+def _list_noncurrent_factors(scheme_project, ecd_list, source_ids, excluded):
+    """Transport, energy and construction entries the project uses that have no A2 values."""
+    used_transport = set()
+    for ps in scheme_project:
+        if ps.distance_init is not None:
+            used_transport.add(ps.transport_id_origin_id or 1)
+        if ps.distance_end is not None:
+            used_transport.add(ps.transport_id_end_id or 4)
+    for key, model, name_field, used, current in (
+            ('transport', models.Transport, 'name_transport', used_transport, methods.current_transport_ids),
+            ('energy', models.TypeEnergy, 'name_type_energy', {e.type_id for e in ecd_list if e.type_id}, methods.current_energy_ids),
+            ('sources', models.SourceInformation, 'name_source_information', set(source_ids), methods.current_source_ids)):
+        missing = used - current() if used else set()
+        excluded[key] = [{'id': row.id, 'name': getattr(row, name_field)}
+                         for row in model.objects.filter(id__in=missing).order_by('id')]
 
 
 class ProjectResultsView(APIView):
@@ -338,7 +392,7 @@ class ProjectResultsView(APIView):
         )
         scheme_project = [
             ps for ps in models.MaterialSchemeProject.objects.filter(project_id=project_id)
-            .select_related('material_id')
+            .select_related('material_id', 'section_id')
             if (ps.section_id_id, ps.origin_id_id, ps.construction_system) not in switched_off
         ]
         material_ids = [ps.material_id_id for ps in scheme_project]
@@ -406,10 +460,15 @@ class ProjectResultsView(APIView):
             except (ValueError, TypeError):
                 pass
 
-        potential_types = [
-            pt for pt in models.PotentialType.objects.all()
-            if pt.name_potential_type not in _IMPACTOS_IGNORAR
-        ]
+        potential_types = list(methods.active_potential_types())
+        a2 = methods.active_method() == methods.A2
+        excluded = {'materials': [], 'no_mass': [], 'transport': [], 'energy': [], 'sources': []}
+        no_mass_rows, biogenic_release = set(), 0.0
+        if a2:
+            scheme_project, no_mass_rows, biogenic_release = _apply_a2_exclusions(
+                scheme_project, conv_lookup, msd_lookup, aggregate_materials, potential_types, excluded,
+                active_databases)
+            _list_noncurrent_factors(scheme_project, ecd_list, source_ids, excluded)
 
         datos = {}
         error_calculos = False
@@ -468,7 +527,7 @@ class ProjectResultsView(APIView):
                 ) if ps.distance_end is not None else 0
 
                 peso = conv_lookup.get(mat.id, 1)
-                tv = peso * float(ps.quantity or 0) * (intl + natl)
+                tv = 0 if ps.id in no_mass_rows else peso * float(ps.quantity or 0) * (intl + natl)
                 a4_total += tv
                 row_transport[ps.id] = tv
 
@@ -514,9 +573,11 @@ class ProjectResultsView(APIView):
                     c1_total += float(ecdp.quantity or 0) * ev
                 else:
                     error_calculos = True
-            datos[name]['FinDeVida'] = {'C1': c1_total, 'C2': 0, 'C3': 0, 'C4': 0}
+            # EN 15804+A2: biogenic CO2 taken up in A1-A3 is released at end of life (design 2026-11-20).
+            c3_total = biogenic_release if impacto.name_potential_type in _BIOGENIC_RELEASE_TYPES else 0
+            datos[name]['FinDeVida'] = {'C1': c1_total, 'C2': 0, 'C3': c3_total, 'C4': 0}
 
-        return Response({'project_id': project_id, 'datos': datos, 'error': error_calculos})
+        return Response({'project_id': project_id, 'datos': datos, 'error': error_calculos, 'excluded': excluded})
 
 
 
