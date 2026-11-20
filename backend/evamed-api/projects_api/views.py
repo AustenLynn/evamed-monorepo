@@ -336,7 +336,8 @@ def _apply_a2_exclusions(scheme_project, conv_lookup, msd_lookup, aggregate_mate
                 conv_lookup[ps.material_id_id] = _UNIT_TONNES[unit]
             else:
                 no_mass.add(ps.id)
-                if ps.distance_init is not None or ps.distance_end is not None:
+                # Imported rows store 0 for no distance, so only a positive one is transport.
+                if (ps.distance_init or 0) > 0 or (ps.distance_end or 0) > 0:
                     excluded['no_mass'].append(
                         {'row_id': ps.id, 'material_id': ps.material_id_id, 'name': mat.name_material})
         if biogenic is not None and (mat.database_from or '') in active_databases:

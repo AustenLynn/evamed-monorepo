@@ -21,7 +21,19 @@ const HELPER_SHEETS = ['murosinterioresbis', 'inicio', 'registro', 'listaelement
   isHeaderRow = (row: Record<string, unknown>): boolean =>
     row?.['Material'] === 'Material' && row?.['Sistema_constructivo'] === 'Sistema_constructivo',
   hasMaterial = (row: Record<string, unknown>): boolean =>
-    row?.['Material'] !== null && row?.['Material'] !== undefined && String(row['Material']).trim() !== '';
+    row?.['Material'] !== null && row?.['Material'] !== undefined && String(row['Material']).trim() !== '',
+  // The template's Origen dropdown -> the labels the materials page groups and saves by.
+  // "Usuario" rows are typed into the template, so they join the template group (origin 1).
+  ORIGEN_FROM_TEMPLATE: Record<string, string> = {
+    Usuario: 'Template EVAMED',
+    'Calculado en Dynamo': 'Opciones EVAMED',
+  };
+
+/** A row with the template's Origen label replaced by the app's own. */
+function withAppOrigen(row: Record<string, unknown>): Record<string, unknown> {
+  const origen = typeof row?.['Origen'] === 'string' ? ORIGEN_FROM_TEMPLATE[row['Origen'] as string] : undefined;
+  return origen ? { ...row, Origen: origen } : row;
+}
 
 /**
  * The upload's rows by building section, in section_id order, matched by sheet
@@ -37,7 +49,7 @@ export function bySection(
     unknownSheets: string[] = [];
   let sectionSheets = 0;
   upload.sheetNames.forEach((name, index) => {
-    const rows = (upload.data[index] ?? []).filter(row => !isHeaderRow(row)),
+    const rows = (upload.data[index] ?? []).filter(row => !isHeaderRow(row)).map(withAppOrigen),
       section = SECTION_KEYS.indexOf(sheetKey(name));
     if (section >= 0) {
       data[section] = data[section].concat(rows);

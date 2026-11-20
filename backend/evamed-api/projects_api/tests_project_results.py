@@ -393,3 +393,12 @@ class A2ResultsTests(APITestCase):
             return len(queries)
 
         self.assertEqual(count(3), count(30))
+
+    def test_imported_zero_distance_is_not_transport(self):
+        # The materials page saves imported rows with distance 0, not empty: that's no transport.
+        material = self._a2_material()
+        material.unit_id = models.Unit.objects.create(name_unit='m²')
+        material.save()
+        models.MaterialSchemeProject.objects.create(
+            material_id=material, project_id=self.project, quantity=2, distance_init=0, distance_end=0)
+        self.assertEqual(self._results()['excluded']['no_mass'], [])

@@ -99,3 +99,20 @@ describe('Generated template catalogue', () => {
     ).toBe(true);
   });
 });
+
+describe('bySection: Origen from the template dropdown', () => {
+  // The template offers "Calculado en Dynamo", "Modelo de Revit" and "Usuario"; the materials page
+  // keeps only its own labels, so the other two used to be dropped silently on save.
+  const upload = (origen: string) => bySection({
+    sheetNames: ['Cimentación'],
+    data: [[{ Origen: origen, Sistema_constructivo: 'Zapata', Material: 'Concreto_X', Cantidad: 1 }]],
+  }).data[0][0]['Origen'];
+
+  it('reads "Usuario" as a template row', () => expect(upload('Usuario')).toBe('Template EVAMED'));
+  it('reads "Calculado en Dynamo" as a Dynamo option', () => expect(upload('Calculado en Dynamo')).toBe('Opciones EVAMED'));
+  it('keeps the labels the app already uses', () => {
+    for (const origen of ['Modelo de Revit', 'Template EVAMED', 'Opciones EVAMED', 'Usuario_Plataforma']) {
+      expect(upload(origen)).toBe(origen);
+    }
+  });
+});
