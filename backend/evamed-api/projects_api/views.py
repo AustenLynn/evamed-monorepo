@@ -188,8 +188,10 @@ class PotentialTypesViewSet(CatalogueViewSet):
     search_fields = ('name_potential_type', )
 
     def get_queryset(self):
-        # Users get the active method's indicators; admins manage every method's.
-        if access.is_admin(self.request.user):
+        # Everyone gets the active method's indicators (results pages use this list);
+        # admin screens ask for every method with ?method=all.
+        if access.is_admin(self.request.user) and (
+                self.request.query_params.get('method') == 'all' or self.request.method != 'GET'):
             return super().get_queryset()
         return super().get_queryset().filter(pk__in=methods.active_potential_types().values('pk'))
 

@@ -151,8 +151,9 @@ export class MaterialsService {
     );
   }
 
+  /** Admin screens: every method's indicators (results pages use the active method's only). */
   getPotentialTypes() {
-    return this.http.get<any>(environment.api_potetnial_types).pipe(
+    return this.http.get<any>(environment.api_potetnial_types, { params: { method: 'all' } }).pipe(
       tap(data => {
         return data;
       })

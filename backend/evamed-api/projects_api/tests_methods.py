@@ -54,11 +54,25 @@ class PotentialTypesEndpointTests(APITestCase):
         self.assertEqual(names, set(A2_SHORT))
 
     @override_settings(EVAMED_IMPACT_METHOD='EN15804+A2')
-    def test_admin_sees_every_method(self):
+    def test_admin_sees_every_method_when_asking(self):
         self.client.force_authenticate(admin_user())
-        names = {row['name_potential_type'] for row in self.client.get('/api-projects/potential-types/').json()}
+        names = {row['name_potential_type']
+                 for row in self.client.get('/api-projects/potential-types/?method=all').json()}
         self.assertIn('PCG 100', names)
         self.assertTrue(set(A2_SHORT) <= names)
+
+    @override_settings(EVAMED_IMPACT_METHOD='CML')
+    def test_admin_results_pages_get_only_the_active_method(self):
+        # Results and comparison pages use this endpoint for admins too (review finding 1).
+        self.client.force_authenticate(admin_user())
+        names = {row['name_potential_type'] for row in self.client.get('/api-projects/potential-types/').json()}
+        self.assertEqual(names, {'PCG 100'})
+
+    @override_settings(EVAMED_IMPACT_METHOD='EN15804+A2')
+    def test_users_cannot_ask_for_every_method(self):
+        names = {row['name_potential_type']
+                 for row in self.client.get('/api-projects/potential-types/?method=all').json()}
+        self.assertEqual(names, set(A2_SHORT))
 
 
 def _std(pk, name):
