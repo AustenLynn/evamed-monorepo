@@ -285,11 +285,17 @@ class A2ResultsTests(APITestCase):
         self.assertEqual(sum(body['datos'][GWP_TOTAL_NAME]['Producción'].values()), 8)
         self.assertEqual(body['excluded']['materials'], [])
 
-    def test_no_mass_material_excludes_transport(self):
+    def _truck(self):
         transport = models.Transport.objects.create(id=4, name_transport='camión')
         for ptype in self.types.values():
             models.PotentialTransport.objects.create(transport_id=transport, potential_type_id=ptype, value=1)
-        row = self._use(self._a2_material(), quantity=2, distance=100)
+
+    def test_no_mass_material_excludes_transport(self):
+        self._truck()
+        material = self._a2_material()
+        material.unit_id = models.Unit.objects.create(name_unit='m²')
+        material.save()
+        row = self._use(material, quantity=2, distance=100)
         body = self._results()
         self.assertEqual(body['datos'][GWP_TOTAL_NAME]['Construccion']['A4'], 0)
         self.assertEqual([e['row_id'] for e in body['excluded']['no_mass']], [row.id])
@@ -339,3 +345,26 @@ class A2ResultsTests(APITestCase):
         self._use(self._a2_material(values={'GWP-biogenic': -10}, mass=1), quantity=2)
         response = self.client.get(RESULTS_URL.format(self.project.id) + '?databases=EPDs')
         self.assertEqual(response.data['datos'][GWP_BIOGENIC_NAME]['FinDeVida']['C3'], 0)
+
+    def test_kg_material_without_conversion_gets_mass_from_unit(self):
+        # Review finding 3: ecoinvent materials have no Conversions row; kg and tonnes need none.
+        self._truck()
+        self._use(self._a2_material(), quantity=2000, distance=100)
+        body = self._results()
+        self.assertAlmostEqual(body['datos'][GWP_TOTAL_NAME]['Construccion']['A4'], 200)
+        self.assertEqual(body['excluded']['no_mass'], [])
+
+    def test_tonne_material_without_conversion_gets_mass_from_unit(self):
+        self._truck()
+        material = self._a2_material()
+        material.unit_id = models.Unit.objects.create(name_unit='Ton')
+        material.save()
+        self._use(material, quantity=2, distance=100)
+        self.assertAlmostEqual(self._results()['datos'][GWP_TOTAL_NAME]['Construccion']['A4'], 200)
+
+    def test_no_mass_listed_only_when_transport_was_entered(self):
+        material = self._a2_material()
+        material.unit_id = models.Unit.objects.create(name_unit='m²')
+        material.save()
+        self._use(material, quantity=2)
+        self.assertEqual(self._results()['excluded']['no_mass'], [])

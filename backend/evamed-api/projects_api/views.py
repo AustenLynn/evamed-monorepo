@@ -299,6 +299,8 @@ def _aggregate_material_ids(msd_rows):
 
 
 _BIOGENIC_RELEASE_TYPES = frozenset(['GWP-biogenic', 'GWP-total'])
+# Tonnes per unit for units whose mass is the unit itself (A4 transport weight).
+_UNIT_TONNES = {'Kg': 0.001, 'kg': 0.001, 'Ton': 1.0}
 
 
 def _material_value(msd_lookup, aggregate_materials, material_id, type_id):
@@ -332,8 +334,14 @@ def _apply_a2_exclusions(scheme_project, conv_lookup, msd_lookup, aggregate_mate
             continue
         kept.append(ps)
         if ps.material_id_id not in conv_lookup:
-            no_mass.add(ps.id)
-            excluded['no_mass'].append({'row_id': ps.id, 'material_id': ps.material_id_id, 'name': mat.name_material})
+            unit = mat.unit_id.name_unit if mat.unit_id else None
+            if unit in _UNIT_TONNES:
+                conv_lookup[ps.material_id_id] = _UNIT_TONNES[unit]
+            else:
+                no_mass.add(ps.id)
+                if ps.distance_init is not None or ps.distance_end is not None:
+                    excluded['no_mass'].append(
+                        {'row_id': ps.id, 'material_id': ps.material_id_id, 'name': mat.name_material})
         if biogenic is not None and (mat.database_from or '') in active_databases:
             uptake = _material_value(msd_lookup, aggregate_materials, ps.material_id_id, biogenic) * float(ps.quantity or 0)
             if uptake < 0:
@@ -394,7 +402,7 @@ class ProjectResultsView(APIView):
         )
         scheme_project = [
             ps for ps in models.MaterialSchemeProject.objects.filter(project_id=project_id)
-            .select_related('material_id', 'section_id')
+            .select_related('material_id__unit_id', 'section_id')
             if (ps.section_id_id, ps.origin_id_id, ps.construction_system) not in switched_off
         ]
         material_ids = [ps.material_id_id for ps in scheme_project]
