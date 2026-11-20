@@ -174,7 +174,8 @@ def material_detail(material_id, materials=None):
     if item is None:
         return None
     material = models.Material.objects.get(pk=material_id)
-    rows = models.MaterialSchemeData.objects.filter(material_id=material_id) \
+    rows = models.MaterialSchemeData.objects.filter(
+        material_id=material_id, potential_type_id__in=methods.active_potential_types()) \
         .select_related('standard_id', 'potential_type_id').order_by('potential_type_id', 'id')
     by_type, types, standards = defaultdict(dict), {}, set()
     for row in rows:

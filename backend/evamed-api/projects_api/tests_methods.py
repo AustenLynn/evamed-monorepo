@@ -302,3 +302,30 @@ class EcoinventA2Tests(TestCase):
     def test_max_datasets_aborts_before_fetch(self):
         self._refresh('--method', 'EN15804+A2', '--max-datasets', '0', '--apply')
         self.assertEqual(FakeEcoinventClient.requests, [])
+
+
+class ExplorerDetailMethodTests(APITestCase):
+    """Review finding 5: a material with values in both methods shows only the active method's."""
+
+    def setUp(self):
+        a1a3 = _std(1, 'A1-A3')
+        unit = models.Unit.objects.create(name_unit='Kg')
+        self.cml_gwp = models.PotentialType.objects.create(name_potential_type='PCG 100')
+        self.material = models.Material.objects.create(name_material='Cemento_Ambos', unit_id=unit)
+        models.MaterialSchemeData.objects.create(
+            material_id=self.material, standard_id=a1a3, potential_type_id=self.cml_gwp, value=1)
+        for ptype in models.PotentialType.objects.filter(method='EN15804+A2'):
+            models.MaterialSchemeData.objects.create(
+                material_id=self.material, standard_id=a1a3, potential_type_id=ptype, value=1)
+
+    def _codes(self):
+        body = self.client.get('/api-projects/explorer/produccion/%d/' % self.material.id).json()
+        return {indicator['code'] for indicator in body['indicators']}
+
+    @override_settings(EVAMED_IMPACT_METHOD='CML')
+    def test_cml_detail_shows_cml_indicators(self):
+        self.assertEqual(self._codes(), {'PCG 100'})
+
+    @override_settings(EVAMED_IMPACT_METHOD='EN15804+A2')
+    def test_a2_detail_shows_a2_indicators(self):
+        self.assertEqual(self._codes(), set(A2_SHORT))
