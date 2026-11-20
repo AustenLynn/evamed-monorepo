@@ -197,6 +197,10 @@ class Material(EcoinventPinnedModel):
     unit_id = models.ForeignKey(Unit, on_delete=models.CASCADE, null=True)
     database_from = models.CharField(max_length=255, null=True)
     description = models.TextField(null=True)
+    # ECO Portal identity, so imports re-match and a purge can find every row.
+    eco_epd_uuid = models.UUIDField(null=True, blank=True, db_index=True)
+    eco_epd_version = models.CharField(max_length=32, null=True, blank=True)
+    eco_reg_authority = models.UUIDField(null=True, blank=True)
 
     def __str__(self):
         """Return string representation of name_material"""
