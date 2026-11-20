@@ -42,9 +42,10 @@ def active_method():
     return method if method in (CML, A2) else CML
 
 
-def active_potential_types():
-    queryset = models.PotentialType.objects.filter(method=active_method())
-    if active_method() == CML:
+def active_potential_types(method=None):
+    method = method or active_method()
+    queryset = models.PotentialType.objects.filter(method=method)
+    if method == CML:
         queryset = queryset.exclude(name_potential_type__in=CML_HIDDEN)
     return queryset.order_by('id')
 
@@ -61,14 +62,14 @@ AGGREGATE_STANDARD = 1          # A1-A3
 SPLIT_STANDARDS = (2, 3, 4)     # A1, A2, A3
 
 
-def _active_type_ids():
-    return set(active_potential_types().values_list('id', flat=True))
+def _active_type_ids(method=None):
+    return set(active_potential_types(method).values_list('id', flat=True))
 
 
-def _material_coverage(materials=None):
-    """{material_id: {standard_id: {potential_type_id with a value}}} for active indicators,
-    plus the active indicator ids. Two queries."""
-    active = _active_type_ids()
+def _material_coverage(materials=None, method=None):
+    """{material_id: {standard_id: {potential_type_id with a value}}} for the method's indicators
+    (default: the active method), plus those indicator ids. Two queries."""
+    active = _active_type_ids(method)
     rows = models.MaterialSchemeData.objects.filter(
         potential_type_id__in=active, value__isnull=False)
     if materials is not None:
@@ -92,9 +93,9 @@ def _missing_type_ids(by_standard, active):
     return active - covered
 
 
-def current_material_ids(materials=None):
-    """Materials with a value for every active indicator (EN 15804+A2 design)."""
-    coverage, active = _material_coverage(materials)
+def current_material_ids(materials=None, method=None):
+    """Materials with a value for every indicator of the method (default: active) (EN 15804+A2 design)."""
+    coverage, active = _material_coverage(materials, method)
     if not active:
         return set()
     return {mid for mid, by_standard in coverage.items() if not _missing_type_ids(by_standard, active)}

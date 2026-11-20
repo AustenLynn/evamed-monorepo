@@ -120,4 +120,8 @@ class Command(BaseCommand):
                 models.Conversions.objects.filter(material_id=material).delete()
                 if record.mass_tonnes is not None:
                     models.Conversions.objects.create(material_id=material, value=record.mass_tonnes)
+        imported = models.Material.objects.filter(eco_epd_uuid__in=[r.uuid for r in records])
+        current = methods.current_material_ids(imported, method=methods.A2)
         self.stdout.write(self.style.SUCCESS('Imported {} EPD(s).'.format(len(records))))
+        self.stdout.write('{} of {} imported materials have every A2 indicator.'.format(
+            len(current), imported.count()))

@@ -77,6 +77,15 @@ class ParseTests(SimpleTestCase):
         self.assertEqual(record.values[('ODP', 'A2')], 1.0)
         self.assertNotIn(('ODP', 'A1-A3'), record.values)
 
+    def test_partial_split_is_dropped_when_a1_a3_is_complete(self):
+        # Review finding 7: a stored partial A1/A2/A3 split would make the material read as split and incomplete.
+        doc = epd()
+        for result in doc['LCIAResults']['LCIAResult'][:3]:
+            result['other']['anies'] += [{'module': 'A1', 'value': '0.5'}, {'module': 'A2', 'value': '0.2'},
+                                        {'module': 'A3', 'value': '0.3'}]
+        record = ilcd.parse(doc)
+        self.assertEqual({module for _short, module in record.values}, {'A1-A3'})
+
     def test_nd_not_stored(self):
         record = ilcd.parse(epd(values={'WDP': 'ND'}))
         self.assertNotIn(('WDP', 'A1-A3'), record.values)
@@ -186,6 +195,9 @@ class ImportCommandTests(TestCase):
         self.assertIn(material.id, methods.current_material_ids())
         self.assertEqual(float(models.Conversions.objects.get(material_id=material).value), 1.0)
 
+    def test_apply_reports_how_many_are_current(self):
+        self.assertIn('1 of 1 imported materials have every A2 indicator', self._run('--apply'))
+
     def test_import_idempotent(self):
         self._run('--apply')
         (self.dir / f'{EPD_UUID}.json').write_text(json.dumps(epd(values={'GWP-total': 400})))
@@ -200,3 +212,8 @@ class ImportCommandTests(TestCase):
         self.families.write_text('{}')
         output = self._run()
         self.assertIn('no family', output)
+
+    @override_settings(EVAMED_IMPACT_METHOD='CML')
+    def test_apply_reports_a2_coverage_while_cml_is_active(self):
+        # Rollout imports while the site still serves CML.
+        self.assertIn('1 of 1 imported materials have every A2 indicator', self._run('--apply'))

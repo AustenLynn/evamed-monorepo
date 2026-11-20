@@ -35,6 +35,7 @@ _GWP_LABELS = [  # order matters: 'land use' before the others, 'total' last
     ('GWP-total', re.compile(r'total', re.I)),
 ]
 MODULES = ('A1-A3', 'A1', 'A2', 'A3')
+CORE = set(LCIA_METHODS.values()) | {short for short, _pattern in _GWP_LABELS}
 
 # Products the owner excluded (2026-11-19): slag and adhesives.
 EXCLUDED_NAMES = {'steel slang', 'bekron cementitious adhesives', 'pegamento medio pvc transparente'}
@@ -157,6 +158,10 @@ def parse(doc):
             module, value = any_.get('module'), _number(any_.get('value'))
             if module in MODULES and value is not None:
                 values[(short, module)] = value * scale
+
+    if all((short, 'A1-A3') in values for short in CORE):
+        # A complete A1-A3 is what EVAmed reads; a partial split next to it would be read instead.
+        values = {key: value for key, value in values.items() if key[1] == 'A1-A3'}
 
     compliance = [_text((c.get('referenceToComplianceSystem') or {}).get('shortDescription'))
                   for c in ((doc.get('modellingAndValidation') or {}).get('complianceDeclarations') or {})
