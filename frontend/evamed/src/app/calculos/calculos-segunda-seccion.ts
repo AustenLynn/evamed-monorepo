@@ -1,5 +1,6 @@
 import subetapasInfo from 'src/app/calculos/Subetapas.json';
 import { Injectable } from '@angular/core';
+import { buildA2Rules } from 'src/app/calculos/a2-rules';
 import { buildAggregateMaterialSet } from 'src/app/calculos/aggregate-materials';
 
 @Injectable({
@@ -43,6 +44,7 @@ export class CalculosSegundaSeccion {
     this.materialList = info.materialList;
     this.materialSchemeDataList = info.materialSchemeDataList;
     this.aggregateMaterials = buildAggregateMaterialSet(this.materialSchemeDataList);
+    const a2 = buildA2Rules(info);
     this.materialSchemeProyectList = info.materialSchemeProyectList;
     this.potentialTypesList = info.potentialTypesList;
     this.standarsList = info.standarsList;
@@ -88,7 +90,7 @@ export class CalculosSegundaSeccion {
         if (schemeProyect.length > 0) {
           schemeProyect.forEach(ps => {
             const baseDatosMaterial = this.materialList.filter(bs=> bs['id'] == ps['material_id']);
-            if(BD[baseDatosMaterial[0]['database_from']]) {
+            if(BD[baseDatosMaterial[0]['database_from']] && a2.counts(ps['material_id'])) {
               if(this.aggregateMaterials.has(ps['material_id'])) {
                 const materiales_subetapa = this.materialSchemeDataList.filter(
                   msd =>
@@ -151,7 +153,7 @@ export class CalculosSegundaSeccion {
                   val['potential_type_id'] == impacto['id'] &&
                   val['transport_id'] == transporteSeleccionado
               );
-              internacional = value_transport[0]['value'] * ps['distance_init'];
+              internacional = (value_transport[0]?.['value'] ?? 0) * ps['distance_init'];
             }
             if (ps['distance_end'] == null) {
               nacional = 0;
@@ -165,16 +167,11 @@ export class CalculosSegundaSeccion {
                   val['potential_type_id'] == impacto['id'] &&
                   val['transport_id'] == transporteSeleccionado
               );
-              nacional = value_transport[0]['value'] * ps['distance_end'];
+              nacional = (value_transport[0]?.['value'] ?? 0) * ps['distance_end'];
             }
-            const conversion_val = this.conversionList.filter(
-              val => val['material_id'] == ps['material_id']
-            );
-            let peso = 1;
-            if (conversion_val.length > 0) {
-              peso = conversion_val[0]['value'];
-            }
-            if(BD[baseDatosMaterial[0]['database_from']]) {
+            // Mass in tonnes: Conversions, or a kg/tonne unit under A2 (else no transport).
+            const peso = a2.tonnes(ps['material_id']);
+            if(BD[baseDatosMaterial[0]['database_from']] && a2.counts(ps['material_id'])) {
               if(!elementoscreados.includes(ps['section_id'])) {
                 elementoscreados.push(ps['section_id']);
                 Datos[nameImpacto][ps['section_id']] = 0;
@@ -211,7 +208,7 @@ export class CalculosSegundaSeccion {
         if (schemeProyect.length > 0) {
           schemeProyect.forEach(ps => {
             const baseDatosMaterial = this.materialList.filter(bs=> bs['id'] == ps['material_id']);
-            if(BD[baseDatosMaterial[0]['database_from']]) {
+            if(BD[baseDatosMaterial[0]['database_from']] && a2.counts(ps['material_id'])) {
               if(!elementoscreados.includes(ps['section_id'])) {
                 elementoscreados.push(ps['section_id']);
                 Datos[nameImpacto][ps['section_id']] = 0;
@@ -287,7 +284,24 @@ export class CalculosSegundaSeccion {
                   }
                   Datos[nameImpacto][ECDP['section_id']] =
                   Datos[nameImpacto][ECDP['section_id']] +
-                    ECDP['quantity'] * energia[0]['value'];
+                    ECDP['quantity'] * (energia[0]?.['value'] ?? 0);
+          });
+        }
+        //C3: EN 15804+A2 biogenic release at end of life, per element.
+        if (a2.releasesInto(impacto['id'])) {
+          schemeProyect.forEach(ps => {
+            const material = this.materialList.filter(bs => bs['id'] == ps['material_id'])[0];
+            if (!material || !BD[material['database_from']]) {
+              return;
+            }
+            const release = a2.biogenicRelease([ps]);
+            if (release) {
+              if(!elementoscreados.includes(ps['section_id'])) {
+                elementoscreados.push(ps['section_id']);
+                Datos[nameImpacto][ps['section_id']] = 0;
+              }
+              Datos[nameImpacto][ps['section_id']] = Datos[nameImpacto][ps['section_id']] + release;
+            }
           });
         }
       }

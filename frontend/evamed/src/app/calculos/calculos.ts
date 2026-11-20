@@ -1,6 +1,7 @@
 import subetapasInfo from 'src/app/calculos/Subetapas.json';
 import escalasCarbono from 'src/app/calculos/EscalasCarbono.json';
 import { Injectable } from '@angular/core';
+import { buildA2Rules } from 'src/app/calculos/a2-rules';
 import { buildAggregateMaterialSet } from 'src/app/calculos/aggregate-materials';
 
 @Injectable({
@@ -49,6 +50,7 @@ export class Calculos {
     this.materialList = info.materialList;
     this.materialSchemeDataList = info.materialSchemeDataList;
     this.aggregateMaterials = buildAggregateMaterialSet(this.materialSchemeDataList);
+    const a2 = buildA2Rules(info);
     this.materialSchemeProyectList = info.materialSchemeProyectList;
     this.potentialTypesList = info.potentialTypesList;
     this.standarsList = info.standarsList;
@@ -101,7 +103,7 @@ export class Calculos {
           if (schemeProyect.length > 0) {
             schemeProyect.forEach(ps => {
               const baseDatosMaterial = this.materialList.filter(bs=> bs['id'] == ps['material_id']);
-              if(BD[baseDatosMaterial[0]['database_from']]) {
+              if(BD[baseDatosMaterial[0]['database_from']] && a2.counts(ps['material_id'])) {
                 if(!this.aggregateMaterials.has(ps['material_id'])) {
                   const materiales_subetapa = this.materialSchemeDataList.filter(
                     msd =>
@@ -174,7 +176,7 @@ export class Calculos {
                   val['potential_type_id'] == impacto['id'] &&
                   val['transport_id'] == transporteSeleccionado
               );
-              internacional = value_transport[0]['value'] * ps['distance_init'];
+              internacional = (value_transport[0]?.['value'] ?? 0) * ps['distance_init'];
             }
             if (ps['distance_end'] == null) {
               nacional = 0;
@@ -188,16 +190,11 @@ export class Calculos {
                   val['potential_type_id'] == impacto['id'] &&
                   val['transport_id'] == transporteSeleccionado
               );
-              nacional = value_transport[0]['value'] * ps['distance_end'];
+              nacional = (value_transport[0]?.['value'] ?? 0) * ps['distance_end'];
             }
-            const conversion_val = this.conversionList.filter(
-              val => val['material_id'] == ps['material_id']
-            );
-            let peso = 1;
-            if (conversion_val.length > 0) {
-              peso = conversion_val[0]['value'];
-            }
-            if(BD[baseDatosMaterial[0]['database_from']]) {
+            // Mass in tonnes: Conversions, or a kg/tonne unit under A2 (else no transport).
+            const peso = a2.tonnes(ps['material_id']);
+            if(BD[baseDatosMaterial[0]['database_from']] && a2.counts(ps['material_id'])) {
               const transporteFila = peso * ps['quantity'] * (nacional + internacional);
               resultado_impacto = resultado_impacto + transporteFila;
               transportePorFila.set(ps, transporteFila);
@@ -233,7 +230,7 @@ export class Calculos {
         if (schemeProyect.length > 0) {
           schemeProyect.forEach(ps => {
           const baseDatosMaterial = this.materialList.filter(bs=> bs['id'] == ps['material_id']);
-          if(BD[baseDatosMaterial[0]['database_from']]) {
+          if(BD[baseDatosMaterial[0]['database_from']] && a2.counts(ps['material_id'])) {
             // Each replacement brings the row's own transport again, not every row's of the material.
             resultado_impacto = resultado_impacto + (transportePorFila.get(ps) ?? 0) * ps['replaces'];
             if(!this.aggregateMaterials.has(ps['material_id'])) {
@@ -334,8 +331,13 @@ export class Calculos {
         Datos[nameImpacto]['FinDeVida']['C1'] = resultado_impacto;
         //C2
         Datos[nameImpacto]['FinDeVida']['C2'] = 0;
-        //C3
-        Datos[nameImpacto]['FinDeVida']['C3'] = 0;
+        //C3: EN 15804+A2 biogenic carbon taken up in A1-A3 (and replacements) is released at end of life.
+        Datos[nameImpacto]['FinDeVida']['C3'] = a2.releasesInto(impacto['id'])
+          ? a2.biogenicRelease(schemeProyect.filter(ps => {
+              const material = this.materialList.filter(bs => bs['id'] == ps['material_id'])[0];
+              return material && BD[material['database_from']];
+            }))
+          : 0;
         //C4
         Datos[nameImpacto]['FinDeVida']['C4'] = 0;
         //console.log('Fin de vida',resultado_impacto)

@@ -360,3 +360,13 @@ class FixtureLoadTests(TestCase):
         self.assertEqual(ef31.count(), 13)
         # New rows after the load get fresh ids, not a seeded row's.
         self.assertNotIn(models.PotentialType.objects.create(name_potential_type='new').pk, set(a2.values_list('pk', flat=True)))
+
+
+class MaterialUnitNameTests(APITestCase):
+    """The browser calculations need the unit name to derive mass from kg/tonne units."""
+
+    def test_materials_endpoint_includes_unit_name(self):
+        material = models.Material.objects.create(
+            name_material='Cemento_X', unit_id=models.Unit.objects.create(name_unit='Ton'))
+        row = next(r for r in self.client.get('/api-projects/materials/').json() if r['id'] == material.id)
+        self.assertEqual(row['unit_name'], 'Ton')

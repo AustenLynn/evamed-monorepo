@@ -1,5 +1,6 @@
 import subetapasInfo from 'src/app/calculos/Subetapas.json';
 import { Injectable } from '@angular/core';
+import { buildA2Rules } from 'src/app/calculos/a2-rules';
 import { buildAggregateMaterialSet } from 'src/app/calculos/aggregate-materials';
 
 @Injectable({
@@ -41,6 +42,7 @@ export class CalculosTercerSeccion {
     this.materialList = info.materialList;
     this.materialSchemeDataList = info.materialSchemeDataList;
     this.aggregateMaterials = buildAggregateMaterialSet(this.materialSchemeDataList);
+    const a2 = buildA2Rules(info);
     this.materialSchemeProyectList = info.materialSchemeProyectList;
     this.potentialTypesList = info.potentialTypesList;
     this.standarsList = info.standarsList;
@@ -99,7 +101,7 @@ export class CalculosTercerSeccion {
           if (schemeProyect.length > 0) {
             schemeProyect.forEach(ps => {
               const baseDatosMaterial = this.materialList.filter(bs=> bs['id'] == ps['material_id']);
-              if(BD[baseDatosMaterial[0]['database_from']]) {
+              if(BD[baseDatosMaterial[0]['database_from']] && a2.counts(ps['material_id'])) {
                 if(this.aggregateMaterials.has(ps['material_id'])) {
                   // A material with only an A1-A3 value counts once (not once per subetapa),
                   // and adds to its element's total instead of resetting it.
@@ -182,7 +184,7 @@ export class CalculosTercerSeccion {
                   val['potential_type_id'] == impacto['id'] &&
                   val['transport_id'] == transporteSeleccionado
               );
-              internacional = value_transport[0]['value'] * ps['distance_init'];
+              internacional = (value_transport[0]?.['value'] ?? 0) * ps['distance_init'];
             }
             if (ps['distance_end'] == null) {
               nacional = 0;
@@ -196,16 +198,11 @@ export class CalculosTercerSeccion {
                   val['potential_type_id'] == impacto['id'] &&
                   val['transport_id'] == transporteSeleccionado
               );
-              nacional = value_transport[0]['value'] * ps['distance_end'];
+              nacional = (value_transport[0]?.['value'] ?? 0) * ps['distance_end'];
             }
-            const conversion_val = this.conversionList.filter(
-              val => val['material_id'] == ps['material_id']
-            );
-            let peso = 1;
-            if (conversion_val.length > 0) {
-              peso = conversion_val[0]['value'];
-            }
-            if(BD[baseDatosMaterial[0]['database_from']]) {
+            // Mass in tonnes: Conversions, or a kg/tonne unit under A2 (else no transport).
+            const peso = a2.tonnes(ps['material_id']);
+            if(BD[baseDatosMaterial[0]['database_from']] && a2.counts(ps['material_id'])) {
               const auxres = peso * ps['quantity'] * (nacional + internacional);
               transportePorFila.set(ps, auxres);
               if(auxres != 0) {
@@ -230,7 +227,7 @@ export class CalculosTercerSeccion {
             return;
           }
           const baseDatosMaterial = this.materialList.filter(bs=> bs['id'] == ps['material_id']);
-          if(!BD[baseDatosMaterial[0]['database_from']]) {
+          if(!BD[baseDatosMaterial[0]['database_from']] || !a2.counts(ps['material_id'])) {
             return;
           }
           const estandares = this.aggregateMaterials.has(ps['material_id']) ? [1] : etapas;

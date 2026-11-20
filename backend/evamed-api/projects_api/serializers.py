@@ -351,6 +351,9 @@ class PotentialTypesSerializer(serializers.ModelSerializer):
 
 class MaterialsSerializer(serializers.ModelSerializer):
     """Serializes a section material"""
+    # Read-only: the browser calculations derive mass from kg/tonne units (EN 15804+A2).
+    unit_name = serializers.CharField(source='unit_id.name_unit', read_only=True, default=None)
+
     class Meta:
         model = models.Material
         fields = '__all__'
