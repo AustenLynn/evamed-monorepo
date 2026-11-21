@@ -370,10 +370,16 @@ export class CompararComponent implements OnInit {
     this.vista = vista;
     saveVista(vista);
     this.aplicarVista();
-    // A selected bar or indicator may no longer exist in the new view.
+    // A selected bar, stage or indicator may no longer exist in the new view.
     this.selector = null;
-    this.impactoSeleccionadoElementoConstructivo = ' ';
+    this.bandera = 0;
+    this.hover = true;
+    if (this.ID !== ' ') {
+      const etapa = document.getElementById(this.ID);
+      if (etapa) etapa.className = 'boton-principal';
+    }
     this.ID = ' ';
+    this.impactoSeleccionadoElementoConstructivo = ' ';
     this.ajusteUsoBaseDatos(Object.keys(this.basesDatos).filter(bd => this.basesDatos[bd]));
   }
 
@@ -423,19 +429,23 @@ export class CompararComponent implements OnInit {
         analisis = this.getAnalisisBarras(element, data);
       this.outproyect_bar.push(analisis);
     });
-    this.fasesEliminadas.forEach(value => {
-      this.outproyect_bar.forEach((proyecto, index) => {
-        const indicadores = Object.keys(proyecto.Datos);
-        indicadores.forEach(element => {
-          delete this.outproyect_bar[index].Datos[element][value];
-        });
-      });
-    });
+    this.quitarFasesEliminadas();
     if (this.resultdosGraficos) {
       this.iniciaBarras();
     } else {
       this.TablaResultados();
     }
+  }
+
+  // Stages hidden with the eye button stay out of the bars after any rebuild.
+  private quitarFasesEliminadas() {
+    (this.fasesEliminadas ?? []).forEach(value => {
+      this.outproyect_bar.forEach(proyecto => {
+        Object.keys(proyecto.Datos).forEach(indicador => {
+          delete proyecto.Datos[indicador][value];
+        });
+      });
+    });
   }
 
   //agregar proyecto a graficas
@@ -1157,6 +1167,7 @@ export class CompararComponent implements OnInit {
         'fragBar': false
       }
     });
+    this.quitarFasesEliminadas();
     //Se reinicia la sección 1
     if(this.Impactos_ambientales) {
       if(this.resultdosGraficos) {

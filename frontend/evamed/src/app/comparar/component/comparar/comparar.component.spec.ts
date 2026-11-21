@@ -189,3 +189,59 @@ describe('CompararComponent carbon-only view', () => {
     expect(component.catologoImpactoAmbiental).toEqual([odp]);
   });
 });
+
+// Final review (2026-11-21): switching views must not leave section 1 half-selected,
+// and stages hidden with the eye button stay hidden after the recalculation.
+describe('CompararComponent view switch resets', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    localStorage.clear();
+    document.body.innerHTML = '';
+  });
+
+  it('clears the selected bar and stage before recalculating', () => {
+    const component: any = Object.create(CompararComponent.prototype);
+    component.calculos = { ajustarNombre: (name: string) => name };
+    component.basesDatos = { 'ECO Platform': true };
+    component.vista = 'completo';
+    component.catologoImpactoAmbiental = [];
+    component.iniciarCatalogo([{ id: 20, name_potential_type: 'GWP-total', name_complete_potential_type: 'GWP' }]);
+    document.body.innerHTML = '<button id="Producción" class="boton-select"></button>';
+    component.ID = 'Producción';
+    component.bandera = 1;
+    component.selector = 'GWP';
+    let estadoAlRecalcular: any;
+    vi.spyOn(component, 'ajusteUsoBaseDatos').mockImplementation(() => {
+      estadoAlRecalcular = { bandera: component.bandera, ID: component.ID, selector: component.selector };
+    });
+
+    component.cambiarVista('carbono');
+
+    expect(estadoAlRecalcular).toEqual({ bandera: 0, ID: ' ', selector: null });
+    expect(document.getElementById('Producción')!.className).toBe('boton-principal');
+  });
+
+  it('keeps stages hidden with the eye button out of the rebuilt bars', () => {
+    const component: any = Object.create(CompararComponent.prototype);
+    component.calculos = { ajustarNombre: (name: string) => name };
+    component.basesDatos = { 'ECO Platform': true };
+    component.proyect_active = [7];
+    component.fasesEliminadas = ['Uso'];
+    component.resultdosGraficos = true;
+    component.Impactos_ambientales = false;
+    component.Impactos_Elementos = false;
+    component.Elementos_constructivos = false;
+    vi.spyOn(component, 'llamarCalculos').mockReturnValue({});
+    vi.spyOn(component, 'getAnalisisBarras').mockImplementation(() => ({
+      id: 7, Nombre: 'Casa', Datos: { GWP: { Producción: 1, Uso: 2 } },
+    }));
+    for (const method of ['getAnalisisRadial', 'getAnalisisPie', 'getAnalisisPieBarSegunaSeccion',
+      'getAnalisisElementos', 'getAnalisisBarrasElementosConstructivos', 'iniciaBarras']) {
+      vi.spyOn(component, method).mockReturnValue({});
+    }
+
+    component.ajusteUsoBaseDatos(['ECO Platform']);
+
+    expect(component.outproyect_bar[0].Datos.GWP).toEqual({ Producción: 1 });
+  });
+});
