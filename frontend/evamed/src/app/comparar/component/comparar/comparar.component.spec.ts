@@ -100,3 +100,92 @@ describe('CompararComponent switched-off systems', () => {
     ]);
   });
 });
+
+// "Solo carbono" filters what the page shows; the calculation keeps every indicator
+// because the A2 rules need all of them (design 2026-11-21-solo-carbono-view).
+describe('CompararComponent carbon-only view', () => {
+  const gwp = { id: 20, name_potential_type: 'GWP-total', name_complete_potential_type: 'Calentamiento global, total' },
+    odp = { id: 24, name_potential_type: 'ODP', name_complete_potential_type: 'Agotamiento de ozono' },
+    build = (types: any[] = [gwp, odp]) => {
+      const component: any = Object.create(CompararComponent.prototype);
+      component.calculos = {
+        ajustarNombre: (name: string) => name,
+        OperacionesDeFase: vi.fn(() => [{
+          'Calentamiento global, total': { Producción: { A1: 1 } },
+          'Agotamiento de ozono': { Producción: { A1: 2 } },
+        }]),
+      };
+      component.potentialTypesList = types;
+      component.materialSchemeProyectList = [];
+      component.selectionsByProject = {};
+      component.basesDatos = { 'ECO Platform': true, 'ECOINVENT 3': false };
+      component.proyect_active = [7, 8];
+      component.vista = 'completo';
+      component.iniciarCatalogo(types);
+      return component;
+    };
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    localStorage.clear();
+  });
+
+  it('passes the full indicator list to the calculation in the carbon view', () => {
+    const component = build();
+    component.vista = 'carbono';
+    component.iniciarCatalogo([gwp, odp]);
+
+    const datos = component.llamarCalculos(7);
+
+    expect(component.calculos.OperacionesDeFase.mock.calls[0][1].potentialTypesList).toEqual([gwp, odp]);
+    expect(Object.keys(datos)).toEqual(['Calentamiento global, total']);
+  });
+
+  it('switching views swaps the catalogue, clears indicator selections and recalculates every compared project', () => {
+    const component = build(),
+      recalcular = vi.spyOn(component, 'ajusteUsoBaseDatos').mockImplementation(() => undefined);
+    component.selector = 'Agotamiento de ozono';
+    component.selectedValue = 'Agotamiento de ozono';
+
+    component.cambiarVista('carbono');
+
+    expect(component.catologoImpactoAmbiental).toEqual([gwp]);
+    expect(component.selector).toBeNull();
+    expect(component.selectedValue).toBe('Calentamiento global, total');
+    expect(recalcular).toHaveBeenCalledTimes(1);
+    expect(recalcular).toHaveBeenCalledWith(['ECO Platform']);
+    expect(localStorage.getItem('evamed.resultados.vista')).toBe('carbono');
+    expect(Object.keys(component.llamarCalculos(8))).toEqual(['Calentamiento global, total']);
+
+    component.cambiarVista('completo');
+
+    expect(component.catologoImpactoAmbiental).toEqual([gwp, odp]);
+    expect(Object.keys(component.llamarCalculos(8))).toEqual(['Calentamiento global, total', 'Agotamiento de ozono']);
+  });
+
+  it('filters the element and material sections by indicator too', () => {
+    const component = build();
+    component.calculosTercerSeccion = {
+      OperacionesDeFasePorElementoConstructivoCicloVida: () => ({
+        materiales: { 'Calentamiento global, total': {}, 'Agotamiento de ozono': {} },
+        Calculos: { 'Calentamiento global, total': {}, 'Agotamiento de ozono': {} },
+      }),
+    };
+    vi.spyOn(component, 'ajusteUsoBaseDatos').mockImplementation(() => undefined);
+    component.cambiarVista('carbono');
+
+    const tres = component.llamarCalculosTercerSeccion(7);
+
+    expect(Object.keys(tres.materiales)).toEqual(['Calentamiento global, total']);
+    expect(Object.keys(tres.Calculos)).toEqual(['Calentamiento global, total']);
+  });
+
+  it('hides the switch when no carbon indicator is served', () => {
+    const component = build([odp]);
+    component.vista = 'carbono';
+    component.iniciarCatalogo([odp]);
+
+    expect(component.carbonoDisponible).toBe(false);
+    expect(component.catologoImpactoAmbiental).toEqual([odp]);
+  });
+});

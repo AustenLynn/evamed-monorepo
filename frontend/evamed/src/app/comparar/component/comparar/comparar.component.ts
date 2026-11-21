@@ -21,6 +21,7 @@ import { forkJoin, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ActiveProjectService } from 'src/app/core/services/active-project/active-project.service';
+import { carbonType, keepIndicators, loadVista, saveVista, VistaResultados } from './vista-carbono';
 import {
   animate,
   state,
@@ -186,6 +187,11 @@ export class CompararComponent implements OnInit {
   impactoSeleccionadoElementoConstructivoGrafica = null;
   banderaAjusteElememtos = false;
   catologoImpactoAmbiental = [];
+  // "Completo / Solo carbono": filters what is shown, never what is calculated.
+  vista: VistaResultados = loadVista();
+  carbonoDisponible = false;
+  private catalogoCompleto: any[] = [];
+  private nombresMostrados: Set<string> | null = null;
   elementosConstructivosMostradosElementos = {};
   elementosConstructivosMostradosElementosPorProyecto = {};
   cicloVidaSeleccionadoElemento = ' ';
@@ -294,14 +300,7 @@ export class CompararComponent implements OnInit {
         this.materialSchemeDataList = materialSchemeData;
         this.materialSchemeProyectList = materialSchemeProyect;
         this.potentialTypesList = potentialTypes;
-        const aux = this.calculos.FiltradoDeImpactos(potentialTypes);
-        this.catologoImpactoAmbiental = aux;
-        this.llenarIdsBotonesImpactos(aux);
-        this.selectedValue =
-          this.catologoImpactoAmbiental[0]['name_complete_potential_type'];
-        this.impactoAmbientalSeleccionado = this.calculos.ajustarNombre(
-          this.catologoImpactoAmbiental[0]['name_complete_potential_type']
-        );
+        this.iniciarCatalogo(this.calculos.FiltradoDeImpactos(potentialTypes));
         this.standarsList = standards;
         this.CSEList = CSE;
         this.SIDList = SID;
@@ -344,6 +343,38 @@ export class CompararComponent implements OnInit {
 
   editProject(id: number) {
     this.activeProject.open(id).subscribe(() => this.router.navigateByUrl('materials-stage/update'));
+  }
+
+  iniciarCatalogo(catalogo: any[]) {
+    this.catalogoCompleto = catalogo ?? [];
+    this.carbonoDisponible = carbonType(this.catalogoCompleto) !== undefined;
+    this.aplicarVista();
+  }
+
+  private aplicarVista() {
+    const carbono = carbonType(this.catalogoCompleto),
+      soloCarbono = this.vista === 'carbono' && carbono !== undefined;
+    this.catologoImpactoAmbiental = soloCarbono ? [carbono] : [...this.catalogoCompleto];
+    this.nombresMostrados = soloCarbono
+      ? new Set([this.calculos.ajustarNombre(carbono['name_complete_potential_type'])])
+      : null;
+    this.llenarIdsBotonesImpactos(this.catologoImpactoAmbiental);
+    const primero = this.catologoImpactoAmbiental[0]?.['name_complete_potential_type'];
+    if (primero !== undefined) {
+      this.selectedValue = primero;
+      this.impactoAmbientalSeleccionado = this.calculos.ajustarNombre(primero);
+    }
+  }
+
+  cambiarVista(vista: VistaResultados) {
+    this.vista = vista;
+    saveVista(vista);
+    this.aplicarVista();
+    // A selected bar or indicator may no longer exist in the new view.
+    this.selector = null;
+    this.impactoSeleccionadoElementoConstructivo = ' ';
+    this.ID = ' ';
+    this.ajusteUsoBaseDatos(Object.keys(this.basesDatos).filter(bd => this.basesDatos[bd]));
   }
 
   //ids Necesarios para modificar en html
@@ -702,8 +733,11 @@ export class CompararComponent implements OnInit {
         DatosCalculos,
         this.basesDatos
       );
-    //console.log(aux)
-    return aux;
+    return {
+      ...aux,
+      materiales: keepIndicators(aux['materiales'], this.nombresMostrados),
+      Calculos: keepIndicators(aux['Calculos'], this.nombresMostrados),
+    };
   }
 
   getAnalisisElementos(idProyecto) {
@@ -738,7 +772,7 @@ export class CompararComponent implements OnInit {
       this.basesDatos
     ),
      auxDatos = auxdata[0];
-    return auxDatos;
+    return keepIndicators(auxDatos, this.nombresMostrados);
   }
 
   getAnalisisBarras(idProyecto, data) {
@@ -1261,12 +1295,14 @@ export class CompararComponent implements OnInit {
       conversionList: this.conversionList,
     },
 
-     auxDatos =
+     auxDatos = keepIndicators(
       this.calculosSegunaSeccion.OperacionesDeFasePorElementoConstructivo(
         idProyecto,
         DatosCalculos,
         this.basesDatos
-      );
+      ),
+      this.nombresMostrados
+    );
     this.AjustarElementosMostrados(auxDatos);
     //console.log(this.iconosElementosConstrucivos)
     this.AjustarElementosMostradosElemntos(auxDatos);
@@ -1321,7 +1357,7 @@ export class CompararComponent implements OnInit {
         let flag = false;
         const auxidelemento: string = element['id'],
           auximpacto = this.calculosSegunaSeccion.ajustarNombre(
-          this.potentialTypesList[0]['name_complete_potential_type']
+          this.catologoImpactoAmbiental[0]['name_complete_potential_type']
         );
         Object.keys(auxDatos[auximpacto]).forEach(idelemento => {
           if (idelemento == auxidelemento.toString() && auxDatos[auximpacto][idelemento] !== 0) {
@@ -1349,7 +1385,7 @@ export class CompararComponent implements OnInit {
         let flag = false;
         const auxidelemento: string = element['id'],
           auximpacto = this.calculosSegunaSeccion.ajustarNombre(
-            this.potentialTypesList[0]['name_complete_potential_type']
+            this.catologoImpactoAmbiental[0]['name_complete_potential_type']
           );
         Object.keys(auxDatos[auximpacto]).forEach(idelemento => {
           if (idelemento == auxidelemento.toString() && auxDatos[auximpacto][idelemento] !== 0) {
@@ -1390,7 +1426,7 @@ export class CompararComponent implements OnInit {
         let flag = false;
         const auxidelemento: string = element['id'],
           auximpacto = this.calculosSegunaSeccion.ajustarNombre(
-            this.potentialTypesList[0]['name_complete_potential_type']
+            this.catologoImpactoAmbiental[0]['name_complete_potential_type']
           );
         Object.keys(auxDatos[auximpacto]).forEach(idelemento => {
           if (idelemento == auxidelemento.toString() && auxDatos[auximpacto][idelemento] !== 0) {
