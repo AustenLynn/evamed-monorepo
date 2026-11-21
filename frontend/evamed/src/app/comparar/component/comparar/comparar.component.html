@@ -13,6 +13,11 @@
   </div>
   <div class="bases-datos">
     <p class="text-duplicados">Duplicados</p>
+    <mat-button-toggle-group *ngIf="carbonoDisponible" class="vista-resultados" [value]="vista"
+      (change)="cambiarVista($event.value)" hideSingleSelectionIndicator aria-label="Indicadores mostrados">
+      <mat-button-toggle value="completo">Completo</mat-button-toggle>
+      <mat-button-toggle value="carbono">Solo carbono</mat-button-toggle>
+    </mat-button-toggle-group>
     <!--<div>
       <p class="text-duplicados">Bases de datos consideradas</p>
       <mat-form-field appearance="outline" subscriptSizing="dynamic" class="select-general">
