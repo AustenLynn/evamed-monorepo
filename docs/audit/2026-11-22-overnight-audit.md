@@ -475,7 +475,7 @@ A-27 ocultar la escala hasta tener la fuente; A-29 diseño adaptable completo.
 | A-29 | Corregido | `styles/_responsive.scss`; verificado en dev a 390 y 768 px (páginas de administración no revisadas). |
 | A-30 | Corregido, por verificar | Cabeceras en Caddy, CSP en modo report-only. No se pudo validar el Caddyfile localmente: revisar con `curl -I` tras el despliegue. |
 | A-31 | Corregido | 102 `console.log` eliminados. |
-| A-32 | Pendiente | Calcular Resultados en el servidor requiere reescribir `comparar` y ampliar el endpoint (secciones 2 y 3); se propone como proyecto aparte. |
+| A-32 | Corregido | Resultados toma las tres secciones de `/projects/<id>/results/?detalle=1`; se quitaron el cálculo del navegador y las descargas de catálogos (bcb9705). Diseño y plan en `docs/superpowers/`. |
 | A-33 | Corregido | "Vista de indicadores" y "Comparar con otro proyecto". |
 | A-34 | Corregido | Una plantilla sin materiales se rechaza con mensaje. |
 | A-35 | Corregido | `accept=".xlsm,.xlsx"` y `type: 'array'`. |
