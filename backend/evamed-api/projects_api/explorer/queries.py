@@ -97,8 +97,8 @@ def production_items(materials=None):
     return items
 
 
-def _named_items(stage, rows, name_field, kind):
-    """Construcción and Uso: no reference unit in the data (R-04), so no unit and no level."""
+def _named_items(stage, rows, name_field, kind, unit=lambda row: None):
+    """Construcción and Uso: no impact level. Uso has no reference unit in the data (R-04)."""
     return [{
         'id': row.id,
         'stage': stage,
@@ -109,7 +109,7 @@ def _named_items(stage, rows, name_field, kind):
         'description': None,
         'source': derive.source_from_name(getattr(row, name_field)),
         'type': kind(getattr(row, name_field)),
-        'unit': None,
+        'unit': unit(row),
         'gwp': gwp,
         'impact_level': None,
     } for row, gwp in rows]
@@ -127,7 +127,8 @@ def construction_items():
     gwp = _first_gwp(models.SourceInformationData.objects, 'sourceInformarion_id_id')
     rows = [(row, gwp.get(row.id)) for row in methods.offerable(
         models.SourceInformation.objects.order_by('id'), methods.current_source_ids)]
-    return _named_items('construccion', rows, 'name_source_information', derive.machinery_type)
+    return _named_items('construccion', rows, 'name_source_information', derive.machinery_type,
+                        unit=lambda row: row.calculation_unit)
 
 
 def use_items():

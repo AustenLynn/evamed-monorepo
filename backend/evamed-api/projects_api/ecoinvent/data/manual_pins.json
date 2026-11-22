@@ -95,12 +95,12 @@
      "confidence": "high"},
 
     {"entity_name": "Banda transportadora (GLO)",
-     "dataset_id": null, "geography": "GLO", "activity_type": "TRANSFORMING_ACTIVITY",
-     "expected_activity": null, "confidence": "unresolved",
-     "notes": "Ambiguous: 'conveyor belt' (ds 1771, unit m, the infrastructure) vs 'transport, freight, conveyor belt' (ds 18142, unit metric ton*km, the operation). EVAmed uses this as a construction-stage machinery source with a quantity, which suits the operation, but the unit differs from the other machinery rows (hour). Needs a domain decision."},
+     "dataset_id": 19154, "geography": "GLO", "activity_type": "TRANSFORMING_ACTIVITY",
+     "expected_activity": "transport, freight, conveyor belt", "confidence": "high",
+     "notes": "Per metric ton*km moved, the operation (the belt itself, ds 1771, is infrastructure per m). The original EVAmed values (0.142 kg CO2 eq) are of this order. The equipment page asks for t·km for this source (SourceInformation.calculation_unit, migration 0093; owner decision 2026-11-22)."},
     {"entity_name": "Excavadora hidráulica (GLO)",
-     "dataset_id": null, "geography": "GLO", "activity_type": "TRANSFORMING_ACTIVITY",
-     "expected_activity": null, "confidence": "unresolved",
-     "notes": "Ambiguous: 'excavation, hydraulic digger' (ds 3302, unit m3, the operation) vs 'hydraulic digger' (ds 6515, unit unit, the machine itself). m3 of excavation does not match the hour-based machinery rows around it. Needs a domain decision."}
+     "dataset_id": 3302, "geography": "GLO", "activity_type": "MARKET_ACTIVITY",
+     "expected_activity": "market for excavation, hydraulic digger", "confidence": "high",
+     "notes": "Per m3 excavated; GLO exists only as the market (RoW 5223 is the transforming activity). The original EVAmed values (0.527 kg CO2 eq) match per m3, not per hour. The equipment page asks for m³ for this source (SourceInformation.calculation_unit, migration 0093; owner decision 2026-11-22)."}
   ]
 }

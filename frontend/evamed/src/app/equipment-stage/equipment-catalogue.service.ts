@@ -24,7 +24,7 @@ export class EquipmentCatalogueService {
         reduce((items, page) => [...items, ...page.results], [] as ExplorerItem[]),
         map(items => items.filter(item => item.name !== 'Mexicaniuh - CADIS').map(item => ({
           id: item.id, name: item.name, displayName: item.display_name || item.name,
-          database: item.source, region: item.region, type: item.type || 'Otros',
+          database: item.source, region: item.region, type: item.type || 'Otros', unit: item.unit || 'h',
         }))), shareReplay(1)
       );
     }

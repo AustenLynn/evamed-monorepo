@@ -1,5 +1,6 @@
 export type EquipmentStage = 'construction' | 'end-life';
-export interface EquipmentSource { id: number; name: string; type: string; displayName?: string; database?: string | null; region?: string | null; }
+/** `unit` is what a row's quantity means: 'h' (hours of operation), 'm³' (excavated) or 't·km' (moved). */
+export interface EquipmentSource { id: number; name: string; type: string; displayName?: string; database?: string | null; region?: string | null; unit?: string; }
 export interface EquipmentUnit { id: number; name: string; }
 export interface EquipmentRow {
   key: string; id: number; sectionId: number;

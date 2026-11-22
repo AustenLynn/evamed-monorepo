@@ -17,15 +17,15 @@ describe('EquipmentCatalogueService', () => {
   it('loads every metadata page, caches sources across stages, and preserves unknown metadata', () => {
     let result: any;
     service.load('construction').subscribe(data => result = data);
-    const page = (id: number, next: string | null) => ({count: 2, next, previous: null, facets: {}, results: [{id, name: id === 11 ? 'Excavadora hidráulica (GLO)' : 'Generador (MX)-Ecoinvent 3', display_name: id === 11 ? 'Excavadora hidráulica' : 'Generador', source: id === 11 ? null : 'ECOINVENT 3', region: id === 11 ? 'Global' : 'México', type: 'Otros'}]});
+    const page = (id: number, next: string | null) => ({count: 2, next, previous: null, facets: {}, results: [{id, name: id === 11 ? 'Excavadora hidráulica (GLO)' : 'Generador (MX)-Ecoinvent 3', display_name: id === 11 ? 'Excavadora hidráulica' : 'Generador', source: id === 11 ? null : 'ECOINVENT 3', region: id === 11 ? 'Global' : 'México', type: 'Otros', unit: id === 11 ? 'm³' : null}]});
     http.expectOne(request => request.url === env.api_explorer + 'construccion/' && request.params.get('page') === '1').flush(page(11, '?page=2'));
     expect(result).toBeUndefined();
     http.expectOne(request => request.url === env.api_explorer + 'construccion/' && request.params.get('page') === '2').flush(page(12, null));
     http.expectOne(env.api_energy_units).flush([]);
     http.expectOne(env.api_constructive_process).flush([]);
     expect(result.sources).toEqual([
-      {id: 11, name: 'Excavadora hidráulica (GLO)', displayName: 'Excavadora hidráulica', database: null, region: 'Global', type: 'Otros'},
-      {id: 12, name: 'Generador (MX)-Ecoinvent 3', displayName: 'Generador', database: 'ECOINVENT 3', region: 'México', type: 'Otros'},
+      {id: 11, name: 'Excavadora hidráulica (GLO)', displayName: 'Excavadora hidráulica', database: null, region: 'Global', type: 'Otros', unit: 'm³'},
+      {id: 12, name: 'Generador (MX)-Ecoinvent 3', displayName: 'Generador', database: 'ECOINVENT 3', region: 'México', type: 'Otros', unit: 'h'},
     ]);
     service.load('end-life').subscribe(data => expect(data.sources).toEqual(result.sources));
     http.expectOne(env.api_units).flush([]);

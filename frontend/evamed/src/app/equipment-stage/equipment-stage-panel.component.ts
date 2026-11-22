@@ -5,6 +5,8 @@ import { EquipmentRowsService } from './equipment-rows.service';
 import { EquipmentCatalogue, EquipmentDraft, EquipmentInput, EquipmentRow, EquipmentSource, EquipmentStage } from './equipment.models';
 import { EquipmentPickerService } from './equipment-picker.service';
 
+const UNIT_LABELS: Record<string, string> = {'h': 'horas de operación', 'm³': 'm³ excavados', 't·km': 'toneladas-kilómetro transportadas (t·km)'};
+
 @Component({selector: 'app-equipment-stage-panel', templateUrl: './equipment-stage-panel.component.html', styleUrls: ['./equipment-stage-panel.component.scss'], standalone: false, changeDetection: ChangeDetectionStrategy.OnPush})
 export class EquipmentStagePanelComponent implements OnChanges, OnDestroy {
   @Input() stage: EquipmentStage = 'construction';
@@ -54,9 +56,15 @@ export class EquipmentStagePanelComponent implements OnChanges, OnDestroy {
   }
   sourceInfo(id: number | null): EquipmentSource | undefined {return this.catalogue.sources.find(source => source.id === id);}
   sourceName(id: number | null): string {const source = this.sourceInfo(id); return source?.displayName || source?.name || 'Fuente no disponible';}
+  /** Short unit of a source's quantity; hours unless the source says otherwise. */
+  quantityUnit(sourceId: number | null): string {return this.sourceInfo(sourceId)?.unit || 'h';}
+  quantityUnitLabel(sourceId: number | null): string {const unit = this.quantityUnit(sourceId); return UNIT_LABELS[unit] ?? unit;}
+  private byHours(sourceId: number | null): boolean {return this.quantityUnit(sourceId) === 'h';}
+  /** Hours rows save the hours unit (audit A-12); a source in m³ or t·km carries its unit itself. */
+  private rowUnitId(sourceId: number | null): number | null {return this.byHours(sourceId) ? this.catalogue.hourUnitId ?? null : null;}
   unitName(id: number | null): string {return id === null ? 'Sin unidad' : this.catalogue.unitLabels.find(unit => unit.id === id)?.name ?? 'Unidad no disponible';}
   /** Saved in another unit before quantities became hours (audit A-12): the number is read as hours. */
-  otherUnit(row: EquipmentRow): boolean {return row.unitId !== null && row.unitId !== (this.catalogue.hourUnitId ?? null);}
+  otherUnit(row: EquipmentRow): boolean {return this.byHours(row.sourceId) && row.unitId !== null && row.unitId !== (this.catalogue.hourUnitId ?? null);}
   legacyUnit(row: EquipmentRow): boolean {return row.unitId !== null && !this.catalogue.units.some(unit => unit.id === row.unitId);}
   draftFor(row: EquipmentRow): EquipmentDraft {
     let draft = this.drafts.get(row.key);
@@ -75,7 +83,7 @@ export class EquipmentStagePanelComponent implements OnChanges, OnDestroy {
       return null;
     }
     if (!draft.sourceId || !Number.isFinite(draft.sourceId)) {this.error = 'Selecciona un equipo.'; return null;}
-    return {sourceId: draft.sourceId, quantity: typeof row.quantity === 'string' && draft.quantity === row.quantity ? row.quantity : quantity, unitId: this.catalogue.hourUnitId ?? null};
+    return {sourceId: draft.sourceId, quantity: typeof row.quantity === 'string' && draft.quantity === row.quantity ? row.quantity : quantity, unitId: this.rowUnitId(draft.sourceId)};
   }
   async save(row: EquipmentRow): Promise<void> {
     if (this.busy) return;
@@ -117,7 +125,7 @@ export class EquipmentStagePanelComponent implements OnChanges, OnDestroy {
   private addSources(stage: EquipmentStage, projectId: number, sectionId: number, identity: string, sources: EquipmentSource[]): Promise<boolean[]> {
     return Promise.all(sources.map(async source => {
       try {
-        const row = await this.track(this.api.create(stage, projectId, sectionId, {sourceId: source.id, quantity: 0, unitId: this.catalogue.hourUnitId ?? null}));
+        const row = await this.track(this.api.create(stage, projectId, sectionId, {sourceId: source.id, quantity: 0, unitId: this.rowUnitId(source.id)}));
         if (identity === this.identity) {this.rows = [...this.rows, row]; this.rawTotal += Number(row.quantity ?? 0); this.totalChange.emit(this.rawTotal); this.mark();}
         return true;
       } catch {return false;}

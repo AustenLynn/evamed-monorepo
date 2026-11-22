@@ -144,3 +144,46 @@ describe('Equipment cards', () => {
     const {api, el, click, quantity} = render('end-life');await click('[data-edit="73"]');quantity('-1');await click('.equipment-save');expect(api.update).not.toHaveBeenCalled();quantity('12,5');await click('.equipment-save');expect(api.update).not.toHaveBeenCalled();expect(el.querySelector('[role="alert"]')).toBeTruthy();
   });
 });
+
+// The excavator and the conveyor belt have ecoinvent factors per m³ excavated and per t·km moved.
+describe('Equipment measured in its own unit', () => {
+  const render = (rowUnitId: number | null = null) => {
+    const rows = [{key: 'construction:80', id: 80, sectionId: 1, sourceId: 11, quantity: '120', unitId: rowUnitId}],
+     api = {list: vi.fn(() => of({rows, rawTotal: 120})), update: vi.fn((_stage: unknown, row: any, value: any) => of({...row, ...value})), create: vi.fn((_stage: unknown, _project: unknown, sectionId: number, value: any) => of({key: 'construction:91', id: 91, sectionId, ...value})), remove: vi.fn(() => of(undefined))},
+     picker = {pickMany: vi.fn(async (context: any) => {const sources = [{id: 12, name: 'Banda transportadora', type: 'Otros', unit: 't·km'}]; await context.save(sources); return sources;}), choose: vi.fn()};
+    TestBed.configureTestingModule({imports: [EquipmentStageUiModule], providers: [
+      {provide: EquipmentCatalogueService, useValue: {load: () => of({sources: [
+        {id: 11, name: 'Excavadora hidráulica (GLO)', displayName: 'Excavadora hidráulica', type: 'Otros', unit: 'm³'},
+        {id: 12, name: 'Banda transportadora (GLO)', displayName: 'Banda transportadora', type: 'Otros', unit: 't·km'}],
+        units: [{id: 2, name: 'Hrs'}, {id: 3, name: 'MJ'}], unitLabels: [{id: 2, name: 'Hrs'}, {id: 3, name: 'MJ'}], hourUnitId: 2, constructionEnergyProcessId: 8})}},
+      {provide: EquipmentRowsService, useValue: api}, {provide: EquipmentPickerService, useValue: picker}]});
+    const fixture = TestBed.createComponent(EquipmentStagePanelComponent);
+    fixture.componentRef.setInput('projectId', 42); fixture.componentRef.setInput('sectionId', 1); fixture.componentRef.setInput('sectionName', 'Cimentación'); fixture.detectChanges();
+    const el: HTMLElement = fixture.nativeElement,
+     click = async (selector: string) => {el.querySelector<HTMLElement>(selector)!.click(); await new Promise(resolve => setTimeout(resolve)); fixture.detectChanges();};
+    return {el, api, click};
+  };
+
+  it('shows and asks for m³ instead of hours, and saves no hours unit', async () => {
+    const {el, api, click} = render();
+    expect(el.querySelector('[data-row="80"] .equipment-quantity')?.textContent).toContain('m³');
+    expect(el.querySelector('[data-row="80"] .equipment-quantity')?.textContent).not.toMatch(/\bh\b/);
+    expect(el.querySelector('[data-edit="80"]')?.getAttribute('aria-label')).toContain('120 m³');
+    await click('[data-edit="80"]');
+    expect(el.querySelector('.equipment-unit-fixed')?.textContent).toContain('m³ excavados');
+    await click('.equipment-save');
+    expect(api.update).toHaveBeenCalledWith('construction', expect.anything(), expect.objectContaining({unitId: null}));
+  });
+
+  it('does not warn that a row saved in another unit is calculated in hours', () => {
+    const {el} = render(3);
+    expect(el.querySelector('.equipment-unit-alert')).toBeNull();
+  });
+
+  it('adds a t·km source without the hours unit', async () => {
+    const {el, api, click} = render();
+    await click('.equipment-panel-header .equipment-primary');
+    expect(api.create).toHaveBeenCalledWith('construction', 42, 1, expect.objectContaining({sourceId: 12, unitId: null}));
+    expect(el.querySelector('[data-row="91"] .equipment-quantity')?.textContent).toContain('t·km');
+  });
+});
