@@ -243,4 +243,20 @@ esa función siga existiendo.
 calcula solo el consumo de energía de la deconstrucción (C1)", pero desde A2 también se calcula C3
 (liberación del carbono biogénico al final de la vida útil).
 
+### Autenticación
+
+Funciona: "ACCEDE AQUÍ" deshabilitado con el formulario vacío; credenciales incorrectas → aviso
+"Correo o contraseña no válidos" (dura 4 s); "Olvidaste tu contraseña" abre `/auth/recover-password`;
+"Regístrate aquí" abre el registro con reglas de contraseña visibles y "ENVIAR REGISTRO"
+deshabilitado hasta completar. No se envió ningún registro ni correo de recuperación.
+
+**A-23 · Media · "Aviso de privacidad" y "Términos y condiciones" no llevan a ningún lado.** En el
+pie de login, registro, recuperar contraseña, verificar correo, completar perfil y acción de correo
+son texto plano (`login.component.html:101-102` y equivalentes), no enlaces. El registro pide marcar
+"He leído y acepto los términos de referencia del manejo de la información" sin enlace a esos
+términos. Como el registro recaba nombre, correo, institución y país, la LFPDPPP pide que el aviso de
+privacidad esté disponible: conviene enlazar un documento real.
+
+**A-24 · Baja · Erratas en el registro.** "He **leido**" (leído), en `register.component.html:154`.
+
 ## Método y límites
