@@ -11,8 +11,7 @@ engañosa con salida; **Baja** = detalle visual, texto o deuda.
 ## Resumen (lo más importante primero)
 
 36 hallazgos numerados: 4 altos (A-09, A-11, A-13, A-16), 10 medios, 21 bajos y 1 descartado
-(A-18). Todos con evidencia en
-dev o en el código.
+(A-18). Todos con evidencia en dev o en el código.
 
 **Primero: números incorrectos o engañosos** (4 altos y 2 medios que también afectan resultados)
 1. **A-11** Los datos A2 de **ecoinvent son incoherentes**: GWP-total ≠ fósil + biogénico + uso de
@@ -94,7 +93,7 @@ la validación. Con Escape o clic fuera, `result` es `undefined` y la excepción
 **651 "AUDITORIA 2026-11-22 (borrar)"** con superficie construida **0**, superficie habitable
 **500** (mayor que la construida) y **0** niveles: `201 Created`. La superficie construida es el
 divisor de los resultados "por m²" (`comparar.component.ts`, `getAnalisisBarras`, y el cálculo del
-servidor), así que un 0 da divisiones entre cero (ver A-1x más abajo si se confirma). Además el
+servidor), así que un 0 da divisiones entre cero (confirmado en A-09). Además el
 alta usa `parseInt`, por lo que 120.75 m² se guarda como 120 sin aviso
 (`home-evamed.component.ts:1344-1346`).
 
