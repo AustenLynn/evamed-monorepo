@@ -39,7 +39,7 @@ export class GraficasTercerSeccionComponent implements OnInit, AfterViewInit {
   botones_elementos_constructivos = [];
   elementoContructivoSelecionado = " ";
   unidadImpactoAmiental = "";
-  private CicloColores = { FinDeVida: '#DEA961', Uso: '#8F5091', Construccion: '#148A93', Producción: '#4DBE89', General: '#707070', B4: '#8F5091', A4: '#148A93', A1: '#4DBE89', A2: '#319F6B', A3: '#368460', 'A1-A3': '#1DF28E'};
+  private CicloColores = { FinDeVida: '#DEA961', Uso: '#8F5091', Construccion: '#148A93', Producción: '#4DBE89', General: '#707070', B4: '#8F5091', A4: '#148A93', A1: '#6FCFA0', A2: '#319F6B', A3: '#368460', 'A1-A3': '#4DBE89'};
   private CicloColoresBW = {Producción: 'rgba(77,190,137,0.2)', Construccion: 'rgba(20,136,147,0.2)', Uso: 'rgba(143,80,145,0.2)', B4: 'rgba(143, 80, 145, 0.2)', A4: 'rgba(20, 138, 147, 0.2)', A1: 'rgba(77, 190, 137, 0.2)', A2: 'rgba(49, 159, 107, 0.2)', A3: 'rgba(54, 132, 96, 0.2)', 'A1-A3': 'rgba(29, 242, 142, 0.2)'};
   private CicloColoresRGB = {Uso: 'rgb(143, 80, 145)', Construccion: 'rgb(20, 138, 147)', Producción: 'rgb(77, 190, 137)', B4: 'rgb(143, 80, 145)', A4: 'rgb(20, 138, 147)', A1: 'rgb(77, 190, 137)', A2: 'rgb(49, 159, 107)', A3: 'rgb(54, 132, 96)', 'A1-A3': 'rgb(29, 242, 142)'};
   public displayedColumnsDispercion: string[] = ['no', 'material', 'porcentaje', 'numero'];

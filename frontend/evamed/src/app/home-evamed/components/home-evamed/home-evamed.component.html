@@ -22,6 +22,9 @@
         <div class="message-plus">Crea tu primer proyecto</div>
       </div>
     </div>
+    <p class="lista-vacia" *ngIf="countProjectList > 0 && projectsList.length === 0" role="status">
+      No tienes proyectos con este uso. Elige «Todos» para ver todos tus proyectos.
+    </p>
     <mat-card appearance="outlined" *ngFor="let project of projectsList; let i = index" class="card-project">
       <mat-card-header>
       <div class="header-tag">
@@ -191,7 +194,10 @@
             <div *ngIf="!auxDataProjectList[i].resultsLoaded" class="loading-results">
               <mat-spinner diameter="48"></mat-spinner>
             </div>
-            <div *ngIf="auxDataProjectList[i].resultsLoaded">
+            <p class="lista-vacia" *ngIf="auxDataProjectList[i].resultsLoaded && sinDatos(project.id)" role="status">
+              Este proyecto aún no tiene datos. Agrega materiales, construcción, uso o fin de vida para ver resultados.
+            </p>
+            <div *ngIf="auxDataProjectList[i].resultsLoaded && !sinDatos(project.id)">
             <app-excluded-notice [excluded]="auxDataProjectList[i].excluded"></app-excluded-notice>
             <div class="mat-tab-resultados" *ngIf="auxDataProjectList[i]['graficasCarbonoOResultados']['resultados']">
               <div>

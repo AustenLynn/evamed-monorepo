@@ -29,4 +29,16 @@ describe('UserService.getMe', () => {
 
     expect(isAdmin).toBe(true);
   });
+
+  it('shares one request between simultaneous callers and asks again afterwards (audit A-03)', () => {
+    const seen: boolean[] = [];
+    service.getMe().subscribe(me => seen.push(me.is_admin));
+    service.getMe().subscribe(me => seen.push(me.is_admin));
+    httpMock.expectOne(environment.api_me).flush({ is_admin: false });
+    expect(seen).toEqual([false, false]);
+
+    service.getMe().subscribe(me => seen.push(me.is_admin));
+    httpMock.expectOne(environment.api_me).flush({ is_admin: true });
+    expect(seen).toEqual([false, false, true]);
+  });
 });

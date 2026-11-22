@@ -36,6 +36,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 //import { formatNumber } from '@angular/common';
 
 import { muestraReferenciaCarbono, OPCIONES_CARBONO } from '../../climate';
+import { filtrarProyectos } from '../../project-filter';
 import { ExcludedNoticeComponent } from '../excluded-notice/excluded-notice.component';
 
 @Component({
@@ -94,6 +95,8 @@ export class HomeEvamedComponent implements OnInit {
   cargaDatosCalculo = false;
   //---
   auxDatosGraficaUso = [];
+  private tarjetasPorId = new Map<number, any>();
+  private usoPorId = new Map<number, any>();
   public doughnutChartType = 'doughnut';
   public pieChartOptions : ChartOptions = {
     responsive: false,
@@ -105,11 +108,14 @@ export class HomeEvamedComponent implements OnInit {
     elements: { arc: { borderWidth: 0 } },
     hover: { mode: null },
     plugins: {
+      // Readable labels, and none on slivers where they overlap (audit A-04).
       datalabels: {
         color: '#FFFFFF',
         font: {
-          size: 8,
+          size: 11,
+          weight: 'bold',
         },
+        display: context => Number(context.dataset.data[context.dataIndex]) >= 5,
       },
       tooltip: {
         enabled: false
@@ -333,8 +339,9 @@ export class HomeEvamedComponent implements OnInit {
 
     const [allProjects, potentialTypesList, ULList, listaBD] = await Promise.all([
       lastValueFrom(this.projectsService.getProjects()),
-      lastValueFrom(this.analisis.getPotentialTypes()),
-      lastValueFrom(this.analisis.getUsefulLife()),
+      // The same cached requests the constructor made, so each loads once (audit A-03).
+      lastValueFrom(this.catalogsService.getPotentialTypes()),
+      lastValueFrom(this.catalogsService.usefulLifeCatalog()),
       lastValueFrom(this.analisis.getDB()),
     ]);
 
@@ -342,7 +349,7 @@ export class HomeEvamedComponent implements OnInit {
     this.projectsList = allProjects
       .filter((item: any) => item.user_platform_id === userId)
       .reverse();
-    this.tempProjectsList = this.projectsList;
+    this.tempProjectsList = [...this.projectsList];
     this.countProjectList = this.projectsList.length;
 
     // Build usage pie chart data (depends on constructor-loaded ACR/ECD)
@@ -404,7 +411,20 @@ export class HomeEvamedComponent implements OnInit {
       DBList: auxBD,
       basesDatos: { ...auxbases },
     }));
+    // Card data is looked up by project id, so filtering or deleting never pairs a card with another project's data.
+    this.projectsList.forEach((project: any, index: number) => {
+      this.tarjetasPorId.set(project.id, this.auxDataProjectList[index]);
+      this.usoPorId.set(project.id, this.auxDatosGraficaUso[index]);
+    });
     this.cargaDatosCalculo = true;
+  }
+
+  /** Rebuilds the visible cards and their parallel data from the full list. */
+  private aplicarFiltro() {
+    this.projectsList = filtrarProyectos(this.tempProjectsList, this.filtroUsoSeleccionado);
+    this.auxDataProjectList = this.projectsList.map((p: any) => this.tarjetasPorId.get(p.id));
+    this.auxDatosGraficaUso = this.projectsList.map((p: any) => this.usoPorId.get(p.id));
+    this.countProjectList = this.tempProjectsList.length;
   }
 
   onTabChange(event: any, i: number) {
@@ -430,8 +450,8 @@ export class HomeEvamedComponent implements OnInit {
     const firstImpactoKey = this.calculos.ajustarNombre(firstImpacto['name_complete_potential_type']);
     const porcentajeSubepata = this.calculos.ValoresProcentajeSubeapa(calculosOperacionesDeFase, []);
 
-    this.auxDataProjectList[i] = {
-      ...this.auxDataProjectList[i],
+    // In place: the same object is shared with tarjetasPorId.
+    Object.assign(this.auxDataProjectList[i], {
       resultsLoaded: true,
       resultsLoading: false,
       excluded: result.excluded,
@@ -471,7 +491,7 @@ export class HomeEvamedComponent implements OnInit {
         this.DatosCalculos.ULList
       ),
       errorCalculos: result.error,
-    };
+    });
   }
 
   onlyUnique(value, index, self) {
@@ -663,6 +683,12 @@ export class HomeEvamedComponent implements OnInit {
     return this.serchEndLifeSection(projectId).length > 0;
   }
 
+  /** No stage has data yet: the results tab says so instead of empty charts (audit A-02). */
+  sinDatos(projectId: number): boolean {
+    return !this.hasProductionData(projectId) && !this.hasConstructionData(projectId) &&
+      !this.hasEndLifeData(projectId) && this.serchUseData(projectId).length === 0;
+  }
+
   DataPieUso(data) {
     const aux = [];
     let auxdata = [];
@@ -691,18 +717,9 @@ export class HomeEvamedComponent implements OnInit {
     return { labels: labels, datasets: auxdata };
   }
 
-  selectUse(id) {
-    this.projectsList = [];
-    this.tempProjectsList.map(item => {
-      if (item.use_id === id) {
-        this.projectsList.push(item);
-      }
-
-      if (id === 0) {
-        this.projectsList.push(item);
-      }
-    });
-    this.projectsList.reverse();
+  selectUse(id: number) {
+    this.filtroUsoSeleccionado = id;
+    this.aplicarFiltro();
   }
 
   openDialogCTOP() {
@@ -723,26 +740,12 @@ export class HomeEvamedComponent implements OnInit {
     });
   }
 
-  deleteProject(id) {
+  deleteProject(id: number) {
     this.projects.deleteProject(id).subscribe(() => {
-      this.users
-        .searchUser(localStorage.getItem('email-login'))
-        .subscribe(data => {
-          localStorage.setItem('email-id', data[0].id);
-          this.projectsList = [];
-          this.projects.getProjects().subscribe(data => {
-            data.map(item => {
-              if (
-                item.user_platform_id ===
-                parseInt(localStorage.getItem('email-id'), 10)
-              ) {
-                this.projectsList.push(item);
-              }
-              this.countProjectList = this.projectsList.length;
-            });
-            this.projectsList.reverse();
-          });
-        });
+      this.tempProjectsList = this.tempProjectsList.filter((p: any) => p.id !== id);
+      this.tarjetasPorId.delete(id);
+      this.usoPorId.delete(id);
+      this.aplicarFiltro();
     });
   }
 

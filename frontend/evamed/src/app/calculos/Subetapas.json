@@ -2,13 +2,13 @@
     {
         "nombre_subeatapa": "Extracción",
         "abreviacion": "A1",
-        "color": "#4DBE89",
+        "color": "#6FCFA0",
         "etapa":"Producción"
     },
     {
         "nombre_subeatapa": "Total Producción",
         "abreviacion": "A1-A3",
-        "color": "#1DF28E",
+        "color": "#4DBE89",
         "etapa":"Producción"
     },
     {
