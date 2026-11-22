@@ -17,7 +17,9 @@ engañosa con salida; **Baja** = detalle visual, texto o deuda.
    avisar** en la página donde se eligen: 10,000 kWh/año durante 50 años aportan 0 kg CO2 eq.
 3. **A-12 · Media · En Construcción la unidad del equipo no cambia el cálculo:** 10 Hrs = 10 kWh
    = 10 MJ = 10 "Sin unidad".
-4. **A-09 · Alta · "Por m²" muestra Infinity/NaN** cuando la superficie construida es 0, y el alta
+4. **A-16 · Alta · Al comparar proyectos en la tabla de Resultados, la fila Total sale con los
+   totales de otro proyecto** cuando el proyecto abierto tiene un id mayor que el comparado.
+5. **A-09 · Alta · "Por m²" muestra Infinity/NaN** cuando la superficie construida es 0, y el alta
    del proyecto lo permite (A-07).
 
 ## Hallazgos
