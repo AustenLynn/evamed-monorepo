@@ -35,7 +35,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 //import { formatNumber } from '@angular/common';
 
-import { isClimateChangeTotal } from '../../climate';
+import { muestraReferenciaCarbono, OPCIONES_CARBONO } from '../../climate';
 import { ExcludedNoticeComponent } from '../excluded-notice/excluded-notice.component';
 
 @Component({
@@ -81,10 +81,7 @@ export class HomeEvamedComponent implements OnInit {
   sections: any[] = [];
   dataMaterial: any;
   catologoImpactoAmbiental: any;
-  catologoOpcionesCarbono = [
-    'Promedio del sector vivienda',
-    'Vivienda sustentable',
-  ];
+  catologoOpcionesCarbono = OPCIONES_CARBONO;
   auxDataProjectList: any;
   ConstructiveSystemElements: any[] = [];
   ListDataEndLife: any[] = [];
@@ -453,14 +450,19 @@ export class HomeEvamedComponent implements OnInit {
         calculosOperacionesDeFase
       ),
       dataGraficaPie: this.cargaDataPie(porcentajeSubepata, firstImpactoKey, []),
-      valorCarbono: this.calculos
-        .determinaValorCarbono(
-          calculosOperacionesDeFase,
-          this.DatosCalculos.projectsList,
-          element.id,
-          this.DatosCalculos.ULList
-        )
-        .toExponential(2),
+      valorCarbono:
+        this.calculos
+          .determinaValorCarbono(
+            calculosOperacionesDeFase,
+            this.DatosCalculos.projectsList,
+            element.id,
+            this.DatosCalculos.ULList
+          )
+          ?.toExponential(2) ?? null,
+      mostrarOpcionCarbono: muestraReferenciaCarbono(
+        firstImpacto['name_complete_potential_type'],
+        this.DatosCalculos.projectsList.find(p => p.id === element.id)
+      ),
       flagsCarbono: this.calculos.buscarValosCarbono(
         calculosOperacionesDeFase,
         this.catologoOpcionesCarbono[0],
@@ -783,7 +785,8 @@ export class HomeEvamedComponent implements OnInit {
   selectImpactoAmbiental(impacto, indexRecivido) {
     this.auxDataProjectList[indexRecivido].impactoSelect =
       this.calculos.ajustarNombre(impacto);
-    if (isClimateChangeTotal(impacto)) {
+    const proyecto = this.DatosCalculos.projectsList.find(p => p.id === this.auxDataProjectList[indexRecivido].id);
+    if (muestraReferenciaCarbono(impacto, proyecto)) {
       this.auxDataProjectList[indexRecivido].mostrarOpcionCarbono = true;
       this.auxDataProjectList[indexRecivido].iconoCarbono = 'switch_left';
     } else {

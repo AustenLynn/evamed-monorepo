@@ -1,3 +1,4 @@
+import { valorReferenciaCarbono } from '../home-evamed/climate';
 import subetapasInfo from 'src/app/calculos/Subetapas.json';
 import escalasCarbono from 'src/app/calculos/EscalasCarbono.json';
 import { Injectable } from '@angular/core';
@@ -600,14 +601,10 @@ export class Calculos {
     Object.keys(data[impacto]["Uso"]).forEach(subetapa =>{
       res += data[impacto]["Uso"][subetapa]
     })
-    let superficieConstruida = 0;
-    superficieConstruida = projectL.filter( p => p['id'] == idP)[0]['living_area']
-    const auxidUse = projectL.filter( p => p['id'] == idP)[0]['useful_life_id'],
-      useLife = Number(UFL.filter( p => p['id'] == auxidUse)[0]['name_useful_life']);
-    //useful_life_id
-    res = res / superficieConstruida
-    res = res / useLife
-    return res;
+    const proyecto = projectL.find(p => p['id'] == idP),
+      vida = UFL.find(p => p['id'] == proyecto?.['useful_life_id']);
+    // Null instead of Infinity/NaN or a misleading 0 "A" (audit A-28).
+    return valorReferenciaCarbono(res, Number(proyecto?.['living_area']), Number(vida?.['name_useful_life']));
   }
 
   determinarDescripcionCarbono(opcion) {
@@ -623,6 +620,8 @@ export class Calculos {
   buscarValosCarbono(data, opcion, projectL, idP, UFL) {
     const aux = {},
       valorCarbono = this.determinaValorCarbono(data, projectL, idP, UFL);
+    // No value: no band is marked (null would compare as 0 and light up "A").
+    if (valorCarbono === null) return aux;
     this.catalogoEscalasCarbono.forEach(element => {
       if(element.nombre_caso === opcion) {
         for (let _i = 1; _i < 8; _i++) {

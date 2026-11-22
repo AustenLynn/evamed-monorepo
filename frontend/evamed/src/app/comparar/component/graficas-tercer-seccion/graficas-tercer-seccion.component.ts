@@ -1,3 +1,4 @@
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Component, OnInit, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
 import { ViewChild, EventEmitter, Input, Output } from '@angular/core';
 import { ChartOptions, ChartType } from 'chart.js';
@@ -17,7 +18,7 @@ import { CommonModule } from '@angular/common';
     styleUrls: ['./graficas-tercer-seccion.component.scss'],
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [BaseChartDirective, MatTableModule, MatIconModule, MatButtonToggleModule,
-        MatButtonModule, MatCardModule, ScrollingModule, CommonModule]
+        MatButtonModule, MatCardModule, ScrollingModule, CommonModule, MatTooltipModule]
 })
 
 export class GraficasTercerSeccionComponent implements OnInit, AfterViewInit {

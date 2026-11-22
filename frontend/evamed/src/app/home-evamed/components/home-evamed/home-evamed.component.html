@@ -282,7 +282,7 @@
                        <mat-button-toggle (click)="cambioGrafica(i,'Pie')"><mat-icon>pie_chart</mat-icon></mat-button-toggle>
                        <mat-button-toggle (click)="cambioGrafica(i,'Bar')"><mat-icon>bar_chart</mat-icon></mat-button-toggle>
                      </mat-button-toggle-group>
-                  <button mat-button>Exportar</button>
+                  <span matTooltip="Próximamente"><button mat-button disabled>Exportar</button></span>
                 </div>
                 <div *ngIf="auxDataProjectList[i].TipoGraficaActiva['Pie']">
                   <div class="canvas-container seccionTres">
@@ -313,7 +313,7 @@
                 </p>
               </div>
               <div>
-                <button mat-stroked-button class="Detalle reporte">Generar reporte</button>
+                <span matTooltip="Próximamente"><button mat-stroked-button class="Detalle reporte" disabled>Generar reporte</button></span>
                 <p>Dispersión de impactos por subetapa</p>
                 <ul class="mostrar-subetapas">
                   <li *ngFor = "let subetapa of auxDataProjectList[i].subetasMostrada">
@@ -364,6 +364,9 @@
                        height="305px">
                     </canvas>
                     <p>KgCO<sub>2</sub> / m<sup>2</sup>a</p>
+                    <p class="text-error" *ngIf="auxDataProjectList[i].valorCarbono === null">
+                      Sin consumo de energía en Uso o sin superficie habitable: no hay valor que comparar.
+                    </p>
                 </div>
                 <div>
                   <div class="fle">
