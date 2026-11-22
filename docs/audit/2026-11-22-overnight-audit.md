@@ -283,4 +283,22 @@ Funciona: renombrar (proyecto 651 → "AUDITORIA 2026-11-22 (borrar) renombrado"
 > Datos de prueba creados en la cuenta del dueño: proyecto **651** "AUDITORIA 2026-11-22 (borrar)
 > renombrado" y su copia **652** "... - Copy". Se pueden borrar desde "⋮ → Eliminar".
 
+### Cálculos verificados (proyecto 651)
+
+Navegador (Resultados) y servidor (`/projects/651/results/`, que alimenta la barra y las tarjetas)
+**coinciden en los 13 indicadores**, y los números cuadran a mano:
+- **Producción:** 1000 kg de cemento × 1.38 + 2 Ton de Bemezcla × 1190 = 3760.05.
+- **A4, transporte:** 1 t × 100 km (camión > 32 t) = 6.58 kg CO2 eq, unos 0.066 kg/t·km, plausible.
+- **A5, construcción:** generador, 10 h = 27.44.
+- **B4, reemplazos:** cemento con vida de 25 años en un proyecto de 50 → 1 reemplazo = 1380 + su
+  transporte 6.58 = 1386.63, como pide el diseño A2.
+- **Total:** 5180.71 en la barra = 5.18e+3 en Resultados.
+
+**A-26 · Baja · Abrir una etapa sin proyecto activo deja la página vacía.** Después de cerrar y
+volver a iniciar sesión, al abrir `/materials-stage/update` directamente (un marcador, o recargar
+con `localStorage` limpio) se pide `GET /api-projects/projects/null/` → 404. La página queda sin
+nombre de proyecto, sin sistemas, con la barra en 0 y sin ningún mensaje. Debería mandar a la
+página de inicio o pedir elegir un proyecto. Probablemente lo mismo pasa en las demás etapas
+`*/update`, porque leen `idProyectoConstrucción` de `localStorage`.
+
 ## Método y límites
