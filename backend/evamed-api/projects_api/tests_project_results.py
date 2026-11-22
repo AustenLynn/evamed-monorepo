@@ -426,3 +426,95 @@ class A2ResultsTests(APITestCase):
         models.MaterialSchemeProject.objects.create(
             material_id=material, project_id=self.project, quantity=2, distance_init=0, distance_end=0)
         self.assertEqual(self._results()['excluded']['no_mass'], [])
+
+
+# A-32 plan, Task 5: ?detalle=1 adds the per-element breakdown that Resultados section 2 draws.
+ELEMENT_STAGES = (('Producción', None), ('Construccion', 'A4'), ('Construccion', 'A5'), ('Uso', 'B4'),
+                  ('FinDeVida', 'C1'), ('FinDeVida', 'C3'))
+
+
+def _element_stage_total(datos_indicador):
+    total = 0
+    for stage, sub in ELEMENT_STAGES:
+        values = datos_indicador[stage]
+        total += sum(values.values()) if sub is None else values[sub]
+    return total
+
+
+@override_settings(EVAMED_IMPACT_METHOD='EN15804+A2')
+class DetailBreakdownTests(APITestCase):
+    setUp = A2ResultsTests.setUp
+    _a2_material = A2ResultsTests._a2_material
+    _old_material = A2ResultsTests._old_material
+    _truck = A2ResultsTests._truck
+
+    def _results(self, detalle=True):
+        url = RESULTS_URL.format(self.project.id) + ('?detalle=1' if detalle else '')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        return response.json()
+
+    def _full_project(self, types):
+        """Two elements with materials (transport, a replacement, biogenic uptake), an A5 machine and a C1 one."""
+        self._truck()
+        walls, floors = models.Section.objects.create(name_section='Muros'), models.Section.objects.create(name_section='Pisos')
+        cement = self._a2_material('Cemento', values={'GWP-biogenic': -2}, mass=1)
+        steel = self._a2_material('Acero', mass=1)
+        models.MaterialSchemeProject.objects.create(material_id=cement, project_id=self.project, quantity=3,
+                                                    section_id=walls, distance_end=10, replaces=1)
+        models.MaterialSchemeProject.objects.create(material_id=steel, project_id=self.project, quantity=2,
+                                                    section_id=floors, distance_end=5)
+        machine = models.SourceInformation.objects.create(name_source_information='Generador')
+        for ptype in types:
+            models.SourceInformationData.objects.create(sourceInformarion_id=machine, potential_type_id=ptype, value=3)
+        models.ConstructiveSystemElement.objects.create(project_id=self.project, section_id=walls,
+                                                        source_information_id=machine, quantity=4)
+        models.ElectricityConsumptionDeconstructiveProcess.objects.create(
+            project_id=self.project, section_id=floors, source_information_id=machine, quantity=2)
+        return walls, floors
+
+    def test_without_detalle_the_response_is_unchanged(self):
+        self.assertEqual(set(self._results(detalle=False)), {'project_id', 'datos', 'error', 'excluded', 'carbono'})
+
+    def test_per_element_sums_to_the_stage_totals_under_a2(self):
+        self._full_project(self.types.values())
+        body = self._results()
+        for name, datos_indicador in body['datos'].items():
+            self.assertAlmostEqual(sum(body['por_elemento'][name].values()), _element_stage_total(datos_indicador),
+                                   places=9, msg=name)
+        self.assertEqual(len(body['por_elemento'][GWP_BIOGENIC_NAME]), 2)
+
+    @override_settings(EVAMED_IMPACT_METHOD='CML')
+    def test_per_element_sums_to_the_stage_totals_under_cml(self):
+        cml = models.PotentialType.objects.filter(method='CML')
+        self._full_project(list(cml) + list(self.types.values()))
+        cement = models.Material.objects.get(name_material='Cemento')
+        for ptype in cml:
+            models.MaterialSchemeData.objects.create(material_id=cement, standard_id=self.std_agg,
+                                                     potential_type_id=ptype, value=2)
+        body = self._results()
+        self.assertTrue(body['por_elemento'])
+        for name, datos_indicador in body['datos'].items():
+            self.assertAlmostEqual(sum(body['por_elemento'][name].values()), _element_stage_total(datos_indicador),
+                                   places=9, msg=name)
+
+    def test_per_element_leaves_out_switched_off_systems_and_excluded_materials(self):
+        walls = models.Section.objects.create(name_section='Muros')
+        off = models.Section.objects.create(name_section='Techos')
+        kept = self._a2_material('Bueno', mass=1)
+        models.MaterialSchemeProject.objects.create(material_id=kept, project_id=self.project, quantity=1,
+                                                    section_id=walls, construction_system='A')
+        models.MaterialSchemeProject.objects.create(material_id=kept, project_id=self.project, quantity=1,
+                                                    section_id=off, construction_system='B')
+        models.MaterialStageSystemSelection.objects.create(project_id=self.project, section_id=off,
+                                                           construction_system='B', is_selected=False)
+        models.MaterialSchemeProject.objects.create(material_id=self._old_material(), project_id=self.project,
+                                                    quantity=5, section_id=off)
+        por_elemento = self._results()['por_elemento']
+        for name, by_element in por_elemento.items():
+            self.assertEqual(by_element.get(str(off.id), 0), 0, name)
+            self.assertEqual(by_element[str(walls.id)], 1, name)
+
+    def test_project_with_no_rows_has_empty_breakdowns(self):
+        body = self._results()
+        self.assertEqual(body['por_elemento'], {name: {} for name in body['datos']})
