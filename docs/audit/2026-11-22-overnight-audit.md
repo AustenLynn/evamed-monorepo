@@ -206,4 +206,41 @@ celda. No dice qué proyecto es cada número y la alineación depende del ancho 
 disparó por script haciendo clic a través del panel. Con Atrás y Adelante del navegador el panel sí
 se cierra (comprobado), así que un usuario real no llega a este estado.
 
+### Permisos y páginas de administración
+
+**Sin hallazgo · Aislamiento entre usuarios (lectura).** Con la cuenta de prueba (no
+administradora), las listas `/material-scheme-project/`, `/projects/`,
+`/constructive-system-element/` y `/annual-consumption-required/` solo devuelven sus propios
+proyectos (646–651). Pedir proyectos ajenos por id (1, 2, 100, 500, 640, 645) da 404 en
+`/projects/<id>/`, `/results/` y `/usage/`; un `PATCH` a un proyecto ajeno da 404. La escritura
+cruzada (crear una fila en un proyecto ajeno) **no se probó en vivo** porque el permiso fue denegado
+durante la sesión. En el código, `access.py:74-75` y `perform_create` (`access.py:147`) validan que
+el proyecto sea visible para el usuario.
+
+**A-19 · Media · Las páginas de administración se abren para cualquier usuario.** `AdminGuard`
+(`admin.guard.ts`) solo exige sesión iniciada y correo verificado; el nombre engaña. La cuenta de
+prueba (`is_admin: false`) abre `/admin-materials` y ve el catálogo completo con un botón
+**"Eliminar"** en cada material y "Agregar material". No se presionó. Las escrituras las protege el
+servidor (`CatalogueViewSet` → `IsAdminOrReadOnly`), así que se espera un 403, pero la interfaz
+ofrece acciones destructivas que van a fallar, y todo depende de que el servidor nunca relaje ese
+permiso. Lo mismo para `/admin`, `/admin-units`, `/admin-db-materials`, `/admin-potential`,
+`/admin-transports`, `/admin-machinery`, `/admin-energy` y `/admin-others` (mismas rutas en
+`app-routing.module.ts`). Arreglo: un guard que revise `me.is_admin` para las rutas `admin*` y
+renombrar el actual (`AuthGuard`).
+
+### Páginas informativas
+
+**A-20 · Media · "Manual de usuario" es la página de ejemplo de Angular.** `/user-manual` muestra
+solo **"user-manual works!"**. El enlace está en el encabezado de todas las páginas.
+
+**A-21 · Baja · "Acerca de" desactualizada.** Presenta MEXICANIUH como base de datos de la
+herramienta (bajo A2 ya no se ofrece) y no menciona ecoinvent, ECO Platform ni EN 15804+A2, que hoy
+son la base de los resultados. Erratas: "¿**Quienes** somos?" (Quiénes) y "Level **lof**
+Development". Menciona comparar la huella de uso contra el promedio del RUV: hay que confirmar que
+esa función siga existiendo.
+
+**A-22 · Baja · Texto de Fin de vida en el Explorer.** `/explorador/fin-de-vida` dice que "EVAMED
+calcula solo el consumo de energía de la deconstrucción (C1)", pero desde A2 también se calcula C3
+(liberación del carbono biogénico al final de la vida útil).
+
 ## Método y límites
