@@ -9,9 +9,9 @@
   <div class="equipment-view"><span>{{ visibleRows.length }} {{ visibleRows.length === 1 ? 'equipo agregado' : 'equipos agregados' }}</span><mat-button-toggle-group [value]="view" (change)="view = $event.value" aria-label="Vista de equipos"><mat-button-toggle value="cards">Tarjetas</mat-button-toggle><mat-button-toggle value="list">Lista</mat-button-toggle></mat-button-toggle-group></div>
   <div class="equipment-grid" [class.equipment-grid-list]="view === 'list'">
     <article evSurface *ngFor="let row of visibleRows" class="equipment-card" [attr.data-row]="row.id" [class.equipment-card-expanded]="expanded === row.key">
-      <button class="equipment-summary" type="button" [attr.data-edit]="row.id" [attr.aria-label]="(expanded === row.key ? 'Cerrar edición: ' : 'Editar equipo: ') + sourceName(row.sourceId) + ', ' + (row.quantity === null ? 'Sin cantidad' : (row.quantity | quantityDisplay)) + ' h'" [disabled]="busy" [attr.aria-expanded]="expanded === row.key" [attr.aria-controls]="'equipment-editor-' + row.id" (click)="edit(row)">
+      <button class="equipment-summary" type="button" [attr.data-edit]="row.id" [attr.aria-label]="(expanded === row.key ? 'Cerrar edición: ' : 'Editar equipo: ') + sourceName(row.sourceId) + ', ' + (row.quantity === null ? 'Sin cantidad' : (row.quantity | quantityDisplay)) + ' ' + quantityUnit(row.sourceId)" [disabled]="busy" [attr.aria-expanded]="expanded === row.key" [attr.aria-controls]="'equipment-editor-' + row.id" (click)="edit(row)">
         <h3 evHeading="section" [title]="sourceInfo(row.sourceId)?.name || sourceName(row.sourceId)">{{ sourceName(row.sourceId) }}</h3>
-        <p class="equipment-quantity">{{ row.quantity | quantityDisplay }} <span>h</span><mat-icon *ngIf="otherUnit(row)" class="equipment-unit-alert" [attr.aria-label]="'Capturado en ' + unitName(row.unitId) + '; se calcula en horas'" title="Capturado en otra unidad; se calcula en horas">warning</mat-icon></p>
+        <p class="equipment-quantity">{{ row.quantity | quantityDisplay }} <span>{{ quantityUnit(row.sourceId) }}</span><mat-icon *ngIf="otherUnit(row)" class="equipment-unit-alert" [attr.aria-label]="'Capturado en ' + unitName(row.unitId) + '; se calcula en horas'" title="Capturado en otra unidad; se calcula en horas">warning</mat-icon></p>
         <span class="equipment-edit-label"><span class="equipment-edit-copy">{{ expanded === row.key ? 'Cerrar edición' : 'Editar equipo' }}</span> <mat-icon>{{ expanded === row.key ? 'expand_less' : 'expand_more' }}</mat-icon></span>
       </button>
       <form evForm *ngIf="expanded === row.key" [id]="'equipment-editor-' + row.id" class="equipment-editor" (ngSubmit)="save(row)">
@@ -19,7 +19,7 @@
           <p class="equipment-draft-name">{{ sourceName(draft.sourceId) }}</p>
           <button evAction="tertiary" mat-button type="button" class="equipment-replace" [disabled]="busy" (click)="replace(row)">Cambiar equipo</button>
           <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Cantidad</mat-label><input matInput type="text" inputmode="decimal" name="quantity" [(ngModel)]="draft.quantity" [disabled]="busy"></mat-form-field>
-          <p class="equipment-unit-fixed">Unidad: <strong>horas de operación</strong></p>
+          <p class="equipment-unit-fixed">Unidad: <strong>{{ quantityUnitLabel(draft.sourceId) }}</strong></p>
           <p class="equipment-unit-warning" *ngIf="otherUnit(row)" role="status">Se capturó en {{ unitName(row.unitId) }}, pero el cálculo usa horas de operación. Revisa la cantidad y guarda.</p>
           <div evActions class="equipment-actions"><button evAction="secondary" mat-stroked-button type="button" class="equipment-cancel" [disabled]="busy" (click)="cancel(row)">Cancelar</button><button evAction="primary" mat-flat-button type="submit" class="equipment-primary equipment-save" [disabled]="busy">{{ busy ? 'Guardando…' : 'Guardar cambios' }}</button></div>
         </ng-container>

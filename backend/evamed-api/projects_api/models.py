@@ -233,6 +233,9 @@ class BulkUnit(models.Model):
 class SourceInformation(EcoinventPinnedModel):
     """Construction source information model"""
     name_source_information = models.CharField(max_length=255)
+    # What a row's quantity means: hours of operation for machinery, m³ excavated or t·km moved for
+    # equipment whose ecoinvent factor is per that unit. Rows multiply quantity × factor as is.
+    calculation_unit = models.CharField(max_length=16, default='h')
 
     def __str__(self):
         """Return string representation of name source information"""

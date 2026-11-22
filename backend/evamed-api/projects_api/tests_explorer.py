@@ -151,10 +151,11 @@ class ExplorerApiTests(APITestCase):
         machinery = [
             ('Generador de energía eléctrica a base de Diesel, potencia menor a 18.64 kW (GLO)-Ecoinvent 3', '0.0012'),
             ('Maquinaria de carga pesada a base de Diesel, potencia mayor a 74.57 kW (GLO)-Ecoinvent 3', '0.0409'),
-            ('Excavadora hidráulica (GLO)', '0.527'),
+            ('Excavadora hidráulica (GLO)', '0.527', 'm³'),
         ]
-        for name, value in machinery:
-            source = models.SourceInformation.objects.create(name_source_information=name)
+        for name, value, *unit in machinery:
+            source = models.SourceInformation.objects.create(
+                name_source_information=name, **({'calculation_unit': unit[0]} if unit else {}))
             models.SourceInformationData.objects.create(
                 sourceInformarion_id=source, potential_type_id=cls.gwp, unit_id=cls.co2, value=Decimal(value))
         energy = [
@@ -311,8 +312,10 @@ class ExplorerApiTests(APITestCase):
         self.assertEqual((excavator['display_name'], excavator['region']), ('Excavadora hidráulica', 'Global'))
         self.assertEqual(excavator['type'], 'Otros')
         self.assertIsNone(excavator['source'])
-        # No reference unit in the data (R-04): no unit and no badge.
-        self.assertIsNone(excavator['unit'])
+        # The unit the quantity is calculated in: m³ excavated here, hours of operation for the rest.
+        self.assertEqual(excavator['unit'], 'm³')
+        generator = self.by_name(body)['Generador de energía eléctrica a base de Diesel, potencia menor a 18.64 kW (GLO)-Ecoinvent 3']
+        self.assertEqual(generator['unit'], 'h')
         self.assertIsNone(excavator['impact_level'])
         self.assertEqual(self.get('construccion', type='Generador')['count'], 1)
 
