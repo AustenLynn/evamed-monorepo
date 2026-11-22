@@ -1,3 +1,4 @@
+import { requiresProject } from './core/services/active-project/requires-project.guard';
 import { referenceRoutes } from './shared/ui/reference/reference.routes';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule, NoPreloading } from '@angular/router';
@@ -72,7 +73,7 @@ export const routes: Routes = [
       },
       {
         path: 'resultados',
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard, requiresProject('results')],
         loadChildren: () =>
           import('./comparar/comparar.module').then(m => m.CompararModule),
       },

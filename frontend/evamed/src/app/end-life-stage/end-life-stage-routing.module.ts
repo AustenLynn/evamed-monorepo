@@ -1,3 +1,4 @@
+import { requiresProject } from '../core/services/active-project/requires-project.guard';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { EndLifeStageComponent } from './components/end-life-stage/end-life-stage.component';
@@ -11,6 +12,7 @@ const routes: Routes = [
   },
   {
     path: 'update',
+    canActivate: [requiresProject('stage')],
     component: EndLifeUpdateComponent
   }
 ];

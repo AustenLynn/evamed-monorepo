@@ -11,11 +11,11 @@ describe('Windows closed without an answer', () => {
   it('renaming a project changes nothing', () => {
     const component: any = Object.create(HomeEvamedComponent.prototype);
     component.dialog = { open: vi.fn(() => ({ afterClosed: () => of(undefined) })) };
-    component.projectsService = { getProjectById: vi.fn(), updateProyect: vi.fn() };
+    component.projectsService = { renameProject: vi.fn() };
 
     component.renameProject(7);
 
-    expect(component.projectsService.getProjectById).not.toHaveBeenCalled();
+    expect(component.projectsService.renameProject).not.toHaveBeenCalled();
   });
 
   it('adding a building element adds nothing', () => {

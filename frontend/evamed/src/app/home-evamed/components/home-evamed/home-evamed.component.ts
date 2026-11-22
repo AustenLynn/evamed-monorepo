@@ -750,7 +750,7 @@ export class HomeEvamedComponent implements OnInit {
   }
 
   renameProject(id: number) {
-    const actual = this.projectsList.find(p => p.id === id)?.name_project ?? '',
+    const actual = (this.projectsList ?? []).find(p => p.id === id)?.name_project ?? '',
       dialogRef = this.dialog.open(ChangeNameProjectComponent, {
         width: '680px',
         data: { nameProject: actual },
@@ -775,7 +775,7 @@ export class HomeEvamedComponent implements OnInit {
   }
 
   duplicateProject(projectId: number) {
-    const nombre = this.projectsList.find(p => p.id === projectId)?.name_project ?? 'este proyecto';
+    const nombre = (this.projectsList ?? []).find(p => p.id === projectId)?.name_project ?? 'este proyecto';
     if (!confirm(`¿Duplicar «${nombre}» con todos sus datos?`)) {
       return;
     }
