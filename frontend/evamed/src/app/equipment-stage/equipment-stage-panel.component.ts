@@ -55,6 +55,8 @@ export class EquipmentStagePanelComponent implements OnChanges, OnDestroy {
   sourceInfo(id: number | null): EquipmentSource | undefined {return this.catalogue.sources.find(source => source.id === id);}
   sourceName(id: number | null): string {const source = this.sourceInfo(id); return source?.displayName || source?.name || 'Fuente no disponible';}
   unitName(id: number | null): string {return id === null ? 'Sin unidad' : this.catalogue.unitLabels.find(unit => unit.id === id)?.name ?? 'Unidad no disponible';}
+  /** Saved in another unit before quantities became hours (audit A-12): the number is read as hours. */
+  otherUnit(row: EquipmentRow): boolean {return row.unitId !== null && row.unitId !== (this.catalogue.hourUnitId ?? null);}
   legacyUnit(row: EquipmentRow): boolean {return row.unitId !== null && !this.catalogue.units.some(unit => unit.id === row.unitId);}
   draftFor(row: EquipmentRow): EquipmentDraft {
     let draft = this.drafts.get(row.key);
@@ -73,10 +75,7 @@ export class EquipmentStagePanelComponent implements OnChanges, OnDestroy {
       return null;
     }
     if (!draft.sourceId || !Number.isFinite(draft.sourceId)) {this.error = 'Selecciona un equipo.'; return null;}
-    if (draft.unitId !== null && draft.unitId !== row.unitId && !this.catalogue.units.some(unit => unit.id === draft.unitId)) {
-      this.error = 'Selecciona una unidad disponible.'; return null;
-    }
-    return {sourceId: draft.sourceId, quantity: typeof row.quantity === 'string' && draft.quantity === row.quantity ? row.quantity : quantity, unitId: draft.unitId};
+    return {sourceId: draft.sourceId, quantity: typeof row.quantity === 'string' && draft.quantity === row.quantity ? row.quantity : quantity, unitId: this.catalogue.hourUnitId ?? null};
   }
   async save(row: EquipmentRow): Promise<void> {
     if (this.busy) return;
@@ -118,7 +117,7 @@ export class EquipmentStagePanelComponent implements OnChanges, OnDestroy {
   private addSources(stage: EquipmentStage, projectId: number, sectionId: number, identity: string, sources: EquipmentSource[]): Promise<boolean[]> {
     return Promise.all(sources.map(async source => {
       try {
-        const row = await this.track(this.api.create(stage, projectId, sectionId, {sourceId: source.id, quantity: 0, unitId: null}));
+        const row = await this.track(this.api.create(stage, projectId, sectionId, {sourceId: source.id, quantity: 0, unitId: this.catalogue.hourUnitId ?? null}));
         if (identity === this.identity) {this.rows = [...this.rows, row]; this.rawTotal += Number(row.quantity ?? 0); this.totalChange.emit(this.rawTotal); this.mark();}
         return true;
       } catch {return false;}

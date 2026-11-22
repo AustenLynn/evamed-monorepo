@@ -8,7 +8,8 @@ import { ExplorerService } from '../explorer/services/explorer.service';
 import { EquipmentCatalogue, EquipmentSource, EquipmentStage, EquipmentUnit } from './equipment.models';
 
 export const CONSTRUCTION_ENERGY_PROCESS = 'Energía consumida durante el proceso constructivo';
-const normalized = (name: string) => name.trim().toLocaleLowerCase();
+const normalized = (name: string) => name.trim().toLocaleLowerCase(),
+  HOURS = new Set(['h', 'hr', 'hrs', 'hora', 'horas']);
 
 @Injectable({ providedIn: 'root' })
 export class EquipmentCatalogueService {
@@ -43,6 +44,7 @@ export class EquipmentCatalogueService {
       return {
         sources,
         units, unitLabels: labels ?? energy,
+        hourUnitId: units.find(unit => HOURS.has(normalized(unit.name)))?.id ?? null,
         constructionEnergyProcessId: processes.find(row => row.name_constructive_process === CONSTRUCTION_ENERGY_PROCESS)?.id ?? null,
       };
     }));

@@ -32,6 +32,6 @@
 </div>
 <app-ev-selection-tray evMenuFooter *ngIf="context.mode === 'add'" class="equipment-tray"
   [items]="selectionItems" [label]="selected.size + ' equipos seleccionados'" [disabled]="saving" (remove)="removeSelection($event)">
-  <button mat-flat-button evAction="primary" type="button" class="equipment-add" [disabled]="!selected.size || saving" (click)="submit()">{{ saving ? 'Agregando…' : 'Agregar ' + selected.size + ' equipos' }}</button>
+  <button mat-flat-button evAction="primary" type="button" class="equipment-add" [disabled]="!selected.size || saving" (click)="submit()">{{ saving ? 'Agregando…' : 'Agregar ' + selected.size + (selected.size === 1 ? ' equipo' : ' equipos') }}</button>
 </app-ev-selection-tray>
 </app-ev-menu-shell>

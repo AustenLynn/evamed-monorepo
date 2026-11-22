@@ -7,13 +7,13 @@ import { EquipmentRowsService } from './equipment-rows.service';
 import { EquipmentPickerService } from './equipment-picker.service';
 
 describe('Equipment cards', () => {
-  const render = (stage = 'construction', initialQuantity = '12.3456789') => {
-    const rows = [{key: 'construction:73', id: 73, sectionId: 1, sourceId: 11, quantity: initialQuantity, unitId: null}, {key: 'construction:74', id: 74, sectionId: 1, sourceId: 11, quantity: 8, unitId: 2}, {key: 'construction:75', id: 75, sectionId: 2, sourceId: 11, quantity: 3, unitId: 2}];
+  const render = (stage = 'construction', initialQuantity = '12.3456789', hourUnitId?: number, unit74 = 2) => {
+    const rows = [{key: 'construction:73', id: 73, sectionId: 1, sourceId: 11, quantity: initialQuantity, unitId: null}, {key: 'construction:74', id: 74, sectionId: 1, sourceId: 11, quantity: 8, unitId: unit74}, {key: 'construction:75', id: 75, sectionId: 2, sourceId: 11, quantity: 3, unitId: 2}];
     let nextId = 90;
     const picker = {pickMany: vi.fn(async (context: any) => {const sources = [{id: 11, name: 'Excavadora hidráulica', type: 'Otros'}], saved = await context.save(sources); return sources.filter((_s, i) => saved[i]);}), choose: vi.fn(async () => ({id: 2, name: 'Generador diésel', type: 'Generador'}))},
      api = {list: vi.fn(() => of({rows, rawTotal: 23.3456789})), update: vi.fn((_stage: unknown, row: any, value: any) => of({...row, ...value})), create: vi.fn((_stage: unknown, _project:unknown, sectionId:number, value:any) => of({key: 'construction:' + nextId, id: nextId++, sectionId, ...value})), remove: vi.fn(() => of(undefined))};
     TestBed.configureTestingModule({imports: [EquipmentStageUiModule], providers: [
-      {provide: EquipmentCatalogueService, useValue: {load: ()=>of({sources: [{id: 11, name: 'Excavadora hidráulica (GLO)-Ecoinvent 3', displayName: 'Excavadora hidráulica', database: 'ECOINVENT 3', region: 'Global', type: 'Otros'}, {id: 2, name: 'Generador diésel', type: 'Generador'}], units: [{id: 2, name: 'Hrs'}], unitLabels: [{id: 2, name: 'Hrs'}], constructionEnergyProcessId: 8})}},
+      {provide: EquipmentCatalogueService, useValue: {load: ()=>of({sources: [{id: 11, name: 'Excavadora hidráulica (GLO)-Ecoinvent 3', displayName: 'Excavadora hidráulica', database: 'ECOINVENT 3', region: 'Global', type: 'Otros'}, {id: 2, name: 'Generador diésel', type: 'Generador'}], units: [{id: 2, name: 'Hrs'}, {id: 3, name: 'MJ'}], unitLabels: [{id: 2, name: 'Hrs'}, {id: 3, name: 'MJ'}], hourUnitId, constructionEnergyProcessId: 8})}},
       {provide: EquipmentRowsService, useValue: api}, {provide: EquipmentPickerService, useValue: picker}
     ]});
     const fixture = TestBed.createComponent(EquipmentStagePanelComponent); fixture.componentRef.setInput('stage', stage);fixture.componentRef.setInput('projectId', 42);fixture.componentRef.setInput('sectionId', 1);fixture.componentRef.setInput('sectionName', 'Cimentación');fixture.detectChanges();
@@ -57,9 +57,26 @@ describe('Equipment cards', () => {
   });
   it('expands inside only the selected card and preserves distinct rows of the same source', async ()=>{
     const {el, api, click} = render();expect(el.querySelectorAll('.equipment-card')).toHaveLength(2);
-    expect(el.textContent).toContain('Sin unidad');await click('[data-edit="73"]');
+    expect(el.querySelector('[data-row="73"] .equipment-quantity')?.textContent).toContain('h');await click('[data-edit="73"]');
     expect(el.querySelector('[data-row="73"] form')).toBeTruthy();expect(el.querySelector('[data-row="74"] form')).toBeNull();
     await click('.equipment-cancel');expect(el.querySelector('form')).toBeNull();expect(api.update).not.toHaveBeenCalled();
+  });
+  it('counts quantities as hours of operation (audit A-12)', async ()=>{
+    const {api, el, click, quantity, rows} = render('construction', '10', 2);
+    await click('[data-edit="73"]');
+    expect(el.querySelector('mat-select[name="unit"]')).toBeNull();
+    expect(el.querySelector('.equipment-unit-fixed')?.textContent).toContain('horas de operación');
+    quantity('12');await click('.equipment-save');
+    expect(api.update).toHaveBeenLastCalledWith('construction', rows[0], {sourceId: 11, quantity: 12, unitId: 2});
+    await click('.equipment-panel-header button');
+    expect(api.create).toHaveBeenLastCalledWith('construction', 42, 1, {sourceId: 11, quantity: 0, unitId: 2});
+  });
+  it('flags a row captured in another unit, whose number is read as hours (audit A-12)', async ()=>{
+    const {el, click} = render('construction', '10', 2, 3);
+    expect(el.querySelector('[data-row="73"] .equipment-unit-alert')).toBeNull();
+    expect(el.querySelector('[data-row="74"] .equipment-unit-alert')).toBeTruthy();
+    await click('[data-edit="74"]');
+    expect(el.querySelector('[data-row="74"] .equipment-unit-warning')?.textContent).toContain('Se capturó en MJ');
   });
   it('saves a decimal comma and permits blank unit/quantity without replacing the row', async ()=>{
     const {api, click, quantity, rows} = render();await click('[data-edit="73"]');quantity('12,5');await click('.equipment-save');
@@ -84,7 +101,7 @@ describe('Equipment cards', () => {
   it('batch addition creates persisted zero/null rows without asking for units', async ()=>{
     const {api, el, click} = render();await click('.equipment-panel-header button');
     expect(api.create).toHaveBeenCalledWith('construction', 42, 1, {sourceId: 11, quantity: 0, unitId: null});
-    expect(el.querySelector('[data-row="90"]')?.textContent).toContain('Sin unidad');
+    expect(el.querySelector('[data-row="90"] .equipment-quantity')?.textContent).toContain('h');
     expect(el.querySelectorAll('.equipment-card')).toHaveLength(3);
   });
   it('replacement keeps quantity and blank unit in a draft until Save, and Cancel restores the source', async ()=>{
