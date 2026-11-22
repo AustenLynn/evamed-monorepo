@@ -113,6 +113,21 @@ describe('CompararComponent project name', () => {
       expect(component.calculos.OperacionesDeFase).not.toHaveBeenCalled();
     });
 
+    it('draws section 2 from the server breakdown', async () => {
+      const porElemento = { GWP: { '1': 4, '2': 1 }, ODP: { '1': 0.5 } },
+        component: any = build(servidor({ 7: () => of({ datos, por_elemento: porElemento }) }));
+      component.calculosSegunaSeccion = { OperacionesDeFasePorElementoConstructivo: vi.fn() };
+      vi.spyOn(component, 'AjustarElementosMostrados').mockImplementation(() => undefined);
+      vi.spyOn(component, 'AjustarElementosMostradosElemntos').mockImplementation(() => undefined);
+      component.projectsList = [{ id: 7, name_project: 'Casa' }];
+      await firstValueFrom(component.resultados.cargar(7));
+
+      const analisis = component.getAnalisisBarrasElementosConstructivos(7);
+
+      expect(analisis).toEqual({ Nombre: 'Casa', id: 7, Datos: porElemento });
+      expect(component.calculosSegunaSeccion.OperacionesDeFasePorElementoConstructivo).not.toHaveBeenCalled();
+    });
+
     it('keeps the Solo carbono filter working with server names', async () => {
       const component: any = build(servidor({ 7: () => of({ datos }) }));
       await firstValueFrom(component.resultados.cargar(7));
