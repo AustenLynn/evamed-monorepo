@@ -39,6 +39,15 @@ describe('usage independent draft state', () => {
     expect(usageOptions(state).find(o=>o.key === 'panels')).toMatchObject({type: null, selectionId: -1, database: null, region: null});
     expect(optionKey({type: null, source: 'unknown'})).toBe('legacy:unknown');
   });
+  it('keeps a saved source without current-method data valid but marks it not offerable (audit A-13)', () => {
+    const state = usageFixture(); state.catalogue[0].offerable = false;
+    const option = usageOptions(state).find(o => o.key === 'type:2')!;
+    expect(option).toMatchObject({supported: true, offerable: false});
+    expect(usageOptions(state).find(o => o.key === 'type:9')!.offerable).toBe(true);
+    const editor = new UsageEditorState(); editor.load(state);
+    expect(editor.annualBlockedReason).toBeNull();
+    expect(editor.notOfferable.map(row => row.id)).toEqual([21]);
+  });
   it('requires explicit coordinated negative annual repair and blocks malformed legacy shares', () => {
     const state = usageFixture(); state.annual!.quantity = -10; state.annuals[0].quantity = -10; state.sources.forEach(r=>r.issues = ['quantity']);
     const editor = new UsageEditorState(); editor.load(state); editor.patchAnnual({quantity: '100'});

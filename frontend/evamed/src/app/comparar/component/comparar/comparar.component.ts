@@ -21,6 +21,7 @@ import { forkJoin, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ActiveProjectService } from 'src/app/core/services/active-project/active-project.service';
+import { ResultsExcluded } from '../../../home-evamed/components/excluded-notice/excluded-notice.component';
 import { carbonType, keepIndicators, loadVista, saveVista, VistaResultados } from './vista-carbono';
 import {
   animate,
@@ -217,6 +218,8 @@ export class CompararComponent implements OnInit {
   botones_grafica_activos = false;
   columnsToDisplay = [];
   impactoAmbientalSeleccionado: string;
+  /** What the server leaves out of the active project's results (audit A-13). */
+  excluded: ResultsExcluded | null = null;
 
   constructor(
     private materials: MaterialsService,
@@ -319,9 +322,18 @@ export class CompararComponent implements OnInit {
         this.BDInicio(DB);
         this.llenarIdsBotones(sectionsList);
         this.idProyectoActivo = parseInt(sessionStorage.getItem('projectID'));
+        this.cargarExcluidos(this.idProyectoActivo);
         this.menu_inicio();
       }
     );
+  }
+
+  private cargarExcluidos(projectId: number) {
+    if (!Number.isFinite(projectId)) return;
+    this.analisis.getProjectResults(projectId).subscribe({
+      next: results => (this.excluded = results?.excluded ?? null),
+      error: () => (this.excluded = null),
+    });
   }
 
   ngOnInit(): void {

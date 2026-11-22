@@ -12,9 +12,9 @@ describe('CompararComponent project name', () => {
   let users$: Subject<any[]>,
     projects$: Subject<any[]>;
 
-  const build = () => {
+  const build = (overrides: Record<string, (...args: any[]) => any> = {}) => {
     const anyRequest = () => of([]),
-      analisis = new Proxy({}, { get: () => anyRequest }),
+      analisis = new Proxy(overrides, { get: (target, name: string) => target[name] ?? anyRequest }),
       materials = { getMaterials: anyRequest },
       calculos = {
         FiltradoDeImpactos: () => [{ name_complete_potential_type: 'GWP' }],
@@ -68,6 +68,19 @@ describe('CompararComponent project name', () => {
 
     expect(component.proyecto.nombre).toBe('Casa Norte');
     expect(component.proyect.map(p => p.Nombre)).toEqual(['Oficina']);
+  });
+
+  it('lists what the server left out of the active project (audit A-13)', () => {
+    const excluded = { materials: [], no_mass: [], transport: [], energy: [{ id: 16, name: 'Red MX' }], sources: [] },
+      getProjectResults = vi.fn(() => of({ excluded })),
+      component = build({ getProjectResults });
+    users$.next([{ id: 3 }]);
+    users$.complete();
+    projects$.next([]);
+    projects$.complete();
+
+    expect(getProjectResults).toHaveBeenCalledWith(7);
+    expect(component.excluded).toEqual(excluded);
   });
 
   it('still draws the charts when the project list cannot be loaded', () => {

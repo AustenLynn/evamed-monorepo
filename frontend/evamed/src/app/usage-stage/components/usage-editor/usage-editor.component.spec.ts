@@ -24,6 +24,13 @@ describe('Usage editor coordination', () => {
     editor.openSource(21); expect(editor.store.dirty).toBe(false);
     editor.patchAnnual({quantity: '12000'}); expect(energy.refresh).toHaveBeenCalledTimes(1);
   });
+  it('names saved sources without current-method data and offers only current ones (audit A-13)', async () => {
+    const state = usageFixture(); state.catalogue[0].offerable = false; state.catalogue[1].offerable = false;
+    api.load.mockReturnValue(of(state)); editor.ngOnInit(); await settle();
+    expect(editor.notOfferableNames).toEqual(['Energía eléctrica, Medio voltaje']);
+    editor.replacementId = 21;
+    expect(editor.pickerOptions.map(o => o.key)).toEqual(['type:2', 'panels']);
+  });
   it('saves one card, locks duplicate submission and keeps annual and another card drafts', async () => {
     editor.ngOnInit(); await settle(); editor.patchAnnual({quantity: '12000'}); editor.patchSource({id: 21, patch: {percentage: '30'}}); editor.patchSource({id: 22, patch: {percentage: '40'}});
     const response = new Subject<UsageState>(); api.save.mockReturnValue(response); const saving = editor.saveSource(21);

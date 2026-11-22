@@ -5,6 +5,7 @@ from django.db import close_old_connections, connections
 from decimal import Decimal
 from uuid import uuid4
 
+from django.test import override_settings
 from rest_framework.test import APIClient, APITestCase, APITransactionTestCase
 from profiles_api.models import UserProfile
 from projects_api import models
@@ -201,6 +202,24 @@ class UsageTests(APITestCase):
         self.assertEqual(self.put(additions=[{'client_id': str(uuid4()), 'type': row.type_id,
                                              'source': 'electric'}]).status_code, 400)
         self.assertEqual(self.put(edits=[{'id': row.id, 'quantity': 800}]).status_code, 400)
+
+    def test_a2_offers_only_sources_with_current_data_but_keeps_old_rows_editable(self):
+        # Audit A-13 (2026-11-22): mexicaniuh grids have no A2 values and were offered and counted as 0.
+        for potential in models.PotentialType.objects.filter(method='EN15804+A2'):
+            models.TypeEnergyData.objects.create(type_energy_id=self.electric, potential_type_id=potential,
+                                                 value=Decimal('0.5'))
+        old = self.row(self.annual(), 40, type=self.gas, source='fuel')
+        with override_settings(EVAMED_IMPACT_METHOD='EN15804+A2'):
+            offer = {item['id']: item['offerable'] for item in self.state()['catalogue']}
+            self.assertEqual(offer, {self.electric.id: True, self.gas.id: False})
+            self.assertEqual(self.put(additions=[{'client_id': str(uuid4()), 'type': self.gas.id,
+                                                 'source': 'fuel'}]).status_code, 400)
+            self.assertEqual(self.put(edits=[{'id': old.id, 'percentage': 30}]).status_code, 200)
+            response = self.put(additions=[{'client_id': str(uuid4()), 'type': self.electric.id,
+                                            'source': 'electric'}])
+            self.assertEqual(response.status_code, 200, response.data)
+        with override_settings(EVAMED_IMPACT_METHOD='CML'):
+            self.assertTrue(all(item['offerable'] for item in self.state()['catalogue']))
 
     def test_foreign_rows_and_untrusted_ownership(self):
         another = models.Project.objects.create(name_project='Other')
