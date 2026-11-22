@@ -1,8 +1,10 @@
-import { of, Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 
 // Compile the component in its NgModule's context (mat-* elements, charts).
 import '../../comparar.module';
 import { CompararComponent } from './comparar.component';
+import { ResultadosService } from '../../resultados.service';
+import { firstValueFrom } from 'rxjs';
 
 // The results page names the active project in menu_inicio(), which runs once
 // the catalogue requests finish. The user's project list comes from its own
@@ -19,6 +21,7 @@ describe('CompararComponent project name', () => {
       calculos = {
         FiltradoDeImpactos: () => [{ name_complete_potential_type: 'GWP' }],
         ajustarNombre: (name: string) => name,
+        OperacionesDeFase: vi.fn(),
         ImpactosSeleccionados: () => [],
         materiales_EPIC: 0,
         materiales_EPD: 0,
@@ -32,7 +35,8 @@ describe('CompararComponent project name', () => {
       calculos as any,
       {} as any,
       {} as any,
-      {} as any
+      {} as any,
+      new ResultadosService(analisis as any, calculos as any)
     );
   };
 
@@ -79,7 +83,7 @@ describe('CompararComponent project name', () => {
     projects$.next([]);
     projects$.complete();
 
-    expect(getProjectResults).toHaveBeenCalledWith(7);
+    expect(getProjectResults).toHaveBeenCalledWith(7, undefined, true);
     expect(component.excluded).toEqual(excluded);
   });
 
@@ -90,6 +94,67 @@ describe('CompararComponent project name', () => {
 
     expect(component.projectsList).toEqual([]);
     expect(CompararComponent.prototype['iniciar_graficas']).toHaveBeenCalledWith(7);
+  });
+
+  // A-32 plan, Task 3: section 1 comes from GET /results/?detalle=1.
+  describe('server results', () => {
+    const datos = { GWP: { Producción: { 'A1-A3': 5 } }, ODP: { Producción: { 'A1-A3': 1 } } },
+      servidor = (map: Record<number, () => any>) => ({
+        getProjectResults: vi.fn((id: number) => map[id]()),
+      }),
+      drawn = () => vi.spyOn(CompararComponent.prototype as any, 'dibujarProyecto').mockImplementation(() => undefined),
+      selections = (component: any) => (component.materials.getMaterialsStageSelections = () => of({ items: [] }));
+
+    it('draws section 1 from the server results', async () => {
+      const component: any = build(servidor({ 7: () => of({ datos }) }));
+      await firstValueFrom(component.resultados.cargar(7));
+
+      expect(component.llamarCalculos(7)).toEqual(datos);
+      expect(component.calculos.OperacionesDeFase).not.toHaveBeenCalled();
+    });
+
+    it('keeps the Solo carbono filter working with server names', async () => {
+      const component: any = build(servidor({ 7: () => of({ datos }) }));
+      await firstValueFrom(component.resultados.cargar(7));
+      component.nombresMostrados = new Set(['GWP']);
+
+      expect(component.llamarCalculos(7)).toEqual({ GWP: datos.GWP });
+    });
+
+    it('shows an error and retries a project that failed', () => {
+      vi.mocked(CompararComponent.prototype['iniciar_graficas'] as any).mockRestore();
+      const dibujar = drawn();
+      let falla = true;
+      const component: any = build(servidor({ 8: () => (falla ? throwError(() => new Error('500')) : of({ datos })) }));
+      selections(component);
+
+      component.iniciar_graficas(8);
+      expect(component.estadoCarga[8]).toBe('error');
+      expect(component.proyect_active).not.toContain(8);
+      expect(dibujar).not.toHaveBeenCalled();
+
+      falla = false;
+      component.reintentar(8);
+      expect(component.estadoCarga[8]).toBe('listo');
+      expect(dibujar).toHaveBeenCalledWith(8);
+    });
+
+    it('ignores a late response for a removed project', () => {
+      vi.mocked(CompararComponent.prototype['iniciar_graficas'] as any).mockRestore();
+      const dibujar = drawn(),
+        tarde = new Subject<any>(),
+        component: any = build(servidor({ 8: () => tarde }));
+      selections(component);
+
+      component.iniciar_graficas(8);
+      // What quitarProyecto does to the shown list (the rest needs the chart containers).
+      component.proyect_active = component.proyect_active.filter((item: number) => item != 8);
+      tarde.next({ datos });
+      tarde.complete();
+
+      expect(dibujar).not.toHaveBeenCalled();
+      expect(component.proyect_active).not.toContain(8);
+    });
   });
 });
 
@@ -130,6 +195,13 @@ describe('CompararComponent carbon-only view', () => {
         }]),
       };
       component.potentialTypesList = types;
+      // Server results (A-32): every indicator of the active method.
+      component.resultados = {
+        obtener: () => ({ datos: {
+          'Calentamiento global, total': { Producción: { A1: 1 } },
+          'Agotamiento de ozono': { Producción: { A1: 2 } },
+        } }),
+      };
       component.materialSchemeProyectList = [];
       component.selectionsByProject = {};
       component.basesDatos = { 'ECO Platform': true, 'ECOINVENT 3': false };
@@ -144,14 +216,14 @@ describe('CompararComponent carbon-only view', () => {
     localStorage.clear();
   });
 
-  it('passes the full indicator list to the calculation in the carbon view', () => {
+  it('shows only the carbon indicator of the server results in the carbon view', () => {
     const component = build();
     component.vista = 'carbono';
     component.iniciarCatalogo([gwp, odp]);
 
     const datos = component.llamarCalculos(7);
 
-    expect(component.calculos.OperacionesDeFase.mock.calls[0][1].potentialTypesList).toEqual([gwp, odp]);
+    expect(component.calculos.OperacionesDeFase).not.toHaveBeenCalled();
     expect(Object.keys(datos)).toEqual(['Calentamiento global, total']);
   });
 
@@ -294,4 +366,5 @@ describe('CompararComponent view switch resets', () => {
 
     expect(component.outproyect_bar[0].Datos.GWP).toEqual({ Producción: 1 });
   });
+
 });

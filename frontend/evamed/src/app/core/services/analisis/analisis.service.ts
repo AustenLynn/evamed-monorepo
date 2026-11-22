@@ -139,9 +139,11 @@ export class AnalisisService {
     return this._db$;
   }
 
-  getProjectResults(projectId: number, databases?: string) {
+  /** `detalle` adds the per-element and per-material breakdowns that Resultados uses (A-32). */
+  getProjectResults(projectId: number, databases?: string, detalle = false) {
     const url = `${environment.api_projects}${projectId}/results/`;
-    const params = databases ? { databases } : {};
+    const params: Record<string, string> = databases ? { databases } : {};
+    if (detalle) params['detalle'] = '1';
     return this.http.get<any>(url, { params });
   }
 }

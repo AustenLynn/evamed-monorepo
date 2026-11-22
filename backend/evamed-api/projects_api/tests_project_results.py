@@ -1,4 +1,6 @@
 """Tests for ProjectResultsView's production-stage aggregation."""
+import json
+
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -68,6 +70,16 @@ class ProductionStageAggregationTests(APITestCase):
         response = self.client.get(RESULTS_URL.format(self.project.id))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         return response.data['datos'][GWP_NAME]['Producción']
+
+    def test_view_returns_compute(self):
+        # A-32 plan, Task 1: the view only resolves the project and databases; results.compute calculates.
+        material = self._material('EPDs')
+        self._impact(material, self.std_agg, 3)
+        self._use_in_project(material, 2)
+        from projects_api import results
+        expected = results.compute(self.project, set(models.DataBaseMaterial.objects.values_list('name', flat=True)))
+        response = self.client.get(RESULTS_URL.format(self.project.id))
+        self.assertEqual(response.json(), json.loads(json.dumps(expected)))
 
     def test_aggregate_only_material_contributes_to_production(self):
         """Regression: ecoinvent materials silently computed to zero."""
