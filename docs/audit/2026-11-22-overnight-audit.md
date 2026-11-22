@@ -437,3 +437,55 @@ enlace**, así que no se puede abrir el EPD de origen.
 - **Incidente durante la auditoría:** por un punto de inserción perdido, las secciones A-11 a A-18 no
   se guardaron en su momento; se reescribieron en el commit "restore A-11..A-18". El contenido es el
   mismo que se registró durante la revisión.
+
+## Estado de las correcciones (2026-11-22, rama `fix/audit-2026-11-22`)
+
+El dueño pidió atender todos los hallazgos y aprobó gastar cuota de ecoinvent para A-11.
+Decisiones del dueño: A-20 manual básico; A-23 borradores de aviso y términos para revisión;
+A-27 ocultar la escala hasta tener la fuente; A-29 diseño adaptable completo.
+
+| Hallazgo | Estado | Qué se hizo |
+|---|---|---|
+| A-01 | Corregido | Los cuatro botones "Exportar"/"Generar reporte" quedan deshabilitados con "Próximamente". |
+| A-02 | Corregido | Mensajes para proyectos sin datos y para un filtro sin proyectos. |
+| A-03 | Corregido | Inicio usa una sola caché para tipos de impacto y vida útil; `/me/` comparte la petición en curso. |
+| A-04 | Corregido | A1-A3 usa el verde de Producción; etiquetas del pie más grandes y ocultas bajo 5 %. |
+| A-05, A-06 | Corregido | El diálogo valida, guarda él mismo y muestra el error sin cerrarse; la X no envía nada. |
+| A-07 | Corregido | Servidor y formulario exigen superficies y niveles enteros > 0 y habitable ≤ construida. |
+| A-08 | Corregido | "Todos" ya no se mezcla en el catálogo de usos (se copiaba la misma lista). |
+| A-09 | Corregido | "Por m²" se desactiva con explicación si falta una superficie; la tabla muestra "—" en vez de Infinity/NaN. |
+| A-10 | Corregido | Los seis botones tienen `aria-label` y tooltip. |
+| A-11 | Causa confirmada | La API del sandbox 3.12 devuelve los valores incoherentes (ver `docs/ecoinvent-api-findings.md` §10). Se agregó `check_gwp` y un aviso en `ecoinvent_refresh`. La solución de datos es la licencia de producción. |
+| A-12 | Corregido | La maquinaria se captura en horas de operación (unidad de los factores de ecoinvent, comprobada); filas viejas en otra unidad muestran aviso. |
+| A-13 | Corregido | Uso solo ofrece fuentes con datos del método; las filas viejas siguen editables y se avisa en Uso y en Resultados. |
+| A-14 | Corregido | Nombres repetidos llevan la base de datos. |
+| A-15 | Corregido en parte | Plurales y nombres de maquinaria (migración 0092). Mostrar impacto en las tarjetas de equipos queda pendiente. |
+| A-16, A-17 | Corregido | La tabla se arma por proyecto en orden de columnas; cada valor lleva el nombre de su proyecto. |
+| A-18 | Descartado | — |
+| A-19 | Corregido | `IsAdminGuard` en las rutas `admin*`; el guard de sesión se llama ahora `AuthGuard`. |
+| A-20 | Corregido | Manual de usuario con 10 secciones. |
+| A-21 | Corregido | Acerca de actualizado a EN 15804+A2 (ecoinvent y ECO Platform) y erratas. |
+| A-22 | Corregido | El texto de Fin de vida menciona C3. |
+| A-23 | Borrador | Páginas públicas `/auth/aviso-de-privacidad` y `/auth/terminos`, marcadas como borrador; enlazadas en los pies y obligatorias en el registro. **Requieren revisión jurídica.** |
+| A-24 | Corregido | "He leído". |
+| A-25 | Corregido | Renombrar abre con el nombre actual y no recarga; duplicar pide confirmación, usa " - copia" y se hace en una transacción del servidor. |
+| A-26 | Corregido | Las etapas y Resultados sin proyecto activo regresan al inicio. |
+| A-27 | Oculto | La escala "Promedio del sector vivienda" no se ofrece hasta confirmar sus valores con el RUV. |
+| A-28 | Corregido | "Ver referencia" aparece desde el inicio, solo en proyectos habitacionales; sin datos de uso no marca "A". |
+| A-29 | Corregido | `styles/_responsive.scss`; verificado en dev a 390 y 768 px (páginas de administración no revisadas). |
+| A-30 | Corregido, por verificar | Cabeceras en Caddy, CSP en modo report-only. No se pudo validar el Caddyfile localmente: revisar con `curl -I` tras el despliegue. |
+| A-31 | Corregido | 102 `console.log` eliminados. |
+| A-32 | Pendiente | Calcular Resultados en el servidor requiere reescribir `comparar` y ampliar el endpoint (secciones 2 y 3); se propone como proyecto aparte. |
+| A-33 | Corregido | "Vista de indicadores" y "Comparar con otro proyecto". |
+| A-34 | Corregido | Una plantilla sin materiales se rechaza con mensaje. |
+| A-35 | Corregido | `accept=".xlsm,.xlsx"` y `type: 'array'`. |
+| A-36 | Corregido | Una línea de descripción por fila; el EPD es un enlace en la ficha. |
+
+**Encontrados al corregir:**
+- **N-01 · Alta.** Renombrar un proyecto hacía un PUT completo con `tier = living_area` y
+  `useful_life_id = country_id`. Confirmado en dev: el proyecto 651 se creó con 0 niveles y hoy tiene
+  500 (su superficie habitable). Como México es el país 1 y la vida útil 1 es "50 años", todo proyecto
+  renombrado quedó con vida útil de 50 años, lo que cambia B4. No hay registro de qué proyectos se
+  renombraron. Corregido: renombrar solo cambia el nombre.
+- **N-02 · Media.** Filtrar por uso o eliminar un proyecto en Inicio emparejaba tarjetas con datos de
+  otro proyecto (las listas se indexaban por posición). Corregido: se buscan por id.
