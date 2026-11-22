@@ -22,6 +22,8 @@ import { catchError, map, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ActiveProjectService } from 'src/app/core/services/active-project/active-project.service';
 import { ResultsExcluded } from '../../../home-evamed/components/excluded-notice/excluded-notice.component';
+import { ResultadosService } from '../../resultados.service';
+import { compararResultados } from '../../paridad';
 import { etiquetasProyectos, filasTabla, porMetroDisponible, ProyectoTabla } from './tabla-resultados';
 import { carbonType, keepIndicators, loadVista, saveVista, VistaResultados } from './vista-carbono';
 import {
@@ -41,6 +43,8 @@ import { UserService } from 'src/app/core/services/user/user.service';
     selector: 'app-comparar',
     templateUrl: './comparar.component.html',
     styleUrls: ['./comparar.component.scss', './styleSU.scss', './styleSD.scss', './styleST.scss'],
+    // A fresh results cache per visit: edits made on the stage pages show on return.
+    providers: [ResultadosService],
     animations: [
         trigger('detailExpand', [
             state('collapsed', style({ height: '0px', minHeight: '0' })),
@@ -219,6 +223,8 @@ export class CompararComponent implements OnInit {
   botones_grafica_activos = false;
   columnsToDisplay = [];
   impactoAmbientalSeleccionado: string;
+  /** Loading state of each shown project's server results (A-32). */
+  estadoCarga: Record<number, 'cargando' | 'error' | 'listo'> = {};
   /** What the server leaves out of the active project's results (audit A-13). */
   excluded: ResultsExcluded | null = null;
 
@@ -232,6 +238,7 @@ export class CompararComponent implements OnInit {
     private calculosSegunaSeccion: CalculosSegundaSeccion,
     private calculosTercerSeccion: CalculosTercerSeccion,
     private activeProject: ActiveProjectService,
+    private resultados: ResultadosService,
   ) {
     // menu_inicio() names the active project from this list, so it loads with
     // the catalogues below instead of racing them.
@@ -331,7 +338,7 @@ export class CompararComponent implements OnInit {
 
   private cargarExcluidos(projectId: number) {
     if (!Number.isFinite(projectId)) return;
-    this.analisis.getProjectResults(projectId).subscribe({
+    this.resultados.cargar(projectId).subscribe({
       next: results => (this.excluded = results?.excluded ?? null),
       error: () => (this.excluded = null),
     });
@@ -516,11 +523,44 @@ export class CompararComponent implements OnInit {
       this.banderaAjusteElememtos = true;
     }
 
-    this.materials.getMaterialsStageSelections(id).pipe(
-      catchError(() => of({ items: [] }))
-    ).subscribe(response => {
-      this.selectionsByProject[id] = response?.items || [];
+    this.estadoCarga[id] = 'cargando';
+    const mostrado = () => this.proyect_active.some(item => item == id);
+    forkJoin([
+      this.materials.getMaterialsStageSelections(id).pipe(catchError(() => of({ items: [] }))),
+      this.resultados.cargar(id),
+    ]).subscribe({
+      next: ([response]) => {
+        // Removed while loading: nothing to draw.
+        if (!mostrado()) return;
+        this.estadoCarga[id] = 'listo';
+        this.selectionsByProject[id] = response?.items || [];
+        this.dibujarProyecto(id);
+      },
+      error: () => {
+        if (!mostrado()) return;
+        this.estadoCarga[id] = 'error';
+        // Out of the shown list, so "Reintentar" starts over.
+        const index = this.proyect_active.findIndex(item => item == id);
+        this.proyect_active.splice(index, 1);
+        this.idsImgEdificios.splice(index, 1);
+        this.banderaAjusteElememtos = false;
+      },
+    });
+  }
 
+  reintentar(id: number) {
+    this.iniciar_graficas(id);
+  }
+
+  /** Projects whose results failed to load, for the retry message. */
+  get proyectosConError(): { id: number; nombre: string }[] {
+    return Object.keys(this.estadoCarga)
+      .map(Number)
+      .filter(id => this.estadoCarga[id] === 'error')
+      .map(id => ({ id, nombre: (this.projectsList ?? []).find(p => p['id'] == id)?.['name_project'] ?? `#${id}` }));
+  }
+
+  private dibujarProyecto(id: number) {
       const data = this.llamarCalculos(id),
 
       analisis = this.getAnalisisBarras(id, data),
@@ -609,7 +649,6 @@ export class CompararComponent implements OnInit {
       this.showVar = false;
       this.showVar_1 = false;
       this.banderaGrapg = 0;
-    });
   }
 
   private getFilteredScheme(idProyecto: number): any[] {
@@ -766,7 +805,31 @@ export class CompararComponent implements OnInit {
     return this.llamarCalculosTercerSeccion(idProyecto);
   }
 
+  /** Section 1 numbers from the server (A-32); the browser calculation only runs in parity mode. */
   llamarCalculos(idProyecto) {
+    const servidor = this.resultados.obtener(idProyecto)?.datos ?? {};
+    this.registrarParidad(idProyecto, 1, () => this.calcularEnNavegador(idProyecto), servidor);
+    return keepIndicators(servidor, this.nombresMostrados);
+  }
+
+  /**
+   * Dev check while both calculations exist (A-32 plan): with localStorage
+   * 'evamed.paridad' = '1', records browser-vs-server differences per project and
+   * section in window.evamedParidad. Removed with the browser calculation.
+   */
+  private registrarParidad(proyecto: number, seccion: number, navegador: () => unknown, servidor: unknown) {
+    let activo = false;
+    try {
+      activo = localStorage.getItem('evamed.paridad') === '1';
+    } catch {
+      /* Blocked storage: off. */
+    }
+    if (!activo) return;
+    const registro = ((window as any).evamedParidad ??= {});
+    registro[`${proyecto}:${seccion}`] = compararResultados(navegador(), servidor);
+  }
+
+  private calcularEnNavegador(idProyecto) {
     const DatosCalculos = {
       TEList: this.TEList,
       projectsList: this.projectsList,
@@ -794,7 +857,7 @@ export class CompararComponent implements OnInit {
       this.basesDatos
     ),
      auxDatos = auxdata[0];
-    return keepIndicators(auxDatos, this.nombresMostrados);
+    return auxDatos;
   }
 
   getAnalisisBarras(idProyecto, data) {
@@ -820,11 +883,11 @@ export class CompararComponent implements OnInit {
         if (this.bandera_por_metro) {
           let superficieConstruida = 0;
           if (fase === 'Uso') {
-            superficieConstruida = this.calculos.projectsList.filter(
+            superficieConstruida = this.projectsList.filter(
               p => p['id'] == idProyecto
             )[0]['living_area'];
           } else {
-            superficieConstruida = this.calculos.projectsList.filter(
+            superficieConstruida = this.projectsList.filter(
               p => p['id'] == idProyecto
             )[0]['builded_surface'];
           }
@@ -838,7 +901,7 @@ export class CompararComponent implements OnInit {
 
   getAnalisisRadial(idProyecto, data) {
     const analisisProyectos: Record<string, any> = {
-      Nombre: this.calculos.projectsList.filter(
+      Nombre: this.projectsList.filter(
         p => p['id'] == idProyecto
       )[0]['name_project'],
       id: idProyecto,
@@ -862,11 +925,11 @@ export class CompararComponent implements OnInit {
         if (this.bandera_por_metro) {
           let superficieConstruida = 0;
           if (fase === 'Uso') {
-            superficieConstruida = this.calculos.projectsList.filter(
+            superficieConstruida = this.projectsList.filter(
               p => p['id'] == idProyecto
             )[0]['living_area'];
           } else {
-            superficieConstruida = this.calculos.projectsList.filter(
+            superficieConstruida = this.projectsList.filter(
               p => p['id'] == idProyecto
             )[0]['builded_surface'];
           }
@@ -880,7 +943,7 @@ export class CompararComponent implements OnInit {
 
   getAnalisisPie(idProyecto, data) {
     const analisisProyectos: Record<string, any> = {
-      Nombre: this.calculos.projectsList.filter(
+      Nombre: this.projectsList.filter(
         p => p['id'] == idProyecto
       )[0]['name_project'],
       id: idProyecto,
@@ -897,11 +960,11 @@ export class CompararComponent implements OnInit {
         if (this.bandera_por_metro) {
           let superficieConstruida = 0;
           if (fase === 'Uso') {
-            superficieConstruida = this.calculos.projectsList.filter(
+            superficieConstruida = this.projectsList.filter(
               p => p['id'] == idProyecto
             )[0]['living_area'];
           } else {
-            superficieConstruida = this.calculos.projectsList.filter(
+            superficieConstruida = this.projectsList.filter(
               p => p['id'] == idProyecto
             )[0]['builded_surface'];
           }
@@ -922,7 +985,7 @@ export class CompararComponent implements OnInit {
   getAnalisisPieBarSegunaSeccion(idProyecto) {
     //Calculos y obtención de datos para crear correctamente las gráficas de barras
     const analisisProyectos: Record<string, any> = {
-      Nombre: this.calculos.projectsList.filter(
+      Nombre: this.projectsList.filter(
         p => p['id'] == idProyecto
       )[0]['name_project'],
       id: idProyecto,
@@ -972,7 +1035,7 @@ export class CompararComponent implements OnInit {
 
   /** False when a shown project lacks a surface: dividing by it gave Infinity/NaN (audit A-09). */
   get porMetroDisponible(): boolean {
-    return porMetroDisponible(this.calculos.projectsList ?? [], this.proyect_active ?? []);
+    return porMetroDisponible(this.projectsList ?? [], this.proyect_active ?? []);
   }
 
   AjustePorMetro(flag) {
@@ -1194,7 +1257,7 @@ export class CompararComponent implements OnInit {
   getAnalisisBarrasElementosConstructivos(idProyecto) {
     //Calculos y obtención de datos para crear correctamente las gráficas de barras
     const analisisProyectos: Record<string, any> = {
-      Nombre: this.calculos.projectsList.filter(
+      Nombre: this.projectsList.filter(
         p => p['id'] == idProyecto
       )[0]['name_project'],
       id: idProyecto,

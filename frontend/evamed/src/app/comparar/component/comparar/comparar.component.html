@@ -28,6 +28,12 @@
     </div>-->
   </div>
   <app-excluded-notice class="resultados-excluidos" [excluded]="excluded"></app-excluded-notice>
+  @for (p of proyectosConError; track p.id) {
+    <p class="error-carga" role="alert">
+      No se pudieron cargar los resultados de «{{ p.nombre }}».
+      <button mat-button type="button" (click)="reintentar(p.id)">Reintentar</button>
+    </p>
+  }
   <div class="div-proyectos-mostrados">
     <div>
       <button mat-button class="menu-proyectos" [matMenuTriggerFor]="menu">Comparar con otro proyecto
