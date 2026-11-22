@@ -34,9 +34,9 @@
        <mat-icon>keyboard_arrow_down</mat-icon></button>
       <mat-menu #menu="matMenu">
         <button mat-menu-item
-          *ngFor="let item of proyect"
+          *ngFor="let item of proyect; let i = index"
           (click)="iniciar_graficas(item.id)">
-          <span>{{item.Nombre}}</span>
+          <span>{{etiquetasMenu[i]}}</span>
         </button>
       </mat-menu>
     </div>
@@ -100,7 +100,12 @@
                   <span style="white-space: pre-line;">{{column}}</span>
                 </th>
                 <td mat-cell *matCellDef="let element" [style.color] = element.color>
-                  <p>{{element.data[column]}}</p></td>
+                  @if (isArray(element.data[column])) {
+                    <p class="valores-proyectos">@for (valor of element.data[column]; track $index) {<span>{{valor}}</span>}</p>
+                  } @else {
+                    <p>{{element.data[column]}}</p>
+                  }
+                </td>
               </ng-container>
               <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
               <tr mat-row *matRowDef="let element; columns: columnsToDisplay;"></tr>

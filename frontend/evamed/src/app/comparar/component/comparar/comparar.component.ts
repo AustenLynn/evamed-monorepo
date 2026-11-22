@@ -22,6 +22,7 @@ import { catchError, map, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ActiveProjectService } from 'src/app/core/services/active-project/active-project.service';
 import { ResultsExcluded } from '../../../home-evamed/components/excluded-notice/excluded-notice.component';
+import { etiquetasProyectos, filasTabla, ProyectoTabla } from './tabla-resultados';
 import { carbonType, keepIndicators, loadVista, saveVista, VistaResultados } from './vista-carbono';
 import {
   animate,
@@ -1004,119 +1005,17 @@ export class CompararComponent implements OnInit {
   }
 
   //creación de tabla de resultado
+  protected readonly isArray = Array.isArray;
+
+  /** Menu labels; projects that share a name get their id (audit A-17). */
+  get etiquetasMenu(): string[] {
+    return etiquetasProyectos(this.proyect ?? []);
+  }
+
   TablaResultados() {
     this.botones_grafica_activos = true;
     this.container.clear();
-    const auxL = ['Producción', 'Construccion', 'Uso', 'FinDeVida'],
-      aux_color = ['#4DBE89', '#148A93', '#8F5091', '#DEA961', '#767676'];
-    //se prepara la información por filas
-    let aux = [],
-      flagMasProyectos = false;
-    const auxtotal = {},
-      auxImpactosTotal = {};
-    this.outproyect_bar.forEach(element => {
-      auxtotal[element.id] = {};
-      auxImpactosTotal[element.id] = [];
-      Object.keys(element.Datos).forEach(impacto => {
-        const auxNombreImpacto = impacto.replace(/\n/g, '');
-        if (!auxImpactosTotal[element.id].includes(auxNombreImpacto)) {
-          auxtotal[element.id][auxNombreImpacto] = 0;
-          auxImpactosTotal[element.id].push(auxNombreImpacto);
-        }
-      });
-    });
-    auxL.forEach((ciclo, index) => {
-      let auxdata = {},
-       auximpactos = [];
-      auxdata['ciclo de vida'] = ciclo;
-      let flagCiclo = true;
-      this.fasesEliminadas.forEach(cicloEliminado => {
-        if (ciclo === cicloEliminado) {
-          flagCiclo = false;
-        }
-      });
-      if (flagCiclo) {
-        this.outproyect_bar.forEach(element => {
-          Object.keys(element.Datos).forEach(impacto => {
-            const auxNombreImpacto = impacto.replace(/\n/g, ''),
-             resultado = element.Datos[impacto][ciclo],
-              resultadoExponencial = resultado.toExponential(2);
-            if (!auximpactos.includes(auxNombreImpacto)) {
-              auximpactos.push(auxNombreImpacto);
-              auxdata[auxNombreImpacto] = resultadoExponencial
-                .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-              auxtotal[element.id][auxNombreImpacto] += resultado;
-            } else {
-              flagMasProyectos = true;
-              const last = auxdata[auxNombreImpacto].toString();
-              auxdata[auxNombreImpacto] = last.concat(
-                '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
-              );
-              auxdata[auxNombreImpacto] = auxdata[auxNombreImpacto].concat(
-                resultadoExponencial
-                  .toString()
-                  .replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-              );
-              auxtotal[element.id][auxNombreImpacto] += resultado;
-            }
-          });
-        });
-        auximpactos = [];
-        aux = [...aux, { data: auxdata, color: aux_color[index] }];
-      }
-      if (ciclo === 'FinDeVida') {
-        auxdata = {};
-        Object.keys(auxtotal).forEach((element, indexproyectos) => {
-          if (indexproyectos == 0) {
-            Object.keys(auxtotal[element]).forEach(impacto => {
-              const resultado = auxtotal[element][impacto],
-                resultadoExponencial = resultado.toExponential(2);
-              auxdata[impacto] = resultadoExponencial;
-            });
-          } else {
-            Object.keys(auxtotal[element]).forEach(impacto => {
-              const resultado = auxtotal[element][impacto],
-                resultadoExponencial = resultado.toExponential(2),
-                last = auxdata[impacto].toString();
-              auxdata[impacto] = last.concat(
-                '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
-              );
-              auxdata[impacto] = auxdata[impacto].concat(
-                resultadoExponencial
-                  .toString()
-                  .replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-              );
-            });
-          }
-        });
-        auxdata['ciclo de vida'] = 'Total';
-        aux = [...aux, { data: auxdata, color: aux_color[index + 1] }];
-      }
-      if (ciclo === 'FinDeVida' && flagMasProyectos == true) {
-        auxdata = {};
-        let numProyecto = 0;
-        this.outproyect_bar.forEach(element => {
-          numProyecto = numProyecto + 1;
-          Object.keys(element.Datos).forEach(impacto => {
-            const auxNombreImpacto = impacto.replace(/\n/g, '');
-            if (!auximpactos.includes(auxNombreImpacto)) {
-              auximpactos.push(auxNombreImpacto);
-              auxdata[auxNombreImpacto] = numProyecto.toString();
-            } else {
-              const last = auxdata[auxNombreImpacto].toString();
-              auxdata[auxNombreImpacto] = last.concat(
-                '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
-              );
-              auxdata[auxNombreImpacto] = auxdata[auxNombreImpacto].concat(
-                numProyecto.toString()
-              );
-            }
-          });
-        });
-        aux = [{ data: auxdata, color: aux_color[index + 1] }, ...aux];
-      }
-    });
+    const aux = filasTabla(this.outproyect_bar as ProyectoTabla[], this.fasesEliminadas);
     this.DatosTabla = aux;
     this.resultdosTabla = true;
     this.resultdosGraficos = false;
