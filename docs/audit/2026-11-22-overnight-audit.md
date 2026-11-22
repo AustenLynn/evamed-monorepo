@@ -318,4 +318,20 @@ hay que elegir otro indicador y volver. Además, la referencia (vivienda) se ofr
 proyectos "Comercial", donde no aplica, y en un proyecto sin datos de uso muestra la flecha en
 "0.00e+0 · A", que se lee como "excelente".
 
+### Celular (390 px de ancho)
+
+**A-29 · Media · La app no se adapta a celular.** Se cargó dentro de un `iframe` de 390 px (las
+herramientas de esta sesión no permiten cambiar el tamaño de la ventana). Ancho del contenido contra
+ancho de pantalla: inicio **433 / 390**, Resultados **975 / 390**, Materiales **872 / 390**.
+- **Inicio:** el nombre del proyecto se encima con las pestañas "Configurar información /
+  Resultados"; la columna del perfil queda aplastada a la derecha y "Crear nuevo proyecto" se corta;
+  las tarjetas de sistemas recortan el texto ("Cimenta…").
+- **Materiales:** las tres columnas (Elementos, Sistema constructivo, Materiales) no caben y
+  Materiales queda fuera; "Continuar" e "Ir a resultados" cortan su texto y la leyenda de la barra
+  de carbono se sale por la izquierda.
+- **Resultados:** las pestañas y la gráfica se salen por la derecha y hay que hacer scroll lateral.
+
+Si el uso en celular no es objetivo, al menos conviene un aviso ("Usa una pantalla de al menos
+1024 px") en lugar de una página rota.
+
 ## Método y límites
