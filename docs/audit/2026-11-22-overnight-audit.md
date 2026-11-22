@@ -360,4 +360,25 @@ paridad verificada arriba).
 dice "Duplicados" (`comparar.component.html:15`), aunque sirve para agregar cualquier proyecto a la
 comparación. Algo como "Comparar con" sería más claro.
 
+### Importar plantilla (`/do-files`) y límites de Uso
+
+Funciona: las 3 descargas (MATED.zip 48 KB, plantillas Windows y Mac de 1.3–1.6 MB, con el catálogo
+filtrado por `offerable_materials`). En Uso: consumo anual negativo → "Escribe un consumo anual
+entero entre 0 y 2147483647."; porcentaje 150 → "Escribe un porcentaje entero entre 0 y 100.".
+Ninguno de los dos se envía.
+
+**A-34 · Baja · Una plantilla vacía se "importa con éxito".** Al cargar la plantilla de Windows
+recién descargada, sin filas, "Continuar" muestra **"Importación de materiales completada ✓ — 0
+Sistemas constructivos, 0 Materiales identificados, 0 no identificados"**. Debería avisar que el
+archivo no trae filas. (Sobre el proyecto 652 no se perdió nada: el autoguardado solo reemplaza las
+filas de origen REVIT/plantilla y Dynamo, y las de "Creados por el usuario" se conservan.)
+
+**A-35 · Baja · El selector de archivo acepta cualquier tipo.** `input[type=file]` en
+`to-do-file.component.html` no tiene `accept=".xlsm,.xlsx"`, así que el diálogo del sistema ofrece
+cualquier archivo. Después aparece un error genérico.
+
+Nota de lectura (no es error): `onFileChange` lee con `readAsArrayBuffer` y llama
+`XLSX.read(..., { type: 'binary' })`. SheetJS lo detecta y lo procesa bien (comprobado con la
+plantilla real), pero el `type` correcto sería `'array'`.
+
 ## Método y límites
