@@ -10,10 +10,11 @@ engañosa con salida; **Baja** = detalle visual, texto o deuda.
 
 ## Resumen (lo más importante primero)
 
-36 hallazgos numerados: 6 altos, 13 medios, 16 bajos y 1 descartado (A-18). Todos con evidencia en
+36 hallazgos numerados: 4 altos (A-09, A-11, A-13, A-16), 10 medios, 21 bajos y 1 descartado
+(A-18). Todos con evidencia en
 dev o en el código.
 
-**Alta: números incorrectos o engañosos**
+**Primero: números incorrectos o engañosos** (4 altos y 2 medios que también afectan resultados)
 1. **A-11** Los datos A2 de **ecoinvent son incoherentes**: GWP-total ≠ fósil + biogénico + uso de
    suelo en 55 de 58 materiales (hasta 231 %), y también en la maquinaria (total < fósil). Afecta
    todo el carbono con materiales de ecoinvent, incluidas la vista Solo carbono y la barra.
