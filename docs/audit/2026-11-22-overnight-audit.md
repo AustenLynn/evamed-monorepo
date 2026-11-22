@@ -301,4 +301,21 @@ nombre de proyecto, sin sistemas, con la barra en 0 y sin ningún mensaje. Deber
 página de inicio o pedir elegir un proyecto. Probablemente lo mismo pasa en las demás etapas
 `*/update`, porque leen `idProyectoConstrucción` de `localStorage`.
 
+### Referencia de huella de carbono (RUV) en la tarjeta
+
+**A-27 · Media · La escala "Promedio del sector vivienda" tiene rangos imposibles.** En
+`calculos/EscalasCarbono.json`, el caso "Promedio del sector vivienda" (kg CO2/m²·año, fase de
+uso) usa A 0–28, B 28.1–**2,895.4**, C –5,762.8, D –8,630.2, E –11,497.6, F –14,365, G > 14,365.
+Son pasos de 2,867.3, cuando el caso hermano "Vivienda sustentable" usa 28, 50.4, 72.8, 95.2,
+117.6, 140 (pasos de 22.4). Con la escala actual, cualquier vivienda real (uso operativo típico de
+~20–60 kg/m²·año) cae en A o B y la comparación no dice nada. Parece un error de captura (¿un
+factor de 100?). Hay que confirmar los valores del RUV con la fuente.
+
+**A-28 · Baja · "Ver referencia" oculto al cargar.** El botón solo aparece después de un
+`selectionChange` en el menú de indicador (`home-evamed.component.ts:946-948`). Al abrir la tarjeta
+el indicador ya es GWP-total, pero `mostrarOpcionCarbono` empieza en `false` (línea 399), así que
+hay que elegir otro indicador y volver. Además, la referencia (vivienda) se ofrece también en
+proyectos "Comercial", donde no aplica, y en un proyecto sin datos de uso muestra la flecha en
+"0.00e+0 · A", que se lee como "excelente".
+
 ## Método y límites
