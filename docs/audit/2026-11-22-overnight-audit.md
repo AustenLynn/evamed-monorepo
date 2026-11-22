@@ -102,3 +102,108 @@ materiales (`201`), editar cantidades (`200`), y la barra de carbono da 3,760.05
 1000 kg × 1.38 + 2 Ton × 1190, cuadra a mano.
 
 
+### Datos de impacto (catálogo A2 en dev)
+
+**A-11 · Alta · GWP-total de ecoinvent no cuadra con sus componentes.** En EN 15804+A2, y en EF 3.1
+de ecoinvent, el cambio climático total es la suma de fósil + biogénico + uso de suelo
+(GWP-total = GWP-fossil + GWP-biogenic + GWP-luluc). Se revisaron por la API los 183 materiales
+vigentes (`/explorer/produccion/<id>/` y `/material-scheme-data/`):
+- **ECO Platform:** 124 de 125 cuadran al 2 %; el que no, "Steel reinforcing bar" (587), difiere
+  3.9 %, lo que es plausible por redondeo del EPD.
+- **ecoinvent:** **55 de 58 no cuadran**, y en ambos sentidos. Ejemplos: CEM III/C total 0.158 contra
+  suma 0.525 (+231 %); Concrete 25 MPa total 473 contra suma 126 kg/m³ (−73 %); Cement, Portland
+  1.380 contra 1.212 (+12 %).
+- Los totales tampoco son una permutación de las sumas de otros materiales: solo 8 coincidencias,
+  y parecen casuales.
+- Varios valores no son plausibles en ninguno de los dos sentidos. Por ejemplo, un concreto de
+  25 MPa suele andar en 250–300 kg CO2e/m³, y un acero 100 % chatarra rara vez llega a 0.3.
+
+Lista completa: `docs/audit/2026-11-22-gwp-inconsistencias.csv`.
+
+Impacto: la vista Solo carbono y la barra de carbono muestran GWP-total, así que **cualquier
+proyecto con materiales de ecoinvent tiene un carbono dudoso**. Lo mismo para los otros 12
+indicadores de esos materiales, que salieron del mismo `ecoinvent_refresh` (2026-11-20) y no se
+pueden validar con una regla interna.
+
+El mapeo de indicadores (`migrations/0091`: 1183 climate change, 1315 fossil, 1222 biogenic, 1187
+luluc) y `_fetch` (`ecoinvent_refresh.py:155-167`, indexado por `(dataset_id, score.id)`) se ven
+bien en lectura. Hipótesis no verificadas:
+- (a) en la API de ecoinvent esos ids no corresponden a las categorías que se creen para el
+  sandbox 3.12;
+- (b) parte de los valores viene de una corrida anterior con otros `ecoinvent_dataset_id`, porque
+  `_apply` deja el valor viejo cuando falta un score;
+- (c) los datos del sandbox no son los oficiales.
+
+Verificarlo cuesta cuota de ecoinvent (1 dataset), así que no se hizo. Siguiente paso sugerido:
+pedir un dataset, por ejemplo Cement, Portland (material 434), con los 4 ids de GWP, y comparar
+con la ficha web de ecoinvent.
+
+### Construcción, Uso y Fin de vida (proyecto 651)
+
+**A-12 · Media · La unidad del equipo no afecta el resultado.** Al editar un equipo se elige
+Cantidad + Unidad (Sin unidad, Hrs, MJ, kWh). Con "Generador ... menor a 18.64 kW" y cantidad 10,
+la barra y el servidor (`Construccion.A5` = 27.44 kg CO2 eq) dan **lo mismo con Hrs, kWh, MJ y
+"Sin unidad"**. El factor se aplica a la cantidad sin importar la unidad. Esto ya estaba anotado
+como R-04 (`SourceInformation`/`TypeEnergy` no tienen unidad de referencia), pero la pantalla deja
+elegir unidades como si importaran. Quien capture "500 MJ" obtiene el impacto de 500 horas. Opción
+mínima: mostrar solo la unidad de referencia del factor y quitar el selector (o validarlo); la
+completa es R-04 B (tabla de unidades de referencia). Fin de vida usa el mismo panel, así que le
+aplica igual.
+
+**A-13 · Alta · Uso ofrece fuentes que no tienen datos del método actual y las cuenta como 0.**
+"Agregar fuentes" lista 8 opciones, entre ellas las 3 "Energía eléctrica ..." de **mexicaniuh**.
+El diseño A2 (2026-11-20) dice que esas redes dejan de ofrecerse ("drop out of the pickers").
+Prueba: 10,000 kWh/año al 100 % con mexicaniuh Medio voltaje → **Uso = 0 kg CO2 eq** (B6 = 0) en
+la barra y en Resultados. El servidor sí la pone en `excluded.energy`, y la tarjeta de inicio lo
+avisa ("Transporte, energía o procesos sin valores del método actual; no se incluyen: Energía
+eléctrica, Medio voltaje (MX)-MEXICANIUH"), pero **ni la página de Uso ni Resultados lo muestran**
+(`app-excluded-notice` solo se usa en `home-evamed`). Causa: `projects_api/usage.py:85-93`
+(`catalogue()`) devuelve todos los `TypeEnergy` sin `methods.offerable(..., current_energy_ids)`.
+Arreglo sugerido: filtrar el catálogo de Uso con `offerable` (las filas viejas siguen editables) y
+mostrar `excluded` también en Uso y en Resultados.
+
+**A-14 · Baja · Nombres duplicados en el catálogo de Uso.** "Energía eléctrica, Medio/Alto/Bajo
+voltaje" aparece dos veces (ecoinvent y mexicaniuh) con la misma etiqueta y el mismo
+`aria-label` ("Seleccionar: Energía eléctrica, Medio voltaje"). Solo el chip de base de datos las
+distingue; en la vista Lista y para lectores de pantalla son idénticas.
+
+**A-15 · Baja · Textos.**
+- "Agregar **1 equipos**", "**1 equipos** agregados", "Agregar **1 fuentes**", "**1 fuentes**
+  agregadas": falta el singular.
+- Catálogo de maquinaria: "Generador de energía eléctrica a base de Diesel, **potencia potencia**
+  entre 18.64 kW y 74.57 kW" y "Maquinaria de carga pesada ... menor a **18.64kW**" (sin espacio).
+- Las tarjetas de equipos y fuentes no muestran ningún valor de impacto, a diferencia de las de
+  materiales (relacionado con R-04).
+
+### Comparar proyectos en Resultados
+
+**A-16 · Alta · Totales intercambiados entre proyectos en la tabla.** Proyecto abierto 651
+(AUDITORIA) y "Miguel Alvarez" agregado desde "Selecciona una opción a visualizar". La tabla
+muestra:
+
+| | 1 (651) | 2 (Miguel Alvarez) |
+|---|---|---|
+| Producción | 3.76e+3 | 5.58e+3 |
+| Construcción | 2.74e+1 | 0 |
+| Fin de vida | 0 | 9.52e+1 |
+| **Total** | **5.67e+3** ✗ (debería ser 3.79e+3) | **3.79e+3** ✗ (debería ser 5.67e+3) |
+
+Causa: `TablaResultados()` (`comparar.component.ts`) acumula los totales en
+`auxtotal[element.id]`, y la fila Total se arma con `Object.keys(auxtotal)`. JavaScript recorre
+las llaves numéricas en orden ascendente, no en el de inserción, así que los totales salen
+ordenados por id de proyecto mientras las columnas siguen `outproyect_bar`. Pasa cada vez que el
+proyecto de la columna 1 tiene un id mayor que algún proyecto comparado; con 3 o más proyectos se
+revuelven. Arreglo: recorrer `this.outproyect_bar` para armar la fila Total. Además, el primer total
+no lleva el separador de miles que llevan los demás valores (detalle del mismo bloque).
+
+**A-17 · Baja · Columnas de la comparación sin nombre.** Con dos o más proyectos, la tabla agrega
+una fila con "1  2" y los valores se separan con espacios duros (` ` × 9) dentro de una sola
+celda. No dice qué proyecto es cada número y la alineación depende del ancho del texto. El proyecto
+1 no tiene chip. Además, en "Selecciona una opción a visualizar" hay dos proyectos llamados
+"Prueba" que no se distinguen.
+
+**A-18 · Descartado · Selector de equipos abierto tras navegar.** Se vio cuando la navegación se
+disparó por script haciendo clic a través del panel. Con Atrás y Adelante del navegador el panel sí
+se cierra (comprobado), así que un usuario real no llega a este estado.
+
+## Método y límites
