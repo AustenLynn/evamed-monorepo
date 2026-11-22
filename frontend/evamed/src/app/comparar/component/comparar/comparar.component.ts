@@ -739,7 +739,7 @@ export class CompararComponent implements OnInit {
     grafica.instance.FaseSeleccionada = this.cicloVidaSeleccionadoElemento;
     grafica.instance.FasesEliminadas = this.ciclosDeVidaIgnoradasElementos;
     grafica.instance.inputProyect = this.proyectosMostrados_elementos;
-    grafica.instance.materiales = this.materialList;
+    grafica.instance.nombresMateriales = this.nombresMateriales;
     grafica.instance.Secciones = this.sectionList;
     grafica.instance.EstadoSeccion = this.estadoTercerSeccion;
     grafica.instance.unidades = this.potentialTypesList;
@@ -767,7 +767,22 @@ export class CompararComponent implements OnInit {
     grafica.instance.unidades = this.potentialTypesList;
   }
 
+  /** Section 3 numbers from the server (A-32); the browser calculation only runs in parity mode. */
   llamarCalculosTercerSeccion(idProyecto) {
+    const servidor = this.resultados.obtener(idProyecto)?.porMaterial ?? { Calculos: {}, materiales: {} };
+    this.registrarParidad(idProyecto, 3, () => this.calcularSeccion3EnNavegador(idProyecto), servidor);
+    return {
+      materiales: keepIndicators(servidor.materiales, this.nombresMostrados),
+      Calculos: keepIndicators(servidor.Calculos, this.nombresMostrados),
+    };
+  }
+
+  /** Material names of every shown project, for the section 3 table. */
+  get nombresMateriales(): Record<string, string> {
+    return Object.assign({}, ...this.proyect_active.map(id => this.resultados.obtener(id)?.nombresMateriales ?? {}));
+  }
+
+  private calcularSeccion3EnNavegador(idProyecto) {
     const DatosCalculos = {
       TEList: this.TEList,
       projectsList: this.projectsList,
@@ -794,11 +809,7 @@ export class CompararComponent implements OnInit {
         DatosCalculos,
         this.basesDatos
       );
-    return {
-      ...aux,
-      materiales: keepIndicators(aux['materiales'], this.nombresMostrados),
-      Calculos: keepIndicators(aux['Calculos'], this.nombresMostrados),
-    };
+    return aux;
   }
 
   getAnalisisElementos(idProyecto) {
