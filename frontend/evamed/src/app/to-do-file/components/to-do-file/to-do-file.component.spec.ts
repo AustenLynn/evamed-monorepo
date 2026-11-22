@@ -138,6 +138,19 @@ describe('ToDoFileComponent upload', () => {
     expect(sessionStorage.getItem('dataProject')).toBeNull();
   });
 
+  it('refuses a template with no material rows instead of importing nothing (audit A-34)', async () => {
+    const book = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(book, XLSX.utils.aoa_to_sheet([['Material', 'Cantidad']]), 'Cimentación');
+    chooseFile(new File([XLSX.write(book, { type: 'array', bookType: 'xlsx' })], 'vacia.xlsm'));
+
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.upload-error')?.textContent).toContain('no tiene materiales');
+    });
+    expect(continueButton().disabled).toBe(true);
+    expect(sessionStorage.getItem('dataProject')).toBeNull();
+  });
+
   it('stays disabled and says so when the parsed file cannot be stored', async () => {
     const setItem = Storage.prototype.setItem;
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (this: Storage, key: string, value: string) {

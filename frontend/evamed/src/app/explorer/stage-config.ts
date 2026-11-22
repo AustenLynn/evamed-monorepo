@@ -84,8 +84,9 @@ export const STAGES: readonly StageConfig[] = [
     sortable: false,
     emptyMessage:
       'Aún no hay escenarios de fin de vida con factores de impacto en la base de datos. ' +
-      'Por ahora, EVAMED calcula solo el consumo de energía de la deconstrucción (C1), ' +
-      'con la maquinaria del explorador de construcción.',
+      'Por ahora, EVAMED calcula el consumo de energía de la deconstrucción (C1), con la ' +
+      'maquinaria del explorador de construcción, y la liberación del carbono biogénico de los ' +
+      'materiales al final de su vida útil (C3).',
   },
 ];
 

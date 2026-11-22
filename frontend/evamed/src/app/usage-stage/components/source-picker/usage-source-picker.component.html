@@ -34,7 +34,7 @@
 </div>
 <app-ev-selection-tray evMenuFooter *ngIf="mode === 'add'" class="usage-tray"
   [items]="selectionItems" [label]="selected.size + ' fuentes seleccionadas'" [disabled]="locked" (remove)="removeSelection($event)">
-  <button mat-flat-button evAction="primary" type="button" class="usage-add" [disabled]="!selected.size || locked" (click)="submit()">{{ locked ? 'Guardando…' : 'Agregar ' + selected.size + ' fuentes' }}</button>
+  <button mat-flat-button evAction="primary" type="button" class="usage-add" [disabled]="!selected.size || locked" (click)="submit()">{{ locked ? 'Guardando…' : 'Agregar ' + selected.size + (selected.size === 1 ? ' fuente' : ' fuentes') }}</button>
 </app-ev-selection-tray>
 </app-ev-menu-shell>
 </section>

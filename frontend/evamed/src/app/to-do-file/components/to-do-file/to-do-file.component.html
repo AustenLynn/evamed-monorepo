@@ -53,7 +53,7 @@
           </p>
           <div class="container-upload-icon">
             <img  #asImage src="assets/images/Icon awesome-file-upload.png" class="img-upload" alt="File upload"/>
-            <input type="file" id="file" (change)="onFileChange($event)" multiple="false" class="input-upload" />
+            <input type="file" id="file" (change)="onFileChange($event)" multiple="false" accept=".xlsm,.xlsx" class="input-upload" />
             <label for="file" #asTitle  id="fileType" class="title-action">Cargar archivo</label>
           </div>
         </div>

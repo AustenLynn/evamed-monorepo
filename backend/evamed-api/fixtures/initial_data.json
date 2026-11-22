@@ -752,14 +752,14 @@
   "model": "projects_api.sourceinformation",
   "pk": 4,
   "fields": {
-    "name_source_information": "Maquinaria de carga pesada a base de Diesel, potencia menor a 18.64kW (GLO)-Ecoinvent 3"
+    "name_source_information": "Maquinaria de carga pesada a base de Diesel, potencia menor a 18.64 kW (GLO)-Ecoinvent 3"
   }
 },
 {
   "model": "projects_api.sourceinformation",
   "pk": 5,
   "fields": {
-    "name_source_information": "Generador de energ\u00eda el\u00e9ctrica a base de Diesel, potencia potencia entre 18.64 kW y 74.57 kW (GLO)-Ecoinvent 3"
+    "name_source_information": "Generador de energ\u00eda el\u00e9ctrica a base de Diesel, potencia entre 18.64 kW y 74.57 kW (GLO)-Ecoinvent 3"
   }
 },
 {

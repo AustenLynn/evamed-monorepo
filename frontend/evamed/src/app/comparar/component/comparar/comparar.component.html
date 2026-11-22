@@ -12,7 +12,7 @@
     <br>
   </div>
   <div class="bases-datos">
-    <p class="text-duplicados">Duplicados</p>
+    <p class="text-duplicados">Vista de indicadores</p>
     <mat-button-toggle-group *ngIf="carbonoDisponible" class="vista-resultados" [value]="vista"
       (change)="cambiarVista($event.value)" hideSingleSelectionIndicator aria-label="Indicadores mostrados">
       <mat-button-toggle value="completo">Completo</mat-button-toggle>
@@ -30,7 +30,7 @@
   <app-excluded-notice class="resultados-excluidos" [excluded]="excluded"></app-excluded-notice>
   <div class="div-proyectos-mostrados">
     <div>
-      <button mat-button class="menu-proyectos" [matMenuTriggerFor]="menu">Selecciona una opción a visualizar
+      <button mat-button class="menu-proyectos" [matMenuTriggerFor]="menu">Comparar con otro proyecto
        <mat-icon>keyboard_arrow_down</mat-icon></button>
       <mat-menu #menu="matMenu">
         <button mat-menu-item

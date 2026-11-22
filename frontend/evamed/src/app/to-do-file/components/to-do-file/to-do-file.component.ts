@@ -86,8 +86,9 @@ export class ToDoFileComponent implements OnInit {
       }
       try {
         /* read workbook */
-        const bstr: string = e.target.result,
-         wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
+        // readAsArrayBuffer below, so the type is 'array' (audit A-35).
+        const bstr: ArrayBuffer = e.target.result,
+         wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'array' });
         /* assingable */
         let partialData: AOA = [];
         const totalData = [];
@@ -108,6 +109,12 @@ export class ToDoFileComponent implements OnInit {
         if (sectionSheets === 0) {
           this.uploadError =
             'El archivo no tiene hojas de elementos constructivos (Cimentación, Muros interiores…). Usa la plantilla de EVAMED.';
+          return;
+        }
+        // An empty template used to "import" 0 materials as a success (audit A-34).
+        if (!toRead.data.flat().some(row => row?.['Material'] != null && String(row['Material']).trim() !== '')) {
+          this.uploadError =
+            'El archivo no tiene materiales: llena al menos una fila en las hojas de elementos constructivos y vuelve a cargarlo.';
           return;
         }
         if (isGeneratedTemplate(wb)) {

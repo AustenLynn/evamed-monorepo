@@ -26,7 +26,9 @@ export function usageOptions(state: UsageState): UsageOption[] {
     }
   }
   options.push({key: 'panels', selectionId: -1, type: null, source: 'panels', name: 'Generación fotovoltaica', rawName: 'Generación fotovoltaica', database: null, region: null, supported: true});
-  return options;
+  // Same label from two databases (e.g. ecoinvent and mexicaniuh grids): name the database (audit A-14).
+  const repeated = new Set(options.map(o => o.name).filter((name, i, all) => all.indexOf(name) !== i));
+  return options.map(o => repeated.has(o.name) && o.database ? {...o, name: `${o.name} (${o.database})`} : o);
 }
 const emptyAnnual = (): AnnualDraft => ({quantity: '', repairUnit: false, confirmRecalculate: false}),
  copy = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;

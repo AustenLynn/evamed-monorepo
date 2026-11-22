@@ -2,7 +2,7 @@
   <div><h2 evHeading="section">Fuentes de suministro</h2><p>Energía consumida · todo el edificio</p></div>
   <button evAction="primary" mat-flat-button type="button" class="usage-primary" [disabled]="pending || blocked || !canAdd" (click)="addSources.emit()"><mat-icon>add_circle</mat-icon> Agregar fuente</button>
 </header>
-<div class="usage-view"><span>{{ rows.length }} fuentes agregadas</span><mat-button-toggle-group [value]="view" (change)="view = $event.value" aria-label="Vista de fuentes"><mat-button-toggle value="cards">Tarjetas</mat-button-toggle><mat-button-toggle value="list">Lista</mat-button-toggle></mat-button-toggle-group></div>
+<div class="usage-view"><span>{{ rows.length }} {{ rows.length === 1 ? 'fuente agregada' : 'fuentes agregadas' }}</span><mat-button-toggle-group [value]="view" (change)="view = $event.value" aria-label="Vista de fuentes"><mat-button-toggle value="cards">Tarjetas</mat-button-toggle><mat-button-toggle value="list">Lista</mat-button-toggle></mat-button-toggle-group></div>
 <div class="usage-grid" [class.usage-grid-list]="view === 'list'">
   <article evSurface *ngFor="let row of rows; trackBy: trackRow" class="usage-card" [attr.data-row]="row.id" [class.usage-card-expanded]="expanded === row.id">
     <button class="usage-summary" type="button" [attr.aria-label]="(expanded === row.id ? 'Cerrar edición: ' : 'Editar fuente: ') + name(row) + ', ' + (row.quantity === null ? 'Sin cantidad' : (row.quantity | quantityDisplay)) + ' ' + unitName(row.unit_id) + ' / año, ' + (row.percentage === null ? 'Sin porcentaje' : row.percentage + ' %')" [disabled]="pending || blocked" [attr.aria-expanded]="expanded === row.id" [attr.aria-controls]="'usage-editor-' + row.id" (click)="editSource.emit(row.id)">
