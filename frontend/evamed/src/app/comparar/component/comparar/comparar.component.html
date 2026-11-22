@@ -68,20 +68,22 @@
             <div class="sub-container">
               <div>
                 <mat-button-toggle-group hideSingleSelectionIndicator>
-                  <mat-button-toggle class="button-impactos" (click)="TablaResultados()"><mat-icon class="icons-options">table_view</mat-icon></mat-button-toggle>
-                  <mat-button-toggle class="button-impactos" (click)="GraficasResultados()"><mat-icon class="icons-options">bar_chart</mat-icon></mat-button-toggle>
+                  <mat-button-toggle class="button-impactos" (click)="TablaResultados()" aria-label="Ver como tabla" matTooltip="Ver como tabla"><mat-icon class="icons-options">table_view</mat-icon></mat-button-toggle>
+                  <mat-button-toggle class="button-impactos" (click)="GraficasResultados()" aria-label="Ver como gráfica" matTooltip="Ver como gráfica"><mat-icon class="icons-options">bar_chart</mat-icon></mat-button-toggle>
                 </mat-button-toggle-group>
               </div>
               <div>
                 <mat-button-toggle-group hideSingleSelectionIndicator>
-                  <mat-button-toggle [disabled]="botones_grafica_activos" class="button-impactos" (click)="porcentaje(true)">%</mat-button-toggle>
-                  <mat-button-toggle [disabled]="botones_grafica_activos" class="button-impactos" (click)="porcentaje(false)">#</mat-button-toggle>
+                  <mat-button-toggle [disabled]="botones_grafica_activos" class="button-impactos" (click)="porcentaje(true)" aria-label="Mostrar en porcentaje" matTooltip="Mostrar en porcentaje">%</mat-button-toggle>
+                  <mat-button-toggle [disabled]="botones_grafica_activos" class="button-impactos" (click)="porcentaje(false)" aria-label="Mostrar en valores absolutos" matTooltip="Mostrar en valores absolutos">#</mat-button-toggle>
                 </mat-button-toggle-group>
               </div>
               <div>
                 <mat-button-toggle-group hideSingleSelectionIndicator>
-                  <mat-button-toggle class="button-impactos" (click) = "AjustePorMetro(1)"><mat-icon class="icons-options">border_all</mat-icon></mat-button-toggle>
-                  <mat-button-toggle class="button-impactos" (click) = "AjustePorMetro(0)"><mat-icon class="icons-options">branding_watermark</mat-icon></mat-button-toggle>
+                  <mat-button-toggle class="button-impactos" (click) = "AjustePorMetro(1)" aria-label="Total del edificio" matTooltip="Total del edificio"><mat-icon class="icons-options">border_all</mat-icon></mat-button-toggle>
+                  <mat-button-toggle class="button-impactos" (click) = "AjustePorMetro(0)" [disabled]="!porMetroDisponible"
+                    aria-label="Por metro cuadrado"
+                    [matTooltip]="porMetroDisponible ? 'Por metro cuadrado' : 'Por m² no disponible: falta la superficie construida o habitable de un proyecto'"><mat-icon class="icons-options">branding_watermark</mat-icon></mat-button-toggle>
                 </mat-button-toggle-group>
               </div>
             </div>

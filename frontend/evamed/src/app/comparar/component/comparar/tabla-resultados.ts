@@ -51,3 +51,17 @@ export function filasTabla(proyectos: ProyectoTabla[], fasesEliminadas: string[]
   filas.push({ data: total, color: COLORES[4] });
   return filas;
 }
+
+/**
+ * Per-m² results divide by the built and the habitable surface, so they only make
+ * sense when every shown project has both above 0 (audit A-09).
+ */
+export function porMetroDisponible(
+  proyectos: { id: number; builded_surface?: number | null; living_area?: number | null }[],
+  ids: number[]
+): boolean {
+  return ids.every(id => {
+    const p = proyectos.find(item => item.id == id);
+    return !!p && (p.builded_surface ?? 0) > 0 && (p.living_area ?? 0) > 0;
+  });
+}

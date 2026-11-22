@@ -22,7 +22,7 @@ import { catchError, map, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ActiveProjectService } from 'src/app/core/services/active-project/active-project.service';
 import { ResultsExcluded } from '../../../home-evamed/components/excluded-notice/excluded-notice.component';
-import { etiquetasProyectos, filasTabla, ProyectoTabla } from './tabla-resultados';
+import { etiquetasProyectos, filasTabla, porMetroDisponible, ProyectoTabla } from './tabla-resultados';
 import { carbonType, keepIndicators, loadVista, saveVista, VistaResultados } from './vista-carbono';
 import {
   animate,
@@ -971,7 +971,13 @@ export class CompararComponent implements OnInit {
     return analisisProyectos;
   }
 
+  /** False when a shown project lacks a surface: dividing by it gave Infinity/NaN (audit A-09). */
+  get porMetroDisponible(): boolean {
+    return porMetroDisponible(this.calculos.projectsList ?? [], this.proyect_active ?? []);
+  }
+
   AjustePorMetro(flag) {
+    if (flag == 0 && !this.porMetroDisponible) return;
     this.outproyect_bar = [];
     this.outproyect_pie = [];
     this.outproyect_radar = [];

@@ -1,4 +1,4 @@
-import { etiquetasProyectos, filasTabla } from './tabla-resultados';
+import { etiquetasProyectos, filasTabla, porMetroDisponible } from './tabla-resultados';
 
 const GWP = 'Calentamiento global,\ntotal',
   proyecto = (id: number, Nombre: string, p: number, c: number, u: number, f: number) => ({
@@ -35,5 +35,19 @@ describe('results table rows', () => {
   it('labels duplicate project names with their id only when needed', () => {
     expect(etiquetasProyectos([{ id: 1, Nombre: 'Prueba' }, { id: 2, Nombre: 'Prueba' }, { id: 3, Nombre: 'Casa' }]))
       .toEqual(['Prueba (#1)', 'Prueba (#2)', 'Casa']);
+  });
+});
+
+describe('per m² availability (audit A-09)', () => {
+  const lista = [
+    { id: 1, builded_surface: 120, living_area: 100 },
+    { id: 2, builded_surface: 0, living_area: 500 },
+    { id: 3, builded_surface: 80, living_area: null },
+  ];
+  it('is available only when every shown project has both surfaces above 0', () => {
+    expect(porMetroDisponible(lista, [1])).toBe(true);
+    expect(porMetroDisponible(lista, [1, 2])).toBe(false);
+    expect(porMetroDisponible(lista, [3])).toBe(false);
+    expect(porMetroDisponible(lista, [9])).toBe(false);
   });
 });
