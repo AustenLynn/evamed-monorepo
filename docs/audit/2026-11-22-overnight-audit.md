@@ -259,4 +259,22 @@ privacidad esté disponible: conviene enlazar un documento real.
 
 **A-24 · Baja · Erratas en el registro.** "He **leido**" (leído), en `register.component.html:154`.
 
+### Menú de la tarjeta (⋮): Renombrar y Duplicar
+
+Funciona: renombrar (proyecto 651 → "AUDITORIA 2026-11-22 (borrar) renombrado") y duplicar (crea el
+**652** con los mismos resultados de servidor por etapa y el mismo uso: 10,000 kWh/año, fuente 16 al
+100 %). "Eliminar" no se probó.
+
+**A-25 · Baja · Detalles de Renombrar y Duplicar.**
+- El diálogo "Cambio de nombre de proyecto" abre con el campo **vacío**, en vez de con el nombre
+  actual.
+- Con solo espacios, "Cambiar nombre" sigue habilitado; al pulsarlo no pasa nada y no hay mensaje.
+- Renombrar y Duplicar **recargan toda la página** (se pierde el scroll y se repiten las ~21
+  peticiones de A-03).
+- Duplicar no pide confirmación y nombra la copia con el sufijo en inglés **" - Copy"**, en una
+  interfaz en español ("- copia").
+
+> Datos de prueba creados en la cuenta del dueño: proyecto **651** "AUDITORIA 2026-11-22 (borrar)
+> renombrado" y su copia **652** "... - Copy". Se pueden borrar desde "⋮ → Eliminar".
+
 ## Método y límites
