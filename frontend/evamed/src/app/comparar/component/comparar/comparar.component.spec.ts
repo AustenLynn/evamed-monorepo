@@ -128,6 +128,21 @@ describe('CompararComponent project name', () => {
       expect(component.calculosSegunaSeccion.OperacionesDeFasePorElementoConstructivo).not.toHaveBeenCalled();
     });
 
+    it('draws section 3 from the server breakdown', async () => {
+      const porMaterial = {
+          Calculos: { GWP: { Producción: { 'A1-A3': { '1': 5 } } } },
+          materiales: { GWP: { Producción: { 'A1-A3': { '1': { '9': 5 } } } } },
+        },
+        component: any = build(servidor({ 7: () => of({ datos, por_material: porMaterial, nombres_materiales: { '9': 'Cemento' } }) }));
+      component.calculosTercerSeccion = { OperacionesDeFasePorElementoConstructivoCicloVida: vi.fn() };
+      await firstValueFrom(component.resultados.cargar(7));
+      component.proyect_active = [7];
+
+      expect(component.llamarCalculosTercerSeccion(7)).toEqual(porMaterial);
+      expect(component.nombresMateriales).toEqual({ '9': 'Cemento' });
+      expect(component.calculosTercerSeccion.OperacionesDeFasePorElementoConstructivoCicloVida).not.toHaveBeenCalled();
+    });
+
     it('keeps the Solo carbono filter working with server names', async () => {
       const component: any = build(servidor({ 7: () => of({ datos }) }));
       await firstValueFrom(component.resultados.cargar(7));
@@ -266,10 +281,12 @@ describe('CompararComponent carbon-only view', () => {
 
   it('filters the element and material sections by indicator too', () => {
     const component = build();
-    component.calculosTercerSeccion = {
-      OperacionesDeFasePorElementoConstructivoCicloVida: () => ({
-        materiales: { 'Calentamiento global, total': {}, 'Agotamiento de ozono': {} },
-        Calculos: { 'Calentamiento global, total': {}, 'Agotamiento de ozono': {} },
+    component.resultados = {
+      obtener: () => ({
+        porMaterial: {
+          materiales: { 'Calentamiento global, total': {}, 'Agotamiento de ozono': {} },
+          Calculos: { 'Calentamiento global, total': {}, 'Agotamiento de ozono': {} },
+        },
       }),
     };
     vi.spyOn(component, 'ajusteUsoBaseDatos').mockImplementation(() => undefined);

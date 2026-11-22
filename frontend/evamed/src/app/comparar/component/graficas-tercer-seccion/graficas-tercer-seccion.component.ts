@@ -29,7 +29,8 @@ export class GraficasTercerSeccionComponent implements OnInit, AfterViewInit {
   @Input() ElementosContructivosEliminados:any;
   @Input() FasesEliminadas:any;
   @Input() FaseSeleccionada:string;
-  @Input() materiales:any;
+  /** Names of the shown projects' materials, from the server results (A-32). */
+  @Input() nombresMateriales: Record<string, string> = {};
   @Input() Secciones:any;
   @Input() EstadoSeccion:any;
   @Input() unidades:any;
@@ -1136,11 +1137,10 @@ export class GraficasTercerSeccionComponent implements OnInit, AfterViewInit {
     }
     let num = 0;
     auxidsMateriales.forEach((material, ii) => {
-      const aux = {},
-       helpMaterial = this.materiales.filter(({id}) => id == material);
+      const aux = {};
       num = num + 1;
       aux['no'] = num;
-      aux['material'] = helpMaterial[0]['name_material'];
+      aux['material'] = this.nombresMateriales?.[material] ?? `Material ${material}`;
       aux['porcentaje'] = ((auxdatos[ii] / suma) * 100).toFixed(2);
       aux['numero'] = auxdatos[ii].toExponential(2);
       infoTablaDispercion.push(aux);
