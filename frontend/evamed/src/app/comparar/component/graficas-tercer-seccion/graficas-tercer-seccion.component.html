@@ -1,4 +1,5 @@
-<cdk-virtual-scroll-viewport appendOnly itemSize="50" class="viewport">
+<!-- A plain scroll box: a cdk-virtual-scroll-viewport makes CDK 22 tables virtualise their rows (only some, or none, shown). -->
+<div class="viewport">
   <mat-card appearance="outlined" *ngFor="let item of InfoMostrada; let i = index" class="card-indicador">
       <div>
         <div class="subtitulo-proyecto">
@@ -125,4 +126,4 @@
           </div>
       </div>
   </mat-card>
-</cdk-virtual-scroll-viewport>
+</div>
