@@ -1257,14 +1257,22 @@ export class CompararComponent implements OnInit {
   getAnalisisBarrasElementosConstructivos(idProyecto) {
     //Calculos y obtención de datos para crear correctamente las gráficas de barras
     const analisisProyectos: Record<string, any> = {
-      Nombre: this.projectsList.filter(
-        p => p['id'] == idProyecto
-      )[0]['name_project'],
+      Nombre: this.projectsList.filter(p => p['id'] == idProyecto)[0]['name_project'],
       id: idProyecto,
       Datos: {},
     },
+      // Section 2 numbers from the server (A-32); the browser calculation only runs in parity mode.
+      servidor = this.resultados.obtener(idProyecto)?.porElemento ?? {};
+    this.registrarParidad(idProyecto, 2, () => this.calcularSeccion2EnNavegador(idProyecto), servidor);
+    const auxDatos = keepIndicators(servidor, this.nombresMostrados);
+    this.AjustarElementosMostrados(auxDatos);
+    this.AjustarElementosMostradosElemntos(auxDatos);
+    analisisProyectos['Datos'] = auxDatos;
+    return analisisProyectos;
+  }
 
-     DatosCalculos = {
+  private calcularSeccion2EnNavegador(idProyecto) {
+    const DatosCalculos = {
       TEList: this.TEList,
       projectsList: this.projectsList,
       materialList: this.materialList,
@@ -1283,20 +1291,8 @@ export class CompararComponent implements OnInit {
       sectionList: this.sectionList,
       PTList: this.PTList,
       conversionList: this.conversionList,
-    },
-
-     auxDatos = keepIndicators(
-      this.calculosSegunaSeccion.OperacionesDeFasePorElementoConstructivo(
-        idProyecto,
-        DatosCalculos,
-        this.basesDatos
-      ),
-      this.nombresMostrados
-    );
-    this.AjustarElementosMostrados(auxDatos);
-    this.AjustarElementosMostradosElemntos(auxDatos);
-    analisisProyectos['Datos'] = auxDatos;
-    return analisisProyectos;
+    };
+    return this.calculosSegunaSeccion.OperacionesDeFasePorElementoConstructivo(idProyecto, DatosCalculos, this.basesDatos);
   }
 
   AjustarElementosMostrados(auxDatos) {

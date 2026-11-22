@@ -49,7 +49,7 @@ def _apply_a2_exclusions(scheme_project, conv_lookup, msd_lookup, aggregate_mate
     (their transport is left out instead of assuming 1 t), and total the biogenic release."""
     missing_by_material = methods.missing_by_material({ps.material_id_id for ps in scheme_project})
     biogenic = next((p.id for p in potential_types if p.name_potential_type == 'GWP-biogenic'), None)
-    kept, no_mass, release = [], set(), 0.0
+    kept, no_mass, release = [], set(), {}
     for ps in scheme_project:
         mat = ps.material_id
         missing = missing_by_material.get(ps.material_id_id, [])
@@ -78,7 +78,7 @@ def _apply_a2_exclusions(scheme_project, conv_lookup, msd_lookup, aggregate_mate
             uptake = (_material_value(msd_lookup, aggregate_materials, ps.material_id_id, biogenic)
                       * float(ps.quantity or 0) * (1 + (ps.replaces or 0)))
             if uptake < 0:
-                release -= uptake
+                release[ps.id] = -uptake
     return kept, no_mass, release
 
 
@@ -183,19 +183,26 @@ def compute(project, active_databases, detalle=False):
     potential_types = list(methods.active_potential_types())
     a2 = methods.active_method() == methods.A2
     excluded = {'materials': [], 'no_mass': [], 'transport': [], 'energy': [], 'sources': []}
-    no_mass_rows, biogenic_release = set(), 0.0
+    no_mass_rows, release_by_row = set(), {}
     if a2:
-        scheme_project, no_mass_rows, biogenic_release = _apply_a2_exclusions(
+        scheme_project, no_mass_rows, release_by_row = _apply_a2_exclusions(
             scheme_project, conv_lookup, msd_lookup, aggregate_materials, potential_types, excluded,
             active_databases)
         _list_noncurrent_factors(scheme_project, ecd_list, source_ids, excluded)
 
+    biogenic_release = sum(release_by_row.values())
     datos = {}
+    por_elemento = {}  # with detalle: indicator -> section id -> A1-A3 + A4 + A5 + B4 + C1 + C3 (A-32)
     error_calculos = False
 
     for impacto in potential_types:
         name = impacto.name_complete_potential_type
         datos[name] = {}
+        elementos = por_elemento[name] = {}
+
+        def sumar(section_id, value, elementos=elementos):
+            if detalle:
+                elementos[str(section_id)] = elementos.get(str(section_id), 0) + value
 
         # ---- Producción ----
         produccion = {}
@@ -209,7 +216,9 @@ def compute(project, active_databases, detalle=False):
                 db = mat.database_from or ''
                 if db not in active_databases or mat.id in aggregate_materials:
                     continue
-                total += msd_lookup.get((mat.id, subetapa, impacto.id), 0) * float(ps.quantity or 0)
+                value = msd_lookup.get((mat.id, subetapa, impacto.id), 0) * float(ps.quantity or 0)
+                total += value
+                sumar(ps.section_id_id, value)
             produccion[subproceso] = produccion.get(subproceso, 0) + total
 
         aggregate_key = standards.get(_AGGREGATE_STANDARD, 'A1-A3')
@@ -219,10 +228,9 @@ def compute(project, active_databases, detalle=False):
             if (mat.database_from or '') not in active_databases:
                 continue
             if mat.id in aggregate_materials:
-                aggregate_total += (
-                    msd_lookup.get((mat.id, _AGGREGATE_STANDARD, impacto.id), 0)
-                    * float(ps.quantity or 0)
-                )
+                value = msd_lookup.get((mat.id, _AGGREGATE_STANDARD, impacto.id), 0) * float(ps.quantity or 0)
+                aggregate_total += value
+                sumar(ps.section_id_id, value)
         if aggregate_total:
             produccion[aggregate_key] = produccion.get(aggregate_key, 0) + aggregate_total
 
@@ -250,11 +258,15 @@ def compute(project, active_databases, detalle=False):
             tv = 0 if ps.id in no_mass_rows else peso * float(ps.quantity or 0) * (intl + natl)
             a4_total += tv
             row_transport[ps.id] = tv
+            sumar(ps.section_id_id, tv)
 
-        a5_total = sum(
-            sid_lookup.get((cse.source_information_id_id, impacto.id), 0) * float(cse.quantity or 0)
-            for cse in cse_list
-        )
+        a5_total = 0
+        for cse in cse_list:
+            key = (cse.source_information_id_id, impacto.id)
+            if key in sid_lookup:
+                value = sid_lookup[key] * float(cse.quantity or 0)
+                a5_total += value
+                sumar(cse.section_id_id, value)
         datos[name]['Construccion'] = {'A4': a4_total, 'A5': a5_total}
 
         # ---- Uso ----
@@ -266,18 +278,20 @@ def compute(project, active_databases, detalle=False):
                 continue
             replaces = ps.replaces or 0
             # Only this row's transport: the material's other rows have their own replacements.
-            b4_total += row_transport.get(ps.id, 0) * replaces
+            value = row_transport.get(ps.id, 0) * replaces
             if mat.id not in aggregate_materials:
                 for subetapa in _PRODUCTION_STAGES:
-                    b4_total += (
+                    value += (
                         msd_lookup.get((mat.id, subetapa, impacto.id), 0)
                         * float(ps.quantity or 0) * replaces
                     )
             else:
-                b4_total += (
+                value += (
                     msd_lookup.get((mat.id, _AGGREGATE_STANDARD, impacto.id), 0)
                     * float(ps.quantity or 0) * replaces
                 )
+            b4_total += value
+            sumar(ps.section_id_id, value)
 
         b6_total = sum(
             useful_life * ted_lookup.get((ecd.type_id, impacto.id), 0) * float(ecd.quantity or 0)
@@ -291,16 +305,24 @@ def compute(project, active_databases, detalle=False):
             ev = sid_lookup.get((ecdp.source_information_id_id, impacto.id))
             if ev is not None:
                 c1_total += float(ecdp.quantity or 0) * ev
+                sumar(ecdp.section_id_id, float(ecdp.quantity or 0) * ev)
             else:
                 error_calculos = True
         # EN 15804+A2: biogenic CO2 taken up in A1-A3 is released at end of life (design 2026-11-20).
         c3_total = biogenic_release if impacto.name_potential_type in _BIOGENIC_RELEASE_TYPES else 0
+        if c3_total:
+            for ps in scheme_project:
+                if ps.id in release_by_row:
+                    sumar(ps.section_id_id, release_by_row[ps.id])
         datos[name]['FinDeVida'] = {'C1': c1_total, 'C2': 0, 'C3': c3_total, 'C4': 0}
 
     # The climate-change indicator (GWP-total under A2, PCG 100 under CML) for the stage pages' carbon bar.
     gwp = methods.gwp_total_type()
     carbono = {'name': gwp.name_complete_potential_type, 'unit': gwp.unit_potential_type} if gwp else None
-    return {
+    payload = {
         'project_id': project_id, 'datos': datos, 'error': error_calculos, 'excluded': excluded,
         'carbono': carbono,
     }
+    if detalle:
+        payload['por_elemento'] = por_elemento
+    return payload
