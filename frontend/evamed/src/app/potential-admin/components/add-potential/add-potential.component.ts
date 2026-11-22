@@ -55,7 +55,6 @@ export class AddPotentialComponent implements OnInit {
       this.materialsService
         .addPotentialTypes(potentialType)
         .subscribe(data => {
-          console.log(data);
           this.onNoClick();
         });
     }

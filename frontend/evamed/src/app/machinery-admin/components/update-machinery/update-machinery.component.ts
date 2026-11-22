@@ -65,7 +65,6 @@ export class UpdateMachineryComponent implements OnInit {
               potential => potential.sourceInformarion_id === machinary.id
             );
             this.potentialList = potentialList;
-            console.log(this.potentialList);
           });
         });
       });

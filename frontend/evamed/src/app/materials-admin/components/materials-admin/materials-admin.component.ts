@@ -131,6 +131,5 @@ export class MaterialsAdminComponent implements OnInit {
 
     this.materialList = filterSelected;
 
-    console.log(filterSelected);
   }
 }

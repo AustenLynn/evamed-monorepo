@@ -210,7 +210,6 @@ export class GraficasTercerSeccionComponent implements OnInit, AfterViewInit {
         aux['DataGraficaMateriales'] = {datasets: auxgrafica['grafica'], labels: auxgrafica['labels']};
         aux['Coloreslementos'] = {};
       }
-      //console.log(proyecto.data['Calculos'][this.impactoAmbientalMostrado.toString()]);
       aux['DatosCicloVida'] = this.GraficaCicloVida(proyecto.data['Calculos'][this.impactoAmbientalMostrado.toString()], aux['CicloSeleccionado'], aux['flagAgruparProduccion'], auxData);
       aux['LabelsCicloVida'] = this.graficaCicloVidaBar(aux['DatosMateriales'], aux['flagAgruparProduccion']);
       aux['LabelsElementos'] = this.EncontrarLabelsElementos(proyecto.data['Calculos'][this.impactoAmbientalMostrado.toString()], aux['CicloSeleccionado'])

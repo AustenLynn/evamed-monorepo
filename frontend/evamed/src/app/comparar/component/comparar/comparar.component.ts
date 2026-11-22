@@ -649,7 +649,6 @@ export class CompararComponent implements OnInit {
     this.containerImgEdificio.clear();
     const containers = {}
     this.proyect_active.forEach((proyecto, index) => {
-      //console.log(this.elementosConstructivosMostradosElementosPorProyecto[proyecto]);
       const auxN = 'imgEdificio'.concat(proyecto);
       containers[auxN] = this.containerImgEdificio.createComponent(this.imgEdificioComponent);
       containers[auxN].instance.inputPtoyect = this.coloresExistententesElementosConstructivos;
@@ -1232,7 +1231,6 @@ export class CompararComponent implements OnInit {
       this.nombresMostrados
     );
     this.AjustarElementosMostrados(auxDatos);
-    //console.log(this.iconosElementosConstrucivos)
     this.AjustarElementosMostradosElemntos(auxDatos);
     analisisProyectos['Datos'] = auxDatos;
     return analisisProyectos;
@@ -1590,7 +1588,6 @@ export class CompararComponent implements OnInit {
     }
     //activate graph selectioned
     if (this.ID != ' ') {
-      //console.log('in');
       document.getElementById(this.ID).className = 'boton-principal';
     }
 
@@ -1899,7 +1896,6 @@ export class CompararComponent implements OnInit {
   iniciarTabaDispercion() {
     this.infoTablaDispercion = [];
     //'color-'no', 'material', 'porcentaje', 'numero'
-    //console.log(this.outproyect_pie_bar_elementos)
     this.outproyect_pie_bar_elementos.forEach(element => {
       if (element['id'] == this.idProyectoSeleccionadoImagen) {
         let auxhelp = [],

@@ -267,7 +267,6 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
 
     this.autosaveIntervalId = setInterval(() => {
       if (!this.projectId) {
-        console.log('autosave: materials-stage skipped (missing projectId)');
         return;
       }
       const signature = this.buildAutosaveSignature();
@@ -276,7 +275,6 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
       }
 
       this.lastAutosaveSignature = signature;
-      console.log('autosave: materials-stage');
       this.saveStepOne();
     }, 5000);
   }
@@ -553,7 +551,6 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
 
   selectCountry(id) {
     this.catalogsService.getExternalDistances().subscribe(data => {
-      console.log(data)
       data.map(item => {
         let typeTransport = 'mar';
         if (id === item.id + 1) {
@@ -649,7 +646,6 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
   }
 
   onNgModelChangeMaterial() {
-    // console.log(this.selectedMaterial);
   }
 
   saveStepOne(): Promise<void> {
@@ -1141,12 +1137,10 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
 
   onSelectMaterial(event, material) {
     event.stopPropagation();
-    console.log('ON SELECT MATERIAL!!!!!!');
     this.dataMaterialSelected.materialSelectedDB = material;
     if (this.dataMaterialSelected.materialFiltrado !== undefined) {
       this.dataMaterialSelected.materialFiltrado = undefined;
     }
-    console.log(this.dataMaterialSelected);
     this.returnMaterialData();
   }
 
@@ -1159,7 +1153,6 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
   }
 
   returnMaterialData() {
-    console.log('returnMaterialData-----');
     const selectedName = this.dataMaterialSelected.materialFiltrado?.name_material
       ?? this.dataMaterialSelected.materialSelectedDB,
           selectedDescription = this.dataMaterialSelected?.description;
@@ -1169,19 +1162,16 @@ onSCSelected(event: MatSelectionListChange | any, originId: number) {
     this.dataMaterialSelected.Material = selectedName;
     this.dataMaterialSelected['Descripción de Material'] = selectedDescription;
 
-    console.log(this.dataMaterialSelected);
     this.selectedMaterial = true;
     this.showSearch = false;
   }
 
   removeMaterial(event) {
     event.stopPropagation();
-    console.log('entra a remove materials');
   }
 
   restoreMaterial(event) {
     event.stopPropagation();
-    console.log('entra a restore material');
   }
 
   duplicateMaterial(event, sc: string, origin: string) {

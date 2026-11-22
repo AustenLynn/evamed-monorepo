@@ -61,7 +61,6 @@ export class UpdatePotentialTransportComponent implements OnInit {
           transport_id: this.data[0].standard_id,
         })
         .subscribe(newScheme => {
-          console.log(newScheme);
           this.onNoClick();
         });
     }

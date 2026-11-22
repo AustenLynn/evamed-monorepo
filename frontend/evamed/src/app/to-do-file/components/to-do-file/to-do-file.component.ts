@@ -51,7 +51,6 @@ export class ToDoFileComponent implements OnInit {
   }
 
   onFileChange(evt: any) {
-    console.log('acción de botón!!!!!');
     const asTitle = this.title.nativeElement,
      asImage = this.image.nativeElement,
 

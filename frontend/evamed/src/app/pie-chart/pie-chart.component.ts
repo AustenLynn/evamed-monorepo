@@ -117,7 +117,6 @@ export class PieChartComponent implements OnInit {
         }]
       });
     }
-    console.log("Pie");
   }
 
   //cambio en la carga de gráficas dependiendo de la sección de resultados
@@ -374,7 +373,6 @@ export class PieChartComponent implements OnInit {
               }
             });
             if(flag) {
-              //console.log(marcador,auxSuma,auxdatos[marcador])
               auxSuma = auxSuma + auxdatos[marcador];
             }
             flag = true;
@@ -432,7 +430,6 @@ export class PieChartComponent implements OnInit {
         show: this.showlast,
       }
     }
-    // console.log('pie',this.pieChartData)
     this.ClickEvent.emit(data);
   }
 }

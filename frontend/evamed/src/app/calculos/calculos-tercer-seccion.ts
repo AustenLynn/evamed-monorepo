@@ -79,7 +79,6 @@ export class CalculosTercerSeccion {
       if (impacto_ban) {
         nameImpacto = impacto['name_complete_potential_type'];
         nameImpacto = this.ajustarNombre(nameImpacto);
-        console.log(nameImpacto)
         Datos[nameImpacto] = {};
         DatosMateriales[nameImpacto] = {};
         Datos[nameImpacto]['Producción'] = {'A1': {}, 'A2': {}, 'A3': {}};
@@ -97,7 +96,6 @@ export class CalculosTercerSeccion {
         etapas.forEach(subetapa => {
           elementoscreados = [];
           const auxSub = "A".concat((subetapa - 1).toString())
-          //console.log(subetapa)
           if (schemeProyect.length > 0) {
             schemeProyect.forEach(ps => {
               const baseDatosMaterial = this.materialList.filter(bs=> bs['id'] == ps['material_id']);
@@ -135,7 +133,6 @@ export class CalculosTercerSeccion {
                           porMaterialA1A3 = DatosMateriales[nameImpacto]['Producción']['A1-A3'][ps['section_id']];
                         porMaterialA1A3[ps['material_id']] = (porMaterialA1A3[ps['material_id']] ?? 0) + auxres;
                         Datos[nameImpacto]['Producción']['A1-A3'][ps['section_id']] = Datos[nameImpacto]['Producción']['A1-A3'][ps['section_id']] + auxres;
-                        //console.log(ps['material_id'],DatosMateriales[nameImpacto]['Producción'][auxSub][ps['section_id']][ps['material_id']],"res",auxres)
                     });
                   }
                 }else{
@@ -156,7 +153,6 @@ export class CalculosTercerSeccion {
                           porMaterial = DatosMateriales[nameImpacto]['Producción'][auxSub][ps['section_id']];
                         porMaterial[ps['material_id']] = (porMaterial[ps['material_id']] ?? 0) + auxres;
                         Datos[nameImpacto]['Producción'][auxSub][ps['section_id']] = Datos[nameImpacto]['Producción'][auxSub][ps['section_id']] + auxres;
-                        //console.log(ps['material_id'],DatosMateriales[nameImpacto]['Producción'][auxSub][ps['section_id']][ps['material_id']],"res",auxres)
                     });
                   }
                 }
@@ -164,7 +160,6 @@ export class CalculosTercerSeccion {
             });
           }
         });
-        //console.log(DatosMateriales[nameImpacto])
         //A4 Transporte
         elementoscreados = [];
         if (schemeProyect.length > 0) {

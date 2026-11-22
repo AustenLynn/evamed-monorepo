@@ -134,7 +134,6 @@ export class ProjectsService {
   }
 
   searchProject(project) {
-    console.log(environment.api_projects + '?search=' + project);
     return this.http
       .get<any>(environment.api_projects + '?search=' + project)
       .pipe(

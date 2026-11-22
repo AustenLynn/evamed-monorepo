@@ -48,8 +48,6 @@ export class ElectricitConsumptionService {
   }
 
   deleteACR(id: number) {
-    console.log('proceso de eliminación');
-    console.log(`${environment.api_annual_consumption_required}${id}/`);
     return this.http
       .delete(`${environment.api_annual_consumption_required}${id}/`)
       .pipe(
@@ -60,8 +58,6 @@ export class ElectricitConsumptionService {
   }
 
   deleteECD(id: number) {
-    console.log('proceso de eliminación');
-    console.log(`${environment.api_electricity_consumption_data}${id}/`);
     return this.http
       .delete(`${environment.api_electricity_consumption_data}${id}/`)
       .pipe(

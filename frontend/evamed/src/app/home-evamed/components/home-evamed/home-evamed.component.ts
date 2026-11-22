@@ -523,7 +523,6 @@ export class HomeEvamedComponent implements OnInit {
         });
       });
     } catch (e) {
-      console.log(e);
     }
 
     return sectionsExist.filter(this.onlyUnique);
@@ -545,7 +544,6 @@ export class HomeEvamedComponent implements OnInit {
         });
       });
     } catch (e) {
-      console.log(e);
     }
 
     return listSC.filter(this.onlyUnique);
@@ -564,7 +562,6 @@ export class HomeEvamedComponent implements OnInit {
         });
       });
     } catch (e) {
-      console.log(e);
     }
 
     return sectionsExist.filter(this.onlyUnique);
@@ -583,7 +580,6 @@ export class HomeEvamedComponent implements OnInit {
         });
       });
     } catch (e) {
-      console.log(e);
     }
 
     return sectionsExist.filter(this.onlyUnique);
@@ -615,7 +611,6 @@ export class HomeEvamedComponent implements OnInit {
         });
       });
     } catch (e) {
-      console.log(e);
     }
 
     return list.filter(this.onlyUnique);
@@ -646,7 +641,6 @@ export class HomeEvamedComponent implements OnInit {
         });
       });
     } catch (e) {
-      console.log(e);
     }
 
     return list.filter(this.onlyUnique);
@@ -665,7 +659,6 @@ export class HomeEvamedComponent implements OnInit {
         }
       });
     } catch (e) {
-      console.log(e);
     }
 
     return dataList.filter(this.onlyUnique);
@@ -735,7 +728,6 @@ export class HomeEvamedComponent implements OnInit {
         this.optionSelected = result.optionSelected;
         this.router.navigateByUrl('do-files');
       } catch {
-        console.log('close modal');
       }
     });
   }
@@ -872,7 +864,6 @@ export class HomeEvamedComponent implements OnInit {
       this.auxDataProjectList[i].impactoCompleteSelect,
       this.auxDataProjectList[i].datos
     );
-    //console.log(auxSubetapas)
     this.auxDataProjectList[i].subetasMostrada = auxSubetapas;
     if (this.auxDataProjectList[i].etapaSeleccionada === etapa) {
       const auxid = etapa.concat('TextInfo'.concat(String(id))),

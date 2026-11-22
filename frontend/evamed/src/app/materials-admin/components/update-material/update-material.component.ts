@@ -172,14 +172,12 @@ export class UpdateMaterialComponent implements OnInit {
 
   goToAddScheme(event: Event) {
     event.preventDefault();
-    console.log('entra a goToAddScheme');
     const dialogRef = this.dialog.open(AddDataSchemeComponent, {
       width: '680px',
       data: { material_id: this.id },
     });
 
     dialogRef.afterClosed().subscribe(() => {
-      console.log('entra a este proceso');
       this.ngOnInit();
     });
   }
