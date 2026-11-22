@@ -8,6 +8,14 @@ del dueño, Chrome headless vía DevTools MCP (modo slim: navigate, evaluate y s
 Severidad: **Alta** = datos incorrectos, pérdida de datos o bloqueo; **Media** = función rota o
 engañosa con salida; **Baja** = detalle visual, texto o deuda.
 
+## Resumen (lo más importante primero)
+
+1. **A-11 · Alta · Los datos A2 de ecoinvent no son coherentes: GWP-total ≠ fósil + biogénico +
+   uso de suelo en 55 de 58 materiales**, con diferencias de hasta 231 %. Afecta a todo resultado
+   de carbono con materiales de ecoinvent, incluidas la vista Solo carbono y la barra de carbono.
+2. **A-09 · Alta · "Por m²" muestra Infinity/NaN** cuando la superficie construida es 0, y el alta
+   del proyecto lo permite (A-07).
+
 ## Hallazgos
 
 ### Página de inicio (`/home-evamed`)
