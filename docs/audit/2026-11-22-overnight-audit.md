@@ -13,7 +13,11 @@ engañosa con salida; **Baja** = detalle visual, texto o deuda.
 1. **A-11 · Alta · Los datos A2 de ecoinvent no son coherentes: GWP-total ≠ fósil + biogénico +
    uso de suelo en 55 de 58 materiales**, con diferencias de hasta 231 %. Afecta a todo resultado
    de carbono con materiales de ecoinvent, incluidas la vista Solo carbono y la barra de carbono.
-2. **A-09 · Alta · "Por m²" muestra Infinity/NaN** cuando la superficie construida es 0, y el alta
+2. **A-13 · Alta · Uso ofrece fuentes sin datos A2 (mexicaniuh) y las cuenta como 0 sin
+   avisar** en la página donde se eligen: 10,000 kWh/año durante 50 años aportan 0 kg CO2 eq.
+3. **A-12 · Media · En Construcción la unidad del equipo no cambia el cálculo:** 10 Hrs = 10 kWh
+   = 10 MJ = 10 "Sin unidad".
+4. **A-09 · Alta · "Por m²" muestra Infinity/NaN** cuando la superficie construida es 0, y el alta
    del proyecto lo permite (A-07).
 
 ## Hallazgos
