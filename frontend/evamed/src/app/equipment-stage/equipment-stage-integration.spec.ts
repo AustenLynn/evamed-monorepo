@@ -17,18 +17,18 @@ import { EndLifeStageComponent } from '../end-life-stage/components/end-life-sta
 import { EndLifeUpdateComponent } from '../end-life-stage/components/end-life-update/end-life-update.component';
 
 describe.each([
-  ['construction', ConstructionStageComponent, 'setConstructionTotal'],
-  ['construction reopened', ConstructionStageUpdateComponent, 'setConstructionTotal'],
-  ['end-life', EndLifeStageComponent, 'setEndLifeTotal'],
-  ['end-life reopened', EndLifeUpdateComponent, 'setEndLifeTotal'],
-])('%s equipment host', (_label, type: any, totalMethod: string) => {
+  ['construction', ConstructionStageComponent],
+  ['construction reopened', ConstructionStageUpdateComponent],
+  ['end-life', EndLifeStageComponent],
+  ['end-life reopened', EndLifeUpdateComponent],
+])('%s equipment host', (_label, type: any) => {
   afterEach(() => { localStorage.clear(); sessionStorage.clear(); });
   const host = () => {
     const component = Object.create(type.prototype);
     component.projectId = 42;
     component.sheetNames = ['Cimentación', 'Muros interiores'];
     component.router = { navigateByUrl: vi.fn() };
-    component.energyTotalService = { [totalMethod]: vi.fn() };
+    component.energyTotalService = { refresh: vi.fn() };
     return component;
   };
   it('waits for pending mutations before navigating to the explicit project', async () => {
@@ -69,10 +69,10 @@ describe.each([
     expect(component.dataArrayEC).toEqual([]);
     expect(component.selectedSheet).toBe('Muros interiores');
   });
-  it('publishes committed panel totals through the existing energy service', () => {
+  it('a committed panel change reloads the carbon bar', () => {
     const component = host();
-    component.onEquipmentTotalChange(123);
-    expect(component.energyTotalService[totalMethod]).toHaveBeenCalledWith(123);
+    component.onEquipmentTotalChange();
+    expect(component.energyTotalService.refresh).toHaveBeenCalled();
   });
 });
 
@@ -93,7 +93,7 @@ describe.each([
       { key: 'two', id: 2, sectionId: 2, sourceId: 5, quantity: 6, unitId: null },
     ] : [],
      api = { list: vi.fn(() => of({rows, rawTotal: existing ? 10 : 0})), create: vi.fn(), update: vi.fn(), remove: vi.fn() },
-     totals = { loadAll: vi.fn(), setConstructionTotal: vi.fn(), setEndLifeTotal: vi.fn(),
+     totals = { loadAll: vi.fn(), refresh: vi.fn(),
       breakdown$: of({construction: 0, usage: 0, endLife: 0, total: 0}) },
      projects = { getProjectById: vi.fn(() => of({id: 42, name_project: 'Casa Norte'})) };
     TestBed.configureTestingModule({imports: [module], providers: [
@@ -121,6 +121,6 @@ describe.each([
     for (const label of ['Casa Norte', 'Producción', 'Construcción', 'Uso', 'Fin de vida', 'Inst. especiales', 'Atrás', 'Continuar', 'Ir a resultados']) expect(text).toContain(label);
     expect(fixture.nativeElement.querySelector('app-energy-bar')).toBeTruthy();
     expect(api.create).not.toHaveBeenCalled(); expect(api.update).not.toHaveBeenCalled(); expect(api.remove).not.toHaveBeenCalled();
-    expect(stage === 'construction' ? totals.setConstructionTotal : totals.setEndLifeTotal).toHaveBeenCalledWith(existing ? 10 : 0);
+    expect(totals.refresh).toHaveBeenCalled();
   });
 });

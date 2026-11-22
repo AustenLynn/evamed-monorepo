@@ -333,6 +333,18 @@ class A2ResultsTests(APITestCase):
         response = self.client.get(RESULTS_URL.format(self.project.id))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_response_names_the_carbon_indicator(self):
+        # The stage pages' carbon bar reads GWP-total by this name (2026-11-21).
+        self._use(self._a2_material(mass=1))
+        carbono = self._results()['carbono']
+        self.assertEqual(carbono['name'], GWP_TOTAL_NAME)
+        self.assertEqual(carbono['unit'], self.types['GWP-total'].unit_potential_type)
+
+    @override_settings(EVAMED_IMPACT_METHOD='CML')
+    def test_cml_carbon_indicator_is_pcg_100(self):
+        self._use(self._old_material(), quantity=3)
+        self.assertEqual(self._results()['carbono']['name'], 'Calentamiento Global')
+
     @override_settings(EVAMED_IMPACT_METHOD='CML')
     def test_cml_setting_matches_legacy_results(self):
         self._use(self._old_material(), quantity=3)

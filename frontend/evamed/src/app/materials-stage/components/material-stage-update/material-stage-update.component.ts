@@ -1,4 +1,5 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { EnergyTotalService } from 'src/app/core/services/energy-total/energy-total.service';
 import { MatListOption } from '@angular/material/list';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -120,6 +121,8 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
     private explorerPicker: ExplorerPickerService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
+    // Optional so specs that build the page positionally keep working.
+    private energyTotal?: EnergyTotalService,
   ) {
     this.materialsService.getMaterials().subscribe(data => {
       this.materialsList = data;
@@ -173,6 +176,7 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
   @ViewChild('sheets') sheetsList!: MatSelectionList;
 
   ngOnInit(): void {
+    this.energyTotal?.loadAll();
     //carga de imagenes
     const images = [
       '../../../../assets/map/2.jpg',

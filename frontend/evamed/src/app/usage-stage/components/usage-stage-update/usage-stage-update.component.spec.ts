@@ -18,7 +18,7 @@ describe.each([['new', UsageStageComponent], ['reopened', UsageStageUpdateCompon
     const response = new Subject<UsageState>(), load = vi.fn(() => response);
     TestBed.configureTestingModule({imports: [UsageStageModule], providers: [provideRouter([]),
       {provide: UsageApiService, useValue: {load, save: vi.fn()}},
-      {provide: EnergyTotalService, useValue: {loadAll: vi.fn(), setUsageTotal: vi.fn(), breakdown$: of({construction: 0, usage: 0, endLife: 0, total: 0})}},
+      {provide: EnergyTotalService, useValue: {loadAll: vi.fn(), refresh: vi.fn(), breakdown$: of({production: 0, construction: 0, usage: 0, endLife: 0, total: 0, unit: 'kg CO2 eq'})}},
       {provide: MaterialsService, useValue: {}}
     ]});
     const fixture = TestBed.createComponent(component); fixture.detectChanges();

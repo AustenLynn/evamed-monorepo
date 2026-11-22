@@ -123,7 +123,7 @@ export class UsageEditorComponent implements OnInit, OnDestroy {
   }
   private confirmed(state: UsageState): void {
     this.projectName = state.project_name;
-    this.energy.setUsageTotal(state.annuals.length === 1 && state.annual && state.annual.quantity >= 0 ? state.annual.quantity : 0);
+    this.energy.refresh();
   }
   private setError(target: UsageOperationTarget, message: string): void {
     if (target.kind === 'annual') this.annualError = message;

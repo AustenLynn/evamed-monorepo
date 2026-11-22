@@ -10,6 +10,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
+import { ProjectSavesInterceptor } from './core/interceptors/project-saves.interceptor';
 
 @NgModule({ declarations: [AppComponent, LayoutComponent],
     bootstrap: [AppComponent],
@@ -25,6 +26,7 @@ import { AuthInterceptor } from './core/interceptors/auth.interceptor';
         provideCharts(withDefaultRegisterables()),
         provideHttpClient(withXhr(), withInterceptorsFromDi()),
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: ProjectSavesInterceptor, multi: true },
     ]
 })
 export class AppModule {}

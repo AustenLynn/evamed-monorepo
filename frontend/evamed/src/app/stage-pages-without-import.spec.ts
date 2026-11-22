@@ -38,9 +38,8 @@ describe.each([
           provide: EnergyTotalService,
           useValue: {
             loadAll: vi.fn(),
-            setConstructionTotal: vi.fn(),
-            setEndLifeTotal: vi.fn(),
-            breakdown$: of({ construction: 0, usage: 0, endLife: 0, total: 0 }),
+            refresh: vi.fn(),
+            breakdown$: of({ production: 0, construction: 0, usage: 0, endLife: 0, total: 0, unit: 'kg CO2 eq' }),
           },
         },
       ],

@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { EnergyTotalService } from 'src/app/core/services/energy-total/energy-total.service';
 import { MatListOption } from '@angular/material/list';
 import { MatSelectionListChange } from '@angular/material/list';
 import { MaterialsService } from './../../../core/services/materials/materials.service';
@@ -132,7 +133,9 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
     private catalogsService: CatalogsService,
     public dialog: MatDialog,
     private explorerPicker: ExplorerPickerService,
-    private analisis: AnalisisService
+    private analisis: AnalisisService,
+    // Optional so specs that build the page positionally keep working.
+    private energyTotal?: EnergyTotalService,
   ) {
     this.materialsService.getMaterials().subscribe(data => {
       this.materialsList = data;
@@ -225,6 +228,7 @@ export class MaterialsStageComponent implements OnInit, OnDestroy {
 
     this.nameProject = PDP.name_project;
     this.projectId = PDP.id;
+    this.energyTotal?.loadAll(this.projectId);
     // Sorted by sheet name, so both templates (and a stored upload from before
     // that) give one row list per section, in section_id order.
     const sections = bySection(data);

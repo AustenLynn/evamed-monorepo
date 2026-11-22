@@ -587,7 +587,13 @@ class ProjectResultsView(APIView):
             c3_total = biogenic_release if impacto.name_potential_type in _BIOGENIC_RELEASE_TYPES else 0
             datos[name]['FinDeVida'] = {'C1': c1_total, 'C2': 0, 'C3': c3_total, 'C4': 0}
 
-        return Response({'project_id': project_id, 'datos': datos, 'error': error_calculos, 'excluded': excluded})
+        # The climate-change indicator (GWP-total under A2, PCG 100 under CML) for the stage pages' carbon bar.
+        gwp = methods.gwp_total_type()
+        carbono = {'name': gwp.name_complete_potential_type, 'unit': gwp.unit_potential_type} if gwp else None
+        return Response({
+            'project_id': project_id, 'datos': datos, 'error': error_calculos, 'excluded': excluded,
+            'carbono': carbono,
+        })
 
 
 

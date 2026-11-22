@@ -12,17 +12,17 @@ describe('Usage editor coordination', () => {
     vi.stubGlobal('sessionStorage', {setItem: vi.fn()}); vi.stubGlobal('localStorage', {setItem: vi.fn()});
     vi.stubGlobal('confirm', vi.fn(() => true));
     api = {load: vi.fn(() => of(usageFixture())), save: vi.fn(() => of(usageFixture()))};
-    energy = {loadAll: vi.fn(), setUsageTotal: vi.fn()}; router = {navigateByUrl: vi.fn()};
+    energy = {loadAll: vi.fn(), refresh: vi.fn()}; router = {navigateByUrl: vi.fn()};
     materials = {getEDCP: vi.fn(() => of([])), getConstructionStage: vi.fn(() => of([])), getMaterialSchemeProyects: vi.fn(() => of([]))};
     editor = new UsageEditorComponent(api, energy, router, materials); editor.projectId = 5;
   });
   afterEach(() => vi.unstubAllGlobals());
   it('hydrates asynchronously, never marks untouched cards dirty, and reports only confirmed totals', async () => {
     const response = new Subject<UsageState>(); api.load.mockReturnValue(response); editor.ngOnInit();
-    expect(editor.loading).toBe(true); expect(energy.setUsageTotal).not.toHaveBeenCalled(); response.next(usageFixture()); await settle();
-    expect(editor.loading).toBe(false); expect(energy.setUsageTotal).toHaveBeenLastCalledWith(10000);
+    expect(editor.loading).toBe(true); expect(energy.refresh).not.toHaveBeenCalled(); response.next(usageFixture()); await settle();
+    expect(editor.loading).toBe(false); expect(energy.refresh).toHaveBeenCalledTimes(1);
     editor.openSource(21); expect(editor.store.dirty).toBe(false);
-    editor.patchAnnual({quantity: '12000'}); expect(energy.setUsageTotal).toHaveBeenCalledTimes(1);
+    editor.patchAnnual({quantity: '12000'}); expect(energy.refresh).toHaveBeenCalledTimes(1);
   });
   it('saves one card, locks duplicate submission and keeps annual and another card drafts', async () => {
     editor.ngOnInit(); await settle(); editor.patchAnnual({quantity: '12000'}); editor.patchSource({id: 21, patch: {percentage: '30'}}); editor.patchSource({id: 22, patch: {percentage: '40'}});
@@ -61,7 +61,7 @@ describe('Usage editor coordination', () => {
   });
   it('does not pick an arbitrary annual total and repairs replacement as a draft only', async () => {
     const state = usageFixture(); state.annual = null; state.annuals.push({id: 12, quantity: 5, unit_id: 22}); api.load.mockReturnValue(of(state)); editor.ngOnInit(); await settle();
-    expect(energy.setUsageTotal).toHaveBeenLastCalledWith(0);
+    expect(energy.refresh).toHaveBeenCalled();
     editor.openPicker(21); await editor.confirmPicker([editor.store.options.find(o=>o.type === 9)!]);
     expect(editor.store.sourceDraft(21)).toMatchObject({percentage: '60', type: 9, source: 'electric'}); expect(api.save).not.toHaveBeenCalled();
   });

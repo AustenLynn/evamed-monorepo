@@ -71,8 +71,8 @@ export class EndLifeUpdateComponent implements OnInit, AfterViewInit {
     this.indexSheet = index;
   }
 
-  onEquipmentTotalChange(total: number): void {
-    this.energyTotalService.setEndLifeTotal(total);
+  onEquipmentTotalChange(): void {
+    this.energyTotalService.refresh();
   }
 
   private async navigateStage(path: string, records: any): Promise<void> {
