@@ -193,6 +193,8 @@ def compute(project, active_databases, detalle=False):
     biogenic_release = sum(release_by_row.values())
     datos = {}
     por_elemento = {}  # with detalle: indicator -> section id -> A1-A3 + A4 + A5 + B4 + C1 + C3 (A-32)
+    # with detalle, for Resultados section 3: indicator -> stage -> substage -> section id (-> material id)
+    por_seccion, por_material = {}, {}
     error_calculos = False
 
     for impacto in potential_types:
@@ -203,6 +205,20 @@ def compute(project, active_databases, detalle=False):
         def sumar(section_id, value, elementos=elementos):
             if detalle:
                 elementos[str(section_id)] = elementos.get(str(section_id), 0) + value
+
+        secciones = por_seccion[name] = {'Producción': {'A1': {}, 'A2': {}, 'A3': {}}, 'Construccion': {'A4': {}},
+                                         'Uso': {'B4': {}}}
+        materiales = por_material[name] = {'Producción': {'A1': {}, 'A2': {}, 'A3': {}},
+                                           'Construccion': {'A4': {}}, 'Uso': {'B4': {}}}
+
+        def anotar(stage, sub, ps, value, secciones=secciones, materiales=materiales):
+            if not detalle:
+                return
+            section, material = str(ps.section_id_id), str(ps.material_id_id)
+            por_sec = secciones[stage].setdefault(sub, {})
+            por_sec[section] = por_sec.get(section, 0) + value
+            por_mat = materiales[stage].setdefault(sub, {}).setdefault(section, {})
+            por_mat[material] = por_mat.get(material, 0) + value
 
         # ---- Producción ----
         produccion = {}
@@ -219,6 +235,7 @@ def compute(project, active_databases, detalle=False):
                 value = msd_lookup.get((mat.id, subetapa, impacto.id), 0) * float(ps.quantity or 0)
                 total += value
                 sumar(ps.section_id_id, value)
+                anotar('Producción', subproceso, ps, value)
             produccion[subproceso] = produccion.get(subproceso, 0) + total
 
         aggregate_key = standards.get(_AGGREGATE_STANDARD, 'A1-A3')
@@ -231,6 +248,7 @@ def compute(project, active_databases, detalle=False):
                 value = msd_lookup.get((mat.id, _AGGREGATE_STANDARD, impacto.id), 0) * float(ps.quantity or 0)
                 aggregate_total += value
                 sumar(ps.section_id_id, value)
+                anotar('Producción', aggregate_key, ps, value)
         if aggregate_total:
             produccion[aggregate_key] = produccion.get(aggregate_key, 0) + aggregate_total
 
@@ -259,6 +277,8 @@ def compute(project, active_databases, detalle=False):
             a4_total += tv
             row_transport[ps.id] = tv
             sumar(ps.section_id_id, tv)
+            if tv:
+                anotar('Construccion', 'A4', ps, tv)
 
         a5_total = 0
         for cse in cse_list:
@@ -292,6 +312,8 @@ def compute(project, active_databases, detalle=False):
                 )
             b4_total += value
             sumar(ps.section_id_id, value)
+            if replaces:
+                anotar('Uso', 'B4', ps, value)
 
         b6_total = sum(
             useful_life * ted_lookup.get((ecd.type_id, impacto.id), 0) * float(ecd.quantity or 0)
@@ -325,4 +347,7 @@ def compute(project, active_databases, detalle=False):
     }
     if detalle:
         payload['por_elemento'] = por_elemento
+        payload['por_material'] = {'Calculos': por_seccion, 'materiales': por_material}
+        payload['nombres_materiales'] = {
+            str(ps.material_id_id): ps.material_id.name_material for ps in scheme_project}
     return payload

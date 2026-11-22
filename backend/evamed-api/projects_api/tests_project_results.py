@@ -510,11 +510,43 @@ class DetailBreakdownTests(APITestCase):
                                                            construction_system='B', is_selected=False)
         models.MaterialSchemeProject.objects.create(material_id=self._old_material(), project_id=self.project,
                                                     quantity=5, section_id=off)
-        por_elemento = self._results()['por_elemento']
-        for name, by_element in por_elemento.items():
+        body = self._results()
+        for name, by_element in body['por_elemento'].items():
             self.assertEqual(by_element.get(str(off.id), 0), 0, name)
             self.assertEqual(by_element[str(walls.id)], 1, name)
+            # Same for section 3 (A-32 plan, Task 7).
+            self.assertEqual(set(body['por_material']['materiales'][name]['Producción']['A1-A3']), {str(walls.id)})
 
     def test_project_with_no_rows_has_empty_breakdowns(self):
         body = self._results()
         self.assertEqual(body['por_elemento'], {name: {} for name in body['datos']})
+
+    # A-32 plan, Task 7: per element and material, for Resultados section 3.
+    SECTION3 = (('Producción', 'A1'), ('Producción', 'A2'), ('Producción', 'A3'), ('Producción', 'A1-A3'),
+                ('Construccion', 'A4'), ('Uso', 'B4'))
+
+    def test_per_material_matches_per_element_and_the_stage_totals(self):
+        self._full_project(self.types.values())
+        body = self._results()
+        calculos, materiales = body['por_material']['Calculos'], body['por_material']['materiales']
+        for name, datos_indicador in body['datos'].items():
+            for stage, sub in self.SECTION3:
+                por_seccion = calculos[name][stage].get(sub, {})
+                self.assertAlmostEqual(sum(por_seccion.values()), datos_indicador[stage].get(sub, 0),
+                                       places=9, msg=(name, stage, sub))
+                for section, value in por_seccion.items():
+                    self.assertAlmostEqual(sum(materiales[name][stage][sub][section].values()), value, places=9)
+        gwp = body['carbono']['name']
+        self.assertEqual(set(calculos[gwp]['Uso']['B4']), {str(models.Section.objects.get(name_section='Muros').id)})
+
+    def test_material_names_only_for_the_project(self):
+        self._full_project(self.types.values())
+        self._a2_material('Ajeno')
+        names = self._results()['nombres_materiales']
+        self.assertEqual(sorted(names.values()), ['Acero', 'Cemento'])
+
+    def test_project_with_no_rows_has_empty_per_material(self):
+        body = self._results()
+        empty = {'Producción': {'A1': {}, 'A2': {}, 'A3': {}}, 'Construccion': {'A4': {}}, 'Uso': {'B4': {}}}
+        self.assertEqual(body['por_material']['Calculos'], {name: empty for name in body['datos']})
+        self.assertEqual(body['nombres_materiales'], {})
