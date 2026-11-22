@@ -120,6 +120,12 @@ vigentes (`/explorer/produccion/<id>/` y `/material-scheme-data/`):
 
 Lista completa: `docs/audit/2026-11-22-gwp-inconsistencias.csv`.
 
+**También en la maquinaria de ecoinvent (Construcción y Fin de vida).** En el proyecto 651, 10 h del
+"Generador ... menor a 18.64 kW" dan GWP-total **27.4** y GWP-fósil **29.7**, con biogénico 0.003 y
+uso de suelo 0.007. El total no puede ser menor que el fósil. Los cuatro valores coinciden entre el
+navegador (Resultados) y el servidor, así que el problema está en los datos guardados, no en el
+cálculo.
+
 Impacto: la vista Solo carbono y la barra de carbono muestran GWP-total, así que **cualquier
 proyecto con materiales de ecoinvent tiene un carbono dudoso**. Lo mismo para los otros 12
 indicadores de esos materiales, que salieron del mismo `ecoinvent_refresh` (2026-11-20) y no se
