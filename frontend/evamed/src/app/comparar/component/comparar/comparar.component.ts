@@ -319,9 +319,6 @@ export class CompararComponent implements OnInit {
         this.BDInicio(DB);
         this.llenarIdsBotones(sectionsList);
         this.idProyectoActivo = parseInt(sessionStorage.getItem('projectID'));
-        this.columnsToDisplay = this.calculos.ImpactosSeleccionados(
-          this.potentialTypesList
-        );
         this.menu_inicio();
       }
     );
@@ -358,6 +355,9 @@ export class CompararComponent implements OnInit {
     this.nombresMostrados = soloCarbono
       ? new Set([this.calculos.ajustarNombre(carbono['name_complete_potential_type'])])
       : null;
+    this.columnsToDisplay = soloCarbono
+      ? ['ciclo de vida', carbono['name_complete_potential_type']]
+      : this.calculos.ImpactosSeleccionados(this.potentialTypesList ?? []);
     this.llenarIdsBotonesImpactos(this.catologoImpactoAmbiental);
     const primero = this.catologoImpactoAmbiental[0]?.['name_complete_potential_type'];
     if (primero !== undefined) {
@@ -1665,6 +1665,12 @@ export class CompararComponent implements OnInit {
 
   //Despliegue gráficas de pie o radar
   grafica(x: string) {
+    // Solo carbono: a radar of one indicator is a single spoke, so a stage click
+    // opens the GWP-total sub-stage breakdown (the pie a bar click opens) instead.
+    if (this.nombresMostrados !== null && this.resultdosGraficos && this.bandera !== 1) {
+      const [carbono] = [...this.nombresMostrados];
+      this.receiveSelector(carbono.replace(/\n/g, ' '));
+    }
     //activate graph selectioned
     if (this.ID != ' ') {
       //console.log('in');

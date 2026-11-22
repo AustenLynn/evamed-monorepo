@@ -110,6 +110,7 @@ describe('CompararComponent carbon-only view', () => {
       const component: any = Object.create(CompararComponent.prototype);
       component.calculos = {
         ajustarNombre: (name: string) => name,
+        ImpactosSeleccionados: (types: any[]) => ['ciclo de vida', ...types.map(t => t.name_complete_potential_type)],
         OperacionesDeFase: vi.fn(() => [{
           'Calentamiento global, total': { Producción: { A1: 1 } },
           'Agotamiento de ozono': { Producción: { A1: 2 } },
@@ -180,6 +181,42 @@ describe('CompararComponent carbon-only view', () => {
     expect(Object.keys(tres.Calculos)).toEqual(['Calentamiento global, total']);
   });
 
+  it('shows only the carbon column in the results table', () => {
+    const component = build();
+    vi.spyOn(component, 'ajusteUsoBaseDatos').mockImplementation(() => undefined);
+
+    component.cambiarVista('carbono');
+    expect(component.columnsToDisplay).toEqual(['ciclo de vida', 'Calentamiento global, total']);
+
+    component.cambiarVista('completo');
+    expect(component.columnsToDisplay).toEqual(['ciclo de vida', 'Calentamiento global, total', 'Agotamiento de ozono']);
+  });
+
+  it('a stage click in the carbon view opens the GWP-total breakdown, not a one-axis radar', () => {
+    const component = build(),
+      graficaEn = (vista: 'completo' | 'carbono') => {
+        vi.spyOn(component, 'ajusteUsoBaseDatos').mockImplementation(() => undefined);
+        component.cambiarVista(vista);
+        component.resultdosGraficos = true;
+        component.banderaGrapg = 1;
+        component.containerGraficas = { clear: () => undefined };
+        const pie = vi.spyOn(component, 'iniciaPie').mockImplementation(() => undefined),
+          radar = vi.spyOn(component, 'iniciaRadiales').mockImplementation(() => undefined);
+        vi.spyOn(component, 'receiveSelector').mockImplementation((nombre: any) => {
+          component.selector = nombre;
+          component.bandera = 1;
+        });
+        component.grafica('Producción');
+        return { pie: pie.mock.calls.length, radar: radar.mock.calls.length, selector: component.selector };
+      };
+    document.body.innerHTML = '<button id="Producción"></button>';
+
+    expect(graficaEn('carbono')).toEqual({ pie: 1, radar: 0, selector: 'Calentamiento global, total' });
+    vi.restoreAllMocks();
+    expect(graficaEn('completo')).toEqual({ pie: 0, radar: 1, selector: null });
+    document.body.innerHTML = '';
+  });
+
   it('hides the switch when no carbon indicator is served', () => {
     const component = build([odp]);
     component.vista = 'carbono';
@@ -201,7 +238,7 @@ describe('CompararComponent view switch resets', () => {
 
   it('clears the selected bar and stage before recalculating', () => {
     const component: any = Object.create(CompararComponent.prototype);
-    component.calculos = { ajustarNombre: (name: string) => name };
+    component.calculos = { ajustarNombre: (name: string) => name, ImpactosSeleccionados: () => [] };
     component.basesDatos = { 'ECO Platform': true };
     component.vista = 'completo';
     component.catologoImpactoAmbiental = [];
