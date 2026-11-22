@@ -334,4 +334,30 @@ ancho de pantalla: inicio **433 / 390**, Resultados **975 / 390**, Materiales **
 Si el uso en celular no es objetivo, al menos conviene un aviso ("Usa una pantalla de al menos
 1024 px") en lugar de una página rota.
 
+### Técnico (servidor, configuración y código)
+
+**A-30 · Media · El frontend se sirve sin cabeceras de seguridad.** `curl -D -` a
+`https://dev.evamediber.click/`: solo `HTTP/2 200`, sin `Strict-Transport-Security`,
+`X-Frame-Options`/`frame-ancestors`, `X-Content-Type-Options` ni `Content-Security-Policy`. La API
+(`/api-projects/...`) sí manda `X-Frame-Options: DENY`, `nosniff` y `Referrer-Policy`, pero tampoco
+HSTS, y expone `server: gunicorn`. `deploy/Caddyfile` no agrega ninguna cabecera. Sugerencia: un
+bloque `header { Strict-Transport-Security "max-age=31536000"; X-Content-Type-Options nosniff;
+X-Frame-Options DENY; Referrer-Policy same-origin; -Server }` en Caddy, y luego una CSP probada en
+dev, porque Firebase y Google Fonts necesitan sus dominios.
+
+**A-31 · Baja · 82 `console.log` activos en el frontend.** Los más ruidosos:
+`material-stage-update.component.ts` (22), `home-evamed.component.ts` (21) y
+`calculos-tercer-seccion.ts:82`, que imprime cada indicador en cada recálculo de la sección 3 de
+Resultados.
+
+**A-32 · Baja · Resultados descarga catálogos completos.** Para calcular en el navegador, la página
+baja `/material-scheme-data/` (5,416 filas, 700 KB, 97 KB comprimido) y `/materials/` (611 KB),
+además de `main.js` (679 KB). Materiales pide `/materials/` dos veces después de cada alta o
+edición. No es urgente, pero `ProjectResultsView` ya calcula lo mismo en el servidor (ver la
+paridad verificada arriba).
+
+**A-33 · Baja · Etiqueta "Duplicados" en Resultados.** Encima del selector para comparar proyectos
+dice "Duplicados" (`comparar.component.html:15`), aunque sirve para agregar cualquier proyecto a la
+comparación. Algo como "Comparar con" sería más claro.
+
 ## Método y límites
