@@ -34,8 +34,6 @@ describe('CompararComponent project name', () => {
       { searchUser: () => users$ } as any,
       calculos as any,
       {} as any,
-      {} as any,
-      {} as any,
       new ResultadosService(analisis as any, calculos as any)
     );
   };
@@ -102,8 +100,7 @@ describe('CompararComponent project name', () => {
       servidor = (map: Record<number, () => any>) => ({
         getProjectResults: vi.fn((id: number) => map[id]()),
       }),
-      drawn = () => vi.spyOn(CompararComponent.prototype as any, 'dibujarProyecto').mockImplementation(() => undefined),
-      selections = (component: any) => (component.materials.getMaterialsStageSelections = () => of({ items: [] }));
+      drawn = () => vi.spyOn(CompararComponent.prototype as any, 'dibujarProyecto').mockImplementation(() => undefined);
 
     it('draws section 1 from the server results', async () => {
       const component: any = build(servidor({ 7: () => of({ datos }) }));
@@ -116,7 +113,6 @@ describe('CompararComponent project name', () => {
     it('draws section 2 from the server breakdown', async () => {
       const porElemento = { GWP: { '1': 4, '2': 1 }, ODP: { '1': 0.5 } },
         component: any = build(servidor({ 7: () => of({ datos, por_elemento: porElemento }) }));
-      component.calculosSegunaSeccion = { OperacionesDeFasePorElementoConstructivo: vi.fn() };
       vi.spyOn(component, 'AjustarElementosMostrados').mockImplementation(() => undefined);
       vi.spyOn(component, 'AjustarElementosMostradosElemntos').mockImplementation(() => undefined);
       component.projectsList = [{ id: 7, name_project: 'Casa' }];
@@ -125,7 +121,6 @@ describe('CompararComponent project name', () => {
       const analisis = component.getAnalisisBarrasElementosConstructivos(7);
 
       expect(analisis).toEqual({ Nombre: 'Casa', id: 7, Datos: porElemento });
-      expect(component.calculosSegunaSeccion.OperacionesDeFasePorElementoConstructivo).not.toHaveBeenCalled();
     });
 
     it('draws section 3 from the server breakdown', async () => {
@@ -134,13 +129,11 @@ describe('CompararComponent project name', () => {
           materiales: { GWP: { Producción: { 'A1-A3': { '1': { '9': 5 } } } } },
         },
         component: any = build(servidor({ 7: () => of({ datos, por_material: porMaterial, nombres_materiales: { '9': 'Cemento' } }) }));
-      component.calculosTercerSeccion = { OperacionesDeFasePorElementoConstructivoCicloVida: vi.fn() };
       await firstValueFrom(component.resultados.cargar(7));
       component.proyect_active = [7];
 
       expect(component.llamarCalculosTercerSeccion(7)).toEqual(porMaterial);
       expect(component.nombresMateriales).toEqual({ '9': 'Cemento' });
-      expect(component.calculosTercerSeccion.OperacionesDeFasePorElementoConstructivoCicloVida).not.toHaveBeenCalled();
     });
 
     it('keeps the Solo carbono filter working with server names', async () => {
@@ -156,7 +149,6 @@ describe('CompararComponent project name', () => {
       const dibujar = drawn();
       let falla = true;
       const component: any = build(servidor({ 8: () => (falla ? throwError(() => new Error('500')) : of({ datos })) }));
-      selections(component);
 
       component.iniciar_graficas(8);
       expect(component.estadoCarga[8]).toBe('error');
@@ -174,7 +166,6 @@ describe('CompararComponent project name', () => {
       const dibujar = drawn(),
         tarde = new Subject<any>(),
         component: any = build(servidor({ 8: () => tarde }));
-      selections(component);
 
       component.iniciar_graficas(8);
       // What quitarProyecto does to the shown list (the rest needs the chart containers).
@@ -189,28 +180,6 @@ describe('CompararComponent project name', () => {
 });
 
 // A system is switched off in one element; the same name elsewhere still counts.
-describe('CompararComponent switched-off systems', () => {
-  it('leaves out only the switched-off system’s section and origin', () => {
-    const component: any = Object.create(CompararComponent.prototype),
-      row = (section_id: number, construction_system: string, origin_id = 1) =>
-        ({ project_id: 7, section_id, construction_system, origin_id });
-    component.materialSchemeProyectList = [
-      row(2, 'Muro A'), row(3, 'Muro A'), row(2, 'Muro A', 3), row(2, 'Muro B'),
-      { project_id: 8, section_id: 2, construction_system: 'Muro A', origin_id: 1 },
-    ];
-    component.selectionsByProject = {
-      7: [{ section_id: 2, label: 'Muro A', origin_id: 1, is_selected: false }],
-    };
-
-    expect(component.getFilteredScheme(7)).toEqual([
-      row(3, 'Muro A'), row(2, 'Muro A', 3), row(2, 'Muro B'),
-      { project_id: 8, section_id: 2, construction_system: 'Muro A', origin_id: 1 },
-    ]);
-  });
-});
-
-// "Solo carbono" filters what the page shows; the calculation keeps every indicator
-// because the A2 rules need all of them (design 2026-11-21-solo-carbono-view).
 describe('CompararComponent carbon-only view', () => {
   const gwp = { id: 20, name_potential_type: 'GWP-total', name_complete_potential_type: 'Calentamiento global, total' },
     odp = { id: 24, name_potential_type: 'ODP', name_complete_potential_type: 'Agotamiento de ozono' },
@@ -233,7 +202,6 @@ describe('CompararComponent carbon-only view', () => {
         } }),
       };
       component.materialSchemeProyectList = [];
-      component.selectionsByProject = {};
       component.basesDatos = { 'ECO Platform': true, 'ECOINVENT 3': false };
       component.proyect_active = [7, 8];
       component.vista = 'completo';
