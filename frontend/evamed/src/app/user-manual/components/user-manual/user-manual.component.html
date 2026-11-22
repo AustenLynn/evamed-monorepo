@@ -1,1 +1,113 @@
-<p>user-manual works!</p>
+<main class="manual">
+  <h1>Manual de usuario</h1>
+  <p class="manual__intro">
+    EVAMED estima los impactos ambientales de un edificio a lo largo de su ciclo de vida: producción de
+    materiales, construcción, uso y fin de vida. Esta guía recorre los pasos en el orden en que los harás.
+  </p>
+
+  <nav class="manual__indice" aria-label="Contenido">
+    <ol>
+      <li><a href="#crear">Crear un proyecto</a></li>
+      <li><a href="#importar">Cargar materiales</a></li>
+      <li><a href="#produccion">Producción</a></li>
+      <li><a href="#construccion">Construcción</a></li>
+      <li><a href="#uso">Uso</a></li>
+      <li><a href="#fin">Fin de vida</a></li>
+      <li><a href="#resultados">Resultados</a></li>
+      <li><a href="#inicio">Tus proyectos</a></li>
+      <li><a href="#explorador">Explorador</a></li>
+      <li><a href="#ayuda">Ayuda</a></li>
+    </ol>
+  </nav>
+
+  <section id="crear">
+    <h2>1. Crear un proyecto</h2>
+    <p>En «Tus proyectos», pulsa <strong>Crear nuevo proyecto</strong> y llena:</p>
+    <ul>
+      <li><strong>Nombre</strong>, <strong>uso</strong> (habitacional, comercial, oficinas…) y <strong>país</strong>.</li>
+      <li><strong>Superficie construida</strong> y <strong>superficie habitable</strong> en m², como números enteros mayores que 0. La habitable no puede ser mayor que la construida. Los resultados «por m²» dividen entre ellas.</li>
+      <li><strong>Número de niveles</strong> y <strong>vida útil</strong> del edificio en años. La vida útil define cuántas veces se reemplaza cada material (B4).</li>
+    </ul>
+    <p>Si falta un dato o hay un error, el formulario te lo indica y conserva lo que escribiste.</p>
+  </section>
+
+  <section id="importar">
+    <h2>2. Cargar materiales</h2>
+    <p>Después de crear el proyecto, elige cómo traer las cantidades de materiales:</p>
+    <ul>
+      <li><strong>Plantilla de Excel</strong>: descarga la plantilla (Windows o Mac), llena una hoja por elemento constructivo (cimentación, muros, techos…) eligiendo los materiales de la lista y cárgala. La plantilla siempre trae el catálogo vigente; si cambió, descárgala de nuevo.</li>
+      <li><strong>Modelo de Revit con DYNAMO</strong>: descarga el archivo MATED, ejecútalo en tu modelo y carga el archivo que genera.</li>
+      <li><strong>Sin archivo</strong>: continúa y agrega los materiales a mano en Producción.</li>
+    </ul>
+  </section>
+
+  <section id="produccion">
+    <h2>3. Producción (A1-A3, A4 y B4)</h2>
+    <ul>
+      <li>Elige un elemento constructivo y un sistema; agrega materiales desde el <strong>Explorador</strong>, que muestra su base de datos (ecoinvent o ECO Platform), región y huella de carbono.</li>
+      <li>Para cada material indica la <strong>cantidad</strong> en su unidad, el <strong>transporte</strong> (tipo y distancia, A4) y su <strong>vida útil</strong>; EVAMED calcula los reemplazos (B4) con la vida útil del edificio.</li>
+      <li>La barra superior muestra el carbono del proyecto (kg CO₂ eq) por etapa y se actualiza al guardar.</li>
+    </ul>
+  </section>
+
+  <section id="construccion">
+    <h2>4. Construcción (A5)</h2>
+    <p>
+      Agrega la maquinaria usada en cada elemento constructivo y escribe las <strong>horas de operación</strong>.
+      Los factores de impacto de la maquinaria son por hora; si un equipo se capturó antes en otra unidad,
+      aparece una advertencia para que revises la cantidad.
+    </p>
+  </section>
+
+  <section id="uso">
+    <h2>5. Uso (B6)</h2>
+    <ol>
+      <li>Escribe el <strong>consumo anual de energía</strong> del edificio en kWh (calculado fuera de EVAMED).</li>
+      <li>Agrega las <strong>fuentes</strong>: red eléctrica, combustible o generación fotovoltaica.</li>
+      <li>Asigna a cada fuente su <strong>porcentaje</strong>; la suma no puede pasar de 100 %.</li>
+    </ol>
+    <p>Solo se ofrecen fuentes con datos del método de cálculo actual. Si un proyecto antiguo usa una que ya no los tiene, verás un aviso para cambiarla con «Cambiar fuente».</p>
+  </section>
+
+  <section id="fin">
+    <h2>6. Fin de vida (C1 y C3)</h2>
+    <p>
+      Agrega la maquinaria de deconstrucción de cada elemento con sus horas de operación (C1). La liberación
+      del carbono biogénico de los materiales (C3) se calcula sola.
+    </p>
+  </section>
+
+  <section id="resultados">
+    <h2>7. Resultados</h2>
+    <ul>
+      <li><strong>Completo / Solo carbono</strong>: los 13 indicadores de EN 15804+A2, o solo el calentamiento global total.</li>
+      <li><strong>Tabla o gráfica</strong>, valores en <strong>%</strong> o absolutos (<strong>#</strong>), y <strong>total del edificio</strong> o <strong>por m²</strong> (disponible cuando el proyecto tiene sus dos superficies).</li>
+      <li><strong>Comparar con otro proyecto</strong>: agrega otros proyectos tuyos; en la tabla cada valor lleva el nombre de su proyecto.</li>
+      <li>Puedes ocultar etapas con el ícono del ojo; el total se recalcula sin ellas.</li>
+      <li>Si algo del proyecto no tiene datos del método actual, un aviso lista lo que no se incluye.</li>
+    </ul>
+  </section>
+
+  <section id="inicio">
+    <h2>8. Tus proyectos</h2>
+    <ul>
+      <li>Cada tarjeta resume el proyecto y, en la pestaña Resultados, sus impactos por etapa.</li>
+      <li>En proyectos habitacionales, con el calentamiento global seleccionado, <strong>Ver referencia</strong> compara la huella de la etapa de uso con la referencia de vivienda sustentable del RUV.</li>
+      <li>El menú <strong>⋮</strong> permite renombrar, duplicar (copia todas las etapas) o eliminar un proyecto.</li>
+      <li>Filtra la lista por uso con el selector de la parte superior.</li>
+    </ul>
+  </section>
+
+  <section id="explorador">
+    <h2>9. Explorador</h2>
+    <p>
+      En «Explorador» puedes consultar todos los materiales, la maquinaria y las fuentes de energía disponibles,
+      con su descripción, base de datos y huella de carbono, sin abrir un proyecto.
+    </p>
+  </section>
+
+  <section id="ayuda">
+    <h2>10. Ayuda</h2>
+    <p>Escríbenos a <a href="mailto:evamed&#64;ibero.mx">evamed&#64;ibero.mx</a>.</p>
+  </section>
+</main>

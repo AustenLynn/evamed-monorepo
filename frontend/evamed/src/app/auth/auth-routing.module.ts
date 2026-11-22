@@ -7,6 +7,7 @@ import { CompleteProfileComponent } from './components/complete-profile/complete
 import { VerifyEmailComponent } from './components/verify-email/verify-email.component';
 import { EmailActionComponent } from './components/email-action/email-action.component';
 import { AboutComponent } from './components/about/about.component';
+import { LegalPageComponent } from './components/legal/legal-page.component';
 
 const routes: Routes = [
   {
@@ -38,6 +39,9 @@ const routes: Routes = [
     path: 'about',
     component: AboutComponent,
   },
+  // Public, so they can be read before registering (audit A-23).
+  { path: 'aviso-de-privacidad', component: LegalPageComponent, data: { documento: 'privacidad' } },
+  { path: 'terminos', component: LegalPageComponent, data: { documento: 'terminos' } },
 ];
 
 @NgModule({
