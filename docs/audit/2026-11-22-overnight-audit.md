@@ -65,4 +65,26 @@ opción del filtro de la página de inicio, no un uso válido.
 > Dato de prueba: el proyecto 651 se creó en la cuenta del dueño para esta auditoría. Se puede
 > borrar desde su menú "⋮ → Eliminar".
 
-## Método y límites
+### Resultados con superficie 0 (proyecto 651)
+
+**A-09 · Alta · "Por m²" con superficie construida 0 muestra Infinity y NaN.** En Resultados del
+proyecto 651 (superficie construida 0, habitable 500), la vista por m² muestra en la tabla
+**Producción "Infinity", Construcción "NaN", Fin de vida "NaN", Total "NaN"**. Uso sale bien
+porque se divide entre la superficie habitable. En la gráfica (#) queda una barra llena con la
+etiqueta "0.00e+0" y un eje de 0 a 0.9, que no significa nada. Causa: A-07 (el alta acepta 0) más
+`getAnalisisBarras` (`comparar.component.ts`), que divide sin revisar el divisor. Arreglo
+sugerido: exigir superficies > 0 al crear o editar el proyecto y, en Resultados, desactivar "por
+m²" con un aviso cuando falte la superficie.
+
+**A-10 · Baja · Botones de icono sin nombre.** Los seis botones de Resultados (tabla, gráfica, %,
+#, y los dos de "total / por m²" con iconos `border_all` y `branding_watermark`) no tienen
+`aria-label` ni tooltip. Los dos de m² en particular no se entienden sin probarlos, y un lector de
+pantalla solo lee "border_all".
+
+### Materiales (proyecto 651)
+
+Funciona: crear sistema, Explorer (183 materiales: 125 ECO Platform + 58 ecoinvent), agregar 2
+materiales (`201`), editar cantidades (`200`), y la barra de carbono da 3,760.05 kg CO2 eq =
+1000 kg × 1.38 + 2 Ton × 1190, cuadra a mano.
+
+
