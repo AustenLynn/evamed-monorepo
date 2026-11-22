@@ -23,7 +23,4 @@ export class ChangeNameProjectComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onNoClick(): void {
-    this.dialogRef.close(this.data);
-  }
 }
