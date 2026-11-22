@@ -31,7 +31,7 @@ export class UsageSourcePickerComponent implements AfterViewInit, OnDestroy {
   private previousFocus: HTMLElement | null = null;
   constructor(readonly browser: UsagePickerService, @Inject(DOCUMENT) private document: Document) {}
   get locked(): boolean {return this.pending || this.submitted;}
-  get available(): UsageOption[] {return this.options.filter(option => option.supported && !this.selectedKeys.includes(option.key));}
+  get available(): UsageOption[] {return this.options.filter(option => option.supported && option.offerable !== false && !this.selectedKeys.includes(option.key));}
   get filtered(): UsageOption[] {return this.available.filter(option => this.browser.matches(option, this.query));}
   get facets() {return this.browser.facets(this.available, this.query);}
   get selection(): UsageOption[] {return this.options.filter(option => this.selected.has(option.key));}

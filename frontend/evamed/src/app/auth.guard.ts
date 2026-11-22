@@ -23,7 +23,7 @@ function within<T>(work: Promise<T>, fallback: T): Promise<T> {
 @Injectable({
   providedIn: 'root'
 })
-export class AdminGuard implements CanActivate {
+export class AuthGuard implements CanActivate {
 
   constructor(
     private authService: AuthService,

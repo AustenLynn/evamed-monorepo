@@ -1,6 +1,21 @@
 {$SITE_DOMAIN} {
 	encode zstd gzip
 
+	# Security headers for the SPA and the API (audit A-30, 2026-11-22).
+	# The CSP is report-only until a dev session shows no violations in the
+	# browser console; then rename it to Content-Security-Policy. Firebase Auth
+	# needs Google's APIs and the evamed-ac3f8.firebaseapp.com sign-in frame.
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' https://apis.google.com https://www.gstatic.com https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.facebook.com https://graph.facebook.com; frame-src https://evamed-ac3f8.firebaseapp.com https://accounts.google.com https://www.facebook.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+		-Server
+		defer
+	}
+
 	# Django API. /admin is deliberately absent: the SPA owns that route and
 	# Django admin is reached over an SSH tunnel instead (see README).
 	@api path /api/* /api-projects/*

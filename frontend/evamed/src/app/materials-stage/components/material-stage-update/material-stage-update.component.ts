@@ -163,7 +163,6 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
         this.nameProject = data.name_project;
         this.catalogsService.usefulLifeCatalog().subscribe(distances => {
           distances.map(distance => {
-            console.log(data.useful_life_id);
             if (data.useful_life_id === distance.id) {
               this.vidaUtilSeleccionado = parseInt(distance.name_useful_life);
               this.vidaUtilSeleccionadoId = parseInt(distance.id);
@@ -463,7 +462,6 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
   }
 
   onNgModelChangeMaterial() {
-    // console.log(this.selectedMaterial);
   }
 
   onSCSelected(event, originId: number) {
@@ -712,9 +710,6 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
 
   updateStepOne() {
     //Lógica de editar
-    console.log('editar------------------');
-    console.log(this.listData2);
-    this.listData2.map(item => console.log(item));
   }
 
   trunc(x, posiciones = 0) {
@@ -752,9 +747,6 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
                   item.material_id === materialData.id &&
                   item.section_id === this.indexSheet + 1
                 ) {
-                  console.log('Material Data');
-                  // console.log(materialData);
-                  console.log(item);
                   prevData['comercial_name'] = item.comercial_name;
                   prevData['name_material'] = materialData.name_material;
                   prevData['quantity'] = this.trunc(item.quantity, 2);
@@ -795,9 +787,6 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
                   item.material_id === materialData.id &&
                   item.section_id === this.indexSheet + 1
                 ) {
-                  console.log('Material Data');
-                  // console.log(materialData);
-                  console.log(item);
                   prevData['comercial_name'] = item.comercial_name;
                   prevData['name_material'] = materialData.name_material;
                   prevData['quantity'] = this.trunc(item.quantity, 2);
@@ -835,7 +824,6 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
   }
 
   updateMaterialSelected(dataMaterialSelected) {
-    console.log('información a actualizar!!!');
 
     this.materialsService
       .searchMaterial(dataMaterialSelected.materialSelectedDB)
@@ -845,9 +833,6 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
             materialData.name_material ===
             dataMaterialSelected.materialSelectedDB
           ) {
-            console.log('IF DEFINITIVO!!!!');
-            console.log(dataMaterialSelected);
-            console.log(materialData);
             this.projectsService
               .updateMaterialSchemeProject(
                 dataMaterialSelected.material_scheme_project_id,
@@ -876,11 +861,7 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
                   transport_id_end: parseInt(dataMaterialSelected.transporte_2),
                 }
               )
-              .subscribe(data => {
-                console.log(
-                  'Update data-----------------------------------------------'
-                );
-                console.log(data);
+              .subscribe(() => {
                 this.ngOnInit();
               });
           }
@@ -1030,12 +1011,10 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
 
     removeMaterial(event) {
     event.stopPropagation();
-    console.log('entra a remove materials');
   }
 
   restoreMaterial(event) {
     event.stopPropagation();
-    console.log('entra a restore material');
   }
 
   duplicateMaterial(event, sc: string, origin: string) {
@@ -1186,7 +1165,6 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
   }
 
   showDetailEPD(event, material) {
-    console.log('Show------------------------------');
     event.stopPropagation();
     this.showEPD = true;
     this.dataMaterialSelected.name = material.name_material;
@@ -1235,11 +1213,9 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
   }
 
   addElement() {
-    console.log('add element');
   }
 
   addSC() {
-    console.log('add SC');
   }
 
   goToSearchInfo() {
@@ -1256,12 +1232,10 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
 
   onSelectMaterial(event, material) {
     event.stopPropagation();
-    console.log('onselected material');
     this.dataMaterialSelected.materialSelectedDB = material;
     if (this.dataMaterialSelected.materialFiltrado !== undefined) {
       this.dataMaterialSelected.materialFiltrado = undefined;
     }
-    console.log(this.dataMaterialSelected.materialSelectedDB);
     this.returnMaterialData();
   }
 
@@ -1323,7 +1297,6 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
       const schemaFilter = cse.filter(
         schema => Number(schema.project_id) === projectId
       );
-      console.log(schemaFilter);
 
       if (schemaFilter.length === 0) {
         this.router.navigateByUrl('construction-stage');
@@ -1378,7 +1351,6 @@ export class MaterialStageUpdateComponent implements OnInit, AfterViewInit {
       const schemaFilter = cse.filter(
         schema => Number(schema.project_id) === projectId
       );
-      console.log(schemaFilter);
 
       if (schemaFilter.length === 0) {
         this.router.navigateByUrl('construction-stage');

@@ -416,7 +416,6 @@ export class BarChartComponent implements OnInit, AfterViewInit {
             }
           });
         });
-        //console.log(auxDatos)
         Object.keys(auxDatos).forEach(etapa => {
           datos = [
             ...datos,
@@ -681,7 +680,6 @@ export class BarChartComponent implements OnInit, AfterViewInit {
         selec: selec,
         nivelesProyectos: this.auxElemntosData,
       };
-      //console.log(this.auxElementos,this.barChartData)
       this.ClickEvent.emit(aux);
     } else {
       if (this.lastClick !== null) {
@@ -713,10 +711,8 @@ export class BarChartComponent implements OnInit, AfterViewInit {
 
   public onHover(e: any) {
     // Controla el flujo de hover sobre los elementos de las barras
-    //console.log(this.showMe);
     if (this.showMe) {
       if (this.hovered !== null && this.hovered !== undefined) {
-        //console.log(this.showMe);
         const serie = this.chartDir.chart.data.datasets[this.hovered.datasetIndex].label;
         if (this.hovered.element.inRange(e.offsetX, e.offsetY)) {
           if (this.lastClick !== serie) {
@@ -789,7 +785,6 @@ export class BarChartComponent implements OnInit, AfterViewInit {
         // TODO: not sure when this color value is used.
         // Need to check if color is an array or not and maybe cast it
       } else {
-        //console.log(this.banera_enfoqueSerie_externo,serie);
         if (datos.label !== serie) {
           color = this.coloresBW[datos.label];
         } else {
@@ -813,7 +808,6 @@ export class BarChartComponent implements OnInit, AfterViewInit {
 
     // if(!this.hoverIniciado){
     //   this.hoverIniciado = true;
-    //   console.log('hovered')
     // // Ya que se inicializa el componente
     //   this.canvas = this.chartDir.chart.canvas;
     //   this.canvas.addEventListener('mousemove', e => { this.onHover(e); });

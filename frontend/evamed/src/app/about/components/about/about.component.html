@@ -40,9 +40,10 @@
       </li>
       <li>  
         <p>
-          Utiliza información de materiales y procesos constructivos de México y
-          Latinoamérica, como la base de datos MEXICANIUH (desarrollada por CADIS), y
-          diversas Declaraciones Ambientales de Productos (EPDs por sus siglas en inglés).
+          Calcula los 13 indicadores principales de la norma EN 15804+A2 con datos de
+          ecoinvent y de Declaraciones Ambientales de Productos (EPDs por sus siglas en inglés)
+          de México y Latinoamérica publicadas en ECO Platform. La vista «Solo carbono» de
+          Resultados muestra únicamente el calentamiento global total.
         </p>
       </li>
       <li>
@@ -60,7 +61,7 @@
         <ul>
           <li>
             <p>
-              Para modelos simplificados con un nivel de desarrollo básico (Level lof
+              Para modelos simplificados con un nivel de desarrollo básico (Level of
               Development-LOD 200), donde solo se cuenta con la geometría básica, este
               complemento calcula la cantidad de materiales para varias opciones de
               sistemas constructivos en los diferentes elementos de un edificio
@@ -81,8 +82,7 @@
       </li>
       <li><p>
         Es posible comparar la huella de carbono de la etapa de uso de una vivienda
-        respecto al promedio del sector vivienda en México, de acuerdo con los datos del
-        Registro Único de Vivienda (RUV).
+        con la referencia de vivienda sustentable del Registro Único de Vivienda (RUV).
       </p></li>
       <li><p>
         Es posible evaluar los potenciales impactos ambientales a través de una serie
@@ -97,7 +97,7 @@
     <p>
       EVAMED está basado en una serie de algoritmos que implementan la lógica de cálculo de
       la metodología del ACV. Esta metodología se basa en las fases del ciclo de vida y los
-      módulos definidos en la norma UNE EN 15978. La interfaz de EVAMED es amigable e
+      módulos definidos en las normas UNE-EN 15978 y EN 15804+A2. La interfaz de EVAMED es amigable e
       intuitiva, pues está dirigida a un usuario no experto en ACV. La herramienta se compone
       de cinco partes generales:
     </p>
@@ -115,10 +115,10 @@
         <p>La cuantificación de materiales de construcción es uno de los procesos que más consume
           tiempo durante el ACV de edificios. Como parte del proyecto EVAMED se ha desarrollado
           un archivo de DYNAMO que permite cuantificar la cantidad de materiales de un modelo
-          de edificio elaborado en Revit. De acuerdo con el American Institute of Architectura (AIA),
-          el nivel de detalle que se puede alacanzar para un modelo de edificio se puede clasificar
+          de edificio elaborado en Revit. De acuerdo con el American Institute of Architects (AIA),
+          el nivel de detalle que se puede alcanzar para un modelo de edificio se puede clasificar
           en cinco niveles: LOD 100, LOD 200, LOD 300, LOD 400 y LOD 500 (Soust-Verdaguer et al.,
-          2017) . El archivo de DYNAMO (que puede ser desacargado desde la plaforma de EVAMED,
+          2017) . El archivo de DYNAMO (que puede ser descargado desde la plataforma de EVAMED,
           e instalado en el equipo del usuario) permite hacer la cuantificación de materiales bajo
           dos escenarios, dependiendo del nivel de LOD alcanzado:
         </p>
@@ -129,7 +129,7 @@
               con nivel LOD 300. Cuando el usuario ha especificado materiales y sistemas constructivos
               en un modelo de Revit, se puede generar un archivo con extensión xlsm con la
               cuantificación de materiales de construcción, catalogados en los diferentes componentes
-              constructivos que conforman el edificio (cimentación, pisos, muros, techs, etc.). Este
+              constructivos que conforman el edificio (cimentación, pisos, muros, techos, etc.). Este
               archivo puede ser cargado en EVAMED, cuya información se catalogará como ‘Modelo de
               Revit’.
             </p>
@@ -168,7 +168,7 @@ se compone de cuatro etapas generales:
           <li>
             <p>
               Producción. En esta etapa se muestra la cuantificación de materiales de
-              construcción, la cual es leida del archivo xlm que previamente se haya importado. Esta
+              construcción, la cual es leída del archivo xlsm que previamente se haya importado. Esta
               información es catalogada en los principales componentes de un edificio: cimentación,
               muros interiores, muros exteriores (fachadas), pisos, entrepisos, techos, estructura,
               puertas, ventanas, instalaciones especiales, y otros. Nuevos materiales pueden ser
@@ -201,63 +201,46 @@ se compone de cuatro etapas generales:
           <li>
             <p>
               Fin de vida. Al igual que en la fase de construcción, se especifica la energía utilizada
-              durante el proceso de deconstrucción de cada elemento constructivo (etapa C1).
+              durante el proceso de deconstrucción de cada elemento constructivo (etapa C1). Además,
+              EVAMED calcula la liberación del carbono biogénico de los materiales al final de su vida
+              útil (etapa C3).
             </p>
           </li>
         </ul>
       </li>
       <li>
-        <h2>Bases de datos</h2>
-        <p>Para la fase de producción (A1-A3), EVAMED se basa en tres fuentes de información:</p>
+        <h2>Bases de datos y método de cálculo</h2>
+        <p>
+          EVAMED calcula los potenciales impactos ambientales con el método de la norma EN 15804+A2:
+          13 indicadores, entre ellos el calentamiento global total, fósil, biogénico y por uso de suelo.
+          Usa dos fuentes de información:
+        </p>
         <ul class="numeros">
           <li>
             <p>
-              MEXICANIUH: Es una base de datos de los principales materiales de construcción
-                fabricados en México, la cual ha sido desarrollada por el Centro de Análisis de Ciclo de
-                Vida y Diseño Sustentable (CADIS). Entre los materiales considerados se encuentran el
-                ladrillo, el block hueco, el cemento, la arena, y la grava, así como los procesos de
-                generación de energía eléctrica en México. Los potenciales impactos ambientales de cada
-                material han sido calculados bajo las reglas del ACV, utilizando el método de evaluación
-                del CML 2 baseline 2000 V2.05.
+              ecoinvent: base de datos internacional de inventarios de ciclo de vida. EVAMED usa sus
+              factores de impacto (método EF 3.1) para materiales, transporte (A4), maquinaria de
+              construcción y deconstrucción (A5 y C1) y energía en la fase de uso (B6).
             </p>
           </li>
           <li>
             <p>
-              Declaraciones Ambientales de Productos (EPD por sus siglas en inglés): Las EPDs es
-un etiquetado ambiental tipo III que ﻿“presentan la información ambiental cuantificada
-sobre el ciclo de vida de los productos para permitir la comparación entre productos que
-cumplan una misma función” (AENOR, 2010) . La cuantificación de los potenciales
-impactos ambientales está basada en las Reglas de Categoría de Producto (PCR por sus
-siglas en inglés) que especifican las reglas de cálculo y la manera de presentar los
-resultados. Los cáculos y resultados son revisados por una tercera parte independiente,
-con lo que se asegura la transparencia de la información (AENOR, 2010) . EVAMED
-considera las EPDs publicadas por The International EPD System para productos de
-construcción fabricados en México, por ser el de mayor presencia a nivel mundial (Ibáñez-
-Forés et al., 2015) .
-            </p>
-          </li>
-          <li>
-            <p>
-              Environmental Performance in Construction (EPiC): Es una extensa base de datos de
-diferentes materiales de construcción. A diferencia de MEXICANIUH y las EPDs, EPiC solo
-considera materiales de construcción de Australia, y se limita a cuantificar la energía y
-agua consumida durante la fabricación de los materiales, así como las emisiones de CO 2
-equivalentes (Crawford et al., 2019) . Es decir, solamente considera la categoría de
-impacto ambiental del Calentamiento Global. EVAMED utiliza esta información para
-contribuir al cálculo de la huella de carbono.
+              Declaraciones Ambientales de Productos (EPD por sus siglas en inglés) de ECO Platform:
+              etiquetas ambientales tipo III, verificadas por una tercera parte independiente, que
+              presentan la información ambiental cuantificada del ciclo de vida de un producto
+              conforme a la norma EN 15804+A2. EVAMED incluye EPDs de productos de construcción
+              de México y Latinoamérica.
             </p>
           </li>
         </ul>
-      </li>
-      
         <p>
-          Para la fase de transporte (A4), construcción (A5), reemplazo (B4), uso de energía
-          operacional (B6), y demolición (C1), EVAMED puede considerar parte de la base de datos
-          ECOINVENT V3, utilizando el método de cálculo CML-IA baseline V3.06/EU25.
-          Actualmente, la utilización de esta base de datos se encuentra en proceso de
-          licenciamiento.
+          Versiones anteriores de EVAMED usaban el método CML con las bases de datos MEXICANIUH
+          (CADIS), EPiC y EPDs de The International EPD System. Esos datos no tienen los indicadores
+          de EN 15804+A2, por lo que ya no se ofrecen; los proyectos que todavía los usan muestran un
+          aviso con los elementos que no se incluyen en los resultados.
         </p>
-      
+      </li>
+
       <li>
         <h2>Resultados</h2>
         <p>
@@ -373,7 +356,7 @@ https://doi.org/10.1016/j.enbuild.2016.12.009
       </p></li>
     </ul>
   </mat-tab>
-  <mat-tab label="¿Quienes somos?">
+  <mat-tab label="¿Quiénes somos?">
     <p>
       Somos un grupo interdisciplinar de investigadores, docentes, estudiantes y profesionistas
 en temas de sustentabilidad, eficiencia energética, impacto ambiental de la edificación,

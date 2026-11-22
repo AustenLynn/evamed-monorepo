@@ -3,7 +3,6 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { HttpErrorResponse } from '@angular/common/http';
 import { AddNewProjectComponent } from '../add-new-project/add-new-project.component';
 import { ChooseTypeOfProjectComponent } from '../choose-type-of-project/choose-type-of-project.component';
 import { ProjectsService } from './../../../core/services/projects/projects.service';
@@ -36,7 +35,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 //import { formatNumber } from '@angular/common';
 
-import { isClimateChangeTotal } from '../../climate';
+import { muestraReferenciaCarbono, OPCIONES_CARBONO } from '../../climate';
+import { filtrarProyectos } from '../../project-filter';
 import { ExcludedNoticeComponent } from '../excluded-notice/excluded-notice.component';
 
 @Component({
@@ -82,10 +82,7 @@ export class HomeEvamedComponent implements OnInit {
   sections: any[] = [];
   dataMaterial: any;
   catologoImpactoAmbiental: any;
-  catologoOpcionesCarbono = [
-    'Promedio del sector vivienda',
-    'Vivienda sustentable',
-  ];
+  catologoOpcionesCarbono = OPCIONES_CARBONO;
   auxDataProjectList: any;
   ConstructiveSystemElements: any[] = [];
   ListDataEndLife: any[] = [];
@@ -98,6 +95,8 @@ export class HomeEvamedComponent implements OnInit {
   cargaDatosCalculo = false;
   //---
   auxDatosGraficaUso = [];
+  private tarjetasPorId = new Map<number, any>();
+  private usoPorId = new Map<number, any>();
   public doughnutChartType = 'doughnut';
   public pieChartOptions : ChartOptions = {
     responsive: false,
@@ -109,11 +108,14 @@ export class HomeEvamedComponent implements OnInit {
     elements: { arc: { borderWidth: 0 } },
     hover: { mode: null },
     plugins: {
+      // Readable labels, and none on slivers where they overlap (audit A-04).
       datalabels: {
         color: '#FFFFFF',
         font: {
-          size: 8,
+          size: 11,
+          weight: 'bold',
         },
+        display: context => Number(context.dataset.data[context.dataIndex]) >= 5,
       },
       tooltip: {
         enabled: false
@@ -233,9 +235,9 @@ export class HomeEvamedComponent implements OnInit {
     private activeProject: ActiveProjectService,
   ) {
     this.catalogsService.usesCatalog().subscribe(data => {
+      // A copy: pushing "Todos" into the same array also offered it as a project use (audit A-08).
       this.catalogoUsos = data;
-      this.filtroCatalogoUsos = data;
-      this.filtroCatalogoUsos.push({ id: 0, name_use: 'Todos' });
+      this.filtroCatalogoUsos = [...data, { id: 0, name_use: 'Todos' }];
     });
 
     this.catalogsService.countriesCatalog().subscribe(data => {
@@ -337,8 +339,9 @@ export class HomeEvamedComponent implements OnInit {
 
     const [allProjects, potentialTypesList, ULList, listaBD] = await Promise.all([
       lastValueFrom(this.projectsService.getProjects()),
-      lastValueFrom(this.analisis.getPotentialTypes()),
-      lastValueFrom(this.analisis.getUsefulLife()),
+      // The same cached requests the constructor made, so each loads once (audit A-03).
+      lastValueFrom(this.catalogsService.getPotentialTypes()),
+      lastValueFrom(this.catalogsService.usefulLifeCatalog()),
       lastValueFrom(this.analisis.getDB()),
     ]);
 
@@ -346,7 +349,7 @@ export class HomeEvamedComponent implements OnInit {
     this.projectsList = allProjects
       .filter((item: any) => item.user_platform_id === userId)
       .reverse();
-    this.tempProjectsList = this.projectsList;
+    this.tempProjectsList = [...this.projectsList];
     this.countProjectList = this.projectsList.length;
 
     // Build usage pie chart data (depends on constructor-loaded ACR/ECD)
@@ -408,7 +411,20 @@ export class HomeEvamedComponent implements OnInit {
       DBList: auxBD,
       basesDatos: { ...auxbases },
     }));
+    // Card data is looked up by project id, so filtering or deleting never pairs a card with another project's data.
+    this.projectsList.forEach((project: any, index: number) => {
+      this.tarjetasPorId.set(project.id, this.auxDataProjectList[index]);
+      this.usoPorId.set(project.id, this.auxDatosGraficaUso[index]);
+    });
     this.cargaDatosCalculo = true;
+  }
+
+  /** Rebuilds the visible cards and their parallel data from the full list. */
+  private aplicarFiltro() {
+    this.projectsList = filtrarProyectos(this.tempProjectsList, this.filtroUsoSeleccionado);
+    this.auxDataProjectList = this.projectsList.map((p: any) => this.tarjetasPorId.get(p.id));
+    this.auxDatosGraficaUso = this.projectsList.map((p: any) => this.usoPorId.get(p.id));
+    this.countProjectList = this.tempProjectsList.length;
   }
 
   onTabChange(event: any, i: number) {
@@ -434,8 +450,8 @@ export class HomeEvamedComponent implements OnInit {
     const firstImpactoKey = this.calculos.ajustarNombre(firstImpacto['name_complete_potential_type']);
     const porcentajeSubepata = this.calculos.ValoresProcentajeSubeapa(calculosOperacionesDeFase, []);
 
-    this.auxDataProjectList[i] = {
-      ...this.auxDataProjectList[i],
+    // In place: the same object is shared with tarjetasPorId.
+    Object.assign(this.auxDataProjectList[i], {
       resultsLoaded: true,
       resultsLoading: false,
       excluded: result.excluded,
@@ -454,14 +470,19 @@ export class HomeEvamedComponent implements OnInit {
         calculosOperacionesDeFase
       ),
       dataGraficaPie: this.cargaDataPie(porcentajeSubepata, firstImpactoKey, []),
-      valorCarbono: this.calculos
-        .determinaValorCarbono(
-          calculosOperacionesDeFase,
-          this.DatosCalculos.projectsList,
-          element.id,
-          this.DatosCalculos.ULList
-        )
-        .toExponential(2),
+      valorCarbono:
+        this.calculos
+          .determinaValorCarbono(
+            calculosOperacionesDeFase,
+            this.DatosCalculos.projectsList,
+            element.id,
+            this.DatosCalculos.ULList
+          )
+          ?.toExponential(2) ?? null,
+      mostrarOpcionCarbono: muestraReferenciaCarbono(
+        firstImpacto['name_complete_potential_type'],
+        this.DatosCalculos.projectsList.find(p => p.id === element.id)
+      ),
       flagsCarbono: this.calculos.buscarValosCarbono(
         calculosOperacionesDeFase,
         this.catologoOpcionesCarbono[0],
@@ -470,7 +491,7 @@ export class HomeEvamedComponent implements OnInit {
         this.DatosCalculos.ULList
       ),
       errorCalculos: result.error,
-    };
+    });
   }
 
   onlyUnique(value, index, self) {
@@ -502,7 +523,6 @@ export class HomeEvamedComponent implements OnInit {
         });
       });
     } catch (e) {
-      console.log(e);
     }
 
     return sectionsExist.filter(this.onlyUnique);
@@ -524,7 +544,6 @@ export class HomeEvamedComponent implements OnInit {
         });
       });
     } catch (e) {
-      console.log(e);
     }
 
     return listSC.filter(this.onlyUnique);
@@ -543,7 +562,6 @@ export class HomeEvamedComponent implements OnInit {
         });
       });
     } catch (e) {
-      console.log(e);
     }
 
     return sectionsExist.filter(this.onlyUnique);
@@ -562,7 +580,6 @@ export class HomeEvamedComponent implements OnInit {
         });
       });
     } catch (e) {
-      console.log(e);
     }
 
     return sectionsExist.filter(this.onlyUnique);
@@ -594,7 +611,6 @@ export class HomeEvamedComponent implements OnInit {
         });
       });
     } catch (e) {
-      console.log(e);
     }
 
     return list.filter(this.onlyUnique);
@@ -625,7 +641,6 @@ export class HomeEvamedComponent implements OnInit {
         });
       });
     } catch (e) {
-      console.log(e);
     }
 
     return list.filter(this.onlyUnique);
@@ -644,7 +659,6 @@ export class HomeEvamedComponent implements OnInit {
         }
       });
     } catch (e) {
-      console.log(e);
     }
 
     return dataList.filter(this.onlyUnique);
@@ -660,6 +674,12 @@ export class HomeEvamedComponent implements OnInit {
 
   hasEndLifeData(projectId: number): boolean {
     return this.serchEndLifeSection(projectId).length > 0;
+  }
+
+  /** No stage has data yet: the results tab says so instead of empty charts (audit A-02). */
+  sinDatos(projectId: number): boolean {
+    return !this.hasProductionData(projectId) && !this.hasConstructionData(projectId) &&
+      !this.hasEndLifeData(projectId) && this.serchUseData(projectId).length === 0;
   }
 
   DataPieUso(data) {
@@ -690,18 +710,9 @@ export class HomeEvamedComponent implements OnInit {
     return { labels: labels, datasets: auxdata };
   }
 
-  selectUse(id) {
-    this.projectsList = [];
-    this.tempProjectsList.map(item => {
-      if (item.use_id === id) {
-        this.projectsList.push(item);
-      }
-
-      if (id === 0) {
-        this.projectsList.push(item);
-      }
-    });
-    this.projectsList.reverse();
+  selectUse(id: number) {
+    this.filtroUsoSeleccionado = id;
+    this.aplicarFiltro();
   }
 
   openDialogCTOP() {
@@ -717,233 +728,60 @@ export class HomeEvamedComponent implements OnInit {
         this.optionSelected = result.optionSelected;
         this.router.navigateByUrl('do-files');
       } catch {
-        console.log('close modal');
       }
     });
   }
 
-  deleteProject(id) {
+  deleteProject(id: number) {
     this.projects.deleteProject(id).subscribe(() => {
-      this.users
-        .searchUser(localStorage.getItem('email-login'))
-        .subscribe(data => {
-          localStorage.setItem('email-id', data[0].id);
-          this.projectsList = [];
-          this.projects.getProjects().subscribe(data => {
-            data.map(item => {
-              if (
-                item.user_platform_id ===
-                parseInt(localStorage.getItem('email-id'), 10)
-              ) {
-                this.projectsList.push(item);
-              }
-              this.countProjectList = this.projectsList.length;
-            });
-            this.projectsList.reverse();
-          });
-        });
+      this.tempProjectsList = this.tempProjectsList.filter((p: any) => p.id !== id);
+      this.tarjetasPorId.delete(id);
+      this.usoPorId.delete(id);
+      this.aplicarFiltro();
     });
   }
 
-  renameProject(id) {
-    const dialogRef = this.dialog.open(ChangeNameProjectComponent, {
-      width: '680px',
-      data: {
-        nameProject: this.nameProject,
-      },
-    });
+  renameProject(id: number) {
+    const actual = (this.projectsList ?? []).find(p => p.id === id)?.name_project ?? '',
+      dialogRef = this.dialog.open(ChangeNameProjectComponent, {
+        width: '680px',
+        data: { nameProject: actual },
+      });
     dialogRef.afterClosed().subscribe(result => {
-      // Closed with Esc or a click outside: nothing to rename.
-      if (!result?.nameProject?.trim()) {
+      const nombre = result?.nameProject?.trim();
+      // Closed with Esc, the X or a click outside, or nothing changed.
+      if (!nombre || nombre === actual) {
         return;
       }
-      this.projectsService.getProjectById(id).subscribe((data: any) => {
-        this.projectsService
-          .updateProyect(id, {
-            id,
-            name_project: result.nameProject,
-            builded_surface: data.builded_surface,
-            living_area: data.living_area,
-            tier: data.living_area,
-            distance: data.distance,
-            use_id: data.use_id,
-            type_id: data.type_id,
-            country_id: data.country_id,
-            useful_life_id: data.country_id,
-            housing_scheme_id: data.housing_scheme_id,
-            user_platform_id: data.user_platform_id,
-            city_id_origin: data.city_id_origin,
-          })
-          .subscribe(data2 => {
-            console.log(data2);
-            location.reload();
-          });
+      this.projectsService.renameProject(id, nombre).subscribe({
+        next: () => {
+          // Update the card in place instead of reloading the page (audit A-25).
+          for (const lista of [this.projectsList, this.tempProjectsList]) {
+            const proyecto = lista?.find(p => p.id === id);
+            if (proyecto) proyecto.name_project = nombre;
+          }
+        },
+        error: () => this.snackBar.open('No se pudo cambiar el nombre. Inténtalo de nuevo.', 'OK', { duration: 4000 }),
       });
     });
   }
 
-  duplicateProject(projectId) {
-    this.cargaDatosCalculo = false;
-    this.projectsService
-      .getProjectById(projectId)
-      .subscribe((projectData: any) => {
-        this.projectsService
-          .addProject({
-            name_project: `${projectData.name_project} - Copy`,
-            builded_surface: projectData.builded_surface,
-            living_area: projectData.living_area,
-            tier: projectData.tier,
-            use_id: projectData.use_id,
-            type_id: projectData.type_id,
-            country_id: projectData.country_id,
-            useful_life_id: projectData.useful_life_id,
-            housing_scheme_id: projectData.housing_scheme_id,
-            user_platform_id: projectData.user_platform_id,
-            city_id_origin: projectData.city_id_origin,
-            distance: null,
-          })
-          .subscribe(newProjectData => {
-            localStorage.setItem('newProjectDataId', newProjectData.id);
-
-            // Duplicar fin de vida
-            const endLifeData = this.ListDataEndLife ?? [];
-            endLifeData.forEach(dataEL => {
-              if (dataEL.project_id === projectId) {
-                this.endLifeService
-                  .addECDP({
-                    quantity: dataEL.quantity,
-                    unit_id: dataEL.unit_id,
-                    source_information_id: dataEL.source_information_id,
-                    section_id: dataEL.section_id,
-                    project_id: newProjectData.id,
-                  })
-                  .subscribe(dataResultEndLife => {
-                    console.log('resultado de fin de vida');
-                    console.log(dataResultEndLife);
-                  });
-              }
-            });
-
-            // Duplicar construcción
-            const constructionData = this.ConstructiveSystemElements ?? [];
-            constructionData.forEach(cs => {
-              if (cs.project_id === projectId) {
-                this.constructionStageService
-                  .addConstructiveSistemElement({
-                    quantity: cs.quantity,
-                    project_id: newProjectData.id,
-                    section_id: cs.section_id,
-                    constructive_process_id: cs.constructive_process_id,
-                    volume_unit_id: cs.volume_unit_id,
-                    energy_unit_id: cs.energy_unit_id,
-                    bulk_unit_id: cs.bulk_unit_id,
-                    source_information_id: cs.source_information_id,
-                  })
-                  .subscribe(dataResultConstruction => {
-                    console.log('resultado de construcción');
-                    console.log(dataResultConstruction);
-                  });
-              }
-            });
-
-            // Duplicar Producción
-            const materialsData = this.dataMaterial ?? [];
-            materialsData.forEach(material => {
-              if (material.project_id === projectId) {
-                this.projectsService
-                  .addSchemeProject({
-                    construction_system: material.construction_system,
-                    comercial_name: material.comercial_name,
-                    quantity: material.quantity,
-                    provider_distance: material.provider_distance,
-                    material_id: material.material_id,
-                    project_id: parseInt(
-                      localStorage.getItem('newProjectDataId') ?? '',
-                      10
-                    ),
-                    origin_id: material.origin_id,
-                    section_id: material.section_id,
-                    value: material.value,
-                    distance_init: material.distance_init,
-                    distance_end: material.distance_end,
-                    replaces: material.replaces,
-                    city_id_origin: material.city_id_origin,
-                    city_id_end: material.city_id_end,
-                    transport_id_origin: material.transport_id_origin,
-                    transport_id_end: material.transport_id_end,
-                    state_id_origin: material.state_id_origin,
-                    unit_text: material.unit_text,
-                    description_material: material.description_material,
-                  })
-                  .subscribe(dataResulMaterial => {
-                    console.log('resultado de materiales');
-                    console.log(dataResulMaterial);
-                  });
-              }
-            });
-
-            this.electricitConsumptionService
-              .getACR()
-              .subscribe(dataAllACR => {
-                dataAllACR.map(acr => {
-                  if (acr.project_id === projectId) {
-                    // Duplicar Uso
-                    this.electricitConsumptionService
-                      .addACR({
-                        project_id: parseInt(
-                          localStorage.getItem('newProjectDataId') ?? '',
-                          10
-                        ),
-                        quantity: acr.quantity,
-                        unit_id: acr.unit_id,
-                      })
-                      .subscribe(dataNewACR => {
-                        console.log('Resultado de add NewACR');
-                        console.log(dataNewACR);
-                        this.electricitConsumptionService
-                          .getECD()
-                          .subscribe(dataAllECD => {
-                            dataAllECD.map(ecd => {
-                              if (
-                                ecd.annual_consumption_required_id === acr.id
-                              ) {
-                                this.electricitConsumptionService
-                                  .addECD({
-                                    quantity: ecd.quantity,
-                                    percentage: ecd.percentage,
-                                    source: ecd.source,
-                                    annual_consumption_required_id:
-                                      dataNewACR.id,
-                                    unit_id: ecd.unit_id,
-                                    type: ecd.type,
-                                  })
-                                  .subscribe(dataNewECD => {
-                                    console.log('Resultado de add New ECD');
-                                    console.log(dataNewECD);
-                                    this.users
-                                      .searchUser(
-                                        localStorage.getItem('email-login')
-                                      )
-                                      .subscribe(data => {
-                                        console.log(data);
-                                        location.reload();
-                                      });
-                                  });
-                              }
-                            });
-                          });
-                      });
-                  }
-                });
-              });
-          });
-      });
+  duplicateProject(projectId: number) {
+    const nombre = (this.projectsList ?? []).find(p => p.id === projectId)?.name_project ?? 'este proyecto';
+    if (!confirm(`¿Duplicar «${nombre}» con todos sus datos?`)) {
+      return;
+    }
+    this.projectsService.duplicateProject(projectId).subscribe({
+      next: () => location.reload(),
+      error: () => this.snackBar.open('No se pudo duplicar el proyecto. Inténtalo de nuevo.', 'OK', { duration: 4000 }),
+    });
   }
 
   selectImpactoAmbiental(impacto, indexRecivido) {
     this.auxDataProjectList[indexRecivido].impactoSelect =
       this.calculos.ajustarNombre(impacto);
-    if (isClimateChangeTotal(impacto)) {
+    const proyecto = this.DatosCalculos.projectsList.find(p => p.id === this.auxDataProjectList[indexRecivido].id);
+    if (muestraReferenciaCarbono(impacto, proyecto)) {
       this.auxDataProjectList[indexRecivido].mostrarOpcionCarbono = true;
       this.auxDataProjectList[indexRecivido].iconoCarbono = 'switch_left';
     } else {
@@ -1026,7 +864,6 @@ export class HomeEvamedComponent implements OnInit {
       this.auxDataProjectList[i].impactoCompleteSelect,
       this.auxDataProjectList[i].datos
     );
-    //console.log(auxSubetapas)
     this.auxDataProjectList[i].subetasMostrada = auxSubetapas;
     if (this.auxDataProjectList[i].etapaSeleccionada === etapa) {
       const auxid = etapa.concat('TextInfo'.concat(String(id))),
@@ -1336,57 +1173,14 @@ export class HomeEvamedComponent implements OnInit {
       },
     });
 
+    // The dialog saves the project itself and closes with it, or with nothing (audit A-05, A-06).
     dialogRef.afterClosed().subscribe(result => {
-      try {
-        this.projectsService
-          .addProject({
-            name_project: result.nombre,
-            builded_surface: parseInt(result.superficieConstruida, 10),
-            living_area: parseInt(result.superficieHabitable, 10),
-            tier: parseInt(result.noNiveles, 10),
-            use_id: result.usoSeleccionado,
-            type_id:
-              result.tipoSeleccionado === undefined
-                ? null
-                : result.tipoSeleccionado,
-            country_id: result.paisSeleccionado,
-            useful_life_id: result.vidaUtilSeleccionado,
-            housing_scheme_id:
-              result.esqHabitacionalSeleccionado === undefined
-                ? null
-                : result.esqHabitacionalSeleccionado,
-            user_platform_id: parseInt(localStorage.getItem('email-id'), 10),
-            city_id_origin:
-              result.ciudadSeleccionada === undefined
-                ? null
-                : result.ciudadSeleccionada,
-            distance: null,
-          })
-          .subscribe({
-            next: data => {
-              sessionStorage.setItem('primaryDataProject', JSON.stringify(data));
-
-              sessionStorage.setItem(
-                'estadoSeleccionado',
-                result.estadoSeleccionado
-              );
-              //this.openDialogCTOP(); // No abrir tipo de evalución e ir directo a do-files
-              this.router.navigateByUrl('do-files');
-            },
-            error: (err: HttpErrorResponse) => {
-              // The API only lets a verified email own projects.
-              if (err.status === 403) {
-                this.snackBar.open(
-                  'Verifica tu correo electrónico para crear proyectos.',
-                  'OK',
-                  { duration: 4000 }
-                );
-              }
-            },
-          });
-      } catch {
-        console.log('close modal');
+      if (!result?.project) {
+        return;
       }
+      sessionStorage.setItem('primaryDataProject', JSON.stringify(result.project));
+      sessionStorage.setItem('estadoSeleccionado', result.estadoSeleccionado);
+      this.router.navigateByUrl('do-files');
     });
   }
 

@@ -1,0 +1,57 @@
+id,base,material,gwp_total,fossil_mas_biogenico_mas_luluc,diferencia_pct
+464,ECOINVENT 3,"Cemento_Cement, CEM III/C {RoW}| market for cement",0.1584,0.5252,231.5
+485,ECOINVENT 3,"Acero_Steel, structural, 100% scrap {GLO}| market ",0.3137,0.9173,192.4
+481,ECOINVENT 3,"Aplanado_Clay plaster {GLO}| market for clay plast",0.06241,0.1784,185.9
+462,ECOINVENT 3,"Block_Lightweight concrete block, polystyrene {RoW",0.5876,1.651,180.9
+471,ECOINVENT 3,"Concreto_Concrete slab {RoW}| market for concrete ",506.6,1415,179.3
+465,ECOINVENT 3,"Cemento_Cement, CEM IV/B {RoW}| market for cement,",0.2811,0.7618,171
+466,ECOINVENT 3,"Cemento_Cement, CEM V/B {RoW}| market for cement, ",0.2269,0.6081,168
+455,ECOINVENT 3,"Concreto_Concrete, medium strength {RoW}| market f",215.1,560.4,160.6
+479,ECOINVENT 3,"Yeso_Gypsum, mineral {RoW}| market for gypsum, min",0.005891,0.01495,153.7
+438,ECOINVENT 3,"Cemento_Cement, CEM III/B {RoW}| market for cement",0.2553,0.6046,136.8
+488,ECOINVENT 3,"Acero_Steel, weathering A, 100% scrap {GLO}| marke",0.6106,1.442,136.1
+447,ECOINVENT 3,"Acero_Steel, chromium steel 18/8, hot rolled {GLO}",3.268,7.597,132.5
+445,ECOINVENT 3,"Acero_Steel, unalloyed {GLO}| market for steel, un",1.281,2.924,128.2
+469,ECOINVENT 3,"Aplanado_Cement plaster {RoW}| market for cement p",132.4,292.8,121.1
+486,ECOINVENT 3,"Acero_Steel, carbon, 100% scrap {GLO}| market for ",0.3908,0.8387,114.6
+476,ECOINVENT 3,"Grava_Gravel, round {RoW}| market for gravel, roun",0.008293,0.01757,111.9
+480,ECOINVENT 3,"Yeso_Stucco {GLO}| market for stucco | Cut-off, S",0.06224,0.1294,107.9
+449,ECOINVENT 3,"Concreto_Concrete, 25MPa {RoW}| market for concret",473.2,125.7,73.4
+452,ECOINVENT 3,"Concreto_Concrete, 40MPa {RoW}| market for concret",543.5,151.8,72.1
+475,ECOINVENT 3,"Grava_Gravel, crushed {RoW}| market for gravel, cr",0.02627,0.007806,70.3
+490,ECOINVENT 3,"Acero_Steel, case hardening, 100% scrap {GLO}| mar",1.028,0.3481,66.1
+444,ECOINVENT 3,"Acero_Steel, low-alloyed, hot rolled {GLO}| market",3.513,1.193,66
+436,ECOINVENT 3,"Cemento_Cement, CEM II/B {RoW}| market for cement,",1.017,0.354,65.2
+461,ECOINVENT 3,"Block_Lightweight concrete block, expanded perlite",1.63,0.6295,61.4
+487,ECOINVENT 3,"Acero_Steel, high strength low alloy, 100% scrap {",1.116,0.4326,61.2
+491,ECOINVENT 3,"Acero_Steel, bearing, 100% scrap {GLO}| market for",1.269,0.4973,60.8
+468,ECOINVENT 3,"Mortero_Cement mortar {RoW}| market for cement mor",0.3777,0.1507,60.1
+463,ECOINVENT 3,"Block_Lightweight concrete block, expanded vermicu",0.707,0.2978,57.9
+446,ECOINVENT 3,"Acero_Steel, chromium steel 18/8 {GLO}| market for",7.101,2.994,57.8
+450,ECOINVENT 3,"Concreto_Concrete, 30MPa {RoW}| market for concret",455.9,200.7,56
+482,ECOINVENT 3,"Aplanado_Cover plaster, mineral {GLO}| market for ",0.06213,0.09632,55
+441,ECOINVENT 3,"Cemento_Cement, unspecified {RoW}| market for ceme",1.188,0.5592,52.9
+440,ECOINVENT 3,"Cemento_Cement, CEM V/A {RoW}| market for cement, ",0.7841,0.3719,52.6
+473,ECOINVENT 3,"Ladrillo_Fly ash brick {RoW}| market for fly ash b",1.034,0.4923,52.4
+442,ECOINVENT 3,"Acero_Reinforcing steel {GLO}| market for reinforc",1.019,1.449,42.2
+474,ECOINVENT 3,"Arena_Sand {RoW}| market for sand | Cut-off, S",0.005436,0.007605,39.9
+435,ECOINVENT 3,"Cemento_Cement, CEM II/A {RoW}| market for cement,",0.3917,0.5328,36
+477,ECOINVENT 3,"Panel de yeso_Gypsum plasterboard {GLO}| market fo",0.1777,0.2409,35.6
+467,ECOINVENT 3,"Cemento_Clinker {RoW}| market for clinker | Cut-of",0.5049,0.3776,25.2
+484,ECOINVENT 3,"Aplanado_Thermal plaster, outdoor {GLO}| market fo",0.4705,0.5621,19.5
+472,ECOINVENT 3,"Ladrillo_Adobe brick {RoW}| market for adobe brick",0.05181,0.06122,18.2
+458,ECOINVENT 3,"Block_Autoclaved aerated concrete block {RoW}| mar",0.2458,0.2801,14
+443,ECOINVENT 3,"Acero_Steel, low-alloyed {GLO}| market for steel, ",3.153,2.745,12.9
+434,ECOINVENT 3,"Cemento_Cement, Portland {RoW}| market for cement,",1.38,1.212,12.2
+459,ECOINVENT 3,"Block_Lightweight concrete block, expanded clay {R",0.2548,0.2281,10.5
+448,ECOINVENT 3,"Concreto_Concrete, 20MPa {RoW}| market for concret",391.9,352.4,10.1
+478,ECOINVENT 3,"Panel de yeso_Gypsum fibreboard {GLO}| market for ",0.3832,0.4187,9.3
+451,ECOINVENT 3,"Concreto_Concrete, 35MPa {RoW}| market for concret",494.1,529,7.1
+489,ECOINVENT 3,"Acero_Steel, weathering B, 100% scrap {GLO}| marke",1.239,1.32,6.5
+470,ECOINVENT 3,"Concreto_Concrete, 45MPa {RoW}| market for concret",552.6,585.6,6
+460,ECOINVENT 3,"Block_Lightweight concrete block, pumice {RoW}| ma",0.2593,0.2714,4.7
+437,ECOINVENT 3,"Cemento_Cement, CEM III/A {RoW}| market for cement",0.251,0.2401,4.3
+587,ECO Platform,"Acero_Steel reinforcing bar manufactured from stee",708.9,736.6,3.9
+439,ECOINVENT 3,"Cemento_Cement, CEM IV/A {RoW}| market for cement,",0.3597,0.3465,3.7
+456,ECOINVENT 3,"Concreto_Lean concrete {RoW}| market for lean conc",229.3,221.4,3.5
+454,ECOINVENT 3,"Concreto_Concrete, normal strength {RoW}| market f",166.9,172,3

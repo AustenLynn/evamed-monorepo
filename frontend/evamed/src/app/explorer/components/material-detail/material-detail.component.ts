@@ -1,3 +1,4 @@
+import { separarEnlaceEpd } from '../../epd-link';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -31,6 +32,8 @@ interface Bar {
   standalone: false,
 })
 export class MaterialDetailComponent implements OnChanges {
+  /** The EPD address at the end of ECO Platform descriptions becomes a link (audit A-36). */
+  protected readonly epd = separarEnlaceEpd;
   @Input({ required: true }) materialId!: number;
   /** Offers "Seleccionar recurso" (the stage page's picker); the browse-only page doesn't. */
   @Input() canSelect = false;

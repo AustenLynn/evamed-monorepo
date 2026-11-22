@@ -150,8 +150,9 @@ con un menor impacto ambiental durante todo su ciclo de vida <a (click)="about()
             </mat-checkbox>
           </div>
           <div class="container-label-input">
-            <mat-checkbox class="margin-checkbox">
-              He leido y acepto los términos de referencia del manejo de la información
+            <mat-checkbox class="margin-checkbox" formControlName="terms">
+              He leído y acepto el <a routerLink="/auth/aviso-de-privacidad" target="_blank">aviso de privacidad</a>
+              y los <a routerLink="/auth/terminos" target="_blank">términos y condiciones</a>
             </mat-checkbox>
           </div>
         </div>
@@ -185,8 +186,8 @@ con un menor impacto ambiental durante todo su ciclo de vida <a (click)="about()
           evamed&#64;ibero.mx
         </div>
         <div class="ap">
-          Aviso de privacidad <br />
-          Términos y condiciones
+          <a routerLink="/auth/aviso-de-privacidad">Aviso de privacidad</a> <br />
+          <a routerLink="/auth/terminos">Términos y condiciones</a>
         </div>
       </div>
     </section>

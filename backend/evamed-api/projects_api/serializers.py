@@ -224,9 +224,22 @@ class HousingSchemeSerializer(serializers.ModelSerializer):
 
 class ProjectsSerializer(serializers.ModelSerializer):
     """Serializes a project object"""
+    # Per-m2 results divide by these, so they must be real sizes (audit A-07, 2026-11-22).
+    builded_surface = serializers.IntegerField(min_value=1, allow_null=False)
+    living_area = serializers.IntegerField(min_value=1, allow_null=False)
+    tier = serializers.IntegerField(min_value=1, allow_null=False)
+
     class Meta:
         model = models.Project
         fields = '__all__'
+
+    def validate(self, attrs):
+        built = attrs.get('builded_surface', getattr(self.instance, 'builded_surface', None))
+        living = attrs.get('living_area', getattr(self.instance, 'living_area', None))
+        if built is not None and living is not None and living > built:
+            raise serializers.ValidationError(
+                {'living_area': 'La superficie habitable no puede ser mayor que la superficie construida.'})
+        return attrs
 
     def create(self, validated_data):
         """Used to create a project."""

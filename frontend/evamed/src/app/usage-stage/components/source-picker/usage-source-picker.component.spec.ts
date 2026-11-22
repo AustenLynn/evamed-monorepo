@@ -29,6 +29,12 @@ describe('Usage source picker', () => {
     picker.pick(options[1]);
     expect(picker.selection.map(row => row.key)).toEqual(['type:2']);
   });
+  it('does not offer sources without data for the current method (audit A-13)', () => {
+    const {picker, fixture} = render();
+    fixture.componentRef.setInput('options', [...options, {...options[0], key: 'type:7', selectionId: 7, type: 7, offerable: false}]);
+    fixture.detectChanges();
+    expect(picker.available.map(row => row.key)).toEqual(['type:2', 'type:4', 'panels']);
+  });
   it('retains option DOM identity when the parent refreshes equivalent catalogue objects', () => {
     const {fixture, el} = render(),
      before = el.querySelector('[data-option="type:2"]');

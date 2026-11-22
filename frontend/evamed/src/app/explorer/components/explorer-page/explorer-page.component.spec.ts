@@ -7,7 +7,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router, RouterModule, ROUTES } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 
-import { AdminGuard } from '../../../admin.guard';
+import { AuthGuard } from '../../../auth.guard';
 import { routes as appRoutes } from '../../../app-routing.module';
 import { ExplorerRoutingModule } from '../../explorer-routing.module';
 import { ExplorerModule } from '../../explorer.module';
@@ -51,11 +51,11 @@ describe('ExplorerPageComponent', () => {
 });
 
 describe('explorer route', () => {
-  it('is lazy, admin-guarded and wide', () => {
+  it('is lazy, auth-guarded and wide', () => {
     const route = appRoutes[0].children!.find(candidate => candidate.path === 'explorador')!;
 
     expect(route.loadChildren).toBeDefined();
-    expect(route.canActivate).toEqual([AdminGuard]);
+    expect(route.canActivate).toEqual([AuthGuard]);
     expect(route.data).toEqual({ layout: 'wide' });
   });
 

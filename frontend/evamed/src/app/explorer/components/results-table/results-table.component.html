@@ -23,7 +23,7 @@
           </button>
           <ng-template #text><span class="results-table__name">{{ item.display_name }}</span></ng-template>
         </ng-template>
-        <span *ngIf="item.description" class="results-table__description">{{ item.description }}</span>
+        <span *ngIf="item.description" class="results-table__description" [title]="item.description">{{ resumen(item.description) }}</span>
       </td>
     </ng-container>
 

@@ -65,7 +65,6 @@ export class UpdateEnergyComponent implements OnInit {
               potential => potential.type_energy_id === energy.id
             );
             this.potentialList = potentialList;
-            console.log(this.potentialList);
           });
         });
       });

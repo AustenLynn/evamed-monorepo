@@ -34,6 +34,16 @@ export class ProjectsService {
     );
   }
 
+  /** Changes only the name (audit 2026-11-22: the old full PUT overwrote tier and useful life). */
+  renameProject(id: number, name: string) {
+    return this.http.patch<any>(`${environment.api_projects}${id}/`, { name_project: name });
+  }
+
+  /** Copies the project and all its stages in one server transaction (audit A-25). */
+  duplicateProject(id: number) {
+    return this.http.post<any>(`${environment.api_projects}${id}/duplicate/`, {});
+  }
+
   deleteProject(id: number) {
     return this.http.delete(`${environment.api_projects}${id}/`).pipe(
       tap(data => {
@@ -124,7 +134,6 @@ export class ProjectsService {
   }
 
   searchProject(project) {
-    console.log(environment.api_projects + '?search=' + project);
     return this.http
       .get<any>(environment.api_projects + '?search=' + project)
       .pipe(

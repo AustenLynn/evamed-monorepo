@@ -15,7 +15,7 @@ from rest_framework.exceptions import APIException, ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from projects_api import models
+from projects_api import methods, models
 from projects_api.access import visible_projects
 from projects_api.explorer import derive
 
@@ -85,12 +85,18 @@ def digest(value):
 
 
 def catalogue():
+    # Every type stays in the catalogue so saved rows remain readable and editable;
+    # `offerable` marks the ones with data for the active method, the only ones
+    # that may be added (audit A-13, 2026-11-22).
+    rows = models.TypeEnergy.objects.order_by('id')
+    offered = set(methods.offerable(rows, methods.current_energy_ids).values_list('id', flat=True))
     return [dict(id=row.id, name=row.name_type_energy,
                  display_name=derive.display_name(row.name_type_energy),
                  family=FAMILIES.get(row.name_type_energy),
                  database=derive.source_from_name(row.name_type_energy),
-                 region=derive.region(row.name_type_energy))
-            for row in models.TypeEnergy.objects.order_by('id')]
+                 region=derive.region(row.name_type_energy),
+                 offerable=row.id in offered)
+            for row in rows]
 
 
 def row_issues(row, annual, canonical, types):
@@ -196,6 +202,9 @@ def apply_change(project, state, change):
         edit_basis = {**annual, 'quantity': annual_change['quantity']}
     for edit in edits:
         row = rows[edit['id']]
+        if 'type' in edit and edit['type'] != row['type'] and edit['type'] in types and \
+                not types[edit['type']]['offerable']:
+            raise ValidationError('Esta fuente no tiene datos del método de cálculo actual.')
         row.update({key: value for key, value in edit.items() if key in ('percentage', 'source', 'type')})
         if edit['repair_unit']:
             if canonical is None:
@@ -241,6 +250,8 @@ def apply_change(project, state, change):
         if canonical is None or not annual or annual['unit_id'] != canonical or annual['quantity'] < 0:
             raise ValidationError('Revisa el consumo anual y la unidad kWh antes de agregar fuentes.')
         ensure_family(addition, types)
+        if addition['type'] is not None and not types[addition['type']]['offerable']:
+            raise ValidationError('Esta fuente no tiene datos del método de cálculo actual.')
         if option_key(addition) in existing_types:
             raise ValidationError('Esta fuente ya está agregada.')
         existing_types.add(option_key(addition))

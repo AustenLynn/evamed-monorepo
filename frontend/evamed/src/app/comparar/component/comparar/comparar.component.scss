@@ -236,3 +236,17 @@ Fases-ciclo {
 .mat-checkbox-indeterminate .mat-checkbox-background {
   background-color: #a8d024 !important;
 }
+
+.resultados-excluidos {
+  display: block;
+  margin: 0 24px 12px;
+}
+
+// One value per compared project, aligned in columns (audit A-17).
+.valores-proyectos {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(5.5em, 1fr);
+  gap: 12px;
+  margin: 0;
+}

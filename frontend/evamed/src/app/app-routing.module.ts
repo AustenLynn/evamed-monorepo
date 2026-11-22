@@ -1,8 +1,10 @@
+import { requiresProject } from './core/services/active-project/requires-project.guard';
 import { referenceRoutes } from './shared/ui/reference/reference.routes';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule, NoPreloading } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
-import { AdminGuard } from './admin.guard';
+import { AuthGuard } from './auth.guard';
+import { IsAdminGuard } from './is-admin.guard';
 
 export const routes: Routes = [
   {
@@ -16,7 +18,7 @@ export const routes: Routes = [
       },
       {
         path: 'home-evamed',
-        canActivate: [AdminGuard],
+        canActivate: [AuthGuard],
         loadChildren: () =>
           import('./home-evamed/home-evamed.module').then(
             m => m.HomeEvamedModule
@@ -24,7 +26,7 @@ export const routes: Routes = [
       },
       {
         path: 'do-files',
-        canActivate: [AdminGuard],
+        canActivate: [AuthGuard],
         loadChildren: () =>
           import('./to-do-file/to-do-file.module').then(
             m => m.ToDoFileModule
@@ -32,7 +34,7 @@ export const routes: Routes = [
       },
       {
         path: 'materials-stage',
-        canActivate: [AdminGuard],
+        canActivate: [AuthGuard],
         loadChildren: () =>
           import('./materials-stage/materials-stage.module').then(
             m => m.MaterialsStageModule
@@ -40,7 +42,7 @@ export const routes: Routes = [
       },
       {
         path: 'construction-stage',
-        canActivate: [AdminGuard],
+        canActivate: [AuthGuard],
         loadChildren: () =>
           import('./construction-stage/construction-stage.module').then(
             m => m.ConstructionStageModule
@@ -48,7 +50,7 @@ export const routes: Routes = [
       },
       {
         path: 'usage-stage',
-        canActivate: [AdminGuard],
+        canActivate: [AuthGuard],
         loadChildren: () =>
           import('./usage-stage/usage-stage.module').then(
             m => m.UsageStageModule
@@ -56,7 +58,7 @@ export const routes: Routes = [
       },
       {
         path: 'end-life-stage',
-        canActivate: [AdminGuard],
+        canActivate: [AuthGuard],
         loadChildren: () =>
           import('./end-life-stage/end-life-stage.module').then(
             m => m.EndLifeStageModule
@@ -64,20 +66,20 @@ export const routes: Routes = [
       },
       {
         path: 'explorador',
-        canActivate: [AdminGuard],
+        canActivate: [AuthGuard],
         data: { layout: 'wide' },
         loadChildren: () =>
           import('./explorer/explorer.module').then(m => m.ExplorerModule),
       },
       {
         path: 'resultados',
-        canActivate: [AdminGuard],
+        canActivate: [AuthGuard, requiresProject('results')],
         loadChildren: () =>
           import('./comparar/comparar.module').then(m => m.CompararModule),
       },
       {
         path: 'admin-materials',
-        canActivate: [AdminGuard],
+        canActivate: [AuthGuard, IsAdminGuard],
         loadChildren: () =>
           import('./materials-admin/materials-admin.module').then(
             m => m.MaterialsAdminModule
@@ -85,7 +87,7 @@ export const routes: Routes = [
       },
       {
         path: 'admin-units',
-        canActivate: [AdminGuard],
+        canActivate: [AuthGuard, IsAdminGuard],
         loadChildren: () =>
           import('./units-admin/units-admin.module').then(
             m => m.UnitsAdminModule
@@ -93,7 +95,7 @@ export const routes: Routes = [
       },
       {
         path: 'admin-db-materials',
-        canActivate: [AdminGuard],
+        canActivate: [AuthGuard, IsAdminGuard],
         loadChildren: () =>
           import('./data-base-admin/data-base-admin.module').then(
             m => m.DataBaseAdminModule
@@ -101,7 +103,7 @@ export const routes: Routes = [
       },
       {
         path: 'admin-potential',
-        canActivate: [AdminGuard],
+        canActivate: [AuthGuard, IsAdminGuard],
         loadChildren: () =>
           import('./potential-admin/potential-admin.module').then(
             m => m.PotentialAdminModule
@@ -109,7 +111,7 @@ export const routes: Routes = [
       },
       {
         path: 'admin-transports',
-        canActivate: [AdminGuard],
+        canActivate: [AuthGuard, IsAdminGuard],
         loadChildren: () =>
           import('./transport-admin/transport-admin.module').then(
             m => m.TransportAdminModule
@@ -117,7 +119,7 @@ export const routes: Routes = [
       },
       {
         path: 'admin-machinery',
-        canActivate: [AdminGuard],
+        canActivate: [AuthGuard, IsAdminGuard],
         loadChildren: () =>
           import('./machinery-admin/machinery-admin.module').then(
             m => m.MachineryAdminModule
@@ -125,7 +127,7 @@ export const routes: Routes = [
       },
       {
         path: 'admin-energy',
-        canActivate: [AdminGuard],
+        canActivate: [AuthGuard, IsAdminGuard],
         loadChildren: () =>
           import('./energy-admin/energy-admin.module').then(
             m => m.EnergyAdminModule
@@ -133,7 +135,7 @@ export const routes: Routes = [
       },
       {
         path: 'admin-others',
-        canActivate: [AdminGuard],
+        canActivate: [AuthGuard, IsAdminGuard],
         loadChildren: () =>
           import('./others-admin/others-admin.module').then(
             m => m.OthersAdminModule
@@ -141,7 +143,7 @@ export const routes: Routes = [
       },
       {
         path: 'admin',
-        canActivate: [AdminGuard],
+        canActivate: [AuthGuard, IsAdminGuard],
         loadChildren: () =>
           import('./principal-admin/principal-admin.module').then(
             m => m.PrincipalAdminModule
@@ -149,13 +151,13 @@ export const routes: Routes = [
       },
       {
         path: 'about',
-        canActivate: [AdminGuard],
+        canActivate: [AuthGuard],
         loadChildren: () =>
           import('./about/about.module').then(m => m.AboutModule),
       },
       {
         path: 'user-manual',
-        canActivate: [AdminGuard],
+        canActivate: [AuthGuard],
         loadChildren: () =>
           import('./user-manual/user-manual.module').then(
             m => m.UserManualModule

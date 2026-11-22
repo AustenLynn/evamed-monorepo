@@ -2,7 +2,7 @@
   <h1 mat-dialog-title class="title-standard-second-light">
     Cambio de nombre de proyecto
   </h1>
-  <button mat-button class="close-icon" [mat-dialog-close]="true" (click)="onNoClick()">
+  <button mat-button class="close-icon" mat-dialog-close aria-label="Cerrar">
     <mat-icon style="color: #fff;">close</mat-icon>
   </button>
 </div>
@@ -14,14 +14,14 @@
       </div>
       <div>
         <mat-form-field>
-          <input class="input-general" [(ngModel)]="data.nameProject" matInput type="text" cdkFocusInitial>
+          <input class="input-general" [(ngModel)]="data.nameProject" matInput type="text" cdkFocusInitial maxlength="255" (keydown.enter)="data.nameProject?.trim() && dialogRef.close(data)">
         </mat-form-field>
       </div>
     </div>
   </div>
 </div>
 <div mat-dialog-actions class="center">
-  <button mat-button [mat-dialog-close]="data" class="yellow-button">
+  <button mat-button [mat-dialog-close]="data" class="yellow-button" [disabled]="!data.nameProject?.trim()">
     Cambiar nombre
   </button>
 </div>

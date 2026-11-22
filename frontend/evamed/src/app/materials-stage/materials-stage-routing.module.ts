@@ -1,3 +1,4 @@
+import { requiresProject } from '../core/services/active-project/requires-project.guard';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { MaterialsStageComponent } from './components/materials-stage/materials-stage.component';
@@ -10,6 +11,7 @@ const routes: Routes = [
   },
   {
     path: 'update',
+    canActivate: [requiresProject('stage')],
     component: MaterialStageUpdateComponent
   }
 ];

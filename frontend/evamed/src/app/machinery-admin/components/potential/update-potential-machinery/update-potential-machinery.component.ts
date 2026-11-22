@@ -90,7 +90,6 @@ export class UpdatePotentialMachineryComponent implements OnInit {
           unit_id: this.unit_id,
         })
         .subscribe(newScheme => {
-          console.log(newScheme);
           this.onNoClick();
         });
     }

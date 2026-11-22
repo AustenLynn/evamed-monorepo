@@ -350,3 +350,27 @@ EP-terrestrial 1358, POCP 1427, ADPE 1147, ADPF 1406, WDP 1230 (migration 0091).
 `ecoinvent_refresh --method EN15804+A2 --count-only` reports the dataset count before any
 fetch; the refresh writes A2 values next to the CML ones. Not yet run on dev.
 
+
+## 10. GWP-total ≠ fossil + biogenic + land use in the 3.12 sandbox (2026-11-22, audit A-11)
+
+The overnight audit found that 55 of 58 ecoinvent materials (and the construction
+machinery) store a GWP-total that is not the sum of its three parts. With the owner's
+OK, three already-pinned datasets were fetched again (repeat datasets are free) with
+both EF v3.1 and EF v3.0 climate change indicators:
+
+| Dataset | EVAmed material | EF 3.1 total (1183) | fossil (1315) + biogenic (1222) + luluc (1187) | EF 3.0 total (983) | EF 3.0 fossil (917) |
+|---|---|---|---|---|---|
+| 7653 | Cemento, Portland (kg) | 1.380 | 1.212 | 1.409 | 1.399 |
+| 8183 | Cemento, CEM III/C (kg) | 0.158 | 0.525 | 0.501 | 0.542 |
+| 21853 | Concreto 25 MPa (m³) | 473.2 | 125.7 | 492.9 | 211.5 |
+
+The indicator ids match ecoinvent's own list (EF v3.1: 1183 climate change, 1315
+fossil, 1222 biogenic, 1187 land use and land use change). EVAmed stores exactly what
+the API returns, and the API's numbers break the rule under both EF versions. So the
+cause is the sandbox data, not the mapping or `_apply` (hypotheses (a) and (b) in the
+audit are ruled out). The sandbox values are not usable for real results; the fix is a
+production licence and a refresh.
+
+In code: `projects_api/gwp_check.py` holds the rule (5 % tolerance for EPD
+rounding), `ecoinvent_refresh` warns about every fetched entity that breaks it, and
+`python manage.py check_gwp` lists what is stored (read-only, CSV).

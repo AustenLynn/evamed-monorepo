@@ -2,15 +2,15 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router, UrlTree } from '@angular/router';
 import { firstValueFrom, Observable, of } from 'rxjs';
 
-import { AdminGuard } from './admin.guard';
+import { AuthGuard } from './auth.guard';
 // Compile LayoutComponent (referenced by the app routes) in its NgModule's context.
 import './app.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AuthService } from './core/services/auth.service';
 
-// AdminGuard protects every platform route (not only admin pages): the user
+// AuthGuard protects every platform route (not only admin pages): the user
 // must be signed in and have verified their email.
-describe('AdminGuard', () => {
+describe('AuthGuard', () => {
   const run = (user: unknown, overrides: Record<string, unknown> = {}, url?: string) => {
     const auth = {
       hasUser: () => of(user),
@@ -21,7 +21,7 @@ describe('AdminGuard', () => {
     TestBed.configureTestingModule({
       providers: [provideRouter([]), { provide: AuthService, useValue: auth }],
     });
-    const result = TestBed.inject(AdminGuard).canActivate(
+    const result = TestBed.inject(AuthGuard).canActivate(
       null as any,
       (url ? { url } : null) as any
     ) as Observable<boolean | UrlTree>;

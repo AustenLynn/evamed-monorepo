@@ -1,0 +1,375 @@
+// Small screens (audit A-29, 2026-11-22). EVAmed's pages were laid out for
+// desktop widths only. These overrides restack them on tablets and phones.
+// Component styles are scoped and load after this file, so layout overrides
+// need !important to win.
+
+$tablet: 1024px;
+$phone: 600px;
+
+@media (max-width: $tablet) {
+  // The grid library gives .container a fixed width (49rem from 768 px), wider
+  // than a 768 px screen.
+  .container {
+    width: auto !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  // Page shell: projects list above the profile card.
+  .principal-container {
+    flex-direction: column !important;
+
+    .content-container,
+    .description-container {
+      width: 100% !important;
+    }
+
+    .description-container {
+      margin-top: 72px !important;
+    }
+  }
+
+  .content-header-container {
+    width: 100% !important;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  // Home: project card.
+  app-home-evamed {
+    .card-project {
+      margin: 10px 0 16px !important;
+    }
+
+    .header-tag {
+      position: relative !important;
+      width: 100% !important;
+    }
+
+    .header-tag .container-tag {
+      position: relative !important;
+    }
+
+    .grid-container {
+      height: auto !important;
+    }
+
+    .mat-tab-resultados {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+    }
+  }
+}
+
+@media (max-width: $phone) {
+  .filter-options {
+    width: 100% !important;
+    margin-top: 0 !important;
+  }
+
+  app-home-evamed {
+    .grid-container .card-item-custom {
+      width: calc(100% - 30px) !important;
+    }
+
+    .grid-container .subseccion {
+      margin-right: 0 !important;
+      flex-wrap: wrap;
+    }
+
+    .mat-mdc-card-content.content-estadisticas {
+      flex-wrap: wrap;
+    }
+
+    .mat-tab-resultados > div {
+      width: 100% !important;
+    }
+  }
+}
+
+// Stage pages (Producción, Construcción, Uso, Fin de vida): stepper, three
+// columns and the bottom bar with the carbon total and the buttons.
+@media (max-width: $tablet) {
+  nav.nav-steps {
+    height: auto !important;
+    padding: 8px 0;
+  }
+
+  .mdl-stepper-horizontal-alternative {
+    width: 100% !important;
+  }
+
+  .mdl-stepper-tag {
+    display: none !important;
+  }
+
+  .mdl-stepper-horizontal-alternative .mdl-stepper-step .mdl-stepper-circle,
+  div.step-one-selected .mdl-stepper-circle,
+  div.step-two .mdl-stepper-circle,
+  div.step-three .mdl-stepper-circle,
+  div.step-four .mdl-stepper-circle {
+    width: 44px !important;
+    height: 44px !important;
+    background-size: contain !important;
+  }
+
+  // The page grid otherwise sizes its column to the widest content.
+  .principal-container.container-total {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  section.container-actions {
+    flex-direction: column !important;
+    min-height: 0 !important;
+    height: auto !important;
+
+    > section,
+    > div {
+      width: 100% !important;
+      height: auto !important;
+      flex: none !important;
+      box-sizing: border-box;
+      border-right: none !important;
+      border-bottom: 1px solid #cbcbcb;
+    }
+  }
+
+  .list-elements {
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  .conditional-section {
+    width: auto !important;
+    height: auto !important;
+    max-height: none !important;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .section-continue {
+    width: auto !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-right: 0 !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 8px;
+    height: auto !important;
+
+    app-energy-bar {
+      flex: 1 1 100% !important;
+      width: 100% !important;
+    }
+
+    .yellow-button {
+      width: auto !important;
+      min-width: 96px;
+      height: auto !important;
+      white-space: normal;
+    }
+  }
+}
+
+@media (max-width: $phone) {
+  .container-image {
+    display: none !important;
+  }
+}
+
+// Resultados (comparar): a fixed 975 px page on desktop.
+@media (max-width: $tablet) {
+  app-comparar {
+    .mat-master,
+    .container-principal-tab {
+      width: 100% !important;
+      box-sizing: border-box;
+    }
+
+    .bases-datos {
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .div-proyectos-mostrados,
+    .div-secondary-graph {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) !important;
+      margin-left: 0 !important;
+    }
+
+    .div-impactos-ambientales {
+      margin: 12px !important;
+    }
+
+    .div-impactos-ambientales .sub-container {
+      display: flex !important;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    // Charts follow the screen width.
+    .campo-grafica-bar,
+    .campo-grafica-bar app-bar-chart,
+    .campo-grafica-bar app-bar-chart > div {
+      width: 100% !important;
+      max-width: 100%;
+    }
+
+    canvas {
+      max-width: 100% !important;
+      height: auto !important;
+    }
+
+    .campo-grafica-bar .dot,
+    .campo-grafica-bar .linea-select {
+      width: auto !important;
+      flex: 1 1 0;
+      margin: 0 2px !important;
+    }
+
+    .campo-grafica-bar .indicadores {
+      margin-left: 0 !important;
+    }
+
+    // The table keeps its columns and scrolls inside its own box.
+    .tabla {
+      overflow-x: auto;
+      max-width: 100%;
+    }
+
+    .Tabla-Datos {
+      margin-left: 0 !important;
+    }
+
+    .example-section {
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+      height: auto !important;
+    }
+
+    // Third tab: one card per project, its three columns stacked. The card list
+    // is a virtual scroller, so it keeps a height and scrolls inside.
+    .card-indicador {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100% !important;
+      height: auto !important;
+      box-sizing: border-box;
+
+      > div {
+        width: 100% !important;
+      }
+    }
+
+    cdk-virtual-scroll-viewport.viewport {
+      height: 85vh !important;
+    }
+
+    .cdk-virtual-scroll-content-wrapper {
+      max-width: 100%;
+    }
+
+    .div-second-tab,
+    .div-elementos-constructivos,
+    .last-div-section-two {
+      width: 100% !important;
+      max-width: 100%;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+// Importar (do-files): two download blocks and the upload block.
+@media (max-width: $tablet) {
+  app-to-do-file {
+    .elements-to-download {
+      flex-wrap: wrap !important;
+    }
+
+    .container-elements-1,
+    .container-elements-2,
+    .container-elements-3 {
+      width: auto !important;
+      margin-left: 16px !important;
+      margin-right: 16px !important;
+    }
+
+    .container-two-icons {
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center !important;
+      margin-right: 0 !important;
+    }
+
+    .container-upload-icon {
+      margin-left: 0 !important;
+    }
+
+    .container-download,
+    .container-upload {
+      width: 100% !important;
+    }
+  }
+}
+
+// Sign-in pages: the green panel goes above the form.
+@media (max-width: $tablet) {
+  .row > .side,
+  .row > .main {
+    flex: 1 1 100% !important;
+    max-width: 100%;
+  }
+
+  .container-title-standard {
+    padding: 24px 16px 0 !important;
+  }
+
+  .context-evamed {
+    margin: 16px !important;
+    padding-bottom: 16px;
+  }
+
+  img.img-logo {
+    height: auto !important;
+    max-width: 100%;
+    max-height: 160px;
+  }
+
+  .logos-ibero {
+    position: static !important;
+    width: 100% !important;
+    left: auto !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+
+    img {
+      width: 45% !important;
+      margin: 0 !important;
+    }
+
+    .middle-message {
+      width: auto !important;
+    }
+  }
+}
+
+@media (max-width: $phone) {
+  .context-evamed .title-context-login {
+    font-size: 28px !important;
+  }
+}
+
+@media (max-width: $phone) {
+  // Registration: sector and country side by side don't fit.
+  app-register .container-label-input-flex {
+    flex-wrap: wrap !important;
+    gap: 0 16px;
+
+    > .container-label-input {
+      flex: 1 1 100% !important;
+      min-width: 0;
+    }
+  }
+}

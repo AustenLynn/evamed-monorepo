@@ -9,6 +9,8 @@ export interface UsageSource {
 export interface UsageCatalogueItem {
   id: number; name: string; display_name: string; family: 'electric' | 'fuel' | null;
   database: string | null; region: string | null;
+  /** False when the source has no data for the active impact method: kept for saved rows, never offered. */
+  offerable?: boolean;
 }
 export interface UsageState {
   project_id: number; project_name: string; annual: UsageAnnual | null; annuals: UsageAnnual[];
@@ -31,6 +33,8 @@ export interface SourceDraft {percentage: string; type: number | null; source: s
 export interface UsageOption {
   key: string; selectionId: number; type: number | null; source: UsageFamily | null;
   name: string; rawName: string; database: string | null; region: string | null; supported: boolean;
+  /** Undefined means offerable. */
+  offerable?: boolean;
 }
 export type UsageOperationTarget = {kind: 'annual'} | {kind: 'source'; id: number} |
   {kind: 'add'; keys: string[]} | {kind: 'remove'; id: number};

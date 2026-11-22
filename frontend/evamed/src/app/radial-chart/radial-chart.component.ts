@@ -72,7 +72,6 @@ export class RadialChartComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarDatos(this.id);
-    console.log("Radar");
   }
 
   cargarLabels(ID:string) {
@@ -116,9 +115,7 @@ export class RadialChartComponent implements OnInit {
         pcolor = this.pointcolores[indicador];
       }
     });
-       //console.log(suma)
     this.inputProyect.forEach(proyecto => {
-      console.log(proyecto)
       const valores_suma = [];
       Object.keys(proyecto.Datos[auxlabel[0]]).forEach(element => {
         valores_suma[element] = 0;

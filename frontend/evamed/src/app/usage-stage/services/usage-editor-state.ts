@@ -17,7 +17,8 @@ export function optionKey(row: Pick<UsageSource, 'type' | 'source'>): string {
 }
 export function usageOptions(state: UsageState): UsageOption[] {
   const options: UsageOption[] = state.catalogue.map(item => ({key: `type:${item.id}`, selectionId: item.id, type: item.id,
-    source: item.family, name: item.display_name, rawName: item.name, database: item.database, region: item.region, supported: item.family !== null}));
+    source: item.family, name: item.display_name, rawName: item.name, database: item.database, region: item.region, supported: item.family !== null,
+    offerable: item.offerable !== false}));
   for (const row of state.sources) {
     if (row.type !== null && !options.some(option => option.type === row.type)) {
       options.push({key: `type:${row.type}`, selectionId: row.type, type: row.type, source: null,
@@ -25,7 +26,9 @@ export function usageOptions(state: UsageState): UsageOption[] {
     }
   }
   options.push({key: 'panels', selectionId: -1, type: null, source: 'panels', name: 'Generación fotovoltaica', rawName: 'Generación fotovoltaica', database: null, region: null, supported: true});
-  return options;
+  // Same label from two databases (e.g. ecoinvent and mexicaniuh grids): name the database (audit A-14).
+  const repeated = new Set(options.map(o => o.name).filter((name, i, all) => all.indexOf(name) !== i));
+  return options.map(o => repeated.has(o.name) && o.database ? {...o, name: `${o.name} (${o.database})`} : o);
 }
 const emptyAnnual = (): AnnualDraft => ({quantity: '', repairUnit: false, confirmRecalculate: false}),
  copy = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
@@ -39,6 +42,8 @@ export class UsageEditorState {
   get canonicalUnit(): UsageUnit | null { return this.saved?.units.find(unit => unit.id === this.saved?.canonical_unit_id) ?? null; }
   get options(): UsageOption[] { return this.saved ? usageOptions(this.saved) : []; }
   get assigned(): number { return (this.saved?.sources ?? []).reduce((sum, row) => sum + (typeof row.percentage === 'number' && row.percentage > 0 ? row.percentage : 0), 0); }
+  /** Saved sources whose type has no data for the active method: they count as 0 in the results. */
+  get notOfferable(): UsageSource[] { return (this.saved?.sources ?? []).filter(row => this.options.find(option => option.key === optionKey(row))?.offerable === false); }
   get remaining(): number { return Math.max(0, 100 - this.assigned); }
   get annualDirty(): boolean { return this.annual.quantity !== this.savedAnnual().quantity || this.annual.repairUnit || this.annual.confirmRecalculate; }
   get dirty(): boolean { return this.annualDirty || this.additionKeys.length > 0 || [...this.drafts].some(([id, draft]) => this.sourceDirty(id, draft)); }

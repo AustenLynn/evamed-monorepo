@@ -19,7 +19,6 @@ export class FooterComponent implements OnInit {
     ]);
     // this.emailField.valueChanges
     // .subscribe(value => {
-    //   console.log(value);
     // });
   }
 
@@ -28,7 +27,6 @@ export class FooterComponent implements OnInit {
 
   sendMail() {
     if (this.emailField.valid) {
-      console.log(this.emailField.value);
     }
   }
 

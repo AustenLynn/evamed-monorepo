@@ -8,7 +8,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
 // Firebase throttles repeated verification emails (auth/too-many-requests).
 export const RESEND_COOLDOWN_MS = 60_000;
 
-// Where AdminGuard sends a signed-in user whose email isn't verified yet. They
+// Where AuthGuard sends a signed-in user whose email isn't verified yet. They
 // stay here until they click the link Firebase emailed them.
 @Component({
     selector: 'app-verify-email',
@@ -56,7 +56,7 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
   }
-  // Back to the page AdminGuard intercepted, if it's a page of this app.
+  // Back to the page AuthGuard intercepted, if it's a page of this app.
   private enterPlatform(): void {
     const requested = this.route.snapshot.queryParamMap.get('returnUrl');
     const isAppPage = !!requested && /^\/(?![\/\\])/.test(requested) && !requested.startsWith('/auth');

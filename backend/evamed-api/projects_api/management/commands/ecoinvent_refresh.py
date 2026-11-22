@@ -21,7 +21,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
 
-from projects_api import methods, models
+from projects_api import gwp_check, methods, models
 from projects_api.ecoinvent.client import EcoinventClient
 from projects_api.ecoinvent.matching import units_compatible
 
@@ -278,3 +278,28 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING(
                 '\n{} (entity, indicator) pair(s) had no score returned.'.format(
                     len(missing))))
+
+        inconsistent = gwp_inconsistencies(changes)
+        if inconsistent:
+            self.stdout.write(self.style.WARNING(
+                '\n{} entit(ies) with GWP-total != fossil + biogenic + luluc (audit A-11). '
+                'The 3.12 sandbox returns these numbers itself; do not use them for real '
+                'results:'.format(len(inconsistent))))
+            for name, bad in inconsistent:
+                self.stdout.write('    {:<52} total {:.6g} vs sum {:.6g}'.format(
+                    name[:52], bad['total'], bad['suma']))
+
+
+def gwp_inconsistencies(changes):
+    """[(name, mismatch)] for the fetched entities whose climate change values disagree."""
+    by_entity = {}
+    for change in changes:
+        key = (type(change['instance']).__name__, change['instance'].pk)
+        entry = by_entity.setdefault(key, (change['name'], {}))
+        entry[1][change['lookup']['potential_type_id'].name_potential_type] = change['value']
+    found = []
+    for name, values in by_entity.values():
+        bad = gwp_check.mismatch(values)
+        if bad:
+            found.append((name, bad))
+    return found

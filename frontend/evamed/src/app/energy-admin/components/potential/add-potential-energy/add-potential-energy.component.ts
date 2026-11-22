@@ -43,7 +43,6 @@ export class AddPotentialEnergyComponent implements OnInit {
     public dialogRef: MatDialogRef<AddPotentialEnergyComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData
   ) {
-    console.log(data);
     this.type_energy_id = data.type_energy_id;
     this.buildForm();
     this.materialsService.getUnits().subscribe(data => {

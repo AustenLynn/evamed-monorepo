@@ -22,8 +22,6 @@ export class DeleteMaterialComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('On Init');
-    console.log(this.data);
   }
 
   onNoClick() {

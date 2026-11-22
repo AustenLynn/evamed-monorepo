@@ -21,6 +21,8 @@ import { forkJoin, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ActiveProjectService } from 'src/app/core/services/active-project/active-project.service';
+import { ResultsExcluded } from '../../../home-evamed/components/excluded-notice/excluded-notice.component';
+import { etiquetasProyectos, filasTabla, porMetroDisponible, ProyectoTabla } from './tabla-resultados';
 import { carbonType, keepIndicators, loadVista, saveVista, VistaResultados } from './vista-carbono';
 import {
   animate,
@@ -217,6 +219,8 @@ export class CompararComponent implements OnInit {
   botones_grafica_activos = false;
   columnsToDisplay = [];
   impactoAmbientalSeleccionado: string;
+  /** What the server leaves out of the active project's results (audit A-13). */
+  excluded: ResultsExcluded | null = null;
 
   constructor(
     private materials: MaterialsService,
@@ -319,9 +323,18 @@ export class CompararComponent implements OnInit {
         this.BDInicio(DB);
         this.llenarIdsBotones(sectionsList);
         this.idProyectoActivo = parseInt(sessionStorage.getItem('projectID'));
+        this.cargarExcluidos(this.idProyectoActivo);
         this.menu_inicio();
       }
     );
+  }
+
+  private cargarExcluidos(projectId: number) {
+    if (!Number.isFinite(projectId)) return;
+    this.analisis.getProjectResults(projectId).subscribe({
+      next: results => (this.excluded = results?.excluded ?? null),
+      error: () => (this.excluded = null),
+    });
   }
 
   ngOnInit(): void {
@@ -636,7 +649,6 @@ export class CompararComponent implements OnInit {
     this.containerImgEdificio.clear();
     const containers = {}
     this.proyect_active.forEach((proyecto, index) => {
-      //console.log(this.elementosConstructivosMostradosElementosPorProyecto[proyecto]);
       const auxN = 'imgEdificio'.concat(proyecto);
       containers[auxN] = this.containerImgEdificio.createComponent(this.imgEdificioComponent);
       containers[auxN].instance.inputPtoyect = this.coloresExistententesElementosConstructivos;
@@ -958,7 +970,13 @@ export class CompararComponent implements OnInit {
     return analisisProyectos;
   }
 
+  /** False when a shown project lacks a surface: dividing by it gave Infinity/NaN (audit A-09). */
+  get porMetroDisponible(): boolean {
+    return porMetroDisponible(this.calculos.projectsList ?? [], this.proyect_active ?? []);
+  }
+
   AjustePorMetro(flag) {
+    if (flag == 0 && !this.porMetroDisponible) return;
     this.outproyect_bar = [];
     this.outproyect_pie = [];
     this.outproyect_radar = [];
@@ -992,119 +1010,17 @@ export class CompararComponent implements OnInit {
   }
 
   //creación de tabla de resultado
+  protected readonly isArray = Array.isArray;
+
+  /** Menu labels; projects that share a name get their id (audit A-17). */
+  get etiquetasMenu(): string[] {
+    return etiquetasProyectos(this.proyect ?? []);
+  }
+
   TablaResultados() {
     this.botones_grafica_activos = true;
     this.container.clear();
-    const auxL = ['Producción', 'Construccion', 'Uso', 'FinDeVida'],
-      aux_color = ['#4DBE89', '#148A93', '#8F5091', '#DEA961', '#767676'];
-    //se prepara la información por filas
-    let aux = [],
-      flagMasProyectos = false;
-    const auxtotal = {},
-      auxImpactosTotal = {};
-    this.outproyect_bar.forEach(element => {
-      auxtotal[element.id] = {};
-      auxImpactosTotal[element.id] = [];
-      Object.keys(element.Datos).forEach(impacto => {
-        const auxNombreImpacto = impacto.replace(/\n/g, '');
-        if (!auxImpactosTotal[element.id].includes(auxNombreImpacto)) {
-          auxtotal[element.id][auxNombreImpacto] = 0;
-          auxImpactosTotal[element.id].push(auxNombreImpacto);
-        }
-      });
-    });
-    auxL.forEach((ciclo, index) => {
-      let auxdata = {},
-       auximpactos = [];
-      auxdata['ciclo de vida'] = ciclo;
-      let flagCiclo = true;
-      this.fasesEliminadas.forEach(cicloEliminado => {
-        if (ciclo === cicloEliminado) {
-          flagCiclo = false;
-        }
-      });
-      if (flagCiclo) {
-        this.outproyect_bar.forEach(element => {
-          Object.keys(element.Datos).forEach(impacto => {
-            const auxNombreImpacto = impacto.replace(/\n/g, ''),
-             resultado = element.Datos[impacto][ciclo],
-              resultadoExponencial = resultado.toExponential(2);
-            if (!auximpactos.includes(auxNombreImpacto)) {
-              auximpactos.push(auxNombreImpacto);
-              auxdata[auxNombreImpacto] = resultadoExponencial
-                .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-              auxtotal[element.id][auxNombreImpacto] += resultado;
-            } else {
-              flagMasProyectos = true;
-              const last = auxdata[auxNombreImpacto].toString();
-              auxdata[auxNombreImpacto] = last.concat(
-                '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
-              );
-              auxdata[auxNombreImpacto] = auxdata[auxNombreImpacto].concat(
-                resultadoExponencial
-                  .toString()
-                  .replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-              );
-              auxtotal[element.id][auxNombreImpacto] += resultado;
-            }
-          });
-        });
-        auximpactos = [];
-        aux = [...aux, { data: auxdata, color: aux_color[index] }];
-      }
-      if (ciclo === 'FinDeVida') {
-        auxdata = {};
-        Object.keys(auxtotal).forEach((element, indexproyectos) => {
-          if (indexproyectos == 0) {
-            Object.keys(auxtotal[element]).forEach(impacto => {
-              const resultado = auxtotal[element][impacto],
-                resultadoExponencial = resultado.toExponential(2);
-              auxdata[impacto] = resultadoExponencial;
-            });
-          } else {
-            Object.keys(auxtotal[element]).forEach(impacto => {
-              const resultado = auxtotal[element][impacto],
-                resultadoExponencial = resultado.toExponential(2),
-                last = auxdata[impacto].toString();
-              auxdata[impacto] = last.concat(
-                '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
-              );
-              auxdata[impacto] = auxdata[impacto].concat(
-                resultadoExponencial
-                  .toString()
-                  .replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-              );
-            });
-          }
-        });
-        auxdata['ciclo de vida'] = 'Total';
-        aux = [...aux, { data: auxdata, color: aux_color[index + 1] }];
-      }
-      if (ciclo === 'FinDeVida' && flagMasProyectos == true) {
-        auxdata = {};
-        let numProyecto = 0;
-        this.outproyect_bar.forEach(element => {
-          numProyecto = numProyecto + 1;
-          Object.keys(element.Datos).forEach(impacto => {
-            const auxNombreImpacto = impacto.replace(/\n/g, '');
-            if (!auximpactos.includes(auxNombreImpacto)) {
-              auximpactos.push(auxNombreImpacto);
-              auxdata[auxNombreImpacto] = numProyecto.toString();
-            } else {
-              const last = auxdata[auxNombreImpacto].toString();
-              auxdata[auxNombreImpacto] = last.concat(
-                '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
-              );
-              auxdata[auxNombreImpacto] = auxdata[auxNombreImpacto].concat(
-                numProyecto.toString()
-              );
-            }
-          });
-        });
-        aux = [{ data: auxdata, color: aux_color[index + 1] }, ...aux];
-      }
-    });
+    const aux = filasTabla(this.outproyect_bar as ProyectoTabla[], this.fasesEliminadas);
     this.DatosTabla = aux;
     this.resultdosTabla = true;
     this.resultdosGraficos = false;
@@ -1315,7 +1231,6 @@ export class CompararComponent implements OnInit {
       this.nombresMostrados
     );
     this.AjustarElementosMostrados(auxDatos);
-    //console.log(this.iconosElementosConstrucivos)
     this.AjustarElementosMostradosElemntos(auxDatos);
     analisisProyectos['Datos'] = auxDatos;
     return analisisProyectos;
@@ -1673,7 +1588,6 @@ export class CompararComponent implements OnInit {
     }
     //activate graph selectioned
     if (this.ID != ' ') {
-      //console.log('in');
       document.getElementById(this.ID).className = 'boton-principal';
     }
 
@@ -1982,7 +1896,6 @@ export class CompararComponent implements OnInit {
   iniciarTabaDispercion() {
     this.infoTablaDispercion = [];
     //'color-'no', 'material', 'porcentaje', 'numero'
-    //console.log(this.outproyect_pie_bar_elementos)
     this.outproyect_pie_bar_elementos.forEach(element => {
       if (element['id'] == this.idProyectoSeleccionadoImagen) {
         let auxhelp = [],

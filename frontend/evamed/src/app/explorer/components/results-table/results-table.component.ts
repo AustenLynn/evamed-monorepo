@@ -1,3 +1,4 @@
+import { resumenDescripcion } from '../../epd-link';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 
@@ -12,6 +13,8 @@ import { ExplorerItem, PAGE_SIZE } from '../../explorer.models';
   standalone: false,
 })
 export class ResultsTableComponent {
+  /** One short line per row; the full text stays in the tooltip and the detail page (audit A-36). */
+  protected readonly resumen = resumenDescripcion;
   @Input() items: ExplorerItem[] = [];
   @Input() count = 0;
   /** 1-based. */

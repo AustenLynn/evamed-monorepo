@@ -21,6 +21,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { GraficasTercerSeccionComponent } from './component/graficas-tercer-seccion/graficas-tercer-seccion.component';
 import { ImageEdificioComponent } from '../image-edificio/image-edificio.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ExcludedNoticeComponent } from '../home-evamed/components/excluded-notice/excluded-notice.component';
 
 @NgModule({
     declarations: [
@@ -46,6 +47,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
         MatCheckboxModule,
         MatSlideToggleModule,
         PieChartComponent,
+        ExcludedNoticeComponent,
         RadialChartComponent,
         BarChartComponent,
         BarChartSimpleComponent,

@@ -38,9 +38,11 @@ export class UsageEditorComponent implements OnInit, OnDestroy {
     const row = this.store.saved?.sources.find(source => source.id === this.replacementId),
      current = row ? optionKey(row) : null,
      used = new Set((this.store.saved?.sources ?? []).filter(source => source.id !== this.replacementId).map(optionKey));
-    return this.store.options.filter(option => option.supported && (option.key === current || !used.has(option.key)));
+    return this.store.options.filter(option => option.supported && (option.key === current || (option.offerable !== false && !used.has(option.key))));
   }
   get pickerSelectedKeys(): string[] {return this.replacementId === null ? (this.store.saved?.sources ?? []).map(optionKey) : [];}
+  /** Audit A-13: saved sources the results leave out because they have no data for the active method. */
+  get notOfferableNames(): string[] {return this.store.notOfferable.map(row => this.sourceName(row));}
   get repairSummary(): string[] {return (this.store.saved?.sources ?? []).map(row => `${this.sourceName(row)}: ${row.percentage === null ? 'sin porcentaje' : row.percentage + ' %'}`);}
   ngOnInit(): void {void this.load();}
   ngOnDestroy(): void {this.destroyed.next(); this.destroyed.complete();}

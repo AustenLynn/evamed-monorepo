@@ -9,6 +9,12 @@ export interface EquipmentDraft { sourceId: number | null; quantity: unknown; un
 export interface EquipmentInput { sourceId: number; quantity: number | string; unitId: number | null; }
 export interface EquipmentCatalogue {
   sources: EquipmentSource[]; units: EquipmentUnit[]; unitLabels: EquipmentUnit[];
+  /**
+   * Every machinery factor is per hour of operation (ecoinvent "machine operation"
+   * datasets), so quantities are hours and rows save this unit (audit A-12).
+   * Null when the unit catalogue has no hours entry.
+   */
+  hourUnitId?: number | null;
   constructionEnergyProcessId: number | null;
 }
 export interface EquipmentSnapshot { rows: EquipmentRow[]; rawTotal: number; }

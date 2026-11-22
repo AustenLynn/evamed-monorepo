@@ -2,7 +2,7 @@
   <h1 mat-dialog-title class="title-standard-second-light">
     Nuevo proyecto
   </h1>
-  <button mat-button class="close-icon" [mat-dialog-close]="true" (click)="onNoClick()">
+  <button mat-button class="close-icon" mat-dialog-close aria-label="Cerrar">
     <mat-icon style="color: #fff;">close</mat-icon>
   </button>
 </div>
@@ -20,8 +20,10 @@
             matInput
             type="text"
             cdkFocusInitial
+            maxlength="255"
           >
         </mat-form-field>
+        <p class="form-error" *ngIf="errores.nombre">{{ errores.nombre }}</p>
       </div>
     </div>
   </div>
@@ -34,11 +36,12 @@
         <mat-form-field appearance="outline" class="select-general">
           <mat-label>Seleccione una opción</mat-label>
           <mat-select [(ngModel)]="data.usoSeleccionado" hideSingleSelectionIndicator>
-            <mat-option *ngFor="let uso of data.catalogoUsos" [value]="uso.id">
+            <mat-option *ngFor="let uso of usos" [value]="uso.id">
               {{uso.name_use}}
             </mat-option>
           </mat-select>
         </mat-form-field>
+        <p class="form-error" *ngIf="errores.usoSeleccionado">{{ errores.usoSeleccionado }}</p>
       </div>
     </div>
     <div class="Col" *ngIf="data.usoSeleccionado === 1">
@@ -71,6 +74,7 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
+        <p class="form-error" *ngIf="errores.paisSeleccionado">{{ errores.paisSeleccionado }}</p>
       </div>
     </div>
     <div class="Col" *ngIf="data.tipoSeleccionado === 5">
@@ -134,8 +138,11 @@
             [(ngModel)]="data.superficieConstruida"
             matInput
             type="number"
+            min="1"
+            step="1"
           >
         </mat-form-field>
+        <p class="form-error" *ngIf="errores.superficieConstruida">{{ errores.superficieConstruida }}</p>
       </div>
     </div>
     <div class="Col">
@@ -150,8 +157,11 @@
             [(ngModel)]="data.superficieHabitable"
             matInput
             type="number"
+            min="1"
+            step="1"
           >
         </mat-form-field>
+        <p class="form-error" *ngIf="errores.superficieHabitable">{{ errores.superficieHabitable }}</p>
       </div>
     </div>
   </div>
@@ -168,8 +178,11 @@
             [(ngModel)]="data.noNiveles"
             matInput
             type="number"
+            min="1"
+            step="1"
           >
         </mat-form-field>
+        <p class="form-error" *ngIf="errores.noNiveles">{{ errores.noNiveles }}</p>
       </div>
     </div>
     <div class="Col">
@@ -185,16 +198,20 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
+        <p class="form-error" *ngIf="errores.vidaUtilSeleccionado">{{ errores.vidaUtilSeleccionado }}</p>
       </div>
     </div>
   </div>
 </div>
 <div mat-dialog-actions class="center">
+  <p class="form-error form-error--servidor" *ngIf="errorServidor" role="alert">{{ errorServidor }}</p>
   <button
     mat-button
-    [mat-dialog-close]="data"
+    type="button"
     class="yellow-button"
+    [disabled]="guardando"
+    (click)="guardar()"
   >
-    Siguiente
+    {{ guardando ? 'Guardando…' : 'Siguiente' }}
   </button>
 </div>

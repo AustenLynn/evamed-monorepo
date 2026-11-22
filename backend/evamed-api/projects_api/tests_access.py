@@ -144,7 +144,7 @@ class ProjectOwnershipTests(APITestCase):
         self.as_alice()
         payload = {
             'name_project': 'New', 'use_id': None, 'type_id': None, 'country_id': None,
-            'builded_surface': None, 'living_area': None, 'tier': None,
+            'builded_surface': 120, 'living_area': 100, 'tier': 2,
             'useful_life_id': None, 'housing_scheme_id': None, 'city_id_origin': None,
             'distance': None,
         }
@@ -152,6 +152,25 @@ class ProjectOwnershipTests(APITestCase):
         theirs = dict(payload, user_platform_id=self.bob_project.user_platform_id.id)
         self.assertEqual(self.client.post('/api-projects/projects/', mine, format='json').status_code, 201)
         self.assertEqual(self.client.post('/api-projects/projects/', theirs, format='json').status_code, 403)
+
+    def test_project_sizes_must_be_possible(self):
+        # Audit A-07 (2026-11-22): a built surface of 0 made every per-m2 result Infinity/NaN.
+        self.as_alice()
+        payload = {
+            'name_project': 'New', 'use_id': None, 'type_id': None, 'country_id': None,
+            'builded_surface': 120, 'living_area': 100, 'tier': 2,
+            'useful_life_id': None, 'housing_scheme_id': None, 'city_id_origin': None,
+            'distance': None, 'user_platform_id': self.alice_project.user_platform_id.id,
+        }
+        for bad in ({'builded_surface': 0}, {'living_area': 0}, {'tier': 0}, {'builded_surface': -5},
+                    {'living_area': 500}, {'builded_surface': None}):
+            response = self.client.post('/api-projects/projects/', dict(payload, **bad), format='json')
+            self.assertEqual(response.status_code, 400, bad)
+        self.assertEqual(self.client.post('/api-projects/projects/', payload, format='json').status_code, 201)
+        url = '/api-projects/projects/%s/' % self.alice_project.id
+        models.Project.objects.filter(pk=self.alice_project.id).update(builded_surface=100, living_area=80)
+        self.assertEqual(self.client.patch(url, {'living_area': 150}, format='json').status_code, 400)
+        self.assertEqual(self.client.patch(url, {'name_project': 'Renombrado'}, format='json').status_code, 200)
 
     def test_results_are_owner_only(self):
         # The owner's 200 path is covered by tests_project_results (which signs in as the owner).
@@ -187,7 +206,7 @@ class ProjectOwnershipTests(APITestCase):
 
         payload = {
             'name_project': 'New', 'use_id': None, 'type_id': None, 'country_id': None,
-            'builded_surface': None, 'living_area': None, 'tier': None,
+            'builded_surface': 120, 'living_area': 100, 'tier': 2,
             'useful_life_id': None, 'housing_scheme_id': None, 'city_id_origin': None,
             'distance': None, 'user_platform_id': self.alice_project.user_platform_id.id,
         }

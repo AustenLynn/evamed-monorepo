@@ -91,6 +91,8 @@ export class RegisterComponent implements OnInit {
       password2: ['', [Validators.required]],
       sector: ['', [Validators.required]],
       country: ['', [Validators.required]],
+      // Registration collects personal data, so the notice must be accepted (audit A-23).
+      terms: [false, [Validators.requiredTrue]],
     });
   }
 

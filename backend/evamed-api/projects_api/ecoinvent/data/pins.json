@@ -1591,7 +1591,7 @@
     {
       "entity_type": "source_information",
       "entity_id": 5,
-      "entity_name": "Generador de energía eléctrica a base de Diesel, potencia potencia entre 18.64 kW y 74.57 kW (GLO)-Ecoinvent 3",
+      "entity_name": "Generador de energía eléctrica a base de Diesel, potencia entre 18.64 kW y 74.57 kW (GLO)-Ecoinvent 3",
       "evamed_unit": null,
       "dataset_id": 10751,
       "activity_name": "machine operation, diesel, >= 18.64 kW and < 74.57 kW, generators",
@@ -1693,7 +1693,7 @@
     {
       "entity_type": "source_information",
       "entity_id": 4,
-      "entity_name": "Maquinaria de carga pesada a base de Diesel, potencia menor a 18.64kW (GLO)-Ecoinvent 3",
+      "entity_name": "Maquinaria de carga pesada a base de Diesel, potencia menor a 18.64 kW (GLO)-Ecoinvent 3",
       "evamed_unit": null,
       "dataset_id": 12116,
       "activity_name": "machine operation, diesel, < 18.64 kW, high load factor",
