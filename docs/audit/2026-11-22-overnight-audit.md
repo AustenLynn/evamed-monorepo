@@ -10,17 +10,42 @@ engañosa con salida; **Baja** = detalle visual, texto o deuda.
 
 ## Resumen (lo más importante primero)
 
-1. **A-11 · Alta · Los datos A2 de ecoinvent no son coherentes: GWP-total ≠ fósil + biogénico +
-   uso de suelo en 55 de 58 materiales**, con diferencias de hasta 231 %. Afecta a todo resultado
-   de carbono con materiales de ecoinvent, incluidas la vista Solo carbono y la barra de carbono.
-2. **A-13 · Alta · Uso ofrece fuentes sin datos A2 (mexicaniuh) y las cuenta como 0 sin
-   avisar** en la página donde se eligen: 10,000 kWh/año durante 50 años aportan 0 kg CO2 eq.
-3. **A-12 · Media · En Construcción la unidad del equipo no cambia el cálculo:** 10 Hrs = 10 kWh
-   = 10 MJ = 10 "Sin unidad".
-4. **A-16 · Alta · Al comparar proyectos en la tabla de Resultados, la fila Total sale con los
-   totales de otro proyecto** cuando el proyecto abierto tiene un id mayor que el comparado.
-5. **A-09 · Alta · "Por m²" muestra Infinity/NaN** cuando la superficie construida es 0, y el alta
-   del proyecto lo permite (A-07).
+36 hallazgos numerados: 6 altos, 13 medios, 16 bajos y 1 descartado (A-18). Todos con evidencia en
+dev o en el código.
+
+**Alta: números incorrectos o engañosos**
+1. **A-11** Los datos A2 de **ecoinvent son incoherentes**: GWP-total ≠ fósil + biogénico + uso de
+   suelo en 55 de 58 materiales (hasta 231 %), y también en la maquinaria (total < fósil). Afecta
+   todo el carbono con materiales de ecoinvent, incluidas la vista Solo carbono y la barra.
+   Anexo: `2026-11-22-gwp-inconsistencias.csv`.
+2. **A-16** Al **comparar proyectos**, la fila **Total** de la tabla sale con los totales de otro
+   proyecto (orden por id). Causa identificada en `TablaResultados()`.
+3. **A-13** **Uso ofrece las fuentes de mexicaniuh**, que no tienen datos A2, y las cuenta como **0**
+   sin avisar en Uso ni en Resultados (solo en la tarjeta de inicio). `usage.py` no filtra con
+   `offerable`.
+4. **A-09** **"Por m²" muestra Infinity/NaN** si la superficie construida es 0, y el alta lo
+   permite (**A-07**).
+5. **A-12** (Media, pero afecta números) **La unidad del equipo no cambia el cálculo** en
+   Construcción y Fin de vida: 10 Hrs = 10 kWh = 10 MJ.
+6. **A-27** (Media) La escala RUV "Promedio del sector vivienda" tiene **rangos imposibles**
+   (pasos de 2,867 kg/m²·año).
+
+**Media: funciones rotas o engañosas**
+- A-01 Cuatro botones "Exportar"/"Generar reporte" sin acción.
+- A-05 Los errores al crear un proyecto se pierden en silencio, junto con lo capturado.
+- A-07 El servidor acepta superficie 0, habitable > construida y 0 niveles.
+- A-19 Las páginas de administración se abren para cualquier usuario (con botones "Eliminar").
+- A-20 "Manual de usuario" muestra "user-manual works!".
+- A-23 "Aviso de privacidad" y "Términos" no son enlaces (el registro pide aceptarlos).
+- A-29 La app no se adapta a celular.
+- A-30 El frontend se sirve sin cabeceras de seguridad (HSTS, CSP, X-Frame-Options).
+
+**Baja:** A-02, A-03, A-04, A-06, A-08, A-10, A-14, A-15, A-17, A-21, A-22, A-24, A-25, A-26, A-28,
+A-31, A-32, A-33, A-34, A-35, A-36.
+
+**Verificado y correcto:** el navegador y el servidor coinciden en los 13 indicadores; Producción,
+A4, A5, B4 (reemplazo con transporte) y el total cuadran a mano; aislamiento de lectura entre
+usuarios; validaciones de Uso; login con error; duplicar copia todo.
 
 ## Hallazgos
 
@@ -381,4 +406,34 @@ Nota de lectura (no es error): `onFileChange` lee con `readAsArrayBuffer` y llam
 `XLSX.read(..., { type: 'binary' })`. SheetJS lo detecta y lo procesa bien (comprobado con la
 plantilla real), pero el `type` correcto sería `'array'`.
 
+### Explorer
+
+**A-36 · Baja · Descripciones largas y enlace al EPD sin vínculo.** En la vista de tabla del
+Explorer de producción, la descripción de cada material sale completa (varios párrafos en los de
+ecoinvent, por ejemplo "Adobe brick"), lo que alarga mucho cada fila. En los de ECO Platform, la
+descripción termina en "EPD: https://portal.eco-platform.org/epds/…" como **texto plano, no como
+enlace**, así que no se puede abrir el EPD de origen.
+
 ## Método y límites
+
+- **Entorno:** dev `https://dev.evamediber.click` con la cuenta de prueba del dueño (no
+  administradora, con acceso a ECO Platform y método activo EN 15804+A2). Código en `main` @
+  `7946df1`. Chrome headless vía DevTools MCP en modo *slim* (solo navegar, evaluar JS y captura).
+  Las interacciones se hicieron con JS (clics y eventos), no con un mouse real.
+- **Datos creados en dev:** proyectos **651** ("AUDITORIA 2026-11-22 (borrar) renombrado") y **652**
+  (su copia), con 2 materiales, 1 equipo, consumo anual de 10,000 kWh y una fuente mexicaniuh. No se
+  borró ni modificó nada de otros proyectos.
+- **No se hizo:**
+  - escritura en proyectos ajenos (permiso denegado en la sesión; se revisó el código);
+  - presionar "Eliminar" en ninguna parte;
+  - registro real, recuperación de contraseña o inicio con Google/Facebook;
+  - consultas a la API de ecoinvent (gastan cuota);
+  - SSH al servidor (abrir el puerto 22 cambia el grupo de seguridad);
+  - pruebas de carga;
+  - pruebas con un tamaño de ventana real de celular (se usó un `iframe` de 390 px).
+- **Límite de las herramientas:** sin consola del navegador, los errores de JavaScript se
+  capturaron con `window.onerror` después de cada carga, así que un error durante el arranque de
+  una página pudo pasar sin verse.
+- **Incidente durante la auditoría:** por un punto de inserción perdido, las secciones A-11 a A-18 no
+  se guardaron en su momento; se reescribieron en el commit "restore A-11..A-18". El contenido es el
+  mismo que se registró durante la revisión.
