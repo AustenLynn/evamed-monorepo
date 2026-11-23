@@ -22,7 +22,15 @@ export interface ResultsExcluded {
   transport: ExcludedEntry[];
   energy: ExcludedEntry[];
   sources: ExcludedEntry[];
+  /** Rows left without C2–C4: reason 'sin_datos', 'sin_masa' or 'sin_tratamiento' (fin de vida design). */
+  end_of_life?: { row_id: number; material_id: number; name: string; reason: string }[];
 }
+
+const END_OF_LIFE_REASONS: Record<string, string> = {
+  sin_datos: 'sin datos de fin de vida',
+  sin_masa: 'sin masa para el escenario',
+  sin_tratamiento: 'tratamiento sin datos',
+};
 
 /** Lists what a project's results don't include, so the user can swap it for A2 data. */
 @Component({
@@ -38,9 +46,14 @@ export class ExcludedNoticeComponent {
     const value = this.excluded();
     if (!value) return null;
     const factors = [...value.transport, ...value.energy, ...value.sources],
-      hasAny = value.materials.length || value.no_mass.length || factors.length;
-    return hasAny ? { ...value, factors } : null;
+      endOfLife = value.end_of_life ?? [],
+      hasAny = value.materials.length || value.no_mass.length || factors.length || endOfLife.length;
+    return hasAny ? { ...value, factors, endOfLife } : null;
   });
+
+  protected endOfLifeReason(reason: string): string {
+    return END_OF_LIFE_REASONS[reason] ?? 'sin datos de fin de vida';
+  }
 
   protected missing(reason: string): string | null {
     return reason.startsWith('missing:') ? reason.slice('missing:'.length).split(',').join(', ') : null;

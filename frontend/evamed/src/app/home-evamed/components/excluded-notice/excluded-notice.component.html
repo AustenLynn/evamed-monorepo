@@ -24,6 +24,16 @@
         }
       </ul>
     }
+    @if (v.endOfLife.length) {
+      <p class="excluded-notice__lead">
+        {{ v.endOfLife.length }} materiales sin fin de vida (C2–C4): no se incluyen en esas etapas.
+      </p>
+      <ul class="excluded-notice__list">
+        @for (item of v.endOfLife; track item.row_id) {
+          <li><strong>{{ item.name }}</strong> <span class="excluded-notice__meta">{{ endOfLifeReason(item.reason) }}</span></li>
+        }
+      </ul>
+    }
     @if (v.factors.length) {
       <p class="excluded-notice__lead">Transporte, energía o procesos sin valores del método actual; no se incluyen:</p>
       <ul class="excluded-notice__list">
