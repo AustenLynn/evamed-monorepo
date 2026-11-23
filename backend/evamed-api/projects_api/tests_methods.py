@@ -370,3 +370,39 @@ class MaterialUnitNameTests(APITestCase):
             name_material='Cemento_X', unit_id=models.Unit.objects.create(name_unit='Ton'))
         row = next(r for r in self.client.get('/api-projects/materials/').json() if r['id'] == material.id)
         self.assertEqual(row['unit_name'], 'Ton')
+
+
+class WasteTreatmentRefreshTests(TestCase):
+    """Fin de vida design, Phase 2: waste treatments refresh like machinery and count when complete."""
+
+    def setUp(self):
+        from unittest import mock
+        from projects_api.management.commands import ecoinvent_refresh
+        FakeEcoinventClient.requests = []
+        patcher = mock.patch.object(ecoinvent_refresh, 'EcoinventClient', FakeEcoinventClient)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        self.treatment = models.WasteTreatment.objects.get(name_waste_treatment='Varilla a reciclaje (RoW)-Ecoinvent 3')
+        self.treatment.ecoinvent_dataset_id = 15194
+        self.treatment.ecoinvent_version, self.treatment.ecoinvent_system_model = '3.12-sandbox', 'cutoff'
+        self.treatment.save()
+
+    def test_refresh_writes_waste_treatment_data(self):
+        from io import StringIO
+        from django.core.management import call_command
+        call_command('ecoinvent_refresh', '--only', 'waste_treatment', '--method', 'EN15804+A2', '--apply',
+                     stdout=StringIO(), stderr=StringIO())
+        rows = models.WasteTreatmentData.objects.filter(waste_treatment_id=self.treatment)
+        self.assertEqual(rows.count(), 13)
+        self.assertEqual({float(r.value) for r in rows}, {2.0})
+
+    @override_settings(EVAMED_IMPACT_METHOD='EN15804+A2')
+    def test_current_waste_treatment_ids(self):
+        a2 = list(models.PotentialType.objects.filter(method='EN15804+A2'))
+        complete = self.treatment
+        partial = models.WasteTreatment.objects.get(name_waste_treatment='Ladrillo a reciclaje (RoW)-Ecoinvent 3')
+        for ptype in a2:
+            models.WasteTreatmentData.objects.create(waste_treatment_id=complete, potential_type_id=ptype, value=1)
+        for ptype in a2[1:]:
+            models.WasteTreatmentData.objects.create(waste_treatment_id=partial, potential_type_id=ptype, value=1)
+        self.assertEqual(methods.current_waste_treatment_ids(), {complete.id})

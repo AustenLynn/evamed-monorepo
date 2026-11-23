@@ -40,6 +40,7 @@ ENTITY_TYPES = {
     'type_energy': (models.TypeEnergy, 'name_type_energy', 'type_energy'),
     'source_information': (
         models.SourceInformation, 'name_source_information', 'source_information'),
+    'waste_treatment': (models.WasteTreatment, 'name_waste_treatment', 'waste_treatment'),
 }
 
 
