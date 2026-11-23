@@ -143,6 +143,11 @@ def current_source_ids():
     return _current_owner_ids(models.SourceInformationData, 'sourceInformarion_id_id')
 
 
+def current_waste_treatment_ids():
+    """Waste treatments with a value for every indicator of the active method (fin de vida design)."""
+    return _current_owner_ids(models.WasteTreatmentData, 'waste_treatment_id_id')
+
+
 # ------------------------------------------------------------ offerable catalogue
 # Under A2 the pickers, explorer and templates offer only current entities. Under CML
 # nothing is filtered, so legacy behaviour (EPiC with GWP only, etc.) is unchanged.

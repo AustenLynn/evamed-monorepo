@@ -41,6 +41,9 @@ TARGETS = {
     'source_information': (
         models.SourceInformation, 'name_source_information',
         models.SourceInformationData, 'sourceInformarion_id', False),
+    'waste_treatment': (
+        models.WasteTreatment, 'name_waste_treatment',
+        models.WasteTreatmentData, 'waste_treatment_id', False),
 }
 
 

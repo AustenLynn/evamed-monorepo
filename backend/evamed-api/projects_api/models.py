@@ -421,6 +421,26 @@ class TreatmentOfGeneratedWaste(models.Model):
         """Return string representation of TOGW"""
         return str(self.project_id)
 
+class WasteTreatment(EcoinventPinnedModel):
+    """Waste treatment (recycling, sorting, landfill) per kg, for EVAmed's end-of-life scenario
+    (fin de vida design, 2026-11-22)."""
+    name_waste_treatment = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name_waste_treatment
+
+
+class WasteTreatmentData(models.Model):
+    """Impact of one kg of waste through a treatment, per indicator."""
+    waste_treatment_id = models.ForeignKey(WasteTreatment, on_delete=models.CASCADE)
+    potential_type_id = models.ForeignKey(PotentialType, on_delete=models.CASCADE)
+    unit_id = models.ForeignKey(Unit, on_delete=models.CASCADE, null=True)
+    value = models.DecimalField(max_digits=45, decimal_places=35, null=True)
+
+    def __str__(self):
+        return str(self.waste_treatment_id)
+
+
 class SourceInformationData(models.Model):
     """SourceInformationData model"""
     sourceInformarion_id = models.ForeignKey(SourceInformation, on_delete=models.CASCADE, null=True)

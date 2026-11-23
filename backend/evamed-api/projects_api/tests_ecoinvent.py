@@ -270,16 +270,33 @@ class ManualPinsFileTests(TestCase):
         self.assertEqual(len(pins['transport']), 7)
         self.assertEqual(len(pins['type_energy']), 3)
         self.assertEqual(len(pins['source_information']), 11)
+        self.assertEqual(len(pins['waste_treatment']), 10)
 
         # Every pin either carries an id with an expected activity to verify
         # against, or is explicitly marked unresolved with a reason.
-        for key in ('transport', 'type_energy', 'source_information'):
+        for key in ('transport', 'type_energy', 'source_information', 'waste_treatment'):
             for pin in pins[key]:
                 if pin.get('dataset_id'):
                     self.assertTrue(pin.get('expected_activity'), pin['entity_name'])
                 else:
                     self.assertEqual(pin.get('confidence'), 'unresolved')
                     self.assertTrue(pin.get('notes'), pin['entity_name'])
+
+
+class WasteTreatmentPinsTests(TestCase):
+    """Fin de vida design, Phase 2: every waste-treatment row has a pin, and resolve knows the type."""
+
+    def test_every_treatment_row_is_pinned(self):
+        from projects_api import models
+        from projects_api.management.commands import ecoinvent_resolve
+        with open(ecoinvent_resolve.MANUAL_PINS_PATH) as handle:
+            pinned = {pin['entity_name'] for pin in json.load(handle)['waste_treatment'] if pin.get('dataset_id')}
+        rows = set(models.WasteTreatment.objects.values_list('name_waste_treatment', flat=True))
+        self.assertEqual(len(rows), 10)
+        # Two treatments the approved scenario doesn't use stay unpinned (no quota spent on them).
+        self.assertEqual(len(pinned), 8)
+        self.assertLessEqual(pinned, rows)
+        self.assertIn('waste_treatment', ecoinvent_resolve.ENTITY_TYPES)
 
 
 class AddMaterialsTests(TestCase):
