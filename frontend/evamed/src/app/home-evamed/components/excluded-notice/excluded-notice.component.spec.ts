@@ -40,8 +40,7 @@ describe('ExcludedNoticeComponent', () => {
 
   it('says transport is left out for materials without mass', () => {
     const el = render({ ...empty, no_mass: [{ row_id: 4, material_id: 10, name: 'Panel' }] });
-    expect(el.textContent).toContain('sin masa: transporte no incluido');
-    expect(el.textContent).toContain('Panel');
+    expect(el.textContent).toContain('Panel · sin masa: transporte no incluido');
   });
 
   it('lists transport, energy and construction entries without values', () => {
@@ -68,6 +67,8 @@ describe('ExcludedNoticeComponent', () => {
     expect(el.textContent).toContain('Concreto');
     expect(el.textContent).toContain('sin datos de fin de vida');
     expect(el.textContent).toContain('sin masa para el escenario');
+    // Angular drops the whitespace between elements: the separator lives inside the text.
+    expect(el.textContent).toContain('Concreto · sin datos de fin de vida');
   });
 
   it('says nothing about end of life when every material has it, or the server does not send it', () => {
