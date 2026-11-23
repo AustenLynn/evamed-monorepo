@@ -5,6 +5,7 @@ Lifecycle results of one project (Python port of the frontend OperacionesDeFase)
 resolves the project and the databases (A-32 plan, 2026-11-22).
 """
 from projects_api import methods, models
+from projects_api.end_of_life import scenario as eol_scenario
 
 
 _PRODUCTION_STAGES = [2, 3, 4]  # standard_id: A1, A2, A3
@@ -48,6 +49,46 @@ def _declared_end_of_life(msd_lookup, end_standards, declaring, material_id, typ
             for module in _END_OF_LIFE_MODULES}
 
 
+_ECOINVENT_DATABASE = 'ECOINVENT 3'
+_VOLUME_UNITS = frozenset(['m³', 'm3'])
+
+
+def _scenario_rows(scheme_project, declaring, eol, conv_lookup, active_databases):
+    """Rows whose end of life comes from EVAmed's scenario, and the rows left without one.
+
+    Returns ({row id: (row, mass in kg, family)}, [(row, reason)], treatment ids by name, truck id).
+    Only ecoinvent materials that declare no C2–C4 take the scenario, and only once it is approved
+    (fin de vida design, Phase 2). Reasons: 'sin_datos', 'sin_masa', 'sin_tratamiento'.
+    """
+    rows, missing = {}, []
+    treatments = dict(models.WasteTreatment.objects.filter(name_waste_treatment__in=eol.treatment_names())
+                      .values_list('name_waste_treatment', 'id'))
+    truck = models.Transport.objects.filter(name_transport=eol.truck).values_list('id', flat=True).first()
+    current_treatments = methods.current_waste_treatment_ids()
+    truck_current = truck is not None and truck in methods.current_transport_ids()
+    for ps in scheme_project:
+        mat = ps.material_id
+        if (mat.database_from or '') not in active_databases or ps.material_id_id in declaring:
+            continue
+        if not eol.approved or mat.database_from != _ECOINVENT_DATABASE:
+            missing.append((ps, 'sin_datos'))
+            continue
+        family = eol.family(mat)
+        unit = mat.unit_id.name_unit if mat.unit_id else None
+        tonnes = conv_lookup.get(mat.id) or _UNIT_TONNES.get(unit)
+        if tonnes is None and unit in _VOLUME_UNITS and family.density_kg_m3:
+            tonnes = family.density_kg_m3 / 1000
+        if not tonnes:
+            missing.append((ps, 'sin_masa'))
+            continue
+        if not truck_current or any(treatments.get(d.treatment) not in current_treatments
+                                    for d in family.destinations):
+            missing.append((ps, 'sin_tratamiento'))
+            continue
+        rows[ps.id] = (ps, float(ps.quantity or 0) * tonnes * 1000, family)
+    return rows, missing, treatments, truck
+
+
 def _material_value(msd_lookup, aggregate_materials, material_id, type_id):
     """A1-A3 for one material and indicator, read as the production stage reads it."""
     if material_id in aggregate_materials:
@@ -85,10 +126,6 @@ def _apply_a2_exclusions(scheme_project, conv_lookup, msd_lookup, aggregate_mate
                 if (ps.distance_init or 0) > 0 or (ps.distance_end or 0) > 0:
                     excluded['no_mass'].append(
                         {'row_id': ps.id, 'material_id': ps.material_id_id, 'name': mat.name_material})
-        if (mat.database_from or '') in active_databases and ps.material_id_id not in declaring:
-            # No end of life declared (fin de vida design): C2–C4 are left out, so say so.
-            excluded['end_of_life'].append({'row_id': ps.id, 'material_id': ps.material_id_id,
-                                            'name': mat.name_material, 'reason': 'sin_datos'})
         # An EPD that declares its end of life already releases its biogenic carbon there.
         if biogenic is not None and (mat.database_from or '') in active_databases and ps.material_id_id not in declaring:
             # The original and every replacement (B4) are released at end of life (-1/+1 balance).
@@ -211,6 +248,18 @@ def compute(project, active_databases, detalle=False):
             active_databases, declaring)
         _list_noncurrent_factors(scheme_project, ecd_list, source_ids, excluded)
 
+    # EVAmed's end-of-life scenario for ecoinvent materials without declared C2–C4 (fin de vida design).
+    scenario_rows, end_of_life_missing, treatments, truck_id = _scenario_rows(
+        scheme_project, declaring, eol_scenario.current(), conv_lookup, active_databases)
+    if a2:
+        excluded['end_of_life'] = [
+            {'row_id': ps.id, 'material_id': ps.material_id_id, 'name': ps.material_id.name_material, 'reason': reason}
+            for ps, reason in end_of_life_missing]
+    wtd_lookup = {
+        (row.waste_treatment_id_id, row.potential_type_id_id): float(row.value or 0)
+        for row in models.WasteTreatmentData.objects.filter(waste_treatment_id__in=treatments.values())
+    } if scenario_rows else {}
+
     biogenic_release = sum(release_by_row.values())
     datos = {}
     por_elemento = {}  # with detalle: indicator -> section id -> A1-A3 + A4 + A5 + B4 + C1 + C3 (A-32)
@@ -318,6 +367,13 @@ def compute(project, active_databases, detalle=False):
             declared = _declared_end_of_life(msd_lookup, end_standards, declaring, ps.material_id_id, impacto.id)
             if declared:
                 row_end_of_life[ps] = {module: value * float(ps.quantity or 0) for module, value in declared.items()}
+        for ps, mass_kg, family in scenario_rows.values():
+            modules = {'C2': mass_kg / 1000 * family.distance_km * pt_lookup.get((impacto.id, truck_id), 0),
+                       'C3': 0, 'C4': 0}
+            for destination in family.destinations:
+                modules[destination.module] += (
+                    mass_kg * destination.share * wtd_lookup.get((treatments[destination.treatment], impacto.id), 0))
+            row_end_of_life[ps] = modules
 
         # ---- Uso ----
         b4_total = 0

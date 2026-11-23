@@ -1,0 +1,180 @@
+{
+  "_comment": [
+    "Fin de vida design (docs/superpowers/specs/2026-11-22-fin-de-vida-c2-c4-design.md), Phase 2.",
+    "Proposal: every number is an assumption until the owner approves it; nothing applies while approved is false.",
+    "module: C3 for recycling or sorting, C4 for landfill. share per family adds up to 1."
+  ],
+  "approved": false,
+  "truck": "Vehículo de carga, entre  16 y 32 Ton, tipo EURO 3 (RoW)-Ecoinvent 3",
+  "families": {
+    "Concreto": {
+      "distance_km": 30,
+      "density_kg_m3": 2400,
+      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "destinations": [
+        {
+          "treatment": "Concreto a relleno de material inerte (RoW)-Ecoinvent 3",
+          "share": 0.9,
+          "module": "C4"
+        },
+        {
+          "treatment": "Concreto sin armar a reciclaje (RoW)-Ecoinvent 3",
+          "share": 0.1,
+          "module": "C3"
+        }
+      ]
+    },
+    "Block": {
+      "distance_km": 30,
+      "density_kg_m3": null,
+      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "destinations": [
+        {
+          "treatment": "Concreto a relleno de material inerte (RoW)-Ecoinvent 3",
+          "share": 0.9,
+          "module": "C4"
+        },
+        {
+          "treatment": "Concreto sin armar a reciclaje (RoW)-Ecoinvent 3",
+          "share": 0.1,
+          "module": "C3"
+        }
+      ]
+    },
+    "Acero": {
+      "distance_km": 30,
+      "density_kg_m3": null,
+      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "destinations": [
+        {
+          "treatment": "Varilla a reciclaje (RoW)-Ecoinvent 3",
+          "share": 0.85,
+          "module": "C3"
+        },
+        {
+          "treatment": "Acero a relleno de material inerte (RoW)-Ecoinvent 3",
+          "share": 0.15,
+          "module": "C4"
+        }
+      ]
+    },
+    "Ladrillo": {
+      "distance_km": 30,
+      "density_kg_m3": null,
+      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "destinations": [
+        {
+          "treatment": "Residuo inerte a relleno (RoW)-Ecoinvent 3",
+          "share": 0.95,
+          "module": "C4"
+        },
+        {
+          "treatment": "Ladrillo a reciclaje (RoW)-Ecoinvent 3",
+          "share": 0.05,
+          "module": "C3"
+        }
+      ]
+    },
+    "Panel de yeso": {
+      "distance_km": 30,
+      "density_kg_m3": null,
+      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "destinations": [
+        {
+          "treatment": "Yeso a relleno de material inerte (RoW)-Ecoinvent 3",
+          "share": 0.9,
+          "module": "C4"
+        },
+        {
+          "treatment": "Tablaroca a reciclaje (RoW)-Ecoinvent 3",
+          "share": 0.1,
+          "module": "C3"
+        }
+      ]
+    },
+    "Yeso": {
+      "distance_km": 30,
+      "density_kg_m3": null,
+      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "destinations": [
+        {
+          "treatment": "Yeso a relleno de material inerte (RoW)-Ecoinvent 3",
+          "share": 1.0,
+          "module": "C4"
+        }
+      ]
+    },
+    "Aplanado": {
+      "distance_km": 30,
+      "density_kg_m3": 1800,
+      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "destinations": [
+        {
+          "treatment": "Residuo inerte a relleno (RoW)-Ecoinvent 3",
+          "share": 1.0,
+          "module": "C4"
+        }
+      ]
+    },
+    "Mortero": {
+      "distance_km": 30,
+      "density_kg_m3": null,
+      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "destinations": [
+        {
+          "treatment": "Residuo inerte a relleno (RoW)-Ecoinvent 3",
+          "share": 1.0,
+          "module": "C4"
+        }
+      ]
+    },
+    "Cemento": {
+      "distance_km": 30,
+      "density_kg_m3": null,
+      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "destinations": [
+        {
+          "treatment": "Residuo inerte a relleno (RoW)-Ecoinvent 3",
+          "share": 1.0,
+          "module": "C4"
+        }
+      ]
+    },
+    "Grava": {
+      "distance_km": 30,
+      "density_kg_m3": null,
+      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "destinations": [
+        {
+          "treatment": "Residuo inerte a relleno (RoW)-Ecoinvent 3",
+          "share": 1.0,
+          "module": "C4"
+        }
+      ]
+    },
+    "Arena": {
+      "distance_km": 30,
+      "density_kg_m3": null,
+      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "destinations": [
+        {
+          "treatment": "Residuo inerte a relleno (RoW)-Ecoinvent 3",
+          "share": 1.0,
+          "module": "C4"
+        }
+      ]
+    },
+    "Otros": {
+      "distance_km": 30,
+      "density_kg_m3": null,
+      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "destinations": [
+        {
+          "treatment": "Residuo inerte a relleno (RoW)-Ecoinvent 3",
+          "share": 1.0,
+          "module": "C4"
+        }
+      ]
+    }
+  }
+}
