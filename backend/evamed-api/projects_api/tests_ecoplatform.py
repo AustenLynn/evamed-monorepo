@@ -158,6 +158,38 @@ class ParseTests(SimpleTestCase):
         self.assertIsNone(ilcd.skip_reason(ilcd.parse(epd())))
 
 
+class EndOfLifeParseTests(SimpleTestCase):
+    """C2–C4 the EPD declares are kept; C1 and D are not (fin de vida design, 2026-11-22)."""
+
+    def _doc(self, amount=1000):
+        doc = epd(amount=amount, values={'GWP-total': 10})
+        for result in doc['LCIAResults']['LCIAResult']:
+            result['other']['anies'] += [{'module': m, 'value': str(v)} for m, v in
+                                        (('C1', 1), ('C2', 2), ('C3', 3), ('C4', 4), ('D', -5))]
+        return doc
+
+    def test_parse_keeps_c2_to_c4(self):
+        values = ilcd.parse(self._doc()).values
+        self.assertEqual((values[('GWP-total', 'C2')], values[('GWP-total', 'C3')], values[('GWP-total', 'C4')]),
+                         (2.0, 3.0, 4.0))
+        self.assertNotIn(('GWP-total', 'C1'), values)
+        self.assertNotIn(('GWP-total', 'D'), values)
+
+    def test_c_modules_scale_like_a1_a3(self):
+        # Declared per 2 kg: EVAmed stores per kg, so every module is halved.
+        values = ilcd.parse(self._doc(amount=2)).values
+        self.assertEqual(values[('GWP-total', 'A1-A3')], 5.0)
+        self.assertEqual(values[('GWP-total', 'C3')], 1.5)
+
+    def test_parse_keeps_c_next_to_complete_a1_a3(self):
+        doc = self._doc()
+        for result in doc['LCIAResults']['LCIAResult']:
+            result['other']['anies'] += [{'module': 'A1', 'value': '0.5'}, {'module': 'A2', 'value': '0.2'},
+                                        {'module': 'A3', 'value': '0.3'}]
+        modules = {module for _short, module in ilcd.parse(doc).values}
+        self.assertEqual(modules, {'A1-A3', 'C2', 'C3', 'C4'})
+
+
 @override_settings(EVAMED_IMPACT_METHOD='EN15804+A2')
 class ImportCommandTests(TestCase):
     def setUp(self):
@@ -207,6 +239,34 @@ class ImportCommandTests(TestCase):
         row = models.MaterialSchemeData.objects.get(material_id__eco_epd_uuid=EPD_UUID, potential_type_id=gwp)
         self.assertEqual(float(row.value), 400.0)
         self.assertEqual(models.MaterialSchemeData.objects.filter(material_id__eco_epd_uuid=EPD_UUID).count(), 13)
+
+    def _with_end_of_life(self):
+        doc = epd(values={'GWP-total': 377})
+        for result in doc['LCIAResults']['LCIAResult']:
+            result['other']['anies'] += [{'module': 'C2', 'value': '2'}, {'module': 'C3', 'value': '3'},
+                                        {'module': 'C4', 'value': '4'}]
+        (self.dir / f'{EPD_UUID}.json').write_text(json.dumps(doc))
+
+    def _c_rows(self):
+        return models.MaterialSchemeData.objects.filter(
+            material_id__eco_epd_uuid=EPD_UUID, standard_id__name_standard__in=('C2', 'C3', 'C4'))
+
+    def test_import_stores_c_modules(self):
+        self._with_end_of_life()
+        self._run('--apply')
+        gwp = models.PotentialType.objects.get(method='EN15804+A2', name_potential_type='GWP-total')
+        by_module = {row.standard_id.name_standard: float(row.value) for row in self._c_rows().filter(potential_type_id=gwp)}
+        self.assertEqual(by_module, {'C2': 2.0, 'C3': 3.0, 'C4': 4.0})
+
+    def test_reimport_keeps_one_row_per_module(self):
+        self._with_end_of_life()
+        self._run('--apply')
+        self._run('--apply')
+        self.assertEqual(self._c_rows().count(), 3 * 13)
+
+    def test_dry_run_reports_end_of_life_coverage(self):
+        self._with_end_of_life()
+        self.assertIn('C2–C4: 1 complete, 0 partial, 0 none', self._run())
 
     def test_missing_family_is_refused(self):
         self.families.write_text('{}')
