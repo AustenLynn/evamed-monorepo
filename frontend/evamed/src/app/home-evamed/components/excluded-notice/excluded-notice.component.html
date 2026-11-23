@@ -20,7 +20,7 @@
       <p class="excluded-notice__lead">Materiales sin masa: transporte no incluido.</p>
       <ul class="excluded-notice__list">
         @for (item of v.no_mass; track item.row_id) {
-          <li><strong>{{ item.name }}</strong> <span class="excluded-notice__meta">sin masa: transporte no incluido</span></li>
+          <li><strong>{{ item.name }}</strong><span class="excluded-notice__meta"> · sin masa: transporte no incluido</span></li>
         }
       </ul>
     }
@@ -30,7 +30,7 @@
       </p>
       <ul class="excluded-notice__list">
         @for (item of v.endOfLife; track item.row_id) {
-          <li><strong>{{ item.name }}</strong> <span class="excluded-notice__meta">{{ endOfLifeReason(item.reason) }}</span></li>
+          <li><strong>{{ item.name }}</strong><span class="excluded-notice__meta"> · {{ endOfLifeReason(item.reason) }}</span></li>
         }
       </ul>
     }
