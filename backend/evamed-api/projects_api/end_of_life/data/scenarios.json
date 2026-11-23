@@ -10,16 +10,16 @@
     "Concreto": {
       "distance_km": 30,
       "density_kg_m3": 2400,
-      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "sources": "Supuesto EVAmed (2026-11-22): no hay cifra nacional publicada; en México se trata un porcentaje muy bajo de los RCD. Pendiente de aprobación. Densidad 2400 kg/m³ (concreto de peso normal).",
       "destinations": [
         {
           "treatment": "Concreto a relleno de material inerte (RoW)-Ecoinvent 3",
-          "share": 0.9,
+          "share": 0.95,
           "module": "C4"
         },
         {
           "treatment": "Concreto sin armar a reciclaje (RoW)-Ecoinvent 3",
-          "share": 0.1,
+          "share": 0.05,
           "module": "C3"
         }
       ]
@@ -27,16 +27,16 @@
     "Block": {
       "distance_km": 30,
       "density_kg_m3": null,
-      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "sources": "Supuesto EVAmed (2026-11-22): no hay cifra nacional publicada; en México se trata un porcentaje muy bajo de los RCD. Pendiente de aprobación.",
       "destinations": [
         {
           "treatment": "Concreto a relleno de material inerte (RoW)-Ecoinvent 3",
-          "share": 0.9,
+          "share": 0.95,
           "module": "C4"
         },
         {
           "treatment": "Concreto sin armar a reciclaje (RoW)-Ecoinvent 3",
-          "share": 0.1,
+          "share": 0.05,
           "module": "C3"
         }
       ]
@@ -44,16 +44,16 @@
     "Acero": {
       "distance_km": 30,
       "density_kg_m3": null,
-      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "sources": "72 % de recuperación de varilla al final de vida, Norteamérica (AISC, More than recycled content). worldsteel usa 95 % y el Reino Unido 98 %.",
       "destinations": [
         {
           "treatment": "Varilla a reciclaje (RoW)-Ecoinvent 3",
-          "share": 0.85,
+          "share": 0.72,
           "module": "C3"
         },
         {
           "treatment": "Acero a relleno de material inerte (RoW)-Ecoinvent 3",
-          "share": 0.15,
+          "share": 0.28,
           "module": "C4"
         }
       ]
@@ -61,7 +61,7 @@
     "Ladrillo": {
       "distance_km": 30,
       "density_kg_m3": null,
-      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "sources": "Supuesto EVAmed (2026-11-22): no hay cifra nacional publicada; en México se trata un porcentaje muy bajo de los RCD. Pendiente de aprobación.",
       "destinations": [
         {
           "treatment": "Residuo inerte a relleno (RoW)-Ecoinvent 3",
@@ -78,7 +78,7 @@
     "Panel de yeso": {
       "distance_km": 30,
       "density_kg_m3": null,
-      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "sources": "Supuesto EVAmed (2026-11-22): no hay cifra nacional publicada; en México se trata un porcentaje muy bajo de los RCD. Pendiente de aprobación.",
       "destinations": [
         {
           "treatment": "Yeso a relleno de material inerte (RoW)-Ecoinvent 3",
@@ -95,7 +95,7 @@
     "Yeso": {
       "distance_km": 30,
       "density_kg_m3": null,
-      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "sources": "Supuesto EVAmed (2026-11-22): no hay cifra nacional publicada; en México se trata un porcentaje muy bajo de los RCD. Pendiente de aprobación.",
       "destinations": [
         {
           "treatment": "Yeso a relleno de material inerte (RoW)-Ecoinvent 3",
@@ -107,7 +107,7 @@
     "Aplanado": {
       "distance_km": 30,
       "density_kg_m3": 1800,
-      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "sources": "Supuesto EVAmed (2026-11-22): no hay cifra nacional publicada; en México se trata un porcentaje muy bajo de los RCD. Pendiente de aprobación.",
       "destinations": [
         {
           "treatment": "Residuo inerte a relleno (RoW)-Ecoinvent 3",
@@ -119,7 +119,7 @@
     "Mortero": {
       "distance_km": 30,
       "density_kg_m3": null,
-      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "sources": "Supuesto EVAmed (2026-11-22): no hay cifra nacional publicada; en México se trata un porcentaje muy bajo de los RCD. Pendiente de aprobación.",
       "destinations": [
         {
           "treatment": "Residuo inerte a relleno (RoW)-Ecoinvent 3",
@@ -131,7 +131,7 @@
     "Cemento": {
       "distance_km": 30,
       "density_kg_m3": null,
-      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "sources": "Supuesto EVAmed (2026-11-22): no hay cifra nacional publicada; en México se trata un porcentaje muy bajo de los RCD. Pendiente de aprobación.",
       "destinations": [
         {
           "treatment": "Residuo inerte a relleno (RoW)-Ecoinvent 3",
@@ -143,7 +143,7 @@
     "Grava": {
       "distance_km": 30,
       "density_kg_m3": null,
-      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "sources": "Supuesto EVAmed (2026-11-22): no hay cifra nacional publicada; en México se trata un porcentaje muy bajo de los RCD. Pendiente de aprobación.",
       "destinations": [
         {
           "treatment": "Residuo inerte a relleno (RoW)-Ecoinvent 3",
@@ -155,7 +155,7 @@
     "Arena": {
       "distance_km": 30,
       "density_kg_m3": null,
-      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "sources": "Supuesto EVAmed (2026-11-22): no hay cifra nacional publicada; en México se trata un porcentaje muy bajo de los RCD. Pendiente de aprobación.",
       "destinations": [
         {
           "treatment": "Residuo inerte a relleno (RoW)-Ecoinvent 3",
@@ -167,7 +167,7 @@
     "Otros": {
       "distance_km": 30,
       "density_kg_m3": null,
-      "sources": "Supuesto EVAmed (2026-11-22), pendiente de fuente y aprobación del dueño.",
+      "sources": "Supuesto EVAmed (2026-11-22): no hay cifra nacional publicada; en México se trata un porcentaje muy bajo de los RCD. Pendiente de aprobación.",
       "destinations": [
         {
           "treatment": "Residuo inerte a relleno (RoW)-Ecoinvent 3",
