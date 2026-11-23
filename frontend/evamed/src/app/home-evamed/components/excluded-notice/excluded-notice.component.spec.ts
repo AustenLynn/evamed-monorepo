@@ -56,6 +56,25 @@ describe('ExcludedNoticeComponent', () => {
     expect(el.textContent).toContain('Generador diésel');
   });
 
+  it('lists materials without end of life (C2–C4)', () => {
+    const el = render({
+      ...empty,
+      end_of_life: [
+        { row_id: 5, material_id: 11, name: 'Concreto', reason: 'sin_datos' },
+        { row_id: 6, material_id: 12, name: 'Block', reason: 'sin_masa' },
+      ],
+    });
+    expect(el.textContent).toContain('2 materiales sin fin de vida (C2–C4): no se incluyen en esas etapas');
+    expect(el.textContent).toContain('Concreto');
+    expect(el.textContent).toContain('sin datos de fin de vida');
+    expect(el.textContent).toContain('sin masa para el escenario');
+  });
+
+  it('says nothing about end of life when every material has it, or the server does not send it', () => {
+    expect(render({ ...empty, end_of_life: [] }).textContent).not.toContain('fin de vida');
+    expect(render(empty).textContent ?? '').not.toContain('fin de vida');
+  });
+
   it('renders nothing when nothing was left out', () => {
     expect(render(empty).querySelector('[role="status"]')).toBeNull();
     expect(render(undefined).querySelector('[role="status"]')).toBeNull();

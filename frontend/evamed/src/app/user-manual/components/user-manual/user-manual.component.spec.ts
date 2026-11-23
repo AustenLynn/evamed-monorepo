@@ -11,4 +11,14 @@ describe('User manual (audit A-20)', () => {
     expect(el.querySelector('h1')?.textContent).toBe('Manual de usuario');
     expect(el.querySelectorAll('section').length).toBe(10);
   });
+
+  it('explains where the end-of-life numbers come from', () => {
+    const fixture = TestBed.createComponent(UserManualComponent);
+    fixture.detectChanges();
+    const text = (fixture.nativeElement as HTMLElement).querySelector('#fin')?.textContent ?? '';
+    expect(text).toContain('C2–C4');
+    expect(text).toContain('EPD del fabricante');
+    expect(text).toContain('escenario de EVAmed');
+    expect(text).toContain('módulo D');
+  });
 });

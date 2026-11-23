@@ -430,7 +430,7 @@ class A2ResultsTests(APITestCase):
 
 # A-32 plan, Task 5: ?detalle=1 adds the per-element breakdown that Resultados section 2 draws.
 ELEMENT_STAGES = (('Producción', None), ('Construccion', 'A4'), ('Construccion', 'A5'), ('Uso', 'B4'),
-                  ('FinDeVida', 'C1'), ('FinDeVida', 'C3'))
+                  ('FinDeVida', 'C1'), ('FinDeVida', 'C2'), ('FinDeVida', 'C3'), ('FinDeVida', 'C4'))
 
 
 def _element_stage_total(datos_indicador):
@@ -550,3 +550,92 @@ class DetailBreakdownTests(APITestCase):
         empty = {'Producción': {'A1': {}, 'A2': {}, 'A3': {}}, 'Construccion': {'A4': {}}, 'Uso': {'B4': {}}}
         self.assertEqual(body['por_material']['Calculos'], {name: empty for name in body['datos']})
         self.assertEqual(body['nombres_materiales'], {})
+
+
+GWP_BIOGENIC = 'GWP-biogenic'
+
+
+@override_settings(EVAMED_IMPACT_METHOD='EN15804+A2')
+class EndOfLifeTests(APITestCase):
+    """C2–C4 declared by EPDs (fin de vida design 2026-11-22, Phase 1)."""
+    setUp = A2ResultsTests.setUp
+    _a2_material = A2ResultsTests._a2_material
+    _old_material = A2ResultsTests._old_material
+    _results = DetailBreakdownTests._results
+
+    def _declare(self, material, modules, short='GWP-total'):
+        """modules: {'C2': value, ...} for one indicator (the others declare 0)."""
+        for module, value in modules.items():
+            standard = models.Standard.objects.get(name_standard=module)
+            for name, ptype in self.types.items():
+                models.MaterialSchemeData.objects.create(
+                    material_id=material, standard_id=standard, potential_type_id=ptype,
+                    value=value if name == short else 0)
+        return material
+
+    def _row(self, material, quantity=1, replaces=0, section=None):
+        return models.MaterialSchemeProject.objects.create(
+            material_id=material, project_id=self.project, quantity=quantity, replaces=replaces, section_id=section)
+
+    def test_declared_c_modules_reach_the_stages(self):
+        self._row(self._declare(self._a2_material(mass=1), {'C2': 2, 'C3': 3, 'C4': 4}), quantity=2)
+        fin = self._results()['datos'][GWP_TOTAL_NAME]['FinDeVida']
+        self.assertEqual((fin['C2'], fin['C3'], fin['C4']), (4, 6, 8))
+
+    def test_partial_declaration_counts_missing_as_zero(self):
+        self._row(self._declare(self._a2_material(mass=1), {'C3': 3}))
+        body = self._results()
+        fin = body['datos'][GWP_TOTAL_NAME]['FinDeVida']
+        self.assertEqual((fin['C2'], fin['C3'], fin['C4']), (0, 3, 0))
+        self.assertEqual(body['excluded']['end_of_life'], [])
+
+    def test_declared_material_gets_no_computed_biogenic_release(self):
+        # The EPD declares 4 in C3; the computed release would be 5 × 2 = 10 on top.
+        material = self._declare(self._a2_material(values={GWP_BIOGENIC: -5}, mass=1), {'C3': 4}, short=GWP_BIOGENIC)
+        self._row(material, quantity=2)
+        fin = self._results()['datos'][GWP_BIOGENIC_NAME]['FinDeVida']
+        self.assertEqual(fin['C3'], 8)
+
+    def test_undeclared_material_keeps_biogenic_release_and_is_listed(self):
+        row = self._row(self._a2_material(values={GWP_BIOGENIC: -5}, mass=1), quantity=2)
+        body = self._results()
+        self.assertEqual(body['datos'][GWP_BIOGENIC_NAME]['FinDeVida']['C3'], 10)
+        self.assertEqual([(e['row_id'], e['reason']) for e in body['excluded']['end_of_life']], [(row.id, 'sin_datos')])
+
+    def test_replacements_add_their_end_of_life_to_b4(self):
+        material = self._declare(self._a2_material(values={'GWP-total': 1}, mass=1), {'C2': 2, 'C3': 3, 'C4': 4})
+        self._row(material, quantity=1, replaces=2)
+        datos = self._results()['datos'][GWP_TOTAL_NAME]
+        # Production of the two replacements (1 × 2) plus their end of life ((2 + 3 + 4) × 2).
+        self.assertEqual(datos['Uso']['B4'], 2 + 18)
+        self.assertEqual(datos['FinDeVida']['C3'], 3)
+
+    def test_switched_off_and_excluded_rows_have_no_end_of_life(self):
+        off = models.Section.objects.create(name_section='Techos')
+        material = self._declare(self._a2_material(mass=1), {'C2': 2, 'C3': 3, 'C4': 4})
+        models.MaterialSchemeProject.objects.create(material_id=material, project_id=self.project, quantity=1,
+                                                    section_id=off, construction_system='B')
+        models.MaterialStageSystemSelection.objects.create(project_id=self.project, section_id=off,
+                                                           construction_system='B', is_selected=False)
+        self._row(self._old_material(), quantity=5)
+        body = self._results()
+        fin = body['datos'][GWP_TOTAL_NAME]['FinDeVida']
+        self.assertEqual((fin['C2'], fin['C3'], fin['C4']), (0, 0, 0))
+        self.assertEqual(body['excluded']['end_of_life'], [])
+
+    def test_per_element_includes_c2_and_c4(self):
+        walls, floors = models.Section.objects.create(name_section='Muros'), models.Section.objects.create(name_section='Pisos')
+        self._row(self._declare(self._a2_material('A', mass=1), {'C2': 2, 'C3': 3, 'C4': 4}), quantity=2, replaces=1,
+                  section=walls)
+        self._row(self._a2_material('B', values={GWP_BIOGENIC: -1}, mass=1), quantity=1, section=floors)
+        body = self._results()
+        for name, datos_indicador in body['datos'].items():
+            self.assertAlmostEqual(sum(body['por_elemento'][name].values()), _element_stage_total(datos_indicador),
+                                   places=9, msg=name)
+        # A1-A3 2, B4 production 2 and end of life 9 × 2, C2 4, C3 6, C4 8.
+        self.assertEqual(body['por_elemento'][GWP_TOTAL_NAME][str(walls.id)], 2 + 2 + 18 + 4 + 6 + 8)
+
+    @override_settings(EVAMED_IMPACT_METHOD='CML')
+    def test_cml_lists_nothing(self):
+        self._row(self._a2_material(mass=1))
+        self.assertEqual(self._results()['excluded']['end_of_life'], [])

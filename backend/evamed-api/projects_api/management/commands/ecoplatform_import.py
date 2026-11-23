@@ -22,7 +22,8 @@ from projects_api.ecoplatform import ilcd
 
 FAMILIES_PATH = os.path.join(os.path.dirname(ilcd.__file__), 'data', 'families.json')
 DATABASE = 'ECO Platform'
-MODULE_STANDARDS = {'A1-A3': 1, 'A1': 2, 'A2': 3, 'A3': 4}
+# Module -> Standard.name_standard (looked up by name; C2-C4 come from migration 0094).
+MODULE_STANDARDS = {module: module for module in ilcd.MODULES}
 
 
 def material_name(family, record):
@@ -75,6 +76,9 @@ class Command(BaseCommand):
             self.stdout.write('    {:<40} {}'.format(family, count))
         for record, reason in skipped:
             self.stdout.write('  skip: {} ({})'.format(record.name, reason))
+        coverage = Counter(self._end_of_life_coverage(record) for record in records)
+        self.stdout.write('C2–C4: {} complete, {} partial, {} none'.format(
+            coverage['complete'], coverage['partial'], coverage['none']))
         for record in records:
             if record.unit_inferred:
                 self.stdout.write('  inferred unit {:<4} {}'.format(record.unit, record.name))
@@ -88,9 +92,19 @@ class Command(BaseCommand):
             if missing:
                 self.stdout.write('  missing indicators {}: {}'.format(', '.join(missing), record.name))
 
+    @staticmethod
+    def _end_of_life_coverage(record):
+        core = [short for short, _f, _u in methods.A2_INDICATORS]
+        declared = [(short, module) in record.values for short in core for module in ilcd.END_OF_LIFE]
+        return 'complete' if all(declared) else 'partial' if any(declared) else 'none'
+
     def _write(self, records, families):
         types = {p.name_potential_type: p for p in models.PotentialType.objects.filter(method=methods.A2)}
-        standards = {s.id: s for s in models.Standard.objects.filter(id__in=MODULE_STANDARDS.values())}
+        standards = {s.name_standard: s for s in models.Standard.objects.filter(
+            name_standard__in=MODULE_STANDARDS.values()).order_by('id')}
+        absent = sorted(set(MODULE_STANDARDS.values()) - set(standards))
+        if absent:
+            raise CommandError('No Standard row named {} (run the migrations).'.format(', '.join(absent)))
         units = {}
         for record in records:
             if record.unit not in units:

@@ -34,6 +34,18 @@ def _aggregate_material_ids(msd_rows):
 _BIOGENIC_RELEASE_TYPES = frozenset(['GWP-biogenic', 'GWP-total'])
 # Tonnes per unit for units whose mass is the unit itself (A4 transport weight).
 _UNIT_TONNES = {'Kg': 0.001, 'kg': 0.001, 'Ton': 1.0}
+# End-of-life modules an EPD can declare (Standard.name_standard; migration 0094). C1 comes from the
+# user's machinery and D is not added (fin de vida design, 2026-11-22).
+_END_OF_LIFE_MODULES = ('C2', 'C3', 'C4')
+
+
+def _declared_end_of_life(msd_lookup, end_standards, declaring, material_id, type_id):
+    """{'C2', 'C3', 'C4'} per unit of a material that declares any of them, else None.
+    A module it doesn't declare counts 0 (EN 15804: not declared is not estimated)."""
+    if material_id not in declaring:
+        return None
+    return {module: msd_lookup.get((material_id, end_standards[module], type_id), 0) if module in end_standards else 0
+            for module in _END_OF_LIFE_MODULES}
 
 
 def _material_value(msd_lookup, aggregate_materials, material_id, type_id):
@@ -44,7 +56,7 @@ def _material_value(msd_lookup, aggregate_materials, material_id, type_id):
 
 
 def _apply_a2_exclusions(scheme_project, conv_lookup, msd_lookup, aggregate_materials, potential_types, excluded,
-                         active_databases):
+                         active_databases, declaring=frozenset()):
     """Under EN 15804+A2: drop rows whose material lacks any A2 indicator, flag rows with no mass
     (their transport is left out instead of assuming 1 t), and total the biogenic release."""
     missing_by_material = methods.missing_by_material({ps.material_id_id for ps in scheme_project})
@@ -73,7 +85,12 @@ def _apply_a2_exclusions(scheme_project, conv_lookup, msd_lookup, aggregate_mate
                 if (ps.distance_init or 0) > 0 or (ps.distance_end or 0) > 0:
                     excluded['no_mass'].append(
                         {'row_id': ps.id, 'material_id': ps.material_id_id, 'name': mat.name_material})
-        if biogenic is not None and (mat.database_from or '') in active_databases:
+        if (mat.database_from or '') in active_databases and ps.material_id_id not in declaring:
+            # No end of life declared (fin de vida design): C2–C4 are left out, so say so.
+            excluded['end_of_life'].append({'row_id': ps.id, 'material_id': ps.material_id_id,
+                                            'name': mat.name_material, 'reason': 'sin_datos'})
+        # An EPD that declares its end of life already releases its biogenic carbon there.
+        if biogenic is not None and (mat.database_from or '') in active_databases and ps.material_id_id not in declaring:
             # The original and every replacement (B4) are released at end of life (-1/+1 balance).
             uptake = (_material_value(msd_lookup, aggregate_materials, ps.material_id_id, biogenic)
                       * float(ps.quantity or 0) * (1 + (ps.replaces or 0)))
@@ -126,6 +143,10 @@ def compute(project, active_databases, detalle=False):
 
     # Materials carrying only a combined A1-A3 value (no extra query).
     aggregate_materials = _aggregate_material_ids(msd_rows)
+    # End-of-life modules materials declare (EPDs), by Standard name.
+    end_standards = dict(models.Standard.objects.filter(name_standard__in=_END_OF_LIFE_MODULES)
+                         .values_list('name_standard', 'id'))
+    declaring = {row.material_id_id for row in msd_rows if row.standard_id_id in end_standards.values()}
 
     # Conversions: material_id → weight factor
     conv_lookup = {
@@ -182,12 +203,12 @@ def compute(project, active_databases, detalle=False):
 
     potential_types = list(methods.active_potential_types())
     a2 = methods.active_method() == methods.A2
-    excluded = {'materials': [], 'no_mass': [], 'transport': [], 'energy': [], 'sources': []}
+    excluded = {'materials': [], 'no_mass': [], 'transport': [], 'energy': [], 'sources': [], 'end_of_life': []}
     no_mass_rows, release_by_row = set(), {}
     if a2:
         scheme_project, no_mass_rows, release_by_row = _apply_a2_exclusions(
             scheme_project, conv_lookup, msd_lookup, aggregate_materials, potential_types, excluded,
-            active_databases)
+            active_databases, declaring)
         _list_noncurrent_factors(scheme_project, ecd_list, source_ids, excluded)
 
     biogenic_release = sum(release_by_row.values())
@@ -289,6 +310,15 @@ def compute(project, active_databases, detalle=False):
                 sumar(cse.section_id_id, value)
         datos[name]['Construccion'] = {'A4': a4_total, 'A5': a5_total}
 
+        # End of life each kept row declares (EPDs), per row: C2–C4 × quantity (fin de vida design).
+        row_end_of_life = {}
+        for ps in scheme_project:
+            if (ps.material_id.database_from or '') not in active_databases:
+                continue
+            declared = _declared_end_of_life(msd_lookup, end_standards, declaring, ps.material_id_id, impacto.id)
+            if declared:
+                row_end_of_life[ps] = {module: value * float(ps.quantity or 0) for module, value in declared.items()}
+
         # ---- Uso ----
         b4_total = 0
         for ps in scheme_project:
@@ -299,6 +329,8 @@ def compute(project, active_databases, detalle=False):
             replaces = ps.replaces or 0
             # Only this row's transport: the material's other rows have their own replacements.
             value = row_transport.get(ps.id, 0) * replaces
+            # Each replacement also reaches its end of life (EN 15978).
+            value += sum(row_end_of_life.get(ps, {}).values()) * replaces
             if mat.id not in aggregate_materials:
                 for subetapa in _PRODUCTION_STAGES:
                     value += (
@@ -336,7 +368,13 @@ def compute(project, active_databases, detalle=False):
             for ps in scheme_project:
                 if ps.id in release_by_row:
                     sumar(ps.section_id_id, release_by_row[ps.id])
-        datos[name]['FinDeVida'] = {'C1': c1_total, 'C2': 0, 'C3': c3_total, 'C4': 0}
+        c2_total = c4_total = 0
+        for ps, modules in row_end_of_life.items():
+            c2_total += modules['C2']
+            c3_total += modules['C3']
+            c4_total += modules['C4']
+            sumar(ps.section_id_id, modules['C2'] + modules['C3'] + modules['C4'])
+        datos[name]['FinDeVida'] = {'C1': c1_total, 'C2': c2_total, 'C3': c3_total, 'C4': c4_total}
 
     # The climate-change indicator (GWP-total under A2, PCG 100 under CML) for the stage pages' carbon bar.
     gwp = methods.gwp_total_type()
