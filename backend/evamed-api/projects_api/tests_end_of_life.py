@@ -58,8 +58,15 @@ class LoadTests(TestCase):
         # Treatments come from migration 0095; transports come with the catalogue dump, not migrations.
         models.Transport.objects.create(name_transport=TRUCK)
         loaded = scenario.load(check_rows=True)
-        self.assertFalse(loaded.approved)
+        self.assertTrue(loaded.approved)  # Owner approved the proposal on 2026-11-23.
         self.assertEqual(scenario.load().truck, TRUCK)
+
+    def test_pinned_treatments_are_exactly_the_ones_the_scenario_uses(self):
+        import json as json_module
+        from projects_api.management.commands import ecoinvent_resolve
+        with open(ecoinvent_resolve.MANUAL_PINS_PATH) as handle:
+            pinned = {p['entity_name'] for p in json_module.load(handle)['waste_treatment'] if p.get('dataset_id')}
+        self.assertEqual(pinned, scenario.load().treatment_names())
 
     def test_family_from_construction_materials_else_otros(self):
         loaded = scenario.from_dict(scenario_data())

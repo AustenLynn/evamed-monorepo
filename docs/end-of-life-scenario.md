@@ -1,7 +1,7 @@
-# Escenario de fin de vida de EVAmed (propuesta)
+# Escenario de fin de vida de EVAmed
 
-Fecha: 2026-11-22. Estado: **propuesta, pendiente de aprobación del dueño**. Mientras
-`projects_api/end_of_life/data/scenarios.json` tenga `"approved": false`, no se aplica.
+Fecha: 2026-11-22. Estado: **aprobado por el dueño el 2026-11-23** (`"approved": true` en
+`projects_api/end_of_life/data/scenarios.json`). Cambiar los números solo con su visto bueno.
 
 Se usa solo para materiales de **ecoinvent** que no declaran C2–C4. Los materiales con EPD usan lo
 que declaró el fabricante. Diseño: `docs/superpowers/specs/2026-11-22-fin-de-vida-c2-c4-design.md`.
@@ -39,7 +39,6 @@ que declaró el fabricante. Diseño: `docs/superpowers/specs/2026-11-22-fin-de-v
 
 ## Datos de ecoinvent
 
-Ocho tratamientos se usan arriba. Los diez ligados en `manual_pins.json` incluyen además «Concreto
-armado a reciclaje» y «Aplanado mineral a separación», que esta propuesta no usa; si se aprueba así,
-se pueden quitar del pin para no gastar 2 datasets de cuota. El conteo exacto se reporta con
+Se usan ocho tratamientos. «Concreto armado a reciclaje» y «Aplanado mineral a separación» existen en
+el catálogo pero quedan sin ligar en `manual_pins.json`, para no gastar cuota en ellos. El conteo exacto se reporta con
 `ecoinvent_refresh --only waste_treatment --count-only` antes de gastar.

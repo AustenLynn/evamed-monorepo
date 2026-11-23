@@ -293,7 +293,9 @@ class WasteTreatmentPinsTests(TestCase):
             pinned = {pin['entity_name'] for pin in json.load(handle)['waste_treatment'] if pin.get('dataset_id')}
         rows = set(models.WasteTreatment.objects.values_list('name_waste_treatment', flat=True))
         self.assertEqual(len(rows), 10)
-        self.assertEqual(rows, pinned)
+        # Two treatments the approved scenario doesn't use stay unpinned (no quota spent on them).
+        self.assertEqual(len(pinned), 8)
+        self.assertLessEqual(pinned, rows)
         self.assertIn('waste_treatment', ecoinvent_resolve.ENTITY_TYPES)
 
 

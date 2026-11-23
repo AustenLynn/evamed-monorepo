@@ -1,10 +1,10 @@
 {
   "_comment": [
     "Fin de vida design (docs/superpowers/specs/2026-11-22-fin-de-vida-c2-c4-design.md), Phase 2.",
-    "Proposal: every number is an assumption until the owner approves it; nothing applies while approved is false.",
+    "Approved by the owner on 2026-11-23 (docs/end-of-life-scenario.md). Change numbers only with the owner.",
     "module: C3 for recycling or sorting, C4 for landfill. share per family adds up to 1."
   ],
-  "approved": false,
+  "approved": true,
   "truck": "Vehículo de carga, entre  16 y 32 Ton, tipo EURO 3 (RoW)-Ecoinvent 3",
   "families": {
     "Concreto": {
