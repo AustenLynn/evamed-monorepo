@@ -7,59 +7,20 @@
 .#{$prefix}-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:16px; align-items:stretch; }
 .#{$prefix}-grid-list { grid-template-columns:1fr; }
 .#{$prefix}-card { display:flex; flex-direction:column; padding:0; min-width:0; }
-.#{$prefix}-card-expanded { border-color:var(--ev-green); }
-.#{$prefix}-summary { display:flex; flex:1; flex-direction:column; align-items:stretch; width:100%; text-align:left; border:0; border-radius:var(--ev-radius-card); background:transparent; color:inherit; padding:20px 16px 12px; cursor:pointer; &:focus-visible { outline:2px solid var(--ev-green-text); outline-offset:3px; } h3 { margin:0 0 16px; font-size:var(--ev-font-section); line-height:var(--ev-line-heading); font-weight:var(--ev-weight-heading); overflow-wrap:anywhere; } }
+.#{$prefix}-summary { display:flex; flex:1; flex-direction:column; align-items:stretch; width:100%; text-align:left; border:0; border-radius:var(--ev-radius-card); background:transparent; color:inherit; padding:20px 16px 12px; h3 { margin:0 0 16px; font-size:var(--ev-font-section); line-height:var(--ev-line-heading); font-weight:var(--ev-weight-heading); overflow-wrap:anywhere; } }
+// In place (2026-11-27): the name changes the equipment or source; quantities are app-quantity-cell.
+.#{$prefix}-name { padding:0; border:0; background:transparent; color:inherit; font:inherit; text-align:left; cursor:pointer; text-decoration:underline dotted; text-underline-offset:4px; &:hover:not(:disabled) { color:var(--ev-green-text); } &:focus-visible { outline:2px solid var(--ev-green-text); outline-offset:3px; } &:disabled { cursor:default; } }
+.#{$prefix}-row-error { margin:8px 0 0; }
 .#{$prefix}-quantity { margin:0 0 16px; font-size:26px; font-weight:600; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; span { font-weight:400; font-size:var(--ev-font-support); color:var(--ev-text-muted-on-bg); } }
-.#{$prefix}-edit-label { display:flex; margin-top:auto; align-items:center; gap:4px; font-size:var(--ev-font-support); color:var(--ev-green-text); }
 .#{$prefix}-card-footer { display:flex; flex-direction:column; align-items:flex-start; gap:8px; padding:0 8px 8px; button { color:var(--ev-text-muted-on-bg); } }
-.#{$prefix}-editor { display:flex; flex-direction:column; gap:16px; padding:16px; border-top:1px solid var(--ev-divider); mat-form-field { width:100%; min-width:0; } }
-.#{$prefix}-draft-name { font-size:var(--ev-font-body); margin:0; overflow-wrap:anywhere; }
-.#{$prefix}-actions { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:8px; }
 .#{$prefix}-error { color:var(--ev-impact-high-text); font-size:var(--ev-font-body); }
 .#{$prefix}-empty { text-align:center; background:var(--ev-surface); border:1px dashed var(--ev-border); border-radius:var(--ev-radius-card); padding:32px 16px; color:var(--ev-text-muted-on-bg); h3 { color:var(--ev-text); font-size:var(--ev-font-section); } }
 @media(max-width:600px) { .#{$prefix}-grid { grid-template-columns:1fr; } .#{$prefix}-panel-header { flex-direction:column; } }
 
 .#{$prefix}-card-meta { display:flex; flex-wrap:wrap; gap:6px; padding:0 8px; min-width:0; }
 
-// Let each collapsed row share its title, quantity, edit and footer tracks.
-// Names wrap fully; no fixed height or line clamping hides equipment details.
-@supports (grid-template-rows: subgrid) {
-  .#{$prefix}-grid:not(.#{$prefix}-grid-list):not(:has(.#{$prefix}-card-expanded)) {
-    .#{$prefix}-card {
-      display:grid;
-      grid-template-rows:subgrid;
-      grid-row:span 5;
-      row-gap:0;
-    }
-
-    .#{$prefix}-summary {
-      display:grid;
-      grid-template-rows:subgrid;
-      grid-row:span 3;
-      row-gap:0;
-      align-items:start;
-    }
-
-    .#{$prefix}-edit-label { margin-top:0; }
-
-    .#{$prefix}-card-footer {
-      display:grid;
-      grid-template-rows:subgrid;
-      grid-row:span 2;
-      row-gap:8px;
-      align-items:start;
-
-      .#{$prefix}-card-meta { grid-row:1; }
-      button { grid-row:2; justify-self:start; }
-    }
-  }
-}
-
-// Expanding an editor must not stretch neighbouring cards to the form's height.
-.#{$prefix}-grid:has(.#{$prefix}-card-expanded) { align-items:start; }
-
 // Compact main-stage rows, using Materials' quantity/name/action hierarchy.
-// Only list mode changes; card tracks and domain editors remain independent.
+// Only list mode changes.
 .#{$prefix}-grid-list {
   &:empty { display:none; }
   gap:0;
@@ -78,7 +39,6 @@
     &:first-child { border-top-left-radius:var(--ev-radius-card); border-top-right-radius:var(--ev-radius-card); }
     &:last-child { border-bottom:0; border-bottom-left-radius:var(--ev-radius-card); border-bottom-right-radius:var(--ev-radius-card); }
   }
-  .#{$prefix}-card-expanded { box-shadow:inset 3px 0 var(--ev-green); }
   .#{$prefix}-summary {
     grid-column:1;
     display:grid;
@@ -96,8 +56,7 @@
     text-align:right;
     span { font-size:var(--ev-font-caption); }
   }
-  .#{$prefix}-edit-label { margin:0; white-space:nowrap; }
-  .#{$prefix}-edit-copy, .#{$prefix}-delete-copy { display:none; }
+  .#{$prefix}-delete-copy { display:none; }
   .#{$prefix}-card-footer { display:contents; }
   .#{$prefix}-card-footer > button {
     grid-column:2;
@@ -109,7 +68,6 @@
     mat-icon { margin:0; }
   }
   .#{$prefix}-card-meta { grid-column:1/-1; padding:0; margin-top:var(--ev-space-3); }
-  .#{$prefix}-editor { grid-column:1/-1; margin-top:var(--ev-space-3); padding:var(--ev-space-5) 0; }
   .#{$prefix}-legacy { grid-column:1/-1; margin:var(--ev-space-3) 0 0; }
 }
 @media(max-width:600px) {

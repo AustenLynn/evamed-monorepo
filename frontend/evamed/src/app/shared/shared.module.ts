@@ -9,6 +9,7 @@ import { RouterModule } from '@angular/router';
 import { MaterialModule } from '../material/material.module';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ReactiveFormsModule } from '@angular/forms';
+import { QuantityCellComponent } from './components/quantity-cell/quantity-cell.component';
 
 @NgModule({
   declarations: [
@@ -16,14 +17,16 @@ import { ReactiveFormsModule } from '@angular/forms';
     HighlightDirective,
     HeaderComponent,
     FooterComponent,
-    EnergyBarComponent
+    EnergyBarComponent,
+    QuantityCellComponent
   ],
   exports: [
     ExponentialPipe,
     HighlightDirective,
     HeaderComponent,
     FooterComponent,
-    EnergyBarComponent
+    EnergyBarComponent,
+    QuantityCellComponent
   ],
   imports: [
     CommonModule,

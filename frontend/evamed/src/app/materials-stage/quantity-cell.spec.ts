@@ -7,7 +7,7 @@ import { of, throwError } from 'rxjs';
 import './materials-stage.module';
 import { MaterialStageUpdateComponent } from './components/material-stage-update/material-stage-update.component';
 import { MaterialsStageComponent } from './components/materials-stage/materials-stage.component';
-import { parseQuantity, QuantityCellComponent } from './components/quantity-cell/quantity-cell.component';
+import { parseQuantity, QuantityCellComponent } from '../shared/components/quantity-cell/quantity-cell.component';
 
 describe('Quantity edited in the Materiales list', () => {
   const render = async (value: number | string = 120.5) => {
@@ -106,16 +106,28 @@ describe('Quantity edited in the Materiales list', () => {
     expect(listKeys).not.toHaveBeenCalled();
   });
 
-  it('saves nothing for a blank, negative, unreadable or unchanged value', async () => {
-    const { open, type, key, emitted } = await render();
-
-    for (const text of ['', '-3', 'abc', '120.5']) {
-      const input = open();
+  it('saves nothing for a blank, negative or unreadable value: the box stays open and says why', async () => {
+    const { el, open, type, key, emitted } = await render();
+    const input = open();
+    for (const text of ['', '-3', 'abc']) {
       type(input, text);
       key(input, 'Enter');
+      expect(el.querySelector('input')).toBe(input);
+      expect(input.getAttribute('aria-invalid')).toBe('true');
+      expect(el.querySelector('.quantity__error')!.textContent!.trim()).toBe('Escribe un número igual o mayor a cero.');
     }
-
+    key(input, 'Escape');
+    expect(el.querySelector('input')).toBeNull();
     expect(emitted).toEqual([]);
+  });
+
+  it('closes without saving an unchanged value', async () => {
+    const { el, open, type, key, emitted } = await render();
+    const input = open();
+    type(input, '120.5');
+    key(input, 'Enter');
+    expect(emitted).toEqual([]);
+    expect(el.querySelector('input')).toBeNull();
   });
 
   it('accepts a decimal comma, 0 (R-47), and only finite numbers that aren’t negative', () => {
@@ -184,5 +196,61 @@ describe('Quantity edited in the Materiales list', () => {
         'No se pudo guardar la cantidad. Intenta de nuevo.', 'Cerrar', { duration: 6000 }
       );
     });
+  });
+});
+
+
+describe('In-place cell options (in-place editing plan, Task 1)', () => {
+  const render = async (inputs: Record<string, unknown>) => {
+    TestBed.configureTestingModule({ imports: [FormsModule, MatTooltipModule], declarations: [QuantityCellComponent] });
+    const fixture = TestBed.createComponent(QuantityCellComponent), emitted: number[] = [];
+    fixture.componentRef.setInput('value', 3);
+    for (const [name, value] of Object.entries(inputs)) fixture.componentRef.setInput(name, value);
+    fixture.componentInstance.changed.subscribe(value => emitted.push(value));
+    fixture.detectChanges();
+    const el: HTMLElement = fixture.nativeElement,
+      enter = (text: string) => {
+        el.querySelector<HTMLButtonElement>('button.quantity')?.click();
+        fixture.detectChanges();
+        const input = el.querySelector<HTMLInputElement>('input')!;
+        input.value = text;
+        input.dispatchEvent(new Event('input'));
+        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+        fixture.detectChanges();
+        return input;
+      };
+    return { el, emitted, enter };
+  };
+  afterEach(() => TestBed.resetTestingModule());
+
+  it('rejects a decimal when whole numbers are required', async () => {
+    const { el, emitted, enter } = await render({ integer: true });
+    enter('2.5');
+    expect(emitted).toEqual([]);
+    expect(el.querySelector('.quantity__error')!.textContent!.trim()).toBe('Escribe un número entero igual o mayor a cero.');
+  });
+
+  it('rejects a value over the maximum', async () => {
+    const { el, emitted, enter } = await render({ integer: true, max: 100 });
+    enter('101');
+    expect(emitted).toEqual([]);
+    expect(el.querySelector('.quantity__error')!.textContent!.trim()).toBe('Escribe un número entre 0 y 100.');
+    enter('40');
+    expect(emitted).toEqual([40]);
+  });
+
+  it('shows the display text when given, and names the field for screen readers', async () => {
+    const { el } = await render({ display: '3 %', label: 'porcentaje' });
+    const button = el.querySelector('button.quantity')!;
+    expect(button.textContent!.trim()).toBe('3 %');
+    expect(button.getAttribute('aria-label')).toBe('Editar porcentaje: 3');
+  });
+
+  it('does not open while disabled', async () => {
+    const { el } = await render({ disabled: true });
+    const button = el.querySelector<HTMLButtonElement>('button.quantity')!;
+    expect(button.disabled).toBe(true);
+    button.click();
+    expect(el.querySelector('input')).toBeNull();
   });
 });

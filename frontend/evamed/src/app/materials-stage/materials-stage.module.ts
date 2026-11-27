@@ -8,7 +8,6 @@ import { MaterialModule } from './../material/material.module';
 import { ExplorerUiModule } from '../explorer/explorer-ui.module';
 import { AddConstructiveElementComponent } from './components/add-constructive-element/add-constructive-element.component';
 import { AddConstructiveSystemComponent } from './components/add-constructive-system/add-constructive-system.component';
-import { QuantityCellComponent } from './components/quantity-cell/quantity-cell.component';
 import { IntermedialComponent } from './components/intermedial/intermedial.component';
 import { PassStepComponent } from './components/pass-step/pass-step.component';
 import { MaterialStageUpdateComponent } from './components/material-stage-update/material-stage-update.component';
@@ -20,8 +19,7 @@ import { MaterialStageUpdateComponent } from './components/material-stage-update
         AddConstructiveElementComponent,
         AddConstructiveSystemComponent,
         IntermedialComponent,
-        PassStepComponent,
-        QuantityCellComponent
+        PassStepComponent
     ],
     imports: [
         CommonModule,

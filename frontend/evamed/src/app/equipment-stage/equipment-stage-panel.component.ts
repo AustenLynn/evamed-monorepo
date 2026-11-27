@@ -2,7 +2,7 @@ import { afterNextRender, ElementRef, Injector, ChangeDetectionStrategy, ChangeD
 import { firstValueFrom, forkJoin, Observable, Subscription } from 'rxjs';
 import { EquipmentCatalogueService } from './equipment-catalogue.service';
 import { EquipmentRowsService } from './equipment-rows.service';
-import { EquipmentCatalogue, EquipmentDraft, EquipmentInput, EquipmentRow, EquipmentSource, EquipmentStage } from './equipment.models';
+import { EquipmentCatalogue, EquipmentInput, EquipmentRow, EquipmentSource, EquipmentStage } from './equipment.models';
 import { EquipmentPickerService } from './equipment-picker.service';
 
 const UNIT_LABELS: Record<string, string> = {'h': 'horas de operación', 'm³': 'm³ excavados', 't·km': 'toneladas-kilómetro transportadas (t·km)'};
@@ -17,14 +17,14 @@ export class EquipmentStagePanelComponent implements OnChanges, OnDestroy {
   @Output() pendingChange = new EventEmitter<boolean>();
   rows: EquipmentRow[] = [];
   catalogue: EquipmentCatalogue = {sources: [], units: [], unitLabels: [], constructionEnergyProcessId: null};
-  expanded: string | null = null;
   view = 'cards';
+  /** Save errors shown on their card (row key -> message). */
+  rowErrors = new Map<string, string>();
   loading = true;
   error = '';
   loadFailed = false;
   private identity = '';
   private rawTotal = 0;
-  private drafts = new Map<string, EquipmentDraft>();
   private tasks = new Set<Promise<unknown>>();
   private read?: Subscription;
   private destroyed = false;
@@ -33,9 +33,8 @@ export class EquipmentStagePanelComponent implements OnChanges, OnDestroy {
     private host: ElementRef<HTMLElement>, private injector: Injector) {}
   ngOnChanges(): void {
     const identity = `${this.stage}:${this.projectId}`;
-    this.expanded = null;
     if (this.identity !== identity) {
-      this.identity = identity; this.drafts.clear(); this.rows = []; this.error = ''; this.load();
+      this.identity = identity; this.rowErrors.clear(); this.rows = []; this.error = ''; this.load();
     }
   }
   get visibleRows(): EquipmentRow[] {return this.rows.filter(row => row.sectionId === this.sectionId);}
@@ -66,37 +65,29 @@ export class EquipmentStagePanelComponent implements OnChanges, OnDestroy {
   /** Saved in another unit before quantities became hours (audit A-12): the number is read as hours. */
   otherUnit(row: EquipmentRow): boolean {return this.byHours(row.sourceId) && row.unitId !== null && row.unitId !== (this.catalogue.hourUnitId ?? null);}
   legacyUnit(row: EquipmentRow): boolean {return row.unitId !== null && !this.catalogue.units.some(unit => unit.id === row.unitId);}
-  draftFor(row: EquipmentRow): EquipmentDraft {
-    let draft = this.drafts.get(row.key);
-    if (!draft) {draft = {sourceId: row.sourceId, quantity: row.quantity, unitId: row.unitId}; this.drafts.set(row.key, draft);}
-    return draft;
+  /** A quantity edited in place (in-place editing design): saved at once. */
+  setQuantity(row: EquipmentRow, quantity: number): Promise<void> {
+    return this.update(row, {sourceId: row.sourceId!, quantity, unitId: this.rowUnitId(row.sourceId)});
   }
-  edit(row: EquipmentRow): void {
+  /** «Cambiar equipo» from the card's name: saved as soon as one is chosen, with the stored quantity. */
+  async replace(row: EquipmentRow): Promise<void> {
     if (this.busy) return;
-    this.error = ''; this.expanded = this.expanded === row.key ? null : row.key; this.draftFor(row);
+    const identity = this.identity,
+     source = await this.picker.choose({stage: this.stage, section: this.sectionName, mode: 'replace'});
+    if (!source || identity !== this.identity || source.id === row.sourceId) return;
+    await this.update(row, {sourceId: source.id, quantity: row.quantity ?? 0, unitId: this.rowUnitId(source.id)});
   }
-  cancel(row: EquipmentRow): void {if (!this.busy) {this.drafts.delete(row.key); this.expanded = null; this.error = ''; this.focusRow(row.id);}}
-  private input(row: EquipmentRow): EquipmentInput | null {
-    const draft = this.draftFor(row), text = String(draft.quantity ?? '').trim().replace(',', '.'), quantity = text === '' ? 0 : Number(text);
-    if (!Number.isFinite(quantity) || quantity < 0 || (this.stage === 'end-life' && !Number.isInteger(quantity))) {
-      this.error = this.stage === 'end-life' ? 'Introduce una cantidad entera igual o mayor a cero.' : 'Introduce una cantidad igual o mayor a cero.';
-      return null;
-    }
-    if (!draft.sourceId || !Number.isFinite(draft.sourceId)) {this.error = 'Selecciona un equipo.'; return null;}
-    return {sourceId: draft.sourceId, quantity: typeof row.quantity === 'string' && draft.quantity === row.quantity ? row.quantity : quantity, unitId: this.rowUnitId(draft.sourceId)};
-  }
-  async save(row: EquipmentRow): Promise<void> {
+  private async update(row: EquipmentRow, input: EquipmentInput): Promise<void> {
     if (this.busy) return;
-    this.error = '';
-    const input = this.input(row); if (!input) return;
     const stage = this.stage, identity = this.identity;
+    this.error = ''; this.rowErrors.delete(row.key);
     try {
       const saved = await this.track(this.api.update(stage, row, input));
       if (identity !== this.identity) return;
       this.rows = this.rows.map(current => current.id === row.id ? {...saved, key: row.key} : current);
       this.rawTotal += Number(saved.quantity ?? 0) - Number(row.quantity ?? 0);
-      this.drafts.delete(row.key); this.expanded = null; this.totalChange.emit(this.rawTotal); this.focusRow(row.id);
-    } catch {if (identity === this.identity) this.error = 'No se pudo guardar el equipo. Intenta de nuevo.';}
+      this.totalChange.emit(this.rawTotal);
+    } catch {if (identity === this.identity) this.rowErrors.set(row.key, 'No se pudo guardar el equipo. Intenta de nuevo.');}
     this.mark();
   }
   async remove(row: EquipmentRow): Promise<void> {
@@ -106,16 +97,10 @@ export class EquipmentStagePanelComponent implements OnChanges, OnDestroy {
       await this.track(this.api.remove(stage, row.id));
       if (identity !== this.identity) return;
       this.rows = this.rows.filter(current => current.id !== row.id);
-      this.rawTotal -= Number(row.quantity ?? 0); this.drafts.delete(row.key);
-      if (this.expanded === row.key) this.expanded = null;
+      this.rawTotal -= Number(row.quantity ?? 0); this.rowErrors.delete(row.key);
       this.totalChange.emit(this.rawTotal); this.focusRow(this.visibleRows[0]?.id);
     } catch {if (identity === this.identity) this.error = 'No se pudo eliminar el equipo. Intenta de nuevo.';}
     this.mark();
-  }
-  async replace(row: EquipmentRow): Promise<void> {
-    const identity = this.identity, draft = this.draftFor(row),
-     source = await this.picker.choose({stage: this.stage, section: this.sectionName, mode: 'replace'});
-    if (source && identity === this.identity && this.drafts.get(row.key) === draft) {draft.sourceId = source.id; this.mark();}
   }
   async add(): Promise<void> {
     if (this.busy || this.loading || this.loadFailed) return;
@@ -139,7 +124,7 @@ export class EquipmentStagePanelComponent implements OnChanges, OnDestroy {
   private focusRow(id?: number): void {
     afterNextRender(() => {
       if (this.destroyed) return;
-      const target = id === undefined ? null : this.host.nativeElement.querySelector<HTMLButtonElement>(`[data-edit="${id}"]`);
+      const target = id === undefined ? null : this.host.nativeElement.querySelector<HTMLButtonElement>(`[data-replace="${id}"]`);
       (target ?? this.host.nativeElement.querySelector<HTMLButtonElement>('.equipment-panel-header button'))?.focus();
     }, {injector: this.injector});
   }

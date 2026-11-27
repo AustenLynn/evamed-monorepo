@@ -7,5 +7,7 @@ import { MaterialModule } from '../material/material.module';
 import { EquipmentPickerComponent } from './equipment-picker.component';
 import { EquipmentStagePanelComponent } from './equipment-stage-panel.component';
 
-@NgModule({declarations: [EquipmentPickerComponent, EquipmentStagePanelComponent], imports: [ExplorerUiModule, EvUiModule, CommonModule, FormsModule, MaterialModule], exports: [EquipmentStagePanelComponent]})
+import { SharedModule } from '../shared/shared.module';
+
+@NgModule({declarations: [EquipmentPickerComponent, EquipmentStagePanelComponent], imports: [ExplorerUiModule, EvUiModule, CommonModule, FormsModule, MaterialModule, SharedModule], exports: [EquipmentStagePanelComponent]})
 export class EquipmentStageUiModule {}

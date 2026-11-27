@@ -60,7 +60,34 @@ export class UsageEditorComponent implements OnInit, OnDestroy {
   cancelAnnual(): void {if (!this.locked) {this.store.cancelAnnual(); this.annualError = '';}}
   cancelSource(id: number): void {if (!this.locked) {this.store.cancelSource(id); this.sourceErrors.delete(id);}}
   saveAnnual(): Promise<boolean> {return this.intent(() => this.store.annualIntent(), {kind: 'annual'});}
+  /** In place: a new consumption over a negative one implies the recalculation the notice explains. */
+  private get recalculates(): boolean {return (this.store.saved?.annual?.quantity ?? 0) < 0 && (this.store.saved?.sources.length ?? 0) > 0;}
+  /** What blocks an in-place annual save (the unit repair has its own button). */
+  get annualBlocked(): string {
+    return this.store.annualBlockedReasonFor({...this.store.annual, confirmRecalculate: this.recalculates, repairUnit: true}) ?? '';
+  }
+  setAnnual(quantity: number): Promise<boolean> {return this.saveAnnualNow({quantity: String(quantity), confirmRecalculate: this.recalculates});}
+  repairAnnualUnit(): Promise<boolean> {return this.saveAnnualNow({repairUnit: true});}
+  private async saveAnnualNow(patch: Partial<AnnualDraft>): Promise<boolean> {
+    if (this.locked) return false;
+    this.store.patchAnnual(patch); this.annualError = '';
+    const saved = await this.saveAnnual();
+    if (!saved && !this.store.unresolved) this.store.cancelAnnual();
+    this.changes?.markForCheck();
+    return saved;
+  }
   saveSource(id: number): Promise<boolean> {return this.intent(() => this.store.sourceIntent(id), {kind: 'source', id});}
+  /** In place (2026-11-27): a source change saves at once; a failed one leaves its error, not a draft. */
+  setPercentage(change: {id: number; percentage: number}): Promise<boolean> {return this.saveNow(change.id, {percentage: String(change.percentage)});}
+  repairUnit(id: number): Promise<boolean> {return this.saveNow(id, {repairUnit: true});}
+  private async saveNow(id: number, patch: Partial<SourceDraft>): Promise<boolean> {
+    if (this.locked) return false;
+    this.store.patchSource(id, patch); this.sourceErrors.delete(id);
+    const saved = await this.saveSource(id);
+    if (!saved && !this.store.unresolved) this.store.cancelSource(id);
+    this.changes?.markForCheck();
+    return saved;
+  }
   async removeSource(id: number): Promise<boolean> {
     if (this.locked || !confirm('¿Eliminar esta fuente? Solo se eliminará el registro seleccionado.')) return false;
     return this.intent(() => ({removals: [id]}), {kind: 'remove', id});
@@ -75,9 +102,9 @@ export class UsageEditorComponent implements OnInit, OnDestroy {
     const available = new Map(this.pickerOptions.map(option => [option.key, option]));
     if (options.some(option => !available.has(option.key))) {this.operationError = 'La selección ya no está disponible.'; return false;}
     if (this.replacementId !== null) {
-      const option = available.get(options[0].key)!;
-      this.patchSource({id: this.replacementId, patch: {type: option.type, source: option.source}});
-      this.store.openSource(this.replacementId); this.pickerOpen = false; return true;
+      const option = available.get(options[0].key)!, id = this.replacementId;
+      this.pickerOpen = false;
+      return this.saveNow(id, {type: option.type, source: option.source});
     }
     const selected = [...new Set(options.map(option => option.key))].map(key => available.get(key)!);
     this.store.additionKeys = selected.map(option => option.key);
@@ -118,7 +145,7 @@ export class UsageEditorComponent implements OnInit, OnDestroy {
       const state = await this.value(this.api.load(this.projectId!, operation.request.operation_id));
       if (typeof state.operation_applied !== 'boolean') throw new Error('Resultado sin confirmar');
       const applied = this.store.reconcile(state); this.confirmed(state);
-      this.operationError = applied ? '' : 'El cambio no se guardó. Conservamos tus valores para que puedas revisarlos y guardar de nuevo.';
+      this.operationError = applied ? '' : 'El cambio no se guardó. Revisa el valor e inténtalo de nuevo.';
       if (applied && operation.target.kind === 'add') this.pickerOpen = false;
       return applied;
     } catch {this.operationError = 'No se pudo confirmar el resultado. Revisa el estado antes de volver a guardar.'; return false;}
