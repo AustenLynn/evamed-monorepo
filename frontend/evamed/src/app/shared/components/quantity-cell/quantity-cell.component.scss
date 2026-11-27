@@ -27,3 +27,14 @@
   font: inherit;
   text-align: right;
 }
+
+.quantity__error {
+  display: block;
+  margin-top: 4px;
+  color: var(--ev-status-error, #b3261e);
+  font-size: var(--ev-font-support, 12px);
+}
+
+.quantity__input[aria-invalid='true'] {
+  border-color: var(--ev-status-error, #b3261e);
+}
