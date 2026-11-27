@@ -120,4 +120,28 @@ describe('Usage editor coordination', () => {
     expect(await editor.repairUnit(22)).toBe(true);
     expect(api.save.mock.calls[0][1].edits).toEqual([{id: 22, percentage: 20, repair_unit: true}]);
   });
+  it('saves the annual consumption edited in place at once', async () => {
+    editor.ngOnInit(); await settle();
+    const saved = usageFixture(); saved.annual!.quantity = 12000; saved.annuals[0].quantity = 12000; api.save.mockReturnValue(of(saved));
+    expect(await editor.setAnnual(12000)).toBe(true);
+    expect(api.save.mock.calls[0][1].annual).toEqual({quantity: 12000});
+    expect(editor.store.dirty).toBe(false);
+  });
+  it('a failed annual save leaves its error and no draft', async () => {
+    editor.ngOnInit(); await settle(); api.save.mockReturnValue(throwError(() => ({status: 400, error: {detail: 'Consumo inválido'}})));
+    expect(await editor.setAnnual(12000)).toBe(false);
+    expect(editor.annualError).toContain('Consumo'); expect(editor.store.dirty).toBe(false);
+  });
+  it('a new consumption over a negative one recalculates the sources without a separate confirmation', async () => {
+    const state = usageFixture(); state.annual!.quantity = -5; state.annuals[0].quantity = -5; state.sources.forEach(row => row.issues = ['quantity']);
+    api.load.mockReturnValue(of(state)); editor.ngOnInit(); await settle();
+    expect(editor.annualBlocked).toBe('');
+    expect(await editor.setAnnual(10000)).toBe(true);
+    expect(api.save.mock.calls[0][1]).toMatchObject({annual: {quantity: 10000}, edits: [{id: 21, percentage: 60}, {id: 22, percentage: 20}]});
+  });
+  it('repairs the annual unit in one click, keeping the saved quantity', async () => {
+    const state = usageFixture(); state.annual!.unit_id = 1; state.annuals[0].unit_id = 1; api.load.mockReturnValue(of(state)); editor.ngOnInit(); await settle();
+    expect(await editor.repairAnnualUnit()).toBe(true);
+    expect(api.save.mock.calls[0][1].annual).toEqual({quantity: 10000, repair_unit: true});
+  });
 });

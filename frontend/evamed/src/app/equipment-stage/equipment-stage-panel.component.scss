@@ -1,36 +1,6 @@
 @use '../../styles/stage-cards' as stageCards;
 @include stageCards.cards('equipment');
 
-// In place (2026-11-27): the summary is no longer a button; the name changes the equipment.
-.equipment-summary {
-  cursor: default;
-}
-
-.equipment-name {
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-  text-decoration: underline dotted;
-  text-underline-offset: 4px;
-
-  &:hover:not(:disabled) {
-    color: var(--ev-green-text);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--ev-green-text);
-    outline-offset: 3px;
-  }
-}
-
-.equipment-row-error {
-  margin: 8px 0 0;
-}
-
 .equipment-unit-alert {
   font-size: 16px;
   height: 16px;

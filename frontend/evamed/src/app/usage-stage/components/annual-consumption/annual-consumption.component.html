@@ -1,14 +1,16 @@
-<form evForm class="annual-form" (ngSubmit)="saveAnnual.emit()">
+<section class="annual-form">
   <h3 evHeading="section">Consumo anual</h3><p class="annual-context">Todo el edificio</p>
   <p *ngIf="!annual" class="annual-context">Define el consumo anual para agregar fuentes.</p>
-  <mat-form-field appearance="outline" subscriptSizing="dynamic"><mat-label>Cantidad (kWh / año)</mat-label><input matInput type="text" inputmode="numeric" name="annualQuantity" [ngModel]="draft.quantity" (ngModelChange)="draftChange.emit({quantity: $event})" [disabled]="pending" [attr.aria-invalid]="error ? true : null" [attr.aria-describedby]="error ? 'annual-error' : null"></mat-form-field>
-  <p *ngIf="canonicalUnit && annual && annual.unit_id !== canonicalUnit.id" evStatus="warning">Unidad guardada: {{ unitLabel }}.</p>
-  <mat-checkbox *ngIf="canonicalUnit && annual && annual.unit_id !== canonicalUnit.id" name="repairUnit" [ngModel]="draft.repairUnit" (ngModelChange)="draftChange.emit({repairUnit: $event})" [disabled]="pending">He revisado la unidad guardada «{{ unitLabel }}» y confirmo corregirla a «{{ canonicalUnit.name_unit }}». No se convierte la cantidad.</mat-checkbox>
-  <p *ngIf="negative" evStatus="warning">El consumo guardado es negativo. Revisa las fuentes antes de confirmar el nuevo total.</p>
-  <ng-container *ngIf="negative && repairSummary.length"><p class="annual-context" *ngFor="let summary of repairSummary">{{ summary }}</p><mat-checkbox name="confirmRecalculate" [ngModel]="draft.confirmRecalculate" (ngModelChange)="draftChange.emit({confirmRecalculate: $event})" [disabled]="pending">He revisado las fuentes y confirmo recalcular sus cantidades con los porcentajes guardados. Sus identificadores se conservan.</mat-checkbox></ng-container>
+  <p class="annual-quantity">
+    <app-quantity-cell [value]="annual?.quantity ?? null" [display]="(annual ? annual.quantity : '—') + ' kWh / año'" label="consumo anual en kWh" [integer]="true" [disabled]="pending" (changed)="setQuantity.emit($event)"></app-quantity-cell>
+  </p>
+  <p *ngIf="wrongUnit" evStatus="warning" class="annual-unit-warning">Unidad guardada: {{ unitLabel }}. <button mat-button type="button" data-repair-annual [disabled]="pending" (click)="repairUnit.emit()">Corregir a {{ canonicalUnit?.name_unit }}</button></p>
+  <ng-container *ngIf="negative">
+    <p evStatus="warning">El consumo guardado es negativo. Al guardar el nuevo consumo se recalcularán las fuentes con sus porcentajes guardados.</p>
+    <p class="annual-context" *ngFor="let summary of repairSummary">{{ summary }}</p>
+  </ng-container>
   <p *ngIf="blockedReason" evStatus="warning">{{ blockedReason }}</p>
   <p evStatus="error" *ngIf="error" id="annual-error" role="alert">{{ error }}</p>
-  <div evActions><button evAction="secondary" mat-stroked-button type="button" data-cancel-annual [disabled]="pending" (click)="cancelAnnual.emit()">Cancelar</button><button evAction="primary" mat-flat-button type="submit" [disabled]="pending || !!blockedReason">{{ pending ? 'Guardando…' : 'Guardar' }}</button></div>
   <p evStatus="warning" role="status" *ngIf="assigned <= 100">{{ assigned }} % asignado · {{ 100 - assigned }} % pendiente</p>
   <p evStatus="error" role="alert" *ngIf="assigned > 100">La asignación guardada supera 100 %. Reduce los porcentajes de las fuentes hasta corregirla. Podrás guardar el consumo anual y agregar fuentes cuando no supere 100 %.</p>
-</form>
+</section>

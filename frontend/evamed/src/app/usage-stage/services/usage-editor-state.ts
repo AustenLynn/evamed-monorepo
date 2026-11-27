@@ -48,16 +48,18 @@ export class UsageEditorState {
   get annualDirty(): boolean { return this.annual.quantity !== this.savedAnnual().quantity || this.annual.repairUnit || this.annual.confirmRecalculate; }
   get dirty(): boolean { return this.annualDirty || this.additionKeys.length > 0 || [...this.drafts].some(([id, draft]) => this.sourceDirty(id, draft)); }
   get canAdd(): boolean { return !!this.saved?.annual && this.saved.annuals.length === 1 && this.saved.annual.quantity >= 0 && this.saved.annual.unit_id === this.canonicalUnit?.id && !!this.canonicalUnit && this.assigned <= 100 && !this.unresolved; }
-  get annualBlockedReason(): string | null {
+  get annualBlockedReason(): string | null { return this.annualBlockedReasonFor(this.annual); }
+  /** Why an annual save with this draft would be refused (in place: the draft the save will send). */
+  annualBlockedReasonFor(draft: AnnualDraft): string | null {
     if (!this.saved || !this.canonicalUnit) return 'No se encontró una unidad kWh única. Revisa las unidades del proyecto.';
     if (this.saved.annuals.length > 1) return 'Hay varios consumos anuales. Resuelve los registros antes de guardar.';
-    if (this.saved.annual && this.saved.annual.unit_id !== this.canonicalUnit.id && !this.annual.repairUnit) return 'Confirma la corrección de la unidad anual a kWh.';
+    if (this.saved.annual && this.saved.annual.unit_id !== this.canonicalUnit.id && !draft.repairUnit) return 'Confirma la corrección de la unidad anual a kWh.';
     const negative = (this.saved.annual?.quantity ?? 0) < 0;
     for (const row of this.saved.sources) {
       if (!this.validSavedRow(row, negative)) return 'Repara las unidades, fuentes, porcentajes o cantidades de las fuentes antes de guardar.';
     }
     if (this.assigned > 100) return 'La asignación supera el 100 %.';
-    if (negative && this.saved.sources.length > 0 && !this.annual.confirmRecalculate) return 'Confirma el recálculo de las fuentes para reparar el consumo negativo.';
+    if (negative && this.saved.sources.length > 0 && !draft.confirmRecalculate) return 'Confirma el recálculo de las fuentes para reparar el consumo negativo.';
     return null;
   }
   load(state: UsageState): void { this.saved = copy(state); this.annual = this.savedAnnual(); this.drafts.clear(); this.expanded = null; this.additionKeys = []; this.unresolved = null; }

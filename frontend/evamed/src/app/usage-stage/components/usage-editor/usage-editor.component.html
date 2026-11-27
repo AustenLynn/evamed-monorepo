@@ -3,7 +3,7 @@
   <div class="usage-message" *ngIf="loadError" role="alert"><p>{{ loadError }}</p><button mat-stroked-button type="button" (click)="load()">Volver a intentar</button></div>
   <ng-container *ngIf="!loading && !loadError && store.saved as state">
     <aside class="container-sheets">
-      <app-annual-consumption [annual]="state.annual" [draft]="store.annual" [units]="state.units" [canonicalUnit]="store.canonicalUnit" [assigned]="store.assigned" [pending]="locked" [blockedReason]="store.annualBlockedReason || ''" [repairSummary]="repairSummary" [error]="annualError" (draftChange)="patchAnnual($event)" (saveAnnual)="saveAnnual()" (cancelAnnual)="cancelAnnual()"></app-annual-consumption>
+      <app-annual-consumption [annual]="state.annual" [units]="state.units" [canonicalUnit]="store.canonicalUnit" [assigned]="store.assigned" [pending]="locked" [blockedReason]="annualBlocked" [repairSummary]="repairSummary" [error]="annualError" (setQuantity)="setAnnual($event)" (repairUnit)="repairAnnualUnit()"></app-annual-consumption>
     </aside>
     <main class="container-systems">
       <div *ngIf="operationError" class="usage-notice" role="alert"><p>{{ operationError }}</p><button *ngIf="store.unresolved" mat-stroked-button type="button" [disabled]="pending" (click)="recover()">Revisar estado</button></div>
