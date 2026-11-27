@@ -78,3 +78,20 @@ export interface MaterialDetail extends ExplorerItem {
   indicators: Indicator[];
   comparison: Comparison | null;
 }
+
+/** GET /explorer/construccion/<id>/ or /explorer/uso/<id>/: the pickers' detail sheet (2026-11-27). */
+export interface CatalogueDetail {
+  id: number;
+  stage: 'construccion' | 'uso';
+  name: string;
+  display_name: string;
+  source: string | null;
+  region: string | null;
+  type: string;
+  unit: string | null;
+  gwp: number | null;
+  description: string | null;
+  modules: string;
+  ecoinvent: { dataset_id: number; version: string | null; activity: string | null; geography: string | null } | null;
+  indicators: { code: string; name: string; unit: string; value: number | null }[];
+}
