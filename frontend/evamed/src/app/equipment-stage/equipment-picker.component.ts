@@ -21,6 +21,8 @@ export class EquipmentPickerComponent implements OnDestroy {
     {param: 'region', urlParam: 'region', facet: 'regions', label: 'Región'},
   ];
   view = 'cards';
+  /** The option whose detail sheet is open (2026-11-27); null shows the catalogue. */
+  detail: EquipmentSource | null = null;
   loading = true;
   failed = false;
   failedNames: string[] = [];
@@ -67,6 +69,11 @@ export class EquipmentPickerComponent implements OnDestroy {
   removeSelection(id: number): void {
     const source = this.sources.find(item => item.id === id);
     if (source) this.pick(source);
+  }
+  open(source: EquipmentSource): void {if (!this.saving && !this.finishing) this.detail = source;}
+  get detailAction(): string {
+    if (!this.detail) return '';
+    return this.context.mode === 'replace' ? 'Elegir este equipo' : this.selected.has(this.detail.id) ? 'Quitar de la selección' : 'Agregar a la selección';
   }
   pick(source: EquipmentSource): void {
     if (this.saving || this.finishing) return;

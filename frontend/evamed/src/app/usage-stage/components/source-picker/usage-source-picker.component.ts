@@ -26,6 +26,8 @@ export class UsageSourcePickerComponent implements AfterViewInit, OnDestroy {
   readonly selected = new Set<string>();
   query: ExplorerQuery = {search: '', filters: {}};
   view = 'cards';
+  /** The energy type whose detail sheet is open (2026-11-27); photovoltaic has none. */
+  detail: UsageOption | null = null;
   private _pending = false;
   private submitted = false;
   private previousFocus: HTMLElement | null = null;
@@ -37,6 +39,15 @@ export class UsageSourcePickerComponent implements AfterViewInit, OnDestroy {
   get selection(): UsageOption[] {return this.options.filter(option => this.selected.has(option.key));}
   get selectionItems(): {id: number; name: string}[] {return this.selection.map(option => ({id: option.selectionId, name: option.name}));}
   trackOption(_index: number, option: UsageOption): string {return option.key;}
+  open(option: UsageOption): void {
+    if (this.locked) return;
+    if (option.type === null) {this.pick(option); return;}
+    this.detail = option;
+  }
+  get detailAction(): string {
+    if (!this.detail) return '';
+    return this.mode === 'replace' ? 'Elegir esta fuente' : this.selected.has(this.detail.key) ? 'Quitar de la selección' : 'Agregar a la selección';
+  }
   pick(option: UsageOption): void {
     if (this.locked || !this.available.some(item => item.key === option.key)) return;
     if (this.mode === 'replace') {

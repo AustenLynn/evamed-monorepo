@@ -11,7 +11,8 @@
       <button *ngIf="locked" mat-stroked-button type="button" class="usage-recover"
         [disabled]="!recoveryEnabled" (click)="requestRecovery()">Revisar estado</button>
     </div>
-    <div class="usage-browser">
+    <app-catalogue-detail *ngIf="detail" stage="uso" [itemId]="detail.type!" [actionLabel]="detailAction" [disabled]="locked" (back)="detail = null" (action)="pick(detail)"></app-catalogue-detail>
+    <div class="usage-browser" *ngIf="!detail">
     <app-filter-panel [filters]="browser.filters" [facets]="facets" [query]="query" [disabled]="locked" (queryChange)="updateQuery($event)"></app-filter-panel>
     <section class="usage-results" aria-label="Resultados del catálogo">
     <header class="usage-results-header">
@@ -21,8 +22,9 @@
     <div class="usage-options" [class.usage-options-list]="view === 'list'">
       <article evSurface *ngFor="let source of filtered; trackBy: trackOption" class="usage-option" [class.usage-option-selected]="selected.has(source.key)">
         <header class="usage-option-header">
-        <button type="button" class="usage-source" [attr.data-option]="source.key" [title]="source.name" [disabled]="locked" (click)="pick(source)">{{ source.name }}</button>
-        <mat-checkbox *ngIf="mode === 'add'" [checked]="selected.has(source.key)" [disabled]="locked" [aria-label]="'Seleccionar: ' + source.name" (change)="pick(source)"></mat-checkbox>
+        <button type="button" class="usage-source" [attr.data-option]="source.key" [title]="source.type === null ? source.name : 'Ver ficha: ' + source.name" [disabled]="locked" (click)="open(source)">{{ source.name }}</button>
+        <mat-checkbox *ngIf="mode === 'add'" [attr.data-pick]="source.key" [checked]="selected.has(source.key)" [disabled]="locked" [aria-label]="'Seleccionar: ' + source.name" (change)="pick(source)"></mat-checkbox>
+        <button *ngIf="mode === 'replace'" mat-stroked-button type="button" [attr.data-choose]="source.key" [disabled]="locked" [attr.aria-label]="'Elegir: ' + source.name" (click)="pick(source)">Elegir</button>
         </header>
         <p>{{ source.source === 'panels' ? 'Generación fotovoltaica' : source.source === 'fuel' ? 'Combustible' : 'Electricidad' }}</p>
         <footer *ngIf="source.source !== 'panels'" class="usage-option-meta"><app-source-chip [source]="source.database || 'Sin base de datos'"></app-source-chip><app-region-chip [region]="source.region || 'Sin región'"></app-region-chip></footer>

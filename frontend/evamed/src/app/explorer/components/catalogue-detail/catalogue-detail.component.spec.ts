@@ -63,6 +63,14 @@ describe('CatalogueDetailComponent', () => {
     expect(el.querySelector('h1')).toBeTruthy();
   });
 
+  it('does not reload when only the action label changes', () => {
+    const {fixture, el} = render();
+    http.expectOne(`${environment.api_explorer}construccion/11/`).flush(EXCAVATOR); fixture.detectChanges();
+    fixture.componentRef.setInput('actionLabel', 'Quitar de la selección'); fixture.detectChanges();
+    http.expectNone(`${environment.api_explorer}construccion/11/`);
+    expect(el.querySelector('[data-action]')!.textContent!.trim()).toBe('Quitar de la selección');
+  });
+
   it('goes back and acts', () => {
     const {fixture, el, back, action} = render('Quitar de la selección');
     http.expectOne(`${environment.api_explorer}construccion/11/`).flush(EXCAVATOR); fixture.detectChanges();

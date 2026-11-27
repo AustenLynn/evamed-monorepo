@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { catchError, map, startWith, switchMap } from 'rxjs/operators';
 
@@ -38,8 +38,11 @@ export class CatalogueDetailComponent implements OnChanges {
     );
   }
 
-  ngOnChanges(): void {
-    if (this.stage && this.itemId) this.key$.next({ stage: this.stage, id: this.itemId });
+  ngOnChanges(changes: SimpleChanges): void {
+    // A new label or disabled state must not reload the sheet.
+    if ((changes['stage'] || changes['itemId']) && this.stage && this.itemId) {
+      this.key$.next({ stage: this.stage, id: this.itemId });
+    }
   }
 
   retry(): void {
