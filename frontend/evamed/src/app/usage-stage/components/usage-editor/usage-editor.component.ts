@@ -61,6 +61,17 @@ export class UsageEditorComponent implements OnInit, OnDestroy {
   cancelSource(id: number): void {if (!this.locked) {this.store.cancelSource(id); this.sourceErrors.delete(id);}}
   saveAnnual(): Promise<boolean> {return this.intent(() => this.store.annualIntent(), {kind: 'annual'});}
   saveSource(id: number): Promise<boolean> {return this.intent(() => this.store.sourceIntent(id), {kind: 'source', id});}
+  /** In place (2026-11-27): a source change saves at once; a failed one leaves its error, not a draft. */
+  setPercentage(change: {id: number; percentage: number}): Promise<boolean> {return this.saveNow(change.id, {percentage: String(change.percentage)});}
+  repairUnit(id: number): Promise<boolean> {return this.saveNow(id, {repairUnit: true});}
+  private async saveNow(id: number, patch: Partial<SourceDraft>): Promise<boolean> {
+    if (this.locked) return false;
+    this.store.patchSource(id, patch); this.sourceErrors.delete(id);
+    const saved = await this.saveSource(id);
+    if (!saved && !this.store.unresolved) this.store.cancelSource(id);
+    this.changes?.markForCheck();
+    return saved;
+  }
   async removeSource(id: number): Promise<boolean> {
     if (this.locked || !confirm('¿Eliminar esta fuente? Solo se eliminará el registro seleccionado.')) return false;
     return this.intent(() => ({removals: [id]}), {kind: 'remove', id});
@@ -75,9 +86,9 @@ export class UsageEditorComponent implements OnInit, OnDestroy {
     const available = new Map(this.pickerOptions.map(option => [option.key, option]));
     if (options.some(option => !available.has(option.key))) {this.operationError = 'La selección ya no está disponible.'; return false;}
     if (this.replacementId !== null) {
-      const option = available.get(options[0].key)!;
-      this.patchSource({id: this.replacementId, patch: {type: option.type, source: option.source}});
-      this.store.openSource(this.replacementId); this.pickerOpen = false; return true;
+      const option = available.get(options[0].key)!, id = this.replacementId;
+      this.pickerOpen = false;
+      return this.saveNow(id, {type: option.type, source: option.source});
     }
     const selected = [...new Set(options.map(option => option.key))].map(key => available.get(key)!);
     this.store.additionKeys = selected.map(option => option.key);

@@ -66,11 +66,12 @@ describe('Usage editor coordination', () => {
     editor = new UsageEditorComponent(api, energy, router, materials); editor.projectId = 5; api.load.mockReturnValue(throwError(() => ({status: 404}))); editor.ngOnInit(); await settle();
     await editor.navigate('projects'); expect(router.navigateByUrl).toHaveBeenCalledWith('/home-evamed');
   });
-  it('does not pick an arbitrary annual total and repairs replacement as a draft only', async () => {
+  it('does not pick an arbitrary annual total: a replacement without one is not saved and says why', async () => {
     const state = usageFixture(); state.annual = null; state.annuals.push({id: 12, quantity: 5, unit_id: 22}); api.load.mockReturnValue(of(state)); editor.ngOnInit(); await settle();
     expect(energy.refresh).toHaveBeenCalled();
     editor.openPicker(21); await editor.confirmPicker([editor.store.options.find(o=>o.type === 9)!]);
-    expect(editor.store.sourceDraft(21)).toMatchObject({percentage: '60', type: 9, source: 'electric'}); expect(api.save).not.toHaveBeenCalled();
+    expect(api.save).not.toHaveBeenCalled(); expect(editor.sourceErrors.get(21)).toContain('consumo anual');
+    expect(editor.store.dirty).toBe(false); expect(editor.pickerOpen).toBe(false);
   });
   it('keeps an uncertain operation editable after a confirmed absent receipt without replay', async () => {
     editor.ngOnInit(); await settle(); editor.patchAnnual({quantity: '12000'});
@@ -94,4 +95,29 @@ describe('Usage editor coordination', () => {
     expect(editor.store.sourceDraft(21).percentage).toBe('30'); expect(editor.quantityPreviews.get(21)).toBe('3600');
   });
 
+  it('saves a percentage edited in place at once', async () => {
+    editor.ngOnInit(); await settle();
+    const saved = usageFixture(); saved.sources[0].percentage = 30; api.save.mockReturnValue(of(saved));
+    expect(await editor.setPercentage({id: 21, percentage: 30})).toBe(true);
+    expect(api.save.mock.calls[0][1].edits).toEqual([{id: 21, percentage: 30}]);
+    expect(editor.store.dirty).toBe(false);
+  });
+  it('test_failed_save_leaves_no_draft: the error stays on the card and leaving asks nothing', async () => {
+    editor.ngOnInit(); await settle();
+    api.save.mockReturnValue(throwError(() => ({status: 400, error: {detail: 'La asignación supera el 100 %.'}})));
+    expect(await editor.setPercentage({id: 21, percentage: 90})).toBe(false);
+    expect(editor.sourceErrors.get(21)).toContain('supera');
+    expect(editor.store.dirty).toBe(false); expect(editor.canLeave()).toBe(true);
+  });
+  it('replacing a source from its name saves at once', async () => {
+    editor.ngOnInit(); await settle();
+    editor.openPicker(21); expect(await editor.confirmPicker([editor.store.options.find(o => o.type === 9)!])).toBe(true);
+    expect(api.save.mock.calls[0][1].edits).toEqual([{id: 21, percentage: 60, type: 9, source: 'electric'}]);
+    expect(editor.pickerOpen).toBe(false);
+  });
+  it('repairs a saved unit in one click', async () => {
+    const state = usageFixture(); state.sources[1].unit_id = 1; api.load.mockReturnValue(of(state)); editor.ngOnInit(); await settle();
+    expect(await editor.repairUnit(22)).toBe(true);
+    expect(api.save.mock.calls[0][1].edits).toEqual([{id: 22, percentage: 20, repair_unit: true}]);
+  });
 });
