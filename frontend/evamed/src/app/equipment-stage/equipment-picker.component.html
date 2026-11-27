@@ -6,7 +6,8 @@
 <div class="equipment-picker-body">
   <p *ngIf="loading" role="status">Cargando equipos…</p>
   <div *ngIf="failed" role="alert">No se pudo cargar el catálogo. <button mat-button type="button" (click)="load()">Reintentar</button></div>
-  <ng-container *ngIf="!loading && !failed">
+  <app-catalogue-detail *ngIf="!loading && !failed && detail" stage="construccion" [itemId]="detail.id" [actionLabel]="detailAction" [disabled]="saving" (back)="detail = null" (action)="pick(detail)"></app-catalogue-detail>
+  <ng-container *ngIf="!loading && !failed && !detail">
     <div class="equipment-browser">
     <app-filter-panel [filters]="filters" [facets]="facets" [query]="query" [disabled]="saving" (queryChange)="query = $event"></app-filter-panel>
     <section class="equipment-results" aria-label="Resultados del catálogo">
@@ -17,8 +18,9 @@
     <div class="equipment-options" [class.equipment-options-list]="view === 'list'">
       <article evSurface *ngFor="let source of filtered" class="equipment-option" [class.equipment-option-selected]="selected.has(source.id)">
         <header class="equipment-option-header">
-        <button type="button" class="equipment-source" [attr.data-source]="source.id" [title]="source.name" [disabled]="saving" (click)="pick(source)">{{ source.displayName || source.name }}</button>
-        <mat-checkbox *ngIf="context.mode === 'add'" [checked]="selected.has(source.id)" [disabled]="saving" [aria-label]="'Seleccionar: ' + source.name" (change)="pick(source)"></mat-checkbox>
+        <button type="button" class="equipment-source" [attr.data-source]="source.id" [title]="'Ver ficha: ' + source.name" [disabled]="saving" (click)="open(source)">{{ source.displayName || source.name }}</button>
+        <mat-checkbox *ngIf="context.mode === 'add'" [attr.data-pick]="source.id" [checked]="selected.has(source.id)" [disabled]="saving" [aria-label]="'Seleccionar: ' + source.name" (change)="pick(source)"></mat-checkbox>
+        <button *ngIf="context.mode === 'replace'" mat-stroked-button type="button" [attr.data-choose]="source.id" [disabled]="saving" [attr.aria-label]="'Elegir: ' + source.name" (click)="pick(source)">Elegir</button>
         </header>
         <p>{{ source.type }}</p>
         <footer class="equipment-option-meta"><app-source-chip [source]="source.database || 'Sin base de datos'"></app-source-chip><app-region-chip [region]="source.region || 'Sin región'"></app-region-chip></footer>

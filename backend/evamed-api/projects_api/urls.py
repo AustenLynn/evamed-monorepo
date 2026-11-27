@@ -58,6 +58,7 @@ urlpatterns = [
     path('projects/<int:project_id>/results/', views.ProjectResultsView.as_view()),
     path('projects/<int:project_id>/material-scheme/', views.ProjectMaterialSchemeView.as_view()),
     path('explorer/produccion/<int:pk>/', explorer_views.ExplorerMaterialDetailView.as_view()),
+    path('explorer/<slug:stage>/<int:pk>/', explorer_views.ExplorerCatalogueDetailView.as_view()),
     path('explorer/<slug:stage>/', explorer_views.ExplorerListView.as_view()),
     path('templates/<str:kind>.xlsm', template_views.TemplateDownloadView.as_view()),
     path('', include(router.urls))

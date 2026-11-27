@@ -319,6 +319,44 @@ class ExplorerApiTests(APITestCase):
         self.assertIsNone(excavator['impact_level'])
         self.assertEqual(self.get('construccion', type='Generador')['count'], 1)
 
+    def _detail(self, stage, pk):
+        return self.client.get('/api-projects/explorer/%s/%d/' % (stage, pk))
+
+    def test_construction_detail(self):
+        excavator = models.SourceInformation.objects.get(name_source_information='Excavadora hidráulica (GLO)')
+        excavator.ecoinvent_dataset_id, excavator.ecoinvent_version = 3302, '3.12-sandbox'
+        excavator.save()
+        models.SourceInformationData.objects.create(
+            sourceInformarion_id=excavator, potential_type_id=self.pa, unit_id=self.co2, value=Decimal('0.004'))
+        response = self._detail('construccion', excavator.id)
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual((body['display_name'], body['unit'], body['modules'], body['region']),
+                         ('Excavadora hidráulica', 'm³', 'A5 y C1', 'Global'))
+        self.assertEqual(body['gwp'], 0.527)
+        self.assertIsNone(body['description'])
+        self.assertEqual(body['ecoinvent'], {'dataset_id': 3302, 'version': '3.12-sandbox',
+                                             'activity': 'market for excavation, hydraulic digger', 'geography': 'GLO'})
+        self.assertEqual([(i['code'], i['unit'], i['value']) for i in body['indicators']],
+                         [('PCG 100', 'kg CO2 eq', 0.527), ('PA', 'kg SO2 eq', 0.004)])
+
+    def test_use_detail(self):
+        grid = models.TypeEnergy.objects.get(name_type_energy='Energía eléctrica, Bajo voltaje (MX)-MEXICANIUH')
+        gas = models.TypeEnergy.objects.get(name_type_energy='Calefacción doméstica con gas natural (GLO)')
+        body = self._detail('uso', grid.id).json()
+        self.assertEqual((body['unit'], body['modules'], body['source'], body['ecoinvent']), ('kWh', 'B6', 'mexicaniuh', None))
+        self.assertEqual(body['indicators'][0]['value'], 0.6286)
+        self.assertIsNone(self._detail('uso', gas.id).json()['unit'])
+
+    def test_detail_without_values_still_opens(self):
+        bare = models.SourceInformation.objects.create(name_source_information='Banda transportadora (GLO)')
+        body = self._detail('construccion', bare.id).json()
+        self.assertEqual((body['indicators'], body['gwp']), ([], None))
+
+    def test_detail_unknown_is_404(self):
+        self.assertEqual(self._detail('construccion', 999999).status_code, 404)
+        self.assertEqual(self._detail('fin-de-vida', 1).status_code, 404)
+
     def test_use_items_and_filters(self):
         body = self.get('uso')
         self.assertEqual(body['facets'], {

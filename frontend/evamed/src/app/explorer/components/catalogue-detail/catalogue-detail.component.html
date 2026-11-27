@@ -1,0 +1,78 @@
+<button mat-button type="button" class="detail__back" data-back (click)="back.emit()"><mat-icon aria-hidden="true">arrow_back</mat-icon> Volver al catálogo</button>
+<ng-container [ngSwitch]="load.status" *ngIf="load$ | async as load">
+  <p *ngSwitchCase="'loading'" role="status" class="detail__status">Cargando ficha…</p>
+  <div *ngSwitchCase="'error'" role="alert" class="detail__error">
+    No se pudo cargar la ficha.
+    <button mat-stroked-button type="button" data-retry (click)="retry()">Reintentar</button>
+  </div>
+  <article *ngSwitchCase="'ready'" class="detail" aria-labelledby="catalogue-detail-title">
+    <ng-container *ngIf="$any(load).detail as detail">
+      <header class="detail__header">
+        <div class="detail__heading">
+          <h1 evHeading="detail" id="catalogue-detail-title" class="detail__title" [title]="detail.name">{{ detail.display_name }}</h1>
+        </div>
+        <div class="detail__chips">
+          <app-source-chip *ngIf="detail.source" [source]="detail.source"></app-source-chip>
+          <app-region-chip *ngIf="detail.region" [region]="detail.region"></app-region-chip>
+          <span *ngIf="detail.unit" class="detail__chip">Unidad: {{ detail.unit }}</span>
+        </div>
+        <button *ngIf="actionLabel" evAction="primary" mat-flat-button type="button" class="detail__select" data-action [disabled]="disabled" (click)="action.emit()">{{ actionLabel }}</button>
+      </header>
+
+      <div class="detail__grid">
+        <section evSurface class="detail__panel" aria-labelledby="catalogue-detail-description">
+          <h2 evHeading="section" id="catalogue-detail-description" class="detail__section">Descripción</h2>
+          <p *ngIf="detail.description; else noDescription" class="detail__description">{{ detail.description }}</p>
+          <ng-template #noDescription><p class="detail__muted">Sin descripción.</p></ng-template>
+        </section>
+
+        <section evSurface class="detail__panel" aria-labelledby="catalogue-detail-general">
+          <h2 evHeading="section" id="catalogue-detail-general" class="detail__section">Información general</h2>
+          <dl class="detail__facts">
+            <dt>Base de datos</dt>
+            <dd>{{ detail.source || '—' }}</dd>
+            <dt>Tipo</dt>
+            <dd>{{ detail.type }}</dd>
+            <dt>Unidad de captura</dt>
+            <dd>{{ detail.unit || '—' }}</dd>
+            <dt>Etapa</dt>
+            <dd>{{ detail.modules }}</dd>
+            <ng-container *ngIf="detail.ecoinvent as ecoinvent">
+              <dt>Proceso ecoinvent</dt>
+              <dd>{{ ecoinvent.activity || '—' }}<ng-container *ngIf="ecoinvent.geography"> · {{ ecoinvent.geography }}</ng-container></dd>
+              <dt>Dataset ecoinvent</dt>
+              <dd>{{ ecoinvent.dataset_id }}<ng-container *ngIf="ecoinvent.version"> · versión {{ ecoinvent.version }}</ng-container></dd>
+            </ng-container>
+          </dl>
+          <div class="detail__gwp">
+            <span class="detail__gwp-value">{{ detail.gwp | gwp }}</span>
+            <span class="detail__muted">kg CO₂e{{ detail.unit ? ' / ' + detail.unit : '' }}</span>
+          </div>
+        </section>
+      </div>
+
+      <section evSurface class="detail__panel" aria-labelledby="catalogue-detail-indicators">
+        <h2 evHeading="section" id="catalogue-detail-indicators" class="detail__section">Indicadores ambientales{{ detail.unit ? ' por ' + detail.unit : '' }}</h2>
+        <div class="detail__table-scroll" *ngIf="detail.indicators.length; else noIndicators">
+          <table class="detail__table">
+            <thead>
+              <tr>
+                <th scope="col">Indicador</th>
+                <th scope="col">Unidad</th>
+                <th scope="col" class="detail__number">Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let indicator of detail.indicators">
+                <th scope="row">{{ indicator.name }} <span class="detail__muted">({{ indicator.code }})</span></th>
+                <td>{{ indicator.unit }}</td>
+                <td class="detail__number detail__total">{{ indicator.value | gwp }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noIndicators><p class="detail__muted">Sin valores del método de cálculo actual.</p></ng-template>
+      </section>
+    </ng-container>
+  </article>
+</ng-container>

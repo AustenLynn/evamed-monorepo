@@ -4,7 +4,10 @@ The catalogue is small (hundreds of rows) and every item's impact level
 depends on its whole group, so each request loads a stage once, then
 filters, facets and pages the list in memory.
 """
+import json
 from collections import Counter, defaultdict
+from functools import lru_cache
+from pathlib import Path
 
 from projects_api import access, methods, models
 from projects_api.explorer import derive
@@ -223,4 +226,65 @@ def _comparison(item, items):
         'mean': sum(peers) / len(peers),
         'p25': derive.percentile(peers, 25),
         'value': item['gwp'],
+    }
+
+
+# Detail sheets for the equipment and use-source pickers (2026-11-27): only stored data.
+_DETAIL_STAGES = {
+    'construccion': (models.SourceInformation, 'name_source_information', models.SourceInformationData,
+                     'sourceInformarion_id', derive.machinery_type, 'A5 y C1', 'source_information'),
+    'uso': (models.TypeEnergy, 'name_type_energy', models.TypeEnergyData,
+            'type_energy_id', derive.energy_type, 'B6', 'type_energy'),
+}
+_PINS_PATH = Path(__file__).resolve().parent.parent / 'ecoinvent' / 'data' / 'pins.json'
+
+
+@lru_cache(maxsize=1)
+def _pinned_activities():
+    """(entity type, dataset id) -> (activity, geography) from the shipped pins artifact."""
+    with open(_PINS_PATH) as handle:
+        pins = json.load(handle)['pins']
+    return {(pin['entity_type'], pin['dataset_id']): (pin.get('activity_name'), pin.get('geography'))
+            for pin in pins if pin.get('dataset_id')}
+
+
+def catalogue_detail(stage, pk):
+    """One equipment (construccion) or use source (uso) with its indicators per unit, or None."""
+    spec = _DETAIL_STAGES.get(stage)
+    if spec is None:
+        return None
+    model, name_field, data_model, owner_field, kind, modules, entity_type = spec
+    row = model.objects.filter(pk=pk).first()
+    if row is None:
+        return None
+    active = list(methods.active_potential_types().order_by('id'))
+    values = {}
+    for type_id, value in data_model.objects.filter(**{owner_field: row}, potential_type_id__in=active) \
+            .order_by('id').values_list('potential_type_id', 'value'):
+        values.setdefault(type_id, _number(value))
+    name = getattr(row, name_field)
+    if stage == 'construccion':
+        unit = row.calculation_unit
+    else:
+        unit = 'kWh' if kind(name) == 'Electricidad' else None
+    ecoinvent = None
+    if row.ecoinvent_dataset_id:
+        activity, geography = _pinned_activities().get((entity_type, row.ecoinvent_dataset_id), (None, None))
+        ecoinvent = {'dataset_id': row.ecoinvent_dataset_id, 'version': row.ecoinvent_version,
+                     'activity': activity, 'geography': geography}
+    return {
+        'id': row.id,
+        'stage': stage,
+        'name': name,
+        'display_name': derive.display_name(name),
+        'source': derive.source_from_name(name),
+        'region': derive.region(name),
+        'type': kind(name),
+        'unit': unit,
+        'gwp': values.get(_gwp_type_id()),
+        'description': None,
+        'modules': modules,
+        'ecoinvent': ecoinvent,
+        'indicators': [{'code': p.name_potential_type, 'name': p.name_complete_potential_type,
+                        'unit': p.unit_potential_type, 'value': values[p.id]} for p in active if p.id in values],
     }

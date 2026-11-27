@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { ExplorerPage, ExplorerQuery, MaterialDetail, PAGE_SIZE } from '../explorer.models';
+import { ExplorerPage, ExplorerQuery, MaterialDetail, PAGE_SIZE, CatalogueDetail } from '../explorer.models';
 import { StageKey } from '../stage-config';
 import { ExplorerFeed, queryKey } from './explorer-feed';
 
@@ -29,6 +29,11 @@ export class ExplorerService {
       params = params.set('sort', query.sort);
     }
     return this.http.get<ExplorerPage>(`${environment.api_explorer}${stage}/`, { params });
+  }
+
+  /** Equipment (construccion) or use source (uso) detail sheet. */
+  catalogueDetail(stage: 'construccion' | 'uso', id: number): Observable<CatalogueDetail> {
+    return this.http.get<CatalogueDetail>(`${environment.api_explorer}${stage}/${id}/`);
   }
 
   material(id: number): Observable<MaterialDetail> {

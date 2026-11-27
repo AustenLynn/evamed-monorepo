@@ -91,3 +91,14 @@ class ExplorerMaterialDetailView(APIView):
         if detail is None:
             raise NotFound('Material no encontrado.')
         return Response(detail)
+
+
+class ExplorerCatalogueDetailView(APIView):
+    """GET /explorer/construccion/<id>/ and /explorer/uso/<id>/: the pickers' detail sheet."""
+    permission_classes = (access.IsAdminOrReadOnly,)
+
+    def get(self, request, stage, pk):
+        detail = queries.catalogue_detail(stage, pk)
+        if detail is None:
+            raise NotFound('No encontrado.')
+        return Response(detail)

@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { MaterialModule } from '../material/material.module';
+import { CatalogueDetailComponent } from './components/catalogue-detail/catalogue-detail.component';
 import { ExplorerBrowserComponent } from './components/explorer-browser/explorer-browser.component';
 import { ExplorerPickerComponent } from './components/explorer-picker/explorer-picker.component';
 import { FilterPanelComponent } from './components/filter-panel/filter-panel.component';
@@ -20,6 +21,7 @@ import { SourceChipComponent } from './components/source-chip/source-chip.compon
 import { GwpPipe } from './pipes/gwp.pipe';
 
 const COMPONENTS = [
+  CatalogueDetailComponent,
   ExplorerBrowserComponent,
   ExplorerPickerComponent,
   FilterPanelComponent,

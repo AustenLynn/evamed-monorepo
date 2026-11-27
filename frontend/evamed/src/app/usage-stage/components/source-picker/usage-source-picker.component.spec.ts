@@ -1,4 +1,7 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { environment } from '../../../../environments/environment';
 import { UsageStageUiModule } from '../../usage-stage-ui.module';
 import { UsageOption } from '../../usage.models';
 import { UsageSourcePickerComponent } from './usage-source-picker.component';
@@ -10,7 +13,7 @@ const options: UsageOption[] = [
 ];
 describe('Usage source picker', () => {
   const render = (mode: 'add' | 'replace' = 'add', selectedKeys: string[] = []) => {
-    TestBed.configureTestingModule({imports: [UsageStageUiModule]});
+    TestBed.configureTestingModule({imports: [UsageStageUiModule], providers: [provideHttpClient(), provideHttpClientTesting()]});
     const fixture = TestBed.createComponent(UsageSourcePickerComponent);
     fixture.componentRef.setInput('options', options);
     fixture.componentRef.setInput('mode', mode);
@@ -105,5 +108,26 @@ describe('Usage source picker', () => {
     expect(picker.selection.map(row => row.key)).toEqual(['type:2']);
     picker.requestClose();
     expect(close).toHaveBeenCalledTimes(1); expect(confirm).toHaveBeenCalledTimes(1);
+  });
+  it('opens the sheet of an energy type from its name; photovoltaic still toggles', () => {
+    const {fixture, picker, el} = render();
+    const http = TestBed.inject(HttpTestingController);
+    el.querySelector<HTMLButtonElement>('[data-option="type:2"]')!.click(); fixture.detectChanges();
+    expect(picker.selected.has('type:2')).toBe(false);
+    http.expectOne(`${environment.api_explorer}uso/2/`).flush({id: 2, stage: 'uso', name: 'Electricidad (MX)', display_name: 'Electricidad',
+      source: 'ECOINVENT 3', region: 'México', type: 'Electricidad', unit: 'kWh', gwp: 0.4, description: null, modules: 'B6', ecoinvent: null, indicators: []});
+    fixture.detectChanges();
+    el.querySelector<HTMLButtonElement>('[data-action]')!.click(); fixture.detectChanges();
+    expect(picker.selected.has('type:2')).toBe(true);
+    el.querySelector<HTMLButtonElement>('[data-back]')!.click(); fixture.detectChanges();
+    el.querySelector<HTMLButtonElement>('[data-option="panels"]')!.click(); fixture.detectChanges();
+    expect(picker.selected.has('panels')).toBe(true);
+    http.verify();
+  });
+  it('replaces with one click on «Elegir», or from the sheet', () => {
+    const {fixture, picker, el} = render('replace');
+    const chosen: UsageOption[][] = []; picker.confirm.subscribe(value => chosen.push(value));
+    el.querySelector<HTMLButtonElement>('[data-choose="type:4"]')!.click();
+    expect(chosen).toEqual([[options[1]]]);
   });
 });
